@@ -30,10 +30,3 @@ pub struct IfToken {
     elif_condition_contents: Vec<(EvaluableToken, Vec<LineTokens>)>,
     else_contents: Option<Vec<LineTokens>>
 }
-
-#[derive(Debug)]
-pub struct WhileToken {
-    location: Location,
-    condition: EvaluableToken,
-    contents: Vec<LineTokens>
-}

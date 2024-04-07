@@ -4,6 +4,7 @@ mod parse_break;
 pub(crate) mod parse_evaluable;
 mod parse_return;
 mod parse_initialisation;
+mod parse_while;
 
 use nom::character::complete::char;
 use nom::Err::Error;
@@ -14,7 +15,7 @@ use substring::Substring;
 use crate::root::nom_parser::parse::{Location, ParseResult, Span, TypeErrorTree};
 use crate::root::nom_parser::parse_blocks::{braced_section, bracketed_section};
 use parse_line::parse_line;
-use crate::root::nom_parser::parse_function::parse_line::LineTokens;
+use crate::root::nom_parser::parse_function::parse_line::{LineTokens, parse_lines};
 use crate::root::nom_parser::parse_impl::parse_impl;
 use crate::root::nom_parser::parse_name::{NameToken, parse_full_name, parse_simple_name};
 use crate::root::nom_parser::parse_parameters::{Parameters, parse_parameters};
@@ -60,19 +61,7 @@ pub fn parse_function(s: Span) -> ParseResult<Span, FunctionToken> {
 
     let (s, contents) = braced_section(s)?;
 
-    let mut lines = Vec::new();
-
-    let mut c = contents;
-    loop {
-        let (cs, _) = discard_ignored(c);
-        if cs.is_empty() {
-            break;
-        }
-        let (cs, function) = parse_line(cs)?;
-
-        lines.push(function);
-        c = cs;
-    }
+    let (_, lines) = parse_lines(contents)?;
 
     Ok((
         s,
