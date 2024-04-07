@@ -2,7 +2,7 @@ use nom::Parser;
 use nom_supreme::tag::complete::tag;
 use crate::root::nom_parser::parse::{Location, ParseResult, Span};
 use crate::root::nom_parser::parse_blocks::braced_section;
-use crate::root::nom_parser::parse_fn::{FunctionToken, parse_function};
+use crate::root::nom_parser::parse_function::{FunctionToken, parse_function};
 use crate::root::nom_parser::parse_name::parse_simple_name;
 use crate::root::nom_parser::parse_parameters::parse_parameters;
 use crate::root::nom_parser::parse_struct::StructToken;

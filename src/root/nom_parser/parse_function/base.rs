@@ -1,15 +1,6 @@
 use crate::root::nom_parser::parse::{Location, ParseResult, Span};
+use crate::root::nom_parser::parse_function::parse_line::LineTokens;
 use crate::root::nom_parser::parse_name::NameToken;
-
-enum LineTokens<'a> {
-    Initialisation(InitialisationToken<'a>),
-    Assignment(AssignmentToken<'a>),
-    If(IfToken<'a>),
-    While(WhileToken<'a>),
-    Return(&'a str),
-    Break,
-    NoOp(EvaluableToken)
-}
 
 #[derive(Debug)]
 pub struct EvaluableToken {
@@ -17,42 +8,48 @@ pub struct EvaluableToken {
     tokens: Vec<EvaluableTokens>
 }
 
-struct InitialisationToken<'a> {
+#[derive(Debug)]
+pub struct InitialisationToken {
     location: Location,
-    name: &'a str,
-    type_name: &'a str,
+    name: String,
+    type_name: String,
     value: EvaluableToken
 }
 
+#[derive(Debug)]
 struct AssignmentOperatorToken {
     location: Location,
     assignment_operator: AssignmentOperatorTokens
 }
 
+#[derive(Debug)]
 enum AssignmentOperatorTokens {
     None,
     Combination(OperatorTokens),
 }
 
-struct AssignmentToken<'a> {
+#[derive(Debug)]
+pub struct AssignmentToken {
     location: Location,
-    name: &'a str,
+    name: String,
     assignment_operator: AssignmentOperatorToken,
     value: EvaluableToken
 }
 
-struct IfToken<'a> {
+#[derive(Debug)]
+pub struct IfToken {
     location: Location,
     if_condition: EvaluableToken,
-    if_contents: Vec<LineTokens<'a>>,
-    elif_condition_contents: Vec<(EvaluableToken, Vec<LineTokens<'a>>)>,
-    else_contents: Option<Vec<LineTokens<'a>>>
+    if_contents: Vec<LineTokens>,
+    elif_condition_contents: Vec<(EvaluableToken, Vec<LineTokens>)>,
+    else_contents: Option<Vec<LineTokens>>
 }
 
-struct WhileToken<'a> {
+#[derive(Debug)]
+pub struct WhileToken {
     location: Location,
     condition: EvaluableToken,
-    contents: Vec<LineTokens<'a>>
+    contents: Vec<LineTokens>
 }
 
 #[derive(Debug)]

@@ -12,3 +12,12 @@ pub fn braced_section(s: Span) -> ParseResult {
     ).parse(s)
         .map(|(s, (_, y, _)): (Span, (char, Span, char))| (s, y))
 }
+
+pub fn bracketed_section(s: Span) -> ParseResult {
+    (
+        char('('),
+        take_until(")"),
+        char(')')
+    ).parse(s)
+        .map(|(s, (_, y, _)): (Span, (char, Span, char))| (s, y))
+}
