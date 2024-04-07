@@ -2,12 +2,12 @@ use crate::root::nom_parser::parse::{ParseResult, Span};
 use crate::root::nom_parser::parse_function::base::AssignmentToken;
 use crate::root::nom_parser::parse_function::parse_break::{test_parse_break, BreakToken};
 use crate::root::nom_parser::parse_function::parse_evaluable::{parse_evaluable, EvaluableToken};
-use crate::root::nom_parser::parse_function::parse_if::IfToken;
+use crate::root::nom_parser::parse_function::parse_if::{IfToken, test_parse_if};
 use crate::root::nom_parser::parse_function::parse_initialisation::{
     test_parse_initialisation, InitialisationToken,
 };
 use crate::root::nom_parser::parse_function::parse_return::{test_parse_return, ReturnToken};
-use crate::root::nom_parser::parse_function::parse_while::WhileToken;
+use crate::root::nom_parser::parse_function::parse_while::{test_parse_while, WhileToken};
 use nom::branch::alt;
 use nom::character::complete::multispace0;
 use nom::Parser;
@@ -48,6 +48,8 @@ pub fn parse_line(s: Span) -> ParseResult<Span, LineTokens> {
         test_parse_break,
         test_parse_return,
         test_parse_initialisation,
+        test_parse_while,
+        test_parse_if
     ))
     .parse(s)
     {
