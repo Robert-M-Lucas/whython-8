@@ -1,20 +1,23 @@
 pub mod base;
 mod parse_line;
 mod parse_break;
-mod parse_evaluable;
+pub(crate) mod parse_evaluable;
 mod parse_return;
 
 use nom::character::complete::char;
+use nom::Err::Error;
 use nom_supreme::tag::complete::tag;
 use nom::Parser;
+use nom_supreme::error::{BaseErrorKind, Expectation};
 use crate::root::nom_parser::parse::{Location, ParseResult, Span, TypeErrorTree};
 use crate::root::nom_parser::parse_blocks::{braced_section, bracketed_section};
 use parse_line::parse_line;
 use crate::root::nom_parser::parse_function::parse_line::LineTokens;
+use crate::root::nom_parser::parse_impl::parse_impl;
 use crate::root::nom_parser::parse_name::{NameToken, parse_full_name, parse_simple_name};
 use crate::root::nom_parser::parse_parameters::{Parameters, parse_parameters};
 use crate::root::nom_parser::parse_struct::StructToken;
-use crate::root::nom_parser::parse_toplevel::TopLevelTokens;
+use crate::root::nom_parser::parse_toplevel::{ToplevelTestFn, TopLevelTokens};
 use crate::root::nom_parser::parse_util::{discard_ignored, require_ignored};
 
 #[derive(Debug)]
@@ -24,6 +27,22 @@ pub struct FunctionToken {
     return_type: Option<NameToken>,
     parameters: Parameters,
     lines: Vec<LineTokens>
+}
+
+pub fn test_parse_function<'a>(s: Span) -> ParseResult<Span, ToplevelTestFn<'a>> {
+    if s.len() >= 2 && &s[..2] == "fn" {
+        Ok((s, |x| parse_function(x).map(|(s, f)| (s, TopLevelTokens::Function(f)))))
+    }
+    else {
+        Err(Error(
+            TypeErrorTree::Base {
+                location: s,
+                kind: BaseErrorKind::Expected(
+                    Expectation::Tag("fn")
+                ),
+            }
+        ))
+    }
 }
 
 pub fn parse_function(s: Span) -> ParseResult<Span, FunctionToken> {

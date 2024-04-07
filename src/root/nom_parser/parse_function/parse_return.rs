@@ -10,7 +10,7 @@ pub struct ReturnToken {
     return_value: EvaluableToken
 }
 
-pub fn parse_break(s: Span) -> ParseResult<Span, ReturnToken> {
+pub fn parse_return(s: Span) -> ParseResult<Span, ReturnToken> {
     let (s, l) = tag("return")(s)?;
     let (s, _) = require_ignored(s)?;
     let (s, value) = parse_evaluable(s, true)?;

@@ -2,9 +2,9 @@ use nom::branch::alt;
 use nom::Parser;
 use crate::root::nom_parser::parse::{ParseResult, Span};
 use crate::root::nom_parser::{parse_util};
-use crate::root::nom_parser::parse_function::{FunctionToken, parse_function};
-use crate::root::nom_parser::parse_impl::{ImplToken, parse_impl};
-use crate::root::nom_parser::parse_struct::{parse_struct, StructToken};
+use crate::root::nom_parser::parse_function::{FunctionToken, parse_function, test_parse_function};
+use crate::root::nom_parser::parse_impl::{ImplToken, parse_impl, test_parse_impl};
+use crate::root::nom_parser::parse_struct::{parse_struct, StructToken, test_parse_struct};
 
 #[derive(Debug)]
 pub enum TopLevelTokens {
@@ -12,6 +12,8 @@ pub enum TopLevelTokens {
     Impl(ImplToken),
     Function(FunctionToken),
 }
+
+pub type ToplevelTestFn<'a> = fn(Span<'a>) -> ParseResult<Span<'a>, TopLevelTokens>;
 
 pub fn parse_toplevel(s: Span) -> ParseResult<Span, Vec<TopLevelTokens>> {
     let mut s = s;
@@ -25,12 +27,14 @@ pub fn parse_toplevel(s: Span) -> ParseResult<Span, Vec<TopLevelTokens>> {
             return Ok((ns, tokens))
         }
 
-        let (ns, token) = alt((
-            |x| parse_impl(x).map(|(s, i)| (s, TopLevelTokens::Impl(i))),
-            |x| parse_function(x).map(|(s, f)| (s, TopLevelTokens::Function(f))),
-            |x| parse_struct(x).map(|(s, st)| (s, TopLevelTokens::Struct(st))),
+        let (ns, parse_fn) = alt((
+            test_parse_struct,
+            test_parse_impl,
+            test_parse_function
         ))
             .parse(ns)?;
+
+        let (ns, token) = parse_fn(ns)?;
 
         tokens.push(token);
 

@@ -10,3 +10,4 @@ mod parse_blocks;
 mod parse_parameters;
 mod parse_name;
 mod parse_arguments;
+mod soft_alt;

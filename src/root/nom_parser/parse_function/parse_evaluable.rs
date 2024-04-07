@@ -14,8 +14,8 @@ enum EvaluableTokens {
     Name(NameToken),
     Literal(LiteralTokens),
     FunctionCall(NameToken, Parameters),
-    InfixOperator(EvaluableToken, OperatorToken, EvaluableToken),
-    PrefixOperator(OperatorToken, EvaluableToken)
+    InfixOperator(Box<EvaluableToken>, OperatorToken, Box<EvaluableToken>),
+    PrefixOperator(OperatorToken, Box<EvaluableToken>)
 }
 
 #[derive(Debug)]
