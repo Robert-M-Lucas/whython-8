@@ -3,14 +3,6 @@ use crate::root::nom_parser::parse_function::parse_evaluable::{EvaluableToken, O
 use crate::root::nom_parser::parse_function::parse_line::LineTokens;
 
 #[derive(Debug)]
-pub struct InitialisationToken {
-    location: Location,
-    name: String,
-    type_name: String,
-    value: EvaluableToken
-}
-
-#[derive(Debug)]
 struct AssignmentOperatorToken {
     location: Location,
     assignment_operator: AssignmentOperatorTokens

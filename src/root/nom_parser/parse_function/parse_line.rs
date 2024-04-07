@@ -1,10 +1,11 @@
 use nom::branch::alt;
 use nom::Parser;
-use crate::root::nom_parser::parse::{Location, ParseResult, Span};
-use crate::root::nom_parser::parse_function::base::{AssignmentToken, IfToken, InitialisationToken, WhileToken};
-use crate::root::nom_parser::parse_function::parse_break::{BreakToken, parse_break};
+use crate::root::nom_parser::parse::{ParseResult, Span};
+use crate::root::nom_parser::parse_function::base::{AssignmentToken, IfToken, WhileToken};
+use crate::root::nom_parser::parse_function::parse_break::{BreakToken, test_parse_break};
 use crate::root::nom_parser::parse_function::parse_evaluable::{EvaluableToken, parse_evaluable};
-use crate::root::nom_parser::parse_function::parse_return::{parse_return, ReturnToken};
+use crate::root::nom_parser::parse_function::parse_initialisation::{InitialisationToken, test_parse_initialisation};
+use crate::root::nom_parser::parse_function::parse_return::{ReturnToken, test_parse_return};
 
 #[derive(Debug)]
 pub enum LineTokens {
@@ -17,11 +18,16 @@ pub enum LineTokens {
     NoOp(EvaluableToken)
 }
 
+pub type LineTestFn<'a> = fn(Span<'a>) -> ParseResult<Span<'a>, LineTokens>;
 pub fn parse_line(s: Span) -> ParseResult<Span, LineTokens> {
-    alt((
-        |x| parse_break(x).map(|(s, b)| (s, LineTokens::Break(b))),
-        |x| parse_return(x).map(|(s, r)| (s, LineTokens::Return(r))),
-        |x| parse_evaluable(x, true).map(|(s, e)| (s, LineTokens::NoOp(e))),
-    ))
-        .parse(s)
+    if let Ok((s, parser)) = alt((
+        test_parse_break,
+        test_parse_return,
+        test_parse_initialisation,
+        )).parse(s) {
+        parser(s)
+    }
+    else { // ? Default case is evaluable
+        parse_evaluable(s, true).map(|(s, e)| (s, LineTokens::NoOp(e)))
+    }
 }

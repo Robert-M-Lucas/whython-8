@@ -3,12 +3,14 @@ mod parse_line;
 mod parse_break;
 pub(crate) mod parse_evaluable;
 mod parse_return;
+mod parse_initialisation;
 
 use nom::character::complete::char;
 use nom::Err::Error;
 use nom_supreme::tag::complete::tag;
 use nom::Parser;
 use nom_supreme::error::{BaseErrorKind, Expectation};
+use substring::Substring;
 use crate::root::nom_parser::parse::{Location, ParseResult, Span, TypeErrorTree};
 use crate::root::nom_parser::parse_blocks::{braced_section, bracketed_section};
 use parse_line::parse_line;
@@ -30,7 +32,7 @@ pub struct FunctionToken {
 }
 
 pub fn test_parse_function<'a>(s: Span) -> ParseResult<Span, ToplevelTestFn<'a>> {
-    if s.len() >= 2 && &s[..2] == "fn" {
+    if s.len() >= 2 && s.substring(0, 2) == "fn" {
         Ok((s, |x| parse_function(x).map(|(s, f)| (s, TopLevelTokens::Function(f)))))
     }
     else {

@@ -2,6 +2,7 @@ use nom::Err::Error;
 use nom_supreme::tag::complete::tag;
 use nom::Parser;
 use nom_supreme::error::{BaseErrorKind, Expectation};
+use substring::Substring;
 use crate::root::nom_parser::parse::{Location, ParseResult, Span, TypeErrorTree};
 use crate::root::nom_parser::parse_blocks::braced_section;
 use crate::root::nom_parser::parse_name::{NameToken, parse_simple_name};
@@ -17,7 +18,7 @@ pub struct StructToken {
 }
 
 pub fn test_parse_struct<'a>(s: Span) -> ParseResult<Span, ToplevelTestFn<'a>> {
-    if s.len() >= 6 && &s[..6] == "struct" {
+    if s.len() >= 6 && s.substring(0, 6) == "struct" {
         Ok((s, |x| parse_struct(x).map(|(s, st)| (s, TopLevelTokens::Struct(st)))))
     }
     else {

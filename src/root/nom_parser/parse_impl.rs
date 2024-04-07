@@ -2,6 +2,7 @@ use nom::Err::Error;
 use nom::Parser;
 use nom_supreme::error::{BaseErrorKind, Expectation};
 use nom_supreme::tag::complete::tag;
+use substring::Substring;
 use crate::root::nom_parser::parse::{Location, ParseResult, Span, TypeErrorTree};
 use crate::root::nom_parser::parse_blocks::braced_section;
 use crate::root::nom_parser::parse_function::{FunctionToken, parse_function};
@@ -19,7 +20,7 @@ pub struct ImplToken {
 }
 
 pub fn test_parse_impl<'a>(s: Span) -> ParseResult<Span, ToplevelTestFn<'a>> {
-    if s.len() >= 4 && &s[..4] == "impl" {
+    if s.len() >= 4 && s.substring(0, 4) == "impl" {
         Ok((s, |x| parse_impl(x).map(|(s, i)| (s, TopLevelTokens::Impl(i)))))
     }
     else {
