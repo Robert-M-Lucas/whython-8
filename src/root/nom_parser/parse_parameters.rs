@@ -1,6 +1,6 @@
-use nom::character::complete::{char, multispace0};
 use crate::root::nom_parser::parse::{ParseResult, Span};
-use crate::root::nom_parser::parse_name::{NameToken, parse_full_name, parse_simple_name};
+use crate::root::nom_parser::parse_name::{parse_full_name, parse_simple_name, NameToken};
+use nom::character::complete::{char, multispace0};
 
 pub type Parameters = Vec<(String, NameToken)>;
 

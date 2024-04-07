@@ -1,9 +1,9 @@
+use crate::root::name_resolver::processor::ProcessorError;
+use crate::root::parser::parse::ParseError;
 use std::io;
 use std::io::ErrorKind;
 use std::ops::{Add, Rem, Sub};
 use std::process::ExitStatus;
-use crate::root::parser::parse::ParseError;
-use crate::root::name_resolver::processor::ProcessorError;
 
 pub fn try_run_program(name: &str, exit_status: io::Result<ExitStatus>) -> Result<ExitStatus, ()> {
     match exit_status {
@@ -11,8 +11,7 @@ pub fn try_run_program(name: &str, exit_status: io::Result<ExitStatus>) -> Resul
         Err(e) => {
             if matches!(e.kind(), ErrorKind::NotFound) {
                 println!("Program `{name}` not found. Check to make sure it is in your path");
-            }
-            else { 
+            } else {
                 println!("Running `{name}` failed with error:\n{e}")
             }
             Err(())
@@ -49,7 +48,7 @@ pub fn align<T: Copy + Sub<Output = T> + Rem<Output = T> + Add<Output = T>>(
 pub enum AnyError {
     Parse(ParseError),
     Processing(ProcessorError),
-    Other
+    Other,
 }
 
 impl From<ParseError> for AnyError {

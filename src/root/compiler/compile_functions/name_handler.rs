@@ -1,13 +1,13 @@
 use crate::root::basic_ast::symbol::{BasicSymbol, NameAccessType, NameType};
 use crate::root::compiler::compile_functions::{FunctionHolder, Line};
-use crate::root::parser::line_info::LineInfo;
+use crate::root::compiler::local_variable::{LocalVariable, TypeInfo};
+use crate::root::custom::types::int::Int;
 use crate::root::name_resolver::processor::ProcessorError;
 use crate::root::name_resolver::type_builder::{TypeTable, TypedFunction};
+use crate::root::parser::line_info::LineInfo;
 use crate::root::utils::align;
 use either::{Either, Left, Right};
 use std::collections::HashSet;
-use crate::root::compiler::local_variable::{LocalVariable, TypeInfo};
-use crate::root::custom::types::int::Int;
 
 pub struct NameHandler {
     type_table: TypeTable,
@@ -65,7 +65,8 @@ impl NameHandler {
         self.local_variables_size += size;
         // parse_function.push(Line::InlineAsm(vec![format!("sub rsp, {}", size)]));
         if let Some(name) = name {
-            self.local_variables.push((name, LocalVariable::from_type_info(addr, _type)));
+            self.local_variables
+                .push((name, LocalVariable::from_type_info(addr, _type)));
         }
         Ok(addr)
     }
@@ -77,16 +78,30 @@ impl NameHandler {
             if variable.type_info.reference_depth != 0 {
                 continue;
             }
-            let t = self.type_table.get_type(variable.type_info.type_id).unwrap();
+            let t = self
+                .type_table
+                .get_type(variable.type_info.type_id)
+                .unwrap();
             if let Some(destructor) = t.get_destructor() {
-                let ref_ = self.add_local_variable(None, TypeInfo::new(variable.type_info.type_id, 1), lines)?;
+                let ref_ = self.add_local_variable(
+                    None,
+                    TypeInfo::new(variable.type_info.type_id, 1),
+                    lines,
+                )?;
 
-                lines.push(Line::InlineAsm(Int::instantiate_local_ref(variable.offset, ref_)));
+                lines.push(Line::InlineAsm(Int::instantiate_local_ref(
+                    variable.offset,
+                    ref_,
+                )));
 
                 lines.push(Line::NoReturnCall(
                     destructor,
                     -(self.local_variable_space() as isize),
-                    vec![(ref_, self.type_table.get_type_size(TypeInfo::new(variable.type_info.type_id, 1))?)],
+                    vec![(
+                        ref_,
+                        self.type_table
+                            .get_type_size(TypeInfo::new(variable.type_info.type_id, 1))?,
+                    )],
                     0,
                 ));
 
@@ -98,7 +113,8 @@ impl NameHandler {
     }
 
     pub fn name_variable(&mut self, name: String, addr: isize, _type: TypeInfo) {
-        self.local_variables.push((name, LocalVariable::from_type_info(addr, _type)));
+        self.local_variables
+            .push((name, LocalVariable::from_type_info(addr, _type)));
     }
 
     pub fn resolve_name<'b>(
@@ -120,7 +136,11 @@ impl NameHandler {
     > {
         let mut current_type: Option<TypeInfo> = None;
         let mut current_variable = None;
-        let mut return_func: Option<(&Box<dyn TypedFunction>, Option<LocalVariable>, &Vec<Vec<(BasicSymbol, LineInfo)>>)> = None;
+        let mut return_func: Option<(
+            &Box<dyn TypedFunction>,
+            Option<LocalVariable>,
+            &Vec<Vec<(BasicSymbol, LineInfo)>>,
+        )> = None;
 
         for (name, access_type, name_type, indirection) in name {
             if return_func.is_some() {
@@ -163,7 +183,14 @@ impl NameHandler {
 
                         if current_type.unwrap().reference_depth > 0 {
                             let ref_addr = self
-                                .add_local_variable(None, TypeInfo::new(t.type_info.type_id, current_type.unwrap().reference_depth), lines)
+                                .add_local_variable(
+                                    None,
+                                    TypeInfo::new(
+                                        t.type_info.type_id,
+                                        current_type.unwrap().reference_depth,
+                                    ),
+                                    lines,
+                                )
                                 .unwrap();
                             lines.push(Line::InlineAsm(Int::instantiate_ref(
                                 current_variable.unwrap(),
@@ -171,7 +198,10 @@ impl NameHandler {
                                 ref_addr,
                             )));
                             current_variable = Some(ref_addr);
-                            current_type = Some(TypeInfo::new(t.type_info.type_id, current_type.unwrap().reference_depth + t.type_info.reference_depth));
+                            current_type = Some(TypeInfo::new(
+                                t.type_info.type_id,
+                                current_type.unwrap().reference_depth + t.type_info.reference_depth,
+                            ));
                         } else {
                             current_variable = Some(current_variable.unwrap() + t.offset);
                             current_type = Some(t.type_info);
@@ -208,7 +238,10 @@ impl NameHandler {
                                     line.clone(),
                                 ));
                             }
-                            Some(LocalVariable::from_type_info(current_variable.unwrap(), current_type.unwrap()))
+                            Some(LocalVariable::from_type_info(
+                                current_variable.unwrap(),
+                                current_type.unwrap(),
+                            ))
                         } else {
                             None
                         };

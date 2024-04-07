@@ -6,16 +6,16 @@ use crate::root::compiler::compile_functions::assignment::process_assignment;
 use crate::root::compiler::compile_functions::name_handler::NameHandler;
 use crate::root::compiler::compile_functions::{evaluate, FunctionHolder, Line};
 use crate::root::compiler::generate_asm::{get_function_sublabel, get_local_address};
-use crate::root::parser::line_info::LineInfo;
 use crate::root::name_resolver::processor::ProcessorError;
 use crate::root::name_resolver::type_builder::Type;
+use crate::root::parser::line_info::LineInfo;
 
+use crate::root::compiler::local_variable::{LocalVariable, TypeInfo};
+use crate::root::custom::types::bool::Bool;
 #[cfg(debug_assertions)]
 use itertools::Itertools;
 #[cfg(debug_assertions)]
 use std::fs;
-use crate::root::compiler::local_variable::{LocalVariable, TypeInfo};
-use crate::root::custom::types::bool::Bool;
 
 pub fn process_lines(
     section: &[(BasicSymbol, LineInfo)],
@@ -118,7 +118,9 @@ pub fn process_lines(
                 name_handler.destroy_local_variables(lines)?;
                 lines.push(Line::Return(Some((
                     return_value.offset,
-                    name_handler.type_table().get_type_size(return_value.type_info)?,
+                    name_handler
+                        .type_table()
+                        .get_type_size(return_value.type_info)?,
                 ))));
             }
             BasicSymbol::Keyword(Keyword::Let) => {
@@ -169,7 +171,11 @@ pub fn process_lines(
                         line[3].1.clone(),
                         type_name.0.clone(),
                     ))?;
-                let addr = name_handler.add_local_variable(None, TypeInfo::new(type_id, type_name.3), lines)?;
+                let addr = name_handler.add_local_variable(
+                    None,
+                    TypeInfo::new(type_id, type_name.3),
+                    lines,
+                )?;
 
                 if line.len() < 6 {
                     return Err(ProcessorError::LetNoValue(line[3].1.clone()));

@@ -5,9 +5,9 @@ use crate::root::ast::literals::Literal;
 use crate::root::compiler::generate_asm::get_local_address;
 use crate::root::compiler::local_variable::TypeInfo;
 use crate::root::custom::types::bool::Bool;
-use crate::root::parser::line_info::LineInfo;
 use crate::root::name_resolver::processor::ProcessorError;
-use crate::root::name_resolver::type_builder::{Type, TypedFunction, TypeTable};
+use crate::root::name_resolver::type_builder::{Type, TypeTable, TypedFunction};
+use crate::root::parser::line_info::LineInfo;
 
 pub fn add_function_signatures(existing: &mut Vec<(Option<isize>, Box<dyn TypedFunction>)>) {
     let signatures: [(Option<isize>, Box<dyn TypedFunction>); 11] = [
@@ -21,7 +21,7 @@ pub fn add_function_signatures(existing: &mut Vec<(Option<isize>, Box<dyn TypedF
         (Some(Int::get_id()), Box::new(IntLE {})),
         (Some(Int::get_id()), Box::new(IntGE {})),
         (Some(Int::get_id()), Box::new(IntEQ {})),
-        (Some(Int::get_id()), Box::new(IntNE {}))
+        (Some(Int::get_id()), Box::new(IntNE {})),
     ];
 
     for s in signatures {
@@ -94,14 +94,21 @@ impl Type for Int {
         let hex_str = format!("{:016x}", *val as i64);
         let upper = &hex_str[..8];
         let lower = &hex_str[8..];
-        
+
         Ok(vec![
-            format!("mov dword [{}], 0x{}", get_local_address(local_address), lower),
-            format!("mov dword [{}], 0x{}", get_local_address(local_address + 4), upper),
+            format!(
+                "mov dword [{}], 0x{}",
+                get_local_address(local_address),
+                lower
+            ),
+            format!(
+                "mov dword [{}], 0x{}",
+                get_local_address(local_address + 4),
+                upper
+            ),
         ])
     }
 }
-
 
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]

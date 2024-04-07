@@ -3,10 +3,10 @@ use crate::root::compiler::compile_functions::name_handler::NameHandler;
 use crate::root::compiler::compile_functions::{
     call_function, evaluate, instantiate_literal, FunctionHolder, Line,
 };
-use crate::root::parser::line_info::LineInfo;
-use crate::root::name_resolver::processor::ProcessorError;
-use either::{Left, Right};
 use crate::root::compiler::local_variable::LocalVariable;
+use crate::root::name_resolver::processor::ProcessorError;
+use crate::root::parser::line_info::LineInfo;
+use either::{Left, Right};
 
 pub fn evaluate_symbol(
     symbol: &(BasicSymbol, LineInfo),
@@ -57,7 +57,9 @@ pub fn evaluate_symbol(
                         lines.push(Line::Copy(
                             new_variable.offset,
                             return_into.offset,
-                            name_handler.type_table().get_type_size(return_into.type_info)?,
+                            name_handler
+                                .type_table()
+                                .get_type_size(return_into.type_info)?,
                         ));
 
                         Some(return_into)

@@ -1,24 +1,24 @@
 use nom::character::complete::{multispace0, multispace1};
+use nom::sequence::Tuple;
 use nom::Parser;
 use nom_supreme::tag::complete::tag;
 use substring::Substring;
-use nom::sequence::Tuple;
 
 use crate::root::nom_parser::parse::{Location, ParseResult, Span, TypeErrorTree};
 use crate::root::nom_parser::parse_blocks::{braced_section, bracketed_section};
-use crate::root::nom_parser::parse_function::parse_line::{LineTokens, parse_lines};
-use crate::root::nom_parser::parse_name::{NameToken, parse_full_name, parse_simple_name};
-use crate::root::nom_parser::parse_parameters::{Parameters, parse_parameters};
-use crate::root::nom_parser::parse_toplevel::{ToplevelTestFn, TopLevelTokens};
+use crate::root::nom_parser::parse_function::parse_line::{parse_lines, LineTokens};
+use crate::root::nom_parser::parse_name::{parse_full_name, parse_simple_name, NameToken};
+use crate::root::nom_parser::parse_parameters::{parse_parameters, Parameters};
+use crate::root::nom_parser::parse_toplevel::{TopLevelTokens, ToplevelTestFn};
 
 pub mod base;
-mod parse_line;
 mod parse_break;
 pub(crate) mod parse_evaluable;
-mod parse_return;
-mod parse_initialisation;
-mod parse_while;
 mod parse_if;
+mod parse_initialisation;
+mod parse_line;
+mod parse_return;
+mod parse_while;
 
 #[derive(Debug)]
 pub struct FunctionToken {
@@ -26,13 +26,15 @@ pub struct FunctionToken {
     name: String,
     return_type: Option<NameToken>,
     parameters: Parameters,
-    lines: Vec<LineTokens>
+    lines: Vec<LineTokens>,
 }
 
 pub fn test_parse_function<'a>(s: Span<'a>) -> ParseResult<Span, ToplevelTestFn<'a>> {
     match (tag("fn"), multispace1).parse(s) {
-        Ok(_) => Ok((s, |x| parse_function(x).map(|(s, x)| (s, TopLevelTokens::Function(x))))),
-        Err(e) => Err(e)
+        Ok(_) => Ok((s, |x| {
+            parse_function(x).map(|(s, x)| (s, TopLevelTokens::Function(x)))
+        })),
+        Err(e) => Err(e),
     }
 }
 
@@ -68,7 +70,6 @@ pub fn parse_function(s: Span) -> ParseResult<Span, FunctionToken> {
             return_type,
             parameters,
             lines,
-        }
+        },
     ))
 }
-

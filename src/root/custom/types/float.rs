@@ -5,9 +5,9 @@ use crate::root::ast::literals::Literal;
 use crate::root::compiler::generate_asm::get_local_address;
 use crate::root::compiler::local_variable::TypeInfo;
 use crate::root::custom::types::bool::Bool;
-use crate::root::parser::line_info::LineInfo;
 use crate::root::name_resolver::processor::ProcessorError;
-use crate::root::name_resolver::type_builder::{Type, TypedFunction, TypeTable};
+use crate::root::name_resolver::type_builder::{Type, TypeTable, TypedFunction};
+use crate::root::parser::line_info::LineInfo;
 
 pub fn add_function_signatures(existing: &mut Vec<(Option<isize>, Box<dyn TypedFunction>)>) {
     let signatures: [(Option<isize>, Box<dyn TypedFunction>); 10] = [
@@ -20,7 +20,7 @@ pub fn add_function_signatures(existing: &mut Vec<(Option<isize>, Box<dyn TypedF
         (Some(Float::get_id()), Box::new(FloatLE {})),
         (Some(Float::get_id()), Box::new(FloatGE {})),
         (Some(Float::get_id()), Box::new(FloatEQ {})),
-        (Some(Float::get_id()), Box::new(FloatNE {}))
+        (Some(Float::get_id()), Box::new(FloatNE {})),
     ];
     for s in signatures {
         existing.push(s);

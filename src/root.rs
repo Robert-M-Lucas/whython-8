@@ -1,35 +1,35 @@
-use std::fs;
-use std::io::ErrorKind;
 use crate::root::assembler::assemble::generate_assembly;
-use crate::root::parser::parse::parse;
 use crate::root::name_resolver::processor::process;
+use crate::root::parser::parse::parse;
+use crate::root::utils::AnyError;
 use crate::time;
 use clap::Parser;
-use std::path::PathBuf;
 use color_print::cprintln;
 use runner::assemble;
-use crate::root::utils::AnyError;
+use std::fs;
+use std::io::ErrorKind;
+use std::path::PathBuf;
 
-#[cfg(target_os = "windows")]
-use runner::link;
 #[cfg(target_os = "windows")]
 use crate::root::runner::run;
+#[cfg(target_os = "windows")]
+use runner::link;
 
 #[cfg(target_os = "linux")]
-use runner::link_gcc_experimental;
-#[cfg(target_os = "linux")]
 use crate::root::runner::run_wine_experimental;
+#[cfg(target_os = "linux")]
+use runner::link_gcc_experimental;
 
 mod assembler;
 mod ast;
 mod basic_ast;
 mod compiler;
 mod custom;
-mod parser;
-mod nom_parser;
 mod name_resolver;
-mod utils;
+mod nom_parser;
+mod parser;
 mod runner;
+mod utils;
 
 /// Compiler for Whython files (.why)
 #[derive(Parser)]
@@ -55,7 +55,7 @@ pub fn main() {
     // link_gcc_experimental("build/out").unwrap();
     // run_wine_experimental("build/out").unwrap();
     // return;
-    
+
     let args = Args::parse();
     let _ = main_args(args);
 }
@@ -69,7 +69,7 @@ pub fn main_args(args: Args) -> Result<(), AnyError> {
             }
         }
     }
-    
+
     let mut asts = Vec::new();
     let mut files_followed = Vec::new();
     print!("Parsing... ");
@@ -93,22 +93,18 @@ pub fn main_args(args: Args) -> Result<(), AnyError> {
 
     print!("Compiling... ");
     time!(generate_assembly(&args.output, functions););
-    
+
     print!("Assembling (NASM)... ");
-    time!(
-        if assemble(&args.output).is_err() {
-            return Err(AnyError::Other);
-        }
-    );
-    
+    time!(if assemble(&args.output).is_err() {
+        return Err(AnyError::Other);
+    });
+
     #[cfg(target_os = "windows")]
     {
         println!("Linking (MSVC - link.exe)... ");
-        time!(
-            if link(&args.output).is_err() {
-                return Err(AnyError::Other);
-            }
-        );
+        time!(if link(&args.output).is_err() {
+            return Err(AnyError::Other);
+        });
         if args.build {
             println!("Skipping execution")
         } else {
@@ -126,7 +122,7 @@ pub fn main_args(args: Args) -> Result<(), AnyError> {
                 return Err(AnyError::Other);
             }
         );
-        
+
         if args.build {
             println!("Skipping execution")
         } else {
@@ -136,7 +132,7 @@ pub fn main_args(args: Args) -> Result<(), AnyError> {
             }
         }
     }
-    
+
     cprintln!("<g,bold>Done!</>");
     Ok(())
 }

@@ -4,15 +4,15 @@ use unique_type_id::UniqueTypeId;
 use crate::root::ast::literals::Literal;
 use crate::root::compiler::generate_asm::get_local_address;
 use crate::root::compiler::local_variable::TypeInfo;
-use crate::root::parser::line_info::LineInfo;
 use crate::root::name_resolver::processor::ProcessorError;
-use crate::root::name_resolver::type_builder::{Type, TypedFunction, TypeTable};
+use crate::root::name_resolver::type_builder::{Type, TypeTable, TypedFunction};
+use crate::root::parser::line_info::LineInfo;
 
 pub fn add_function_signatures(existing: &mut Vec<(Option<isize>, Box<dyn TypedFunction>)>) {
     let signatures: [(Option<isize>, Box<dyn TypedFunction>); 3] = [
         (Some(Bool::get_id()), Box::new(BoolNot {})),
         (Some(Bool::get_id()), Box::new(BoolEQ {})),
-        (Some(Bool::get_id()), Box::new(BoolNE {}))
+        (Some(Bool::get_id()), Box::new(BoolNE {})),
     ];
     for s in signatures {
         existing.push(s);

@@ -1,22 +1,20 @@
-use lazy_static::lazy_static;
-use unique_type_id::UniqueTypeId;
 use crate::root::basic_ast::symbol::BasicSymbol;
 use crate::root::compiler::generate_asm::get_local_address;
 use crate::root::compiler::local_variable::TypeInfo;
 use crate::root::custom::types::int::Int;
-use crate::root::parser::line_info::LineInfo;
 use crate::root::name_resolver::type_builder::TypedFunction;
+use crate::root::parser::line_info::LineInfo;
+use lazy_static::lazy_static;
+use unique_type_id::UniqueTypeId;
 
 pub fn add_function_signatures(existing: &mut Vec<(Option<isize>, Box<dyn TypedFunction>)>) {
-    let signatures: [(Option<isize>, Box<dyn TypedFunction>); 1] = [
-        (None, Box::new(WindowsExit {})),
-    ];
+    let signatures: [(Option<isize>, Box<dyn TypedFunction>); 1] =
+        [(None, Box::new(WindowsExit {}))];
 
     for s in signatures {
         existing.push(s);
     }
 }
-
 
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]

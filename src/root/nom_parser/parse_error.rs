@@ -1,7 +1,7 @@
+use crate::root::parser::line_info::LineInfo;
 use std::io;
 use std::path::PathBuf;
 use thiserror::Error;
-use crate::root::parser::line_info::LineInfo;
 
 #[derive(Error, Debug)]
 pub enum ParseError {
@@ -30,5 +30,5 @@ pub enum ParseError {
     #[error("Error: Initialiser type must be followed by braces containing attribute values\n{0}")]
     NoInitialiserContents(LineInfo),
     #[error("Error: Attribute cannot be empty (must be a value between commas)\n{0}")]
-    NoInitialiserAttribute(LineInfo)
+    NoInitialiserAttribute(LineInfo),
 }

@@ -1,10 +1,10 @@
-use nom::sequence::Tuple;
-use nom::bytes::complete::{take_till, take_while};
-use nom_supreme::error::{BaseErrorKind, Expectation};
-use nom::error::ParseError;
-use nom::{InputTakeAtPosition, IResult, Parser};
 use crate::root::nom_parser::parse::{ParseResult, Span, TypeErrorTree};
 use crate::root::nom_parser::parse_comments;
+use nom::bytes::complete::{take_till, take_while};
+use nom::error::ParseError;
+use nom::sequence::Tuple;
+use nom::{IResult, InputTakeAtPosition, Parser};
+use nom_supreme::error::{BaseErrorKind, Expectation};
 
 pub fn take_whitespace(s: Span) -> ParseResult {
     take_while(|c: char| c.is_whitespace())(s)
@@ -46,7 +46,6 @@ pub fn take_whitespace(s: Span) -> ParseResult {
 //     Ok((s, ()))
 // }
 
-pub fn take_till_whitespace(s: Span) -> ParseResult
-{
+pub fn take_till_whitespace(s: Span) -> ParseResult {
     take_till(|c: char| c.is_whitespace())(s)
 }

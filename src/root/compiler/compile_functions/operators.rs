@@ -4,13 +4,13 @@ use crate::root::basic_ast::symbol::BasicSymbol;
 use crate::root::compiler::compile_functions::instantiate_literal::instantiate_variable;
 use crate::root::compiler::compile_functions::name_handler::NameHandler;
 use crate::root::compiler::compile_functions::{FunctionHolder, Line};
-use crate::root::parser::line_info::LineInfo;
-use crate::root::name_resolver::processor::ProcessorError;
-use either::{Left, Right};
 use crate::root::compiler::local_variable::{LocalVariable, TypeInfo};
 use crate::root::custom::types::bool::Bool;
 use crate::root::custom::types::float::Float;
 use crate::root::custom::types::int::Int;
+use crate::root::name_resolver::processor::ProcessorError;
+use crate::root::parser::line_info::LineInfo;
+use either::{Left, Right};
 
 pub fn evaluate_operator(symbol: &(BasicSymbol, LineInfo)) -> Result<&Operator, ProcessorError> {
     match &symbol.0 {
@@ -30,8 +30,9 @@ pub fn evaluate_operation(
 ) -> Result<Option<LocalVariable>, ProcessorError> {
     Ok(Some(match &op.0 {
         Operator::Not => {
-            let func = function_holder.get_function(Some(lhs.type_info), "not").ok_or(
-                ProcessorError::SingleOpFunctionNotFound(
+            let func = function_holder
+                .get_function(Some(lhs.type_info), "not")
+                .ok_or(ProcessorError::SingleOpFunctionNotFound(
                     op.1.clone(),
                     "not".to_string(),
                     name_handler
@@ -40,8 +41,7 @@ pub fn evaluate_operation(
                         .unwrap()
                         .get_indirect_name(lhs.type_info.reference_depth)
                         .to_string(),
-                ),
-            )?;
+                ))?;
             name_handler.use_function(func);
             let func_args = func.get_args();
             let func_id = func.get_id();
@@ -82,12 +82,17 @@ pub fn evaluate_operation(
             };
             let func = function_holder.functions().get(&func_id).unwrap();
             if func.is_inline() {
-                lines.push(Line::InlineAsm(func.get_inline(vec![lhs.offset, output.offset])));
+                lines.push(Line::InlineAsm(
+                    func.get_inline(vec![lhs.offset, output.offset]),
+                ));
             } else {
                 lines.push(Line::ReturnCall(
                     func.get_id(),
                     -(name_handler.local_variable_space() as isize),
-                    vec![(lhs.offset, name_handler.type_table().get_type_size(lhs.type_info)?)],
+                    vec![(
+                        lhs.offset,
+                        name_handler.type_table().get_type_size(lhs.type_info)?,
+                    )],
                     name_handler.type_table().get_type_size(output.type_info)?,
                     output.offset,
                 ));
@@ -97,7 +102,10 @@ pub fn evaluate_operation(
         op_ => {
             if matches!(op_, Operator::And) && rhs.is_none() {
                 let return_into = if let Some(return_into) = return_into {
-                    if return_into.type_info.type_id != lhs.type_info.type_id || return_into.type_info.reference_depth != lhs.type_info.reference_depth + 1 {
+                    if return_into.type_info.type_id != lhs.type_info.type_id
+                        || return_into.type_info.reference_depth
+                            != lhs.type_info.reference_depth + 1
+                    {
                         return Err(ProcessorError::BadEvaluatedType(
                             op.1.clone(),
                             name_handler
@@ -117,8 +125,13 @@ pub fn evaluate_operation(
                     return_into
                 } else {
                     LocalVariable::new(
-                        name_handler.add_local_variable(None, TypeInfo::new(lhs.type_info.type_id, lhs.type_info.reference_depth + 1), lines)?,
-                        lhs.type_info.type_id, lhs.type_info.reference_depth + 1
+                        name_handler.add_local_variable(
+                            None,
+                            TypeInfo::new(lhs.type_info.type_id, lhs.type_info.reference_depth + 1),
+                            lines,
+                        )?,
+                        lhs.type_info.type_id,
+                        lhs.type_info.reference_depth + 1,
                     )
                 };
                 lines.push(Line::InlineAsm(Int::instantiate_local_ref(
@@ -134,7 +147,10 @@ pub fn evaluate_operation(
                     if lhs.type_info.reference_depth == 0 {
                         return Err(ProcessorError::CantDerefNonRef(op.1.clone()));
                     }
-                    if return_into.type_info.type_id != lhs.type_info.type_id || return_into.type_info.reference_depth != lhs.type_info.reference_depth - 1 {
+                    if return_into.type_info.type_id != lhs.type_info.type_id
+                        || return_into.type_info.reference_depth
+                            != lhs.type_info.reference_depth - 1
+                    {
                         return Err(ProcessorError::BadEvaluatedType(
                             op.1.clone(),
                             name_handler
@@ -154,15 +170,22 @@ pub fn evaluate_operation(
                     return_into
                 } else {
                     LocalVariable::new(
-                        name_handler.add_local_variable(None, TypeInfo::new(lhs.type_info.type_id, lhs.type_info.reference_depth + 1), lines)?,
-                        lhs.type_info.type_id, lhs.type_info.reference_depth - 1,
+                        name_handler.add_local_variable(
+                            None,
+                            TypeInfo::new(lhs.type_info.type_id, lhs.type_info.reference_depth + 1),
+                            lines,
+                        )?,
+                        lhs.type_info.type_id,
+                        lhs.type_info.reference_depth - 1,
                     )
                 };
 
                 lines.push(Line::DynFromCopy(
                     lhs.offset,
                     return_into.offset,
-                    name_handler.type_table().get_type_size(return_into.type_info)?,
+                    name_handler
+                        .type_table()
+                        .get_type_size(return_into.type_info)?,
                 ));
                 return Ok(Some(return_into));
             }
@@ -170,7 +193,10 @@ pub fn evaluate_operation(
             // Heap alloc
             if matches!(op_, Operator::HeapAlloc) && rhs.is_none() {
                 let return_into = if let Some(return_into) = return_into {
-                    if return_into.type_info.type_id != lhs.type_info.type_id || return_into.type_info.reference_depth != lhs.type_info.reference_depth + 1 {
+                    if return_into.type_info.type_id != lhs.type_info.type_id
+                        || return_into.type_info.reference_depth
+                            != lhs.type_info.reference_depth + 1
+                    {
                         return Err(ProcessorError::BadEvaluatedType(
                             op.1.clone(),
                             name_handler
@@ -190,8 +216,13 @@ pub fn evaluate_operation(
                     return_into
                 } else {
                     LocalVariable::new(
-                        name_handler.add_local_variable(None, TypeInfo::new(lhs.type_info.type_id, lhs.type_info.reference_depth + 1), lines)?,
-                        lhs.type_info.type_id, lhs.type_info.reference_depth + 1,
+                        name_handler.add_local_variable(
+                            None,
+                            TypeInfo::new(lhs.type_info.type_id, lhs.type_info.reference_depth + 1),
+                            lines,
+                        )?,
+                        lhs.type_info.type_id,
+                        lhs.type_info.reference_depth + 1,
                     )
                 };
                 let size = name_handler.type_table().get_type_size(lhs.type_info)?;
@@ -223,8 +254,13 @@ pub fn evaluate_operation(
                     return_into
                 } else {
                     LocalVariable::new(
-                        name_handler.add_local_variable(None, TypeInfo::new(Bool::get_id(), 0), lines)?,
-                        Bool::get_id(), 0,
+                        name_handler.add_local_variable(
+                            None,
+                            TypeInfo::new(Bool::get_id(), 0),
+                            lines,
+                        )?,
+                        Bool::get_id(),
+                        0,
                     )
                 };
 
@@ -238,11 +274,17 @@ pub fn evaluate_operation(
 
             // Negate int
             let (lhs, rhs) = if matches!(op_, Operator::Subtract)
-                && rhs.is_none() && (lhs.type_info == TypeInfo::new(Int::get_id(), 0) || lhs.type_info == TypeInfo::new(Float::get_id(), 0))
+                && rhs.is_none()
+                && (lhs.type_info == TypeInfo::new(Int::get_id(), 0)
+                    || lhs.type_info == TypeInfo::new(Float::get_id(), 0))
             {
                 (
                     instantiate_variable(
-                        if lhs.type_info.type_id == Int::get_id() { Left((&Literal::Int(0), &op.1)) } else { Left((&Literal::Float(0.0), &op.1)) },
+                        if lhs.type_info.type_id == Int::get_id() {
+                            Left((&Literal::Int(0), &op.1))
+                        } else {
+                            Left((&Literal::Float(0.0), &op.1))
+                        },
                         lines,
                         name_handler,
                         function_holder,
@@ -282,8 +324,9 @@ pub fn evaluate_operation(
 
             // println!("{}vs{} {} {}vs{}", lhs.1.0, Float::get_id(), func_name, rhs.1.1, Float::get_id());
 
-            let func = function_holder.get_function(Some(lhs.type_info), func_name).ok_or(
-                ProcessorError::OpFunctionNotFound(
+            let func = function_holder
+                .get_function(Some(lhs.type_info), func_name)
+                .ok_or(ProcessorError::OpFunctionNotFound(
                     op.1.clone(),
                     func_name.to_string(),
                     name_handler
@@ -298,8 +341,7 @@ pub fn evaluate_operation(
                         .unwrap()
                         .get_indirect_name(rhs.type_info.reference_depth)
                         .to_string(),
-                ),
-            )?;
+                ))?;
             name_handler.use_function(func);
             let func_args = func.get_args();
             let func_id = func.get_id();
@@ -367,16 +409,24 @@ pub fn evaluate_operation(
 
             let func = function_holder.functions().get(&func_id).unwrap();
             if func.is_inline() {
-                lines.push(Line::InlineAsm(
-                    func.get_inline(vec![lhs.offset, rhs.offset, output.offset]),
-                ));
+                lines.push(Line::InlineAsm(func.get_inline(vec![
+                    lhs.offset,
+                    rhs.offset,
+                    output.offset,
+                ])));
             } else {
                 lines.push(Line::ReturnCall(
                     func.get_id(),
                     -(name_handler.local_variable_space() as isize),
                     vec![
-                        (lhs.offset, name_handler.type_table().get_type_size(lhs.type_info)?),
-                        (rhs.offset, name_handler.type_table().get_type_size(rhs.type_info)?),
+                        (
+                            lhs.offset,
+                            name_handler.type_table().get_type_size(lhs.type_info)?,
+                        ),
+                        (
+                            rhs.offset,
+                            name_handler.type_table().get_type_size(rhs.type_info)?,
+                        ),
                     ],
                     name_handler.type_table().get_type_size(output.type_info)?,
                     output.offset,

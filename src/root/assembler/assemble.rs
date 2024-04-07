@@ -17,7 +17,7 @@ pub fn generate_assembly(output: &str, functions: Vec<Box<dyn Function>>) {
         out += "\r\n";
         out += &(f.get_asm());
     }
-    
+
     out += "\nformatStr:
 	db `The int is %d\\n`,0";
 

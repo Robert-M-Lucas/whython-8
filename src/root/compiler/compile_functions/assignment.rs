@@ -1,10 +1,10 @@
 use crate::root::basic_ast::symbol::BasicSymbol;
 use crate::root::compiler::compile_functions::name_handler::NameHandler;
 use crate::root::compiler::compile_functions::{evaluate, operators, FunctionHolder, Line};
-use crate::root::parser::line_info::LineInfo;
-use crate::root::name_resolver::processor::ProcessorError;
-use either::Left;
 use crate::root::compiler::local_variable::{LocalVariable, TypeInfo};
+use crate::root::name_resolver::processor::ProcessorError;
+use crate::root::parser::line_info::LineInfo;
+use either::Left;
 
 pub fn process_assignment(
     lines: &mut Vec<Line>,
@@ -34,7 +34,10 @@ pub fn process_assignment(
                     return Err(ProcessorError::CantDerefNonRef(line[0].1.clone()));
                 }
 
-                let new_type = TypeInfo::new(variable.type_info.type_id, variable.type_info.reference_depth - 1);
+                let new_type = TypeInfo::new(
+                    variable.type_info.type_id,
+                    variable.type_info.reference_depth - 1,
+                );
                 let non_ref = name_handler
                     .add_local_variable(None, new_type, lines)
                     .unwrap();
@@ -43,7 +46,10 @@ pub fn process_assignment(
                     non_ref,
                     name_handler.type_table().get_type_size(new_type)?,
                 ));
-                (Some(variable), LocalVariable::from_type_info(non_ref, new_type))
+                (
+                    Some(variable),
+                    LocalVariable::from_type_info(non_ref, new_type),
+                )
             } else {
                 (None, variable)
             };
@@ -78,7 +84,9 @@ pub fn process_assignment(
                 lines.push(Line::DynToCopy(
                     variable.offset,
                     original_variable.unwrap().offset,
-                    name_handler.type_table().get_type_size(variable.type_info)?,
+                    name_handler
+                        .type_table()
+                        .get_type_size(variable.type_info)?,
                 ));
             }
 

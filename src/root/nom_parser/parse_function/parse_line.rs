@@ -1,14 +1,16 @@
+use crate::root::nom_parser::parse::{ParseResult, Span};
+use crate::root::nom_parser::parse_function::base::AssignmentToken;
+use crate::root::nom_parser::parse_function::parse_break::{test_parse_break, BreakToken};
+use crate::root::nom_parser::parse_function::parse_evaluable::{parse_evaluable, EvaluableToken};
+use crate::root::nom_parser::parse_function::parse_if::IfToken;
+use crate::root::nom_parser::parse_function::parse_initialisation::{
+    test_parse_initialisation, InitialisationToken,
+};
+use crate::root::nom_parser::parse_function::parse_return::{test_parse_return, ReturnToken};
+use crate::root::nom_parser::parse_function::parse_while::WhileToken;
 use nom::branch::alt;
 use nom::character::complete::multispace0;
 use nom::Parser;
-use crate::root::nom_parser::parse::{ParseResult, Span};
-use crate::root::nom_parser::parse_function::base::AssignmentToken;
-use crate::root::nom_parser::parse_function::parse_break::{BreakToken, test_parse_break};
-use crate::root::nom_parser::parse_function::parse_evaluable::{EvaluableToken, parse_evaluable};
-use crate::root::nom_parser::parse_function::parse_if::IfToken;
-use crate::root::nom_parser::parse_function::parse_initialisation::{InitialisationToken, test_parse_initialisation};
-use crate::root::nom_parser::parse_function::parse_return::{ReturnToken, test_parse_return};
-use crate::root::nom_parser::parse_function::parse_while::WhileToken;
 
 #[derive(Debug)]
 pub enum LineTokens {
@@ -18,7 +20,7 @@ pub enum LineTokens {
     While(WhileToken),
     Return(ReturnToken),
     Break(BreakToken),
-    NoOp(EvaluableToken)
+    NoOp(EvaluableToken),
 }
 
 pub type LineTestFn<'a> = fn(Span<'a>) -> ParseResult<Span<'a>, LineTokens>;
@@ -46,10 +48,12 @@ pub fn parse_line(s: Span) -> ParseResult<Span, LineTokens> {
         test_parse_break,
         test_parse_return,
         test_parse_initialisation,
-        )).parse(s) {
+    ))
+    .parse(s)
+    {
         parser(s)
-    }
-    else { // ? Default case is evaluable
+    } else {
+        // ? Default case is evaluable
         parse_evaluable(s, true).map(|(s, e)| (s, LineTokens::NoOp(e)))
     }
 }

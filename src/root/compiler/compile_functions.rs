@@ -9,16 +9,16 @@ mod process_lines;
 mod reference;
 
 use crate::root::basic_ast::symbol::BasicSymbol;
+use crate::root::compiler::generate_asm::compile_user_function;
+use crate::root::compiler::local_variable::TypeInfo;
 use crate::root::custom::get::{
     get_custom_function_implementations, get_custom_function_signatures,
 };
-use crate::root::compiler::generate_asm::compile_user_function;
-use crate::root::parser::line_info::LineInfo;
 use crate::root::name_resolver::processor::ProcessorError;
 use crate::root::name_resolver::type_builder::{TypeTable, TypedFunction};
+use crate::root::parser::line_info::LineInfo;
 use name_handler::NameHandler;
 use std::collections::HashMap;
-use crate::root::compiler::local_variable::TypeInfo;
 
 pub enum Line {
     ReturnCall(isize, isize, Vec<(isize, usize)>, usize, isize),

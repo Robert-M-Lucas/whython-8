@@ -1,5 +1,5 @@
-use std::{fs, io};
 use std::path::PathBuf;
+use std::{fs, io};
 
 use same_file::is_same_file;
 use thiserror::Error;
@@ -40,23 +40,27 @@ pub enum ParseError {
     #[error("Error: Initialiser type must be followed by braces containing attribute values\n{0}")]
     NoInitialiserContents(LineInfo),
     #[error("Error: Attribute cannot be empty (must be a value between commas)\n{0}")]
-    NoInitialiserAttribute(LineInfo)
+    NoInitialiserAttribute(LineInfo),
 }
 
-pub fn parse(path: PathBuf, asts: &mut Vec<BasicAbstractSyntaxTree>, files_followed: &mut Vec<PathBuf>) -> Result<(), ParseError> {
-    for other_path in & *files_followed {
+pub fn parse(
+    path: PathBuf,
+    asts: &mut Vec<BasicAbstractSyntaxTree>,
+    files_followed: &mut Vec<PathBuf>,
+) -> Result<(), ParseError> {
+    for other_path in &*files_followed {
         if is_same_file(&path, other_path).map_err(|x| ParseError::FileRead(path.clone(), x))? {
-            return Ok(())
+            return Ok(());
         }
     }
-    
+
     let data = fs::read_to_string(&path);
 
     if let Err(e) = data {
         return Err(ParseError::FileRead(path, e));
     }
     let mut reader = FileReader::new(path.clone(), data.unwrap());
-    
+
     files_followed.push(path);
 
     // * IMPORT PHASE

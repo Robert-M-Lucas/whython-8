@@ -81,7 +81,7 @@ pub fn compile_user_function(c_function: &UserFunction) -> String {
                     "; [return call] {} , {:?}, {}",
                     *function, local_args, *return_addr
                 ));
-                
+
                 let sum =
                     local_args.iter().map(|x| align(x.1, 8)).sum::<usize>() + align(*ret_size, 8);
                 let mut t = 0usize;

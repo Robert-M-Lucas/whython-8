@@ -1,8 +1,8 @@
 use crate::root::ast::literals::Literal;
 use crate::root::compiler::local_variable::{LocalVariable, TypeInfo};
-use crate::root::parser::line_info::LineInfo;
 use crate::root::name_resolver::processor::ProcessorError;
 use crate::root::name_resolver::type_builder::{Type, TypeTable};
+use crate::root::parser::line_info::LineInfo;
 
 pub struct UserType {
     name: String,
@@ -69,7 +69,7 @@ impl Type for UserType {
     ) -> Result<usize, ProcessorError> {
         if path.is_none() {
             // path = Some(vec![self.get_id()])
-            // ? 
+            // ?
         } else {
             let mut failed_check = false;
             for id in &**path.as_ref().unwrap() {

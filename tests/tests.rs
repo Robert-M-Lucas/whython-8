@@ -10,7 +10,7 @@ fn tests() {
 
     for entry in get_files(PathBuf::from("tests/inputs")) {
         let in_path = PathBuf::from("tests/inputs").join(entry.clone());
-        
+
         let out_path = PathBuf::from("tests/outputs").join(entry);
 
         compare(
@@ -24,7 +24,7 @@ fn get_files(base_dir: PathBuf) -> Vec<PathBuf> {
     let mut out = Vec::new();
     walk_dir(&base_dir, PathBuf::new(), &mut out);
     out
-} 
+}
 
 fn walk_dir(base_dir: &PathBuf, prefix: PathBuf, out: &mut Vec<PathBuf>) {
     for entry in base_dir.join(prefix.clone()).read_dir().unwrap() {
@@ -35,11 +35,10 @@ fn walk_dir(base_dir: &PathBuf, prefix: PathBuf, out: &mut Vec<PathBuf>) {
             walk_dir(base_dir, emit, out);
             continue;
         }
-        
+
         out.push(emit);
     }
 }
-
 
 fn compare(in_path: String, out_path: String) {
     println!("Testing `{}`", in_path);
@@ -48,7 +47,8 @@ fn compare(in_path: String, out_path: String) {
         input: in_path,
         output: String::from("tests/temp/out"),
         build: true
-    }).is_ok());
+    })
+    .is_ok());
 
     let result = Command::new("tests/temp/out.exe").output().unwrap();
 
@@ -61,6 +61,9 @@ fn compare(in_path: String, out_path: String) {
 
     assert_eq!(
         result.trim(),
-        fs::read_to_string(out_path).unwrap().replace("\r\n", "\n").trim()
+        fs::read_to_string(out_path)
+            .unwrap()
+            .replace("\r\n", "\n")
+            .trim()
     );
 }

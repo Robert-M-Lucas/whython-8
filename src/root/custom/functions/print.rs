@@ -8,8 +8,8 @@ use crate::root::compiler::local_variable::TypeInfo;
 use crate::root::custom::types::bool::Bool;
 use crate::root::custom::types::float::Float;
 use crate::root::custom::types::int::Int;
-use crate::root::parser::line_info::LineInfo;
 use crate::root::name_resolver::type_builder::TypedFunction;
+use crate::root::parser::line_info::LineInfo;
 
 pub fn add_function_signatures(existing: &mut Vec<(Option<isize>, Box<dyn TypedFunction>)>) {
     let signatures: [(Option<isize>, Box<dyn TypedFunction>); 3] = [
@@ -27,14 +27,13 @@ pub fn add_function_implementations(existing: &mut Vec<Box<dyn Function>>) {
     let functions: [Box<dyn Function>; 3] = [
         Box::new(PrintI {}),
         Box::new(PrintB {}),
-        Box::new(PrintF{})
+        Box::new(PrintF {}),
     ];
 
     for s in functions {
         existing.push(s);
     }
 }
-
 
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
@@ -95,7 +94,7 @@ impl Function for PrintI {
                 "mov rdx, qword [rbp+16]".to_string(),
                 "sub rsp, 40".to_string(),
                 "call printf".to_string(),
-                "add rsp, 40".to_string()
+                "add rsp, 40".to_string(),
             ])],
             name: "printi".to_string(),
         })
@@ -165,7 +164,7 @@ impl Function for PrintB {
                 "mov rdx, qword [rbp+16]".to_string(),
                 "sub rsp, 40".to_string(),
                 "call printf".to_string(),
-                "add rsp, 40".to_string()
+                "add rsp, 40".to_string(),
             ])],
             name: "printb".to_string(),
         })
@@ -224,7 +223,7 @@ impl Function for PrintF {
                 "mov rdx, qword [rbp+16]".to_string(),
                 "sub rsp, 40".to_string(),
                 "call printf".to_string(),
-                "add rsp, 40".to_string()
+                "add rsp, 40".to_string(),
             ])],
             name: "printf".to_string(),
         })

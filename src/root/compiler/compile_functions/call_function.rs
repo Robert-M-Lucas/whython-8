@@ -4,9 +4,9 @@ use crate::root::compiler::compile_functions::name_handler::NameHandler;
 use crate::root::compiler::compile_functions::operators::evaluate_operation;
 use crate::root::compiler::compile_functions::{evaluate, FunctionHolder, Line};
 use crate::root::compiler::local_variable::LocalVariable;
-use crate::root::parser::line_info::LineInfo;
 use crate::root::name_resolver::processor::ProcessorError;
 use crate::root::name_resolver::type_builder::TypedFunction;
+use crate::root::parser::line_info::LineInfo;
 
 pub fn call_function(
     function: &Box<dyn TypedFunction>,
@@ -58,7 +58,9 @@ pub fn call_function(
 
     let mut call_args = Vec::new();
     if let Some(default_arg) = default_arg {
-        let default_arg = if default_arg.type_info.reference_depth == 0 && target_args[0].1.reference_depth == 1 {
+        let default_arg = if default_arg.type_info.reference_depth == 0
+            && target_args[0].1.reference_depth == 1
+        {
             // TODO: Bad operator line
             let into = name_handler.add_local_variable(None, target_args[0].1, lines)?;
             evaluate_operation(
@@ -79,7 +81,9 @@ pub fn call_function(
         }
         call_args.push((
             default_arg.offset,
-            name_handler.type_table().get_type_size(default_arg.type_info)?,
+            name_handler
+                .type_table()
+                .get_type_size(default_arg.type_info)?,
         ));
     }
     for arg in args {
@@ -109,7 +113,9 @@ pub fn call_function(
         }
         call_args.push((
             evaluated.offset,
-            name_handler.type_table().get_type_size(evaluated.type_info)?,
+            name_handler
+                .type_table()
+                .get_type_size(evaluated.type_info)?,
         ));
     }
 

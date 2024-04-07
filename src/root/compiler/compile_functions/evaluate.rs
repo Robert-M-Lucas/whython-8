@@ -2,8 +2,8 @@ use crate::root::basic_ast::symbol::BasicSymbol;
 use crate::root::compiler::compile_functions::name_handler::NameHandler;
 use crate::root::compiler::compile_functions::{evaluate_symbol, operators, FunctionHolder, Line};
 use crate::root::compiler::local_variable::LocalVariable;
-use crate::root::parser::line_info::LineInfo;
 use crate::root::name_resolver::processor::ProcessorError;
+use crate::root::parser::line_info::LineInfo;
 
 pub fn evaluate(
     section: &[(BasicSymbol, LineInfo)],
