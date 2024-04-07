@@ -1,0 +1,10 @@
+ - Have refs as special cases for types with same underlying type - how
+ - Cast from **type to *type follows ref
+ - Cast from *type to type copies
+ - Impls accept *self
+ - Impl non-static functions only accessible through *type
+ - *type.attrib accessed through fixed offset from r9 i.e. mov r9, qword [rbp - *type addr]; mov rax, qword [r9 + x]
+
+Implementing special case:
+ - Have first part of names (and types) store indirection amount
+

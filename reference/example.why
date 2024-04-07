@@ -1,0 +1,31 @@
+mod test.why;
+
+fn main() ~ int {
+    printi(true + false);
+    let a: bool = true;
+    printi(a.add(false));
+    printi(bool#add(true, false));
+
+    extern();
+
+    let i: int = 0;
+    while (i < 90) {
+        printi(fibb(0, 1, i));
+        i += 1;
+    };
+    return fibb(0, 1, 20);
+}
+
+fn fibb(a: int, b: int, n: int) ~ int {
+    if (n <= 0) { return a; };
+    return fibb(b, a + b, n - 1);
+}
+
+impl bool {
+    fn add(lhs: bool, rhs: bool) ~ int {
+        let out: int = 0;
+        if (lhs) { out += 1; };
+        if (rhs) { out += 1; };
+        return out;
+    }
+}

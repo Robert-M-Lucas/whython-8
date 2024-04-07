@@ -1,0 +1,22 @@
+Working
+- struct definition
+- functions
+- static struct functions
+- non-static struct functions
+- return
+- while
+- break
+- if/elif/else
+- int type w/ most operators
+- bool type w/ some operator
+- variable initialisation
+- variable assignments
+- recursion
+- showing
+
+Silent Fail
+- None (yet :D)
+
+Error
+- instantiating custom structs
+- comments (for the weak)

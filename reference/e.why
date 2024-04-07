@@ -1,0 +1,31 @@
+fn fact(x: float) ~ float {
+	if (x == 0.0) {
+        return 1.0;
+    };
+
+    let f: float = 1.0;
+    let i: float = 1.0;
+
+    while (i < (x + 0.99)) {
+        f *= i;
+        i += 1.0;
+    };
+
+    return f;
+}
+
+fn main() ~ int {
+    let e: float = 0.0;
+
+    let i: float = 0.0;
+    while (i < 10.0) {
+        e += 1.0 / fact(i);
+        printf(e);
+        i += 1.0;
+    };
+
+    printf(e);
+
+    return 7;
+}
+

@@ -1,0 +1,75 @@
+struct Node {
+    cur: int,
+    last: bool,
+    next: $Node
+}
+
+struct LL {
+    base: $Node,
+    has_first: bool
+}
+
+impl LL {
+    fn new() ~ LL {
+        return @LL {
+            0,
+            false
+        };
+    }
+
+    fn add(self, next: int) {
+        let new_node: Node = @Node {
+            next,
+            true,
+            0
+        };
+
+        if (!(*self.has_first)) {
+            *self.base = ^new_node;
+            *self.has_first = true;
+            return;
+        };
+
+        let curr: $Node = *self.base;
+        while (!(*curr.last)) {
+            curr = *curr.next;
+        };
+
+        *curr.last = false;
+        *curr.next = ^new_node;
+    }
+
+    fn print(self) {
+        if (!(*self.has_first)) {
+            return;
+        };
+
+        let curr: $Node = *self.base;
+        printi(*curr.cur);
+        while (!(*curr.last)) {
+            curr = *curr.next;
+            printi(*curr.cur);
+        };
+    }
+}
+
+fn test_two() {
+    let ll: LL = LL#new();
+
+    ll.add(12);
+
+    ll.add(18);
+
+    ll.print();
+    printi(123123);
+}
+
+fn test() {
+    test_two();
+}
+
+fn main() ~ int {
+    test();
+
+    return 7;
+}

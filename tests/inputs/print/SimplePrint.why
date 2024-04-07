@@ -1,0 +1,7 @@
+fn main() ~ int {
+    printi(121);
+    printi(-1121);
+    printb(true);
+    printb(false);
+    return 0;
+}
