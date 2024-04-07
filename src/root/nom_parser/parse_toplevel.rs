@@ -27,7 +27,7 @@ pub fn parse_toplevel(s: Span) -> ParseResult<Span, Vec<TopLevelTokens>> {
             return Ok((ns, tokens))
         }
 
-        let (ns, parse_fn) = alt((
+        let (_, parse_fn) = alt((
             test_parse_struct,
             test_parse_impl,
             test_parse_function

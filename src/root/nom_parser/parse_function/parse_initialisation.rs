@@ -4,6 +4,7 @@ use nom_supreme::error::{BaseErrorKind, Expectation};
 use nom_supreme::tag::complete::tag;
 use substring::Substring;
 use crate::root::nom_parser::parse::{Location, ParseResult, Span, TypeErrorTree};
+use crate::root::nom_parser::parse_function::parse_break::parse_break;
 use crate::root::nom_parser::parse_function::parse_evaluable::{EvaluableToken, parse_evaluable};
 use crate::root::nom_parser::parse_function::parse_line::{LineTestFn, LineTokens};
 use crate::root::nom_parser::parse_name::{NameToken, parse_full_name, parse_simple_name};
@@ -18,19 +19,10 @@ pub struct InitialisationToken {
     value: EvaluableToken
 }
 
-pub fn test_parse_initialisation<'a>(s: Span) -> ParseResult<Span, LineTestFn<'a>> {
-    if s.len() >= 3 && s.substring(0, 3) == "let" {
-        Ok((s, |x| parse_initialisation(x).map(|(s, i)| (s, LineTokens::Initialisation(i)))))
-    }
-    else {
-        Err(Error(
-            TypeErrorTree::Base {
-                location: s,
-                kind: BaseErrorKind::Expected(
-                    Expectation::Tag("let")
-                ),
-            }
-        ))
+pub fn test_parse_initialisation<'a>(s: Span<'a>) -> ParseResult<Span, LineTestFn<'a>> {
+    match tag::<_, _, TypeErrorTree<'a>>("let")(s) {
+        Ok(_) => Ok((s, |x| parse_initialisation(x).map(|(s, x)| (s, LineTokens::Initialisation(x))))),
+        Err(e) => Err(e)
     }
 }
 

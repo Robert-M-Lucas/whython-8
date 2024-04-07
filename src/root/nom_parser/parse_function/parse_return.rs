@@ -15,19 +15,10 @@ pub struct ReturnToken {
     return_value: EvaluableToken
 }
 
-pub fn test_parse_return<'a>(s: Span) -> ParseResult<Span, LineTestFn<'a>> {
-    if s.len() >= 6 && s.substring(0, 6) == "return" {
-        Ok((s, |x| parse_return(x).map(|(s, r)| (s, LineTokens::Return(r)))))
-    }
-    else {
-        Err(Error(
-            TypeErrorTree::Base {
-                location: s,
-                kind: BaseErrorKind::Expected(
-                    Expectation::Tag("return")
-                ),
-            }
-        ))
+pub fn test_parse_return<'a>(s: Span<'a>) -> ParseResult<Span, LineTestFn<'a>> {
+    match tag::<_, _, TypeErrorTree<'a>>("return")(s) {
+        Ok(_) => Ok((s, |x| parse_return(x).map(|(s, x)| (s, LineTokens::Return(x))))),
+        Err(e) => Err(e)
     }
 }
 

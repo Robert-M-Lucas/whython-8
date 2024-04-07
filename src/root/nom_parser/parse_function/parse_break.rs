@@ -4,6 +4,7 @@ use nom_supreme::error::{BaseErrorKind, Expectation};
 use nom_supreme::tag::complete::tag;
 use substring::Substring;
 use crate::root::nom_parser::parse::{Location, ParseResult, Span, TypeErrorTree};
+use crate::root::nom_parser::parse_function::parse_function;
 use crate::root::nom_parser::parse_function::parse_line::{LineTestFn, LineTokens};
 use crate::root::nom_parser::parse_struct::parse_struct;
 use crate::root::nom_parser::parse_toplevel::{ToplevelTestFn, TopLevelTokens};
@@ -14,19 +15,10 @@ pub struct BreakToken {
     location: Location,
 }
 
-pub fn test_parse_break<'a>(s: Span) -> ParseResult<Span, LineTestFn<'a>> {
-    if s.len() >= 5 && s.substring(0, 5) == "break" {
-        Ok((s, |x| parse_break(x).map(|(s, b)| (s, LineTokens::Break(b)))))
-    }
-    else {
-        Err(Error(
-            TypeErrorTree::Base {
-                location: s,
-                kind: BaseErrorKind::Expected(
-                    Expectation::Tag("break")
-                ),
-            }
-        ))
+pub fn test_parse_break<'a>(s: Span<'a>) -> ParseResult<Span, LineTestFn<'a>> {
+    match tag::<_, _, TypeErrorTree<'a>>("break")(s) {
+        Ok(_) => Ok((s, |x| parse_break(x).map(|(s, x)| (s, LineTokens::Break(x))))),
+        Err(e) => Err(e)
     }
 }
 

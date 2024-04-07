@@ -20,7 +20,7 @@ pub enum LineTokens {
 
 pub type LineTestFn<'a> = fn(Span<'a>) -> ParseResult<Span<'a>, LineTokens>;
 pub fn parse_line(s: Span) -> ParseResult<Span, LineTokens> {
-    if let Ok((s, parser)) = alt((
+    if let Ok((_, parser)) = alt((
         test_parse_break,
         test_parse_return,
         test_parse_initialisation,

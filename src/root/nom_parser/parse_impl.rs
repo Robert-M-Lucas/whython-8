@@ -19,21 +19,13 @@ pub struct ImplToken {
     functions: Vec<FunctionToken>
 }
 
-pub fn test_parse_impl<'a>(s: Span) -> ParseResult<Span, ToplevelTestFn<'a>> {
-    if s.len() >= 4 && s.substring(0, 4) == "impl" {
-        Ok((s, |x| parse_impl(x).map(|(s, i)| (s, TopLevelTokens::Impl(i)))))
-    }
-    else {
-        Err(Error(
-            TypeErrorTree::Base {
-                location: s,
-                kind: BaseErrorKind::Expected(
-                    Expectation::Tag("impl")
-                ),
-            }
-        ))
+pub fn test_parse_impl<'a>(s: Span<'a>) -> ParseResult<Span, ToplevelTestFn<'a>> {
+    match tag::<_, _, TypeErrorTree<'a>>("struct")(s) {
+        Ok(_) => Ok((s, |x| parse_impl(x).map(|(s, x)| (s, TopLevelTokens::Impl(x))))),
+        Err(e) => Err(e)
     }
 }
+
 pub fn parse_impl(s: Span) -> ParseResult<Span, ImplToken> {
     let location = Location::from_span(s);
     let (s, _) = tag("impl").parse(s)?;

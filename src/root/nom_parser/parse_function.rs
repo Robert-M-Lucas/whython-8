@@ -31,19 +31,10 @@ pub struct FunctionToken {
     lines: Vec<LineTokens>
 }
 
-pub fn test_parse_function<'a>(s: Span) -> ParseResult<Span, ToplevelTestFn<'a>> {
-    if s.len() >= 2 && s.substring(0, 2) == "fn" {
-        Ok((s, |x| parse_function(x).map(|(s, f)| (s, TopLevelTokens::Function(f)))))
-    }
-    else {
-        Err(Error(
-            TypeErrorTree::Base {
-                location: s,
-                kind: BaseErrorKind::Expected(
-                    Expectation::Tag("fn")
-                ),
-            }
-        ))
+pub fn test_parse_function<'a>(s: Span<'a>) -> ParseResult<Span, ToplevelTestFn<'a>> {
+    match tag::<_, _, TypeErrorTree<'a>>("fn")(s) {
+        Ok(_) => Ok((s, |x| parse_function(x).map(|(s, x)| (s, TopLevelTokens::Function(x))))),
+        Err(e) => Err(e)
     }
 }
 
