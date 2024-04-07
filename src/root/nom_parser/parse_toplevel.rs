@@ -1,4 +1,5 @@
 use nom::branch::alt;
+use nom::character::complete::multispace0;
 use nom::Parser;
 use crate::root::nom_parser::parse::{ParseResult, Span};
 use crate::root::nom_parser::{parse_util};
@@ -21,7 +22,7 @@ pub fn parse_toplevel(s: Span) -> ParseResult<Span, Vec<TopLevelTokens>> {
 
     loop {
         let ns = s;
-        let (ns, _) = parse_util::discard_ignored(ns);
+        let (ns, _) = multispace0(ns)?;
 
         if ns.is_empty() {
             return Ok((ns, tokens))

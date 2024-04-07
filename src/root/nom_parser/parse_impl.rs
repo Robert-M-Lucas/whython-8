@@ -1,16 +1,14 @@
-use nom::Err::Error;
+use nom::character::complete::multispace0;
+use nom::character::streaming::multispace1;
 use nom::Parser;
-use nom_supreme::error::{BaseErrorKind, Expectation};
+use nom::sequence::Tuple;
 use nom_supreme::tag::complete::tag;
-use substring::Substring;
-use crate::root::nom_parser::parse::{Location, ParseResult, Span, TypeErrorTree};
+
+use crate::root::nom_parser::parse::{Location, ParseResult, Span};
 use crate::root::nom_parser::parse_blocks::braced_section;
 use crate::root::nom_parser::parse_function::{FunctionToken, parse_function};
 use crate::root::nom_parser::parse_name::parse_simple_name;
-use crate::root::nom_parser::parse_parameters::parse_parameters;
-use crate::root::nom_parser::parse_struct::{parse_struct, StructToken};
 use crate::root::nom_parser::parse_toplevel::{ToplevelTestFn, TopLevelTokens};
-use crate::root::nom_parser::parse_util::{discard_ignored, require_ignored};
 
 #[derive(Debug)]
 pub struct ImplToken {
@@ -20,7 +18,7 @@ pub struct ImplToken {
 }
 
 pub fn test_parse_impl<'a>(s: Span<'a>) -> ParseResult<Span, ToplevelTestFn<'a>> {
-    match tag::<_, _, TypeErrorTree<'a>>("struct")(s) {
+    match (tag("impl"), multispace1).parse(s) {
         Ok(_) => Ok((s, |x| parse_impl(x).map(|(s, x)| (s, TopLevelTokens::Impl(x))))),
         Err(e) => Err(e)
     }
@@ -29,16 +27,16 @@ pub fn test_parse_impl<'a>(s: Span<'a>) -> ParseResult<Span, ToplevelTestFn<'a>>
 pub fn parse_impl(s: Span) -> ParseResult<Span, ImplToken> {
     let location = Location::from_span(s);
     let (s, _) = tag("impl").parse(s)?;
-    let (s, _) = require_ignored(s)?;
+    let (s, _) = multispace1(s)?;
     let (s, name) = parse_simple_name(s)?;
-    let (s, _) = discard_ignored(s);
+    let (s, _) = multispace0(s)?;
     let (s, contents) = braced_section(s)?;
 
     let mut functions = Vec::new();
 
     let mut c = contents;
     loop {
-        let (cs, _) = discard_ignored(c);
+        let (cs, _) = multispace0(c)?;
         if cs.is_empty() {
             break;
         }
