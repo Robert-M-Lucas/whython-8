@@ -3,7 +3,7 @@ use nom::Err::Error;
 use nom::InputTake;
 use nom_supreme::error::{BaseErrorKind, Expectation};
 use crate::root::nom_parser::parse::{Location, ParseResult, Span, TypeErrorTree};
-use crate::root::nom_parser::parse_function::base::EvaluableToken;
+use crate::root::nom_parser::parse_function::parse_evaluable::EvaluableToken;
 
 #[derive(Debug)]
 enum NameConnectors {

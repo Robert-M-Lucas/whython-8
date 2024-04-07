@@ -1,5 +1,8 @@
 pub mod base;
 mod parse_line;
+mod parse_break;
+mod parse_evaluable;
+mod parse_return;
 
 use nom::character::complete::char;
 use nom_supreme::tag::complete::tag;
