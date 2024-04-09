@@ -1,9 +1,8 @@
-use itertools::multipeek;
 use nom::character::complete::{multispace0, multispace1};
 use nom::sequence::Tuple;
 use nom_supreme::tag::complete::tag;
 
-use crate::root::nom_parser::parse::{Location, ParseResult, Span};
+use crate::root::nom_parser::parse::{Location, ParseResult, Span, TypeErrorTree};
 use crate::root::nom_parser::parse_blocks::bracketed_section;
 use crate::root::nom_parser::parse_function::parse_evaluable::{EvaluableToken, parse_evaluable};
 use crate::root::nom_parser::parse_function::parse_line::{LineTestFn, LineTokens, parse_lines};
@@ -41,7 +40,7 @@ pub fn parse_if(s: Span) -> ParseResult<Span, IfToken> {
 
         if ns.is_empty() { break; }
 
-        let ns = if let Ok((ns, _)) = tag("else") {
+        let ns = if let Ok((ns, _)) = tag::<_, _, TypeErrorTree>("else")(ns) {
             ns
         }
         else {
@@ -49,7 +48,7 @@ pub fn parse_if(s: Span) -> ParseResult<Span, IfToken> {
             break;
         };
 
-        let (ns, condition) = if let Ok((ns, _)) = (multispace1, tag("if")).parse(ns) {
+        let (ns, condition) = if let Ok((ns, _)) = (multispace1::<_, TypeErrorTree>, tag("if")).parse(ns) {
             let (ns, _) = multispace0(ns)?;
             let (ns, content) = bracketed_section(ns)?;
             let (_, condition) = parse_evaluable(content, false)?;

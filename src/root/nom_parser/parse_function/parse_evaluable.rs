@@ -1,5 +1,9 @@
+use nom::character::complete::multispace0;
+use crate::root::ast::operators::Operator;
 use crate::root::nom_parser::parse::{Location, ParseResult, Span};
+use crate::root::nom_parser::parse_blocks::braced_section;
 use crate::root::nom_parser::parse_function::FunctionToken;
+use crate::root::nom_parser::parse_function::parse_operator::OperatorToken;
 use crate::root::nom_parser::parse_name::NameToken;
 use crate::root::nom_parser::parse_parameters::Parameters;
 
@@ -18,17 +22,7 @@ enum EvaluableTokens {
     PrefixOperator(OperatorToken, Box<EvaluableToken>),
 }
 
-#[derive(Debug)]
-struct OperatorToken {
-    location: Location,
-    operator: OperatorTokens,
-}
 
-#[derive(Debug)]
-pub enum OperatorTokens {
-    Add,
-    Subtract,
-}
 
 #[derive(Debug)]
 enum LiteralTokens {
@@ -36,6 +30,31 @@ enum LiteralTokens {
     String(String),
 }
 
+#[derive(Debug)]
+enum TempEvaluableTokens {
+    EvaluableToken(EvaluableToken),
+    Operator(Operator)
+}
+
 pub fn parse_evaluable(s: Span, semicolon_terminated: bool) -> ParseResult<Span, EvaluableToken> {
+    let mut s = s;
+
+    let mut evaluables = Vec::new();
+
+    loop {
+        let (ns, _) = multispace0(s)?;
+
+        let ns = if let Ok((ns, _)) = braced_section(s) {
+            let (ns, evaluable) = parse_evaluable(ns, false)?;
+            evaluables.push(TempEvaluableTokens::EvaluableToken(evaluable));
+            ns
+        }
+        else {
+            todo!()
+        };
+
+        s = ns;
+    }
+
     todo!()
 }
