@@ -2,7 +2,7 @@ use nom::character::complete::multispace1;
 use nom::sequence::Tuple;
 use nom_supreme::tag::complete::tag;
 
-use crate::root::nom_parser::parse::{Location, ParseResult, Span};
+use crate::root::nom_parser::parse::{ErrorTree, Location, ParseResult, Span};
 use crate::root::nom_parser::parse_function::parse_evaluable::{parse_evaluable, EvaluableToken};
 use crate::root::nom_parser::parse_function::parse_line::{LineTestFn, LineTokens};
 

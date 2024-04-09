@@ -8,8 +8,8 @@ use std::rc::Rc;
 
 pub type Span<'a> = LocatedSpan<&'a str, &'a Rc<PathBuf>>;
 
-pub type ParseResult<'a, I = Span<'a>, O = Span<'a>, E = TypeErrorTree<'a>> = IResult<I, O, E>;
-pub type TypeErrorTree<'a> = GenericErrorTree<
+pub type ParseResult<'a, I = Span<'a>, O = Span<'a>, E = ErrorTree<'a>> = IResult<I, O, E>;
+pub type ErrorTree<'a> = GenericErrorTree<
     Span<'a>,
     &'static str,
     &'static str,

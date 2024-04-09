@@ -1,4 +1,4 @@
-use crate::root::nom_parser::parse::{ParseResult, Span, TypeErrorTree};
+use crate::root::nom_parser::parse::{ParseResult, Span, ErrorTree};
 use crate::root::nom_parser::parse_comments;
 use nom::bytes::complete::{take_till, take_while};
 use nom::error::ParseError;

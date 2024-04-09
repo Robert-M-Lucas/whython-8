@@ -1,4 +1,4 @@
-use crate::root::nom_parser::parse::{Location, ParseResult, Span, TypeErrorTree};
+use crate::root::nom_parser::parse::{Location, ParseResult, Span, ErrorTree};
 use crate::root::nom_parser::parse_function::parse_evaluable::EvaluableToken;
 use nom::bytes::complete::take_till;
 use nom::Err::Error;
@@ -18,6 +18,7 @@ pub struct NameToken {
     names: Vec<(NameConnectors, String)>,
     function_call: Option<Vec<EvaluableToken>>,
 }
+
 
 pub fn parse_full_name(s: Span) -> ParseResult<Span, NameToken> {
     // TODO: Handle function calls
@@ -66,7 +67,7 @@ pub fn parse_simple_name(s: Span) -> ParseResult {
 
     if let Some(first) = s.chars().next() {
         if first.is_ascii_digit() {
-            return Err(Error(TypeErrorTree::Base {
+            return Err(Error(ErrorTree::Base {
                 location: s,
                 kind: BaseErrorKind::Expected(Expectation::Space),
             }));
@@ -74,7 +75,7 @@ pub fn parse_simple_name(s: Span) -> ParseResult {
     }
 
     if n.is_empty() {
-        Err(Error(TypeErrorTree::Base {
+        Err(Error(ErrorTree::Base {
             location: s,
             kind: BaseErrorKind::Expected(Expectation::Alpha),
         }))

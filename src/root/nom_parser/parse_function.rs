@@ -4,7 +4,7 @@ use nom::Parser;
 use nom_supreme::tag::complete::tag;
 use substring::Substring;
 
-use crate::root::nom_parser::parse::{Location, ParseResult, Span, TypeErrorTree};
+use crate::root::nom_parser::parse::{Location, ParseResult, Span, ErrorTree};
 use crate::root::nom_parser::parse_blocks::{braced_section, bracketed_section};
 use crate::root::nom_parser::parse_function::parse_line::{parse_lines, LineTokens};
 use crate::root::nom_parser::parse_name::{parse_full_name, parse_simple_name, NameToken};
@@ -51,7 +51,7 @@ pub fn parse_function(s: Span) -> ParseResult<Span, FunctionToken> {
 
     let (s, _) = multispace0(s)?;
 
-    let (s, return_type) = if let Ok((s, _)) = tag::<_, _, TypeErrorTree>("->")(s) {
+    let (s, return_type) = if let Ok((s, _)) = tag::<_, _, ErrorTree>("->")(s) {
         let (s, _) = multispace0(s)?;
         let (s, return_type) = parse_full_name(s)?;
         (multispace0(s)?.0, Some(return_type))

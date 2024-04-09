@@ -3,7 +3,7 @@ use nom::sequence::Tuple;
 use nom::Parser;
 use nom_supreme::tag::complete::tag;
 
-use crate::root::nom_parser::parse::{Location, ParseResult, Span, TypeErrorTree};
+use crate::root::nom_parser::parse::{Location, ParseResult, Span, ErrorTree};
 use crate::root::nom_parser::parse_blocks::bracketed_section;
 use crate::root::nom_parser::parse_function::parse_evaluable::{parse_evaluable, EvaluableToken};
 use crate::root::nom_parser::parse_function::parse_line::{parse_lines, LineTestFn, LineTokens};

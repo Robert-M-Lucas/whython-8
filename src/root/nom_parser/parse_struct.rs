@@ -1,4 +1,4 @@
-use crate::root::nom_parser::parse::{Location, ParseResult, Span, TypeErrorTree};
+use crate::root::nom_parser::parse::{Location, ParseResult, Span, ErrorTree};
 use crate::root::nom_parser::parse_blocks::braced_section;
 use crate::root::nom_parser::parse_name::{parse_simple_name, NameToken};
 use crate::root::nom_parser::parse_parameters::{parse_parameters, Parameters};
