@@ -16,7 +16,7 @@ pub type ErrorTree<'a> = GenericErrorTree<
     Box<dyn std::error::Error + Send + Sync + 'static>,
 >;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Location {
     path: Rc<PathBuf>,
     offset: usize,

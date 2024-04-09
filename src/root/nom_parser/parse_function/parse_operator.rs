@@ -8,22 +8,62 @@ use crate::root::nom_parser::parse::{Location, ParseResult, Span, ErrorTree};
 
 
 const OPERATOR_MAPS: [(&str, OperatorTokens, bool); 3] = [
-    ("+", OperatorTokens::Add, true),
-    ("-", OperatorTokens::Subtract, true),
-    ("!", OperatorTokens::Not, false)
+    ("+", OperatorTokens::Add, false),
+    ("-", OperatorTokens::Subtract, false),
+    ("!", OperatorTokens::Not, true)
 ];
 
-#[derive(Debug)]
+
+// TODO: Implement functionally
+pub fn is_prefix_op(operator: &OperatorTokens) -> bool {
+    for (_, op, prefix) in &OPERATOR_MAPS {
+        if operator == op {
+            return *prefix;
+        }
+    }
+    panic!()
+}
+
+pub fn get_priority(operator: &OperatorTokens) -> usize {
+    for (p, (_, op, _)) in OPERATOR_MAPS.iter().enumerate() {
+        if operator == op {
+            return p;
+        }
+    }
+    panic!()
+}
+
+#[derive(Debug, Clone)]
 pub struct OperatorToken {
     location: Location,
     operator: OperatorTokens,
 }
 
-#[derive(Debug)]
+impl OperatorToken {
+    pub fn is_prefix_opt_t(&self) -> bool {
+        is_prefix_op(&self.operator)
+    }
+
+    pub fn get_priority_t(&self) -> usize {
+        get_priority(&self.operator)
+    }
+}
+
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub enum OperatorTokens {
     Add,
     Subtract,
     Not
+}
+
+impl OperatorTokens {
+    pub fn is_prefix_opt_t(&self) -> bool {
+        is_prefix_op(&self)
+    }
+
+    pub fn get_priority_t(&self) -> usize {
+        get_priority(&self)
+    }
 }
 
 pub fn parse_operator(s: Span) -> ParseResult<Span, OperatorToken> {
