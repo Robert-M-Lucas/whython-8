@@ -1,5 +1,4 @@
 use crate::root::nom_parser::parse::{ErrorTree, Location, ParseResult, Span};
-use crate::root::nom_parser::parse_blocks::braced_section;
 use crate::root::nom_parser::parse_function::parse_literal::{
     parse_literal, LiteralToken, LiteralTokens,
 };
@@ -7,7 +6,9 @@ use crate::root::nom_parser::parse_function::parse_operator::{parse_operator, Op
 use crate::root::nom_parser::parse_name::{parse_full_name, NameToken};
 use b_box::b;
 use nom::branch::alt;
-use nom::character::complete::{char, multispace0};
+use nom::character::complete::{char};
+use crate::root::nom_parser::parse_blocks::default_section;
+use crate::root::nom_parser::parse_util::discard_ignored;
 
 #[derive(Debug)]
 pub struct EvaluableToken {
@@ -42,7 +43,7 @@ pub fn parse_evaluable(s: Span, semicolon_terminated: bool) -> ParseResult<Span,
     let mut evaluables = Vec::new();
 
     loop {
-        let (ns, _) = multispace0(s)?;
+        let (ns, _) = discard_ignored(s)?;
 
         if semicolon_terminated {
             if let Ok((ns, _)) = char::<_, ErrorTree>(';')(ns) {
@@ -63,7 +64,7 @@ pub fn parse_evaluable(s: Span, semicolon_terminated: bool) -> ParseResult<Span,
             break;
         }
 
-        let ns = if let Ok((ns, _)) = braced_section(s) {
+        let ns = if let Ok((ns, _)) = default_section(s, '(') {
             let (ns, evaluable) = parse_evaluable(ns, false)?;
             evaluables.push(TempEvaluableTokens::EvaluableToken(evaluable));
             ns

@@ -1,11 +1,12 @@
-use nom::character::complete::{multispace0, multispace1};
+
 use nom::sequence::Tuple;
 use nom_supreme::tag::complete::tag;
 
 use crate::root::nom_parser::parse::{ErrorTree, Location, ParseResult, Span};
-use crate::root::nom_parser::parse_blocks::bracketed_section;
+use crate::root::nom_parser::parse_blocks::default_section;
 use crate::root::nom_parser::parse_function::parse_evaluable::{parse_evaluable, EvaluableToken};
 use crate::root::nom_parser::parse_function::parse_line::{parse_lines, LineTestFn, LineTokens};
+use crate::root::nom_parser::parse_util::{discard_ignored, require_ignored};
 
 #[derive(Debug)]
 pub struct IfToken {
@@ -25,18 +26,18 @@ pub fn test_parse_if<'a>(s: Span<'a>) -> ParseResult<Span, LineTestFn<'a>> {
 
 pub fn parse_if(s: Span) -> ParseResult<Span, IfToken> {
     let (s, l) = tag("if")(s)?;
-    let (s, _) = multispace0(s)?;
-    let (s, content) = bracketed_section(s)?;
+    let (s, _) = discard_ignored(s)?;
+    let (s, content) = default_section(s, '(')?;
     let (_, if_condition) = parse_evaluable(content, false)?;
-    let (s, _) = multispace0(s)?;
-    let (s, contents) = bracketed_section(s)?;
+    let (s, _) = discard_ignored(s)?;
+    let (s, contents) = default_section(s, '(')?;
     let (_, if_contents) = parse_lines(contents)?;
 
     let mut elifs = Vec::new();
     let mut s = s;
 
     loop {
-        let (ns, _) = multispace0(s)?;
+        let (ns, _) = discard_ignored(s)?;
 
         if ns.is_empty() {
             break;
@@ -50,18 +51,18 @@ pub fn parse_if(s: Span) -> ParseResult<Span, IfToken> {
         };
 
         let (ns, condition) =
-            if let Ok((ns, _)) = (multispace1::<_, ErrorTree>, tag("if")).parse(ns) {
-                let (ns, _) = multispace0(ns)?;
-                let (ns, content) = bracketed_section(ns)?;
+            if let Ok((ns, _)) = (require_ignored, tag("if")).parse(ns) {
+                let (ns, _) = discard_ignored(ns)?;
+                let (ns, content) = default_section(ns, '{')?;
                 let (_, condition) = parse_evaluable(content, false)?;
                 (ns, Some(condition))
             } else {
                 (ns, None)
             };
 
-        let (ns, _) = multispace0(ns)?;
+        let (ns, _) = discard_ignored(ns)?;
 
-        let (ns, contents) = bracketed_section(ns)?;
+        let (ns, contents) = default_section(s, '{')?;
         let (_, contents) = parse_lines(contents)?;
 
         // ? Handle else if

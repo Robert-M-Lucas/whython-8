@@ -4,8 +4,8 @@ use crate::root::nom_parser::parse_impl::{parse_impl, test_parse_impl, ImplToken
 use crate::root::nom_parser::parse_struct::{parse_struct, test_parse_struct, StructToken};
 use crate::root::nom_parser::parse_util;
 use nom::branch::alt;
-use nom::character::complete::multispace0;
 use nom::Parser;
+use crate::root::nom_parser::parse_util::discard_ignored;
 
 #[derive(Debug)]
 pub enum TopLevelTokens {
@@ -22,7 +22,8 @@ pub fn parse_toplevel(s: Span) -> ParseResult<Span, Vec<TopLevelTokens>> {
 
     loop {
         let ns = s;
-        let (ns, _) = multispace0(ns)?;
+
+        let (ns, _) = discard_ignored(ns)?;
 
         if ns.is_empty() {
             return Ok((ns, tokens));

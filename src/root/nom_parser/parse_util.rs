@@ -1,50 +1,66 @@
 use crate::root::nom_parser::parse::{ErrorTree, ParseResult, Span};
 use crate::root::nom_parser::parse_comments;
 use nom::bytes::complete::{take_till, take_while};
-use nom::error::ParseError;
+use nom::error::{ErrorKind, ParseError};
 use nom::sequence::Tuple;
 use nom::{IResult, InputTakeAtPosition, Parser};
+use nom::character::complete::multispace1;
+use nom::Err::Error;
 use nom_supreme::error::{BaseErrorKind, Expectation};
 
 pub fn take_whitespace(s: Span) -> ParseResult {
     take_while(|c: char| c.is_whitespace())(s)
 }
 
-// pub fn discard_ignored(s: Span) -> (Span, bool) {
-//     let mut s = s;
-//     let mut ever_found = false;
-//     let mut found = true;
-//     while found {
-//         found = false;
-//         if let Ok((ns, _)) = parse_comments::parse_comment(s) {
-//             s = ns;
-//             found = true;
-//             ever_found = true;
-//         }
-//         if let Ok((ns, p)) = take_whitespace(s) {
-//             if !p.is_empty() {
-//                 s = ns;
-//                 found = true;
-//                 ever_found = true;
-//             }
-//         }
-//     }
-//
-//     (s, ever_found)
-// }
+pub fn discard_ignored(s: Span) -> ParseResult<Span, ()> {
+    let mut s = s;
+    let mut ever_found = false;
+    let mut found = true;
+    while found {
+        found = false;
+        if let Ok((ns, _)) = parse_comments::parse_comment(s) {
+            s = ns;
+            found = true;
+            ever_found = true;
+        }
 
-// pub fn require_ignored(s: Span) -> ParseResult<Span, ()> {
-//     let (s, i) = multispace0(s)?;
-//     if !i {
-//         return Err(nom::Err::Error(
-//             TypeErrorTree::Base {
-//                 location: s,
-//                 kind: BaseErrorKind::Expected(Expectation::Space),
-//             }
-//         ))
-//     }
-//     Ok((s, ()))
-// }
+        if let Ok((ns, _)) = multispace1::<_, ErrorTree>(s) {
+            s = ns;
+            found = true;
+            ever_found = true;
+        }
+    }
+
+    Ok((s, ()))
+}
+
+pub fn require_ignored(s: Span) -> ParseResult<Span, ()> {
+    let mut s = s;
+    let mut ever_found = false;
+    let mut found = true;
+    while found {
+        found = false;
+        if let Ok((ns, _)) = parse_comments::parse_comment(s) {
+            s = ns;
+            found = true;
+            ever_found = true;
+        }
+
+        if let Ok((ns, _)) = multispace1::<_, ErrorTree>(s) {
+            s = ns;
+            found = true;
+            ever_found = true;
+        }
+    }
+
+    if !ever_found {
+        return Err(Error(
+            ErrorTree::from_error_kind(s, ErrorKind::Space)
+        ))
+    }
+
+    Ok((s, ()))
+}
 
 pub fn take_till_whitespace(s: Span) -> ParseResult {
     take_till(|c: char| c.is_whitespace())(s)

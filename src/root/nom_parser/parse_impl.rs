@@ -1,13 +1,13 @@
-use nom::character::complete::{multispace0, multispace1};
 use nom::sequence::Tuple;
 use nom::Parser;
 use nom_supreme::tag::complete::tag;
 
 use crate::root::nom_parser::parse::{Location, ParseResult, Span};
-use crate::root::nom_parser::parse_blocks::braced_section;
+use crate::root::nom_parser::parse_blocks::default_section;
 use crate::root::nom_parser::parse_function::{parse_function, FunctionToken};
 use crate::root::nom_parser::parse_name::parse_simple_name;
 use crate::root::nom_parser::parse_toplevel::{TopLevelTokens, ToplevelTestFn};
+use crate::root::nom_parser::parse_util::{discard_ignored, require_ignored};
 
 #[derive(Debug)]
 pub struct ImplToken {
@@ -17,7 +17,7 @@ pub struct ImplToken {
 }
 
 pub fn test_parse_impl<'a>(s: Span<'a>) -> ParseResult<Span, ToplevelTestFn<'a>> {
-    match (tag("impl"), multispace1).parse(s) {
+    match (tag("impl"), require_ignored).parse(s) {
         Ok(_) => Ok((s, |x| {
             parse_impl(x).map(|(s, x)| (s, TopLevelTokens::Impl(x)))
         })),
@@ -28,16 +28,16 @@ pub fn test_parse_impl<'a>(s: Span<'a>) -> ParseResult<Span, ToplevelTestFn<'a>>
 pub fn parse_impl(s: Span) -> ParseResult<Span, ImplToken> {
     let location = Location::from_span(s);
     let (s, _) = tag("impl").parse(s)?;
-    let (s, _) = multispace1(s)?;
+    let (s, _) = require_ignored(s)?;
     let (s, name) = parse_simple_name(s)?;
-    let (s, _) = multispace0(s)?;
-    let (s, contents) = braced_section(s)?;
+    let (s, _) = discard_ignored(s)?;
+    let (s, contents) = default_section(s, '{')?;
 
     let mut functions = Vec::new();
 
     let mut c = contents;
     loop {
-        let (cs, _) = multispace0(c)?;
+        let (cs, _) = discard_ignored(c)?;
         if cs.is_empty() {
             break;
         }

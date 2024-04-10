@@ -1,7 +1,7 @@
 use crate::root::nom_parser::parse::{Location, ParseResult, Span};
 use nom::branch::alt;
 use nom::bytes::complete::tag;
-use nom::character::complete::multispace0;
+use crate::root::nom_parser::parse_util::discard_ignored;
 
 #[derive(Debug)]
 pub struct LiteralToken {
@@ -16,7 +16,7 @@ pub enum LiteralTokens {
 }
 
 pub fn parse_literal(s: Span) -> ParseResult<Span, LiteralToken> {
-    let (s, _) = multispace0(s)?;
+    let (s, _) = discard_ignored(s)?;
 
     let (ns, l) = alt((
         |x| tag("true")(x).map(|(s, _)| (s, LiteralTokens::Bool(true))),

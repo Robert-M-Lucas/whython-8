@@ -9,8 +9,8 @@ use crate::root::nom_parser::parse_function::parse_initialisation::{
 use crate::root::nom_parser::parse_function::parse_return::{test_parse_return, ReturnToken};
 use crate::root::nom_parser::parse_function::parse_while::{test_parse_while, WhileToken};
 use nom::branch::alt;
-use nom::character::complete::multispace0;
 use nom::Parser;
+use crate::root::nom_parser::parse_util::discard_ignored;
 
 #[derive(Debug)]
 pub enum LineTokens {
@@ -30,7 +30,7 @@ pub fn parse_lines(contents: Span) -> ParseResult<(), Vec<LineTokens>> {
 
     let mut c = contents;
     loop {
-        let (cs, _) = multispace0(c)?;
+        let (cs, _) = discard_ignored(c)?;
         if cs.is_empty() {
             break;
         }

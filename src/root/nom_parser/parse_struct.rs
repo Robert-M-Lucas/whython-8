@@ -1,15 +1,16 @@
 use crate::root::nom_parser::parse::{ErrorTree, Location, ParseResult, Span};
-use crate::root::nom_parser::parse_blocks::braced_section;
 use crate::root::nom_parser::parse_name::{parse_simple_name, NameToken};
 use crate::root::nom_parser::parse_parameters::{parse_parameters, Parameters};
 use crate::root::nom_parser::parse_toplevel::{TopLevelTokens, ToplevelTestFn};
-use nom::character::complete::{multispace0, multispace1, satisfy};
+use nom::character::complete::{ satisfy};
 use nom::sequence::Tuple;
 use nom::Err::Error;
 use nom::{IResult, Parser};
 use nom_supreme::error::{BaseErrorKind, Expectation};
 use nom_supreme::tag::complete::tag;
 use substring::Substring;
+use crate::root::nom_parser::parse_blocks::default_section;
+use crate::root::nom_parser::parse_util::{discard_ignored, require_ignored};
 
 #[derive(Debug)]
 pub struct StructToken {
@@ -19,7 +20,7 @@ pub struct StructToken {
 }
 
 pub fn test_parse_struct<'a>(s: Span<'a>) -> ParseResult<Span, ToplevelTestFn<'a>> {
-    match (tag("struct"), multispace1).parse(s) {
+    match (tag("struct"), require_ignored).parse(s) {
         Ok(_) => Ok((s, |x| {
             parse_struct(x).map(|(s, x)| (s, TopLevelTokens::Struct(x)))
         })),
@@ -30,10 +31,10 @@ pub fn test_parse_struct<'a>(s: Span<'a>) -> ParseResult<Span, ToplevelTestFn<'a
 pub fn parse_struct(s: Span) -> ParseResult<Span, StructToken> {
     let location = Location::from_span(s);
     let (s, _) = tag("struct").parse(s)?;
-    let (s, _) = multispace1(s)?;
+    let (s, _) = require_ignored(s)?;
     let (s, name) = parse_simple_name(s)?;
-    let (s, _) = multispace0(s)?;
-    let (s, contents) = braced_section(s)?;
+    let (s, _) = discard_ignored(s)?;
+    let (s, contents) = default_section(s, '{')?;
     let (_, parameters) = parse_parameters(contents)?;
 
     Ok((
