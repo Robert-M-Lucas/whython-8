@@ -1,1 +1,40 @@
-structs
+struct A {
+    a: B,
+    b: C
+}
+
+fn test(a: C) -> ReturnType {
+    let a: int = 12;
+    a = 13;
+}
+
+impl A {
+    fn test_impl(c: D) {
+        let x: int = 15;
+        break;
+        return 15;
+
+        if (a == 3) {
+            let y: int = 18;
+        }
+
+        while (true) {
+            if (true) {
+
+            }
+            elif (false) {
+
+            }
+            else {
+
+            }
+        }
+
+        if (true) {
+
+        }
+        else {
+
+        }
+    }
+}

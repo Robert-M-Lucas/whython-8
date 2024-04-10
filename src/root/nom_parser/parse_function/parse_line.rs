@@ -1,5 +1,5 @@
 use crate::root::nom_parser::parse::{ErrorTree, ParseResult, Span};
-use crate::root::nom_parser::parse_function::base::AssignmentToken;
+use crate::root::nom_parser::parse_function::parse_assigner::AssignmentToken;
 use crate::root::nom_parser::parse_function::parse_break::{test_parse_break, BreakToken};
 use crate::root::nom_parser::parse_function::parse_evaluable::{parse_evaluable, EvaluableToken};
 use crate::root::nom_parser::parse_function::parse_if::{IfToken, test_parse_if};
@@ -56,6 +56,6 @@ pub fn parse_line(s: Span) -> ParseResult<Span, LineTokens> {
         parser(s)
     } else {
         // ? Default case is evaluable
-        parse_evaluable(s, true).map(|(s, e)| (s, LineTokens::NoOp(e))).map_err(|e| todo!())
+        parse_evaluable(s, true).map(|(s, e)| (s, LineTokens::NoOp(e)))
     }
 }

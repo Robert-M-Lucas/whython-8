@@ -20,6 +20,9 @@ mod parse_line;
 mod parse_return;
 mod parse_while;
 mod parse_operator;
+mod parse_literal;
+mod parse_assigner;
+mod parse_assignment;
 
 #[derive(Debug)]
 pub struct FunctionToken {

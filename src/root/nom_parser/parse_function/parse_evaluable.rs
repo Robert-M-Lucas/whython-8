@@ -1,15 +1,11 @@
 use b_box::b;
-use either::Either;
 use nom::branch::alt;
 use nom::character::complete::{char, multispace0};
-use nom_supreme::error::GenericErrorTree;
-use crate::root::ast::operators::Operator;
 use crate::root::nom_parser::parse::{ErrorTree, Location, ParseResult, Span};
 use crate::root::nom_parser::parse_blocks::braced_section;
-use crate::root::nom_parser::parse_function::FunctionToken;
+use crate::root::nom_parser::parse_function::parse_literal::{LiteralToken, LiteralTokens, parse_literal};
 use crate::root::nom_parser::parse_function::parse_operator::{OperatorToken, parse_operator};
 use crate::root::nom_parser::parse_name::{NameToken, parse_full_name};
-use crate::root::nom_parser::parse_parameters::Parameters;
 
 #[derive(Debug)]
 pub struct EvaluableToken {
@@ -17,18 +13,16 @@ pub struct EvaluableToken {
     token: EvaluableTokens,
 }
 
-#[derive(Debug)]
-enum EvaluableTokens {
-    Name(NameToken),
-    Literal(LiteralTokens),
-    InfixOperator(Box<EvaluableToken>, OperatorToken, Box<EvaluableToken>),
-    PrefixOperator(OperatorToken, Box<EvaluableToken>),
+pub fn temp_from_token(s: Span, token: EvaluableTokens) -> TempEvaluableTokens {
+    TempEvaluableTokens::EvaluableToken(EvaluableToken { location: Location::from_span(s), token })
 }
 
 #[derive(Debug)]
-enum LiteralTokens {
-    Bool(bool),
-    String(String),
+enum EvaluableTokens {
+    Name(NameToken),
+    Literal(LiteralToken),
+    InfixOperator(Box<EvaluableToken>, OperatorToken, Box<EvaluableToken>),
+    PrefixOperator(OperatorToken, Box<EvaluableToken>),
 }
 
 #[derive(Debug)]
@@ -71,21 +65,11 @@ pub fn parse_evaluable(s: Span, semicolon_terminated: bool) -> ParseResult<Span,
         }
         else {
             let (ns, token) = alt((
+                |x| parse_literal(x)
+                    .map(|(s, t)| (s, temp_from_token(s, EvaluableTokens::Literal(t)))),
                 |x| parse_operator(x).map(|(s, t)| (s, TempEvaluableTokens::Operator(t))),
                 |x| parse_full_name(x)
-                    .map(|(s, t)|
-                        (
-                            s,
-                            TempEvaluableTokens::EvaluableToken(
-                                EvaluableToken {
-                                    location: Location::from_span(x),
-                                    token: EvaluableTokens::Name(
-                                        t
-                                    )
-                                }
-                            )
-                        )
-                    )
+                    .map(|(s, t)| (s, temp_from_token(s, EvaluableTokens::Name(t))))
             ))(ns)?;
             evaluables.push(token);
             ns
