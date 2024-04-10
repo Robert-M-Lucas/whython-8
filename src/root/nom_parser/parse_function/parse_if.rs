@@ -30,7 +30,7 @@ pub fn parse_if(s: Span) -> ParseResult<Span, IfToken> {
     let (s, content) = default_section(s, '(')?;
     let (_, if_condition) = parse_evaluable(content, false)?;
     let (s, _) = discard_ignored(s)?;
-    let (s, contents) = default_section(s, '(')?;
+    let (s, contents) = default_section(s, '{')?;
     let (_, if_contents) = parse_lines(contents)?;
 
     let mut elifs = Vec::new();
@@ -53,7 +53,7 @@ pub fn parse_if(s: Span) -> ParseResult<Span, IfToken> {
         let (ns, condition) =
             if let Ok((ns, _)) = (require_ignored, tag("if")).parse(ns) {
                 let (ns, _) = discard_ignored(ns)?;
-                let (ns, content) = default_section(ns, '{')?;
+                let (ns, content) = default_section(ns, '(')?;
                 let (_, condition) = parse_evaluable(content, false)?;
                 (ns, Some(condition))
             } else {
@@ -62,7 +62,7 @@ pub fn parse_if(s: Span) -> ParseResult<Span, IfToken> {
 
         let (ns, _) = discard_ignored(ns)?;
 
-        let (ns, contents) = default_section(s, '{')?;
+        let (ns, contents) = default_section(ns, '{')?;
         let (_, contents) = parse_lines(contents)?;
 
         // ? Handle else if

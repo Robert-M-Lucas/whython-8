@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use itertools::Itertools;
 use crate::root::nom_parser::parse::{ErrorTree, ParseResult, Span};
 use nom::bytes::complete::take_until;
-use nom::character::complete::char as nchar;
+use nom::character::complete::{anychar, char as nchar};
 use nom::Err::Error;
 use nom::error::{ErrorKind, ParseError};
 use nom::{InputIter, InputTake, Offset};
@@ -18,11 +18,13 @@ const DEFAULT_TERMINATORS: [(char, char); 2] = [
 ];
 
 pub fn default_section(s: Span, section_char: char) -> ParseResult {
-    section(
+    let x = section(
         s,
         DEFAULT_TERMINATORS.iter().find_position(|(c, _)| *c == section_char).unwrap().0,
         &DEFAULT_TERMINATORS
-    )
+    );
+    // println!("----------\n{:?}\n**{}\n\n**{}\n\n**{}", section_char, s.fragment(), x.as_ref().unwrap().0.fragment(), x.as_ref().unwrap().1.fragment());
+    x
 }
 
 pub fn section<'a>(s: Span<'a>, terminator: usize, all_terminators: &[(char, char)]) -> ParseResult<'a> {
@@ -41,7 +43,7 @@ pub fn section<'a>(s: Span<'a>, terminator: usize, all_terminators: &[(char, cha
 
         if let Ok((ns, _)) = nchar::<_, ErrorTree>(all_terminators[terminator].1)(s) {
             if depth == 0 {
-                return Ok((ns, initial_span.take_split(initial_span.offset(&s)).0));
+                return Ok((ns, initial_span.take_split(initial_span.offset(&s)).1));
             }
             else {
                 s = ns;
@@ -69,6 +71,8 @@ pub fn section<'a>(s: Span<'a>, terminator: usize, all_terminators: &[(char, cha
                 todo!()
             }
         }
+
+        s = anychar(s)?.0;
     }
 
     Err(Error(ErrorTree::from_char(s, all_terminators[terminator].1)))

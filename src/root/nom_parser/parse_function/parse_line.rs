@@ -1,3 +1,4 @@
+use itertools::Itertools;
 use crate::root::nom_parser::parse::{ErrorTree, ParseResult, Span};
 use crate::root::nom_parser::parse_function::parse_assignment::{AssignmentToken, test_parse_assignment};
 use crate::root::nom_parser::parse_function::parse_break::{test_parse_break, BreakToken};
@@ -34,6 +35,7 @@ pub fn parse_lines(contents: Span) -> ParseResult<(), Vec<LineTokens>> {
         if cs.is_empty() {
             break;
         }
+
         let (cs, function) = parse_line(cs)?;
 
         lines.push(function);

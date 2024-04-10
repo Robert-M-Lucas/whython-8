@@ -13,7 +13,7 @@ pub struct BreakToken {
 }
 
 pub fn test_parse_break<'a>(s: Span<'a>) -> ParseResult<Span, LineTestFn<'a>> {
-    match (tag("break"), require_ignored).parse(s) {
+    match tag("break")(s) {
         Ok(_) => Ok((s, |x| {
             parse_break(x).map(|(s, x)| (s, LineTokens::Break(x)))
         })),

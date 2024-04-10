@@ -7,9 +7,10 @@ use nom_supreme::error::GenericErrorTree;
 use nom_supreme::tag::complete::tag;
 use nom_supreme::tag::TagError;
 
-const OPERATOR_MAPS: [(&str, OperatorTokens, bool); 3] = [
+const OPERATOR_MAPS: [(&str, OperatorTokens, bool); 4] = [
     ("+", OperatorTokens::Add, false),
     ("-", OperatorTokens::Subtract, false),
+    ("==", OperatorTokens::Equals, false),
     ("!", OperatorTokens::Not, true),
 ];
 
@@ -54,6 +55,7 @@ pub enum OperatorTokens {
     Add,
     Subtract,
     Not,
+    Equals
 }
 
 impl OperatorTokens {

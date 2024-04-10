@@ -28,7 +28,7 @@ pub fn test_parse_while<'a>(s: Span<'a>) -> ParseResult<Span, LineTestFn<'a>> {
 pub fn parse_while(s: Span) -> ParseResult<Span, WhileToken> {
     let (s, l) = tag("while")(s)?;
     let (s, _) = discard_ignored(s)?;
-    let (s, content) = default_section(s, '{')?;
+    let (s, content) = default_section(s, '(')?;
     let (_, condition) = parse_evaluable(content, false)?;
     let (s, _) = discard_ignored(s)?;
     let (s, contents) = default_section(s, '{')?;
