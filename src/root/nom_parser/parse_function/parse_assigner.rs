@@ -28,8 +28,6 @@ const ASSIGNERS: [(&str, AssignmentOperatorTokens); 2] = [
 ];
 
 pub fn parse_assigner(s: Span) -> ParseResult<Span, AssignmentOperatorToken> {
-    let (s, _) = multispace0(s)?;
-
     let (ns, a) = alt_many(ASSIGNERS.map(|(t, o)| move |x| tag(t)(x).map(|(s, _)| (s, o.clone()))))
         .parse(s)?;
 

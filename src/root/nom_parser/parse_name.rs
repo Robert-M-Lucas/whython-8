@@ -1,6 +1,7 @@
 use crate::root::nom_parser::parse::{ErrorTree, Location, ParseResult, Span};
 use crate::root::nom_parser::parse_function::parse_evaluable::EvaluableToken;
 use nom::bytes::complete::take_till;
+use nom::character::complete::multispace0;
 use nom::Err::Error;
 use nom::InputTake;
 use nom_supreme::error::{BaseErrorKind, Expectation};
@@ -21,6 +22,8 @@ pub struct NameToken {
 
 pub fn parse_full_name(s: Span) -> ParseResult<Span, NameToken> {
     // TODO: Handle function calls
+
+    let (s, _) = multispace0(s)?;
 
     let location = Location::from_span(s);
 
