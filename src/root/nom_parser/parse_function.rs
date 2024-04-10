@@ -11,7 +11,6 @@ use crate::root::nom_parser::parse_name::{parse_full_name, parse_simple_name, Na
 use crate::root::nom_parser::parse_parameters::{parse_parameters, Parameters};
 use crate::root::nom_parser::parse_toplevel::{TopLevelTokens, ToplevelTestFn};
 
-pub mod base;
 mod parse_break;
 pub(crate) mod parse_evaluable;
 mod parse_if;

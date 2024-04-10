@@ -1,23 +1,38 @@
-use crate::root::nom_parser::parse::Location;
-use crate::root::nom_parser::parse_function::parse_evaluable::EvaluableToken;
+use clap::builder::TypedValueParser;
+use nom::branch::alt;
+use nom::bytes::complete::tag;
+use nom::character::complete::multispace0;
+use crate::root::nom_parser::parse::{Location, ParseResult, Span};
 use crate::root::nom_parser::parse_function::parse_operator::OperatorTokens;
+use crate::root::nom_parser::parse_util::alt_many;
+use nom::Parser;
 
 #[derive(Debug)]
-struct AssignmentOperatorToken {
+pub struct AssignmentOperatorToken {
     location: Location,
     assignment_operator: AssignmentOperatorTokens,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 enum AssignmentOperatorTokens {
-    None,
+    Normal,
     Combination(OperatorTokens),
 }
 
-#[derive(Debug)]
-pub struct AssignmentToken {
-    location: Location,
-    name: String,
-    assignment_operator: AssignmentOperatorToken,
-    value: EvaluableToken,
+const ASSIGNERS: [(&str, AssignmentOperatorTokens); 2] = [
+    ("=", AssignmentOperatorTokens::Normal),
+    ("+=", AssignmentOperatorTokens::Combination(OperatorTokens::Add))
+];
+
+pub fn parse_assigner(s: Span) -> ParseResult<Span, AssignmentOperatorToken> {
+    let (s, _) = multispace0(s)?;
+
+    let (ns, a) = alt_many(ASSIGNERS.map(|(t, o)| {
+        move |x| tag(t)(x).map(|(s, _)| (s, o.clone()))
+    })).parse(s)?;
+
+    Ok((ns, AssignmentOperatorToken {
+        location: Location::from_span(s),
+        assignment_operator: a,
+    }))
 }

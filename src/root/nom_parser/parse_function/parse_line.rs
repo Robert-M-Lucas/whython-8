@@ -1,5 +1,5 @@
 use crate::root::nom_parser::parse::{ErrorTree, ParseResult, Span};
-use crate::root::nom_parser::parse_function::parse_assigner::AssignmentToken;
+use crate::root::nom_parser::parse_function::parse_assignment::AssignmentToken;
 use crate::root::nom_parser::parse_function::parse_break::{test_parse_break, BreakToken};
 use crate::root::nom_parser::parse_function::parse_evaluable::{parse_evaluable, EvaluableToken};
 use crate::root::nom_parser::parse_function::parse_if::{IfToken, test_parse_if};
