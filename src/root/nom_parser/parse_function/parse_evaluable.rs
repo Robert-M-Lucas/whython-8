@@ -192,7 +192,7 @@ pub fn parse_evaluable(s: Span, semicolon_terminated: bool) -> ParseResult<Span,
 
     debug_assert!(after.is_empty());
 
-    let mut evaluables: Vec<_> = evaluables.into_iter().map(|e| Some(e)).collect();
+    let mut evaluables: Vec<_> = enumerated.into_iter().map(|(_, e)| Some(e)).collect();
 
 
     fn recursively_convert_temp(base: TempOperation, evaluables: &mut Vec<Option<TempEvaluableTokens>>) -> EvaluableToken {
@@ -205,19 +205,24 @@ pub fn parse_evaluable(s: Span, semicolon_terminated: bool) -> ParseResult<Span,
 
         match base {
             TempOperation::Infix(lhs, op, rhs) => {
-                let lhs = recursively_convert_temp(lhs.into(), evaluables);
+                let lhs = recursively_convert_temp(*lhs, evaluables);
                 EvaluableToken {
                     location: lhs.location.clone(),
                     token: EvaluableTokens::InfixOperator(
                         b!(lhs),
                         op,
-                        b!(recursively_convert_temp(rhs.into(), evaluables))
+                        b!(recursively_convert_temp(*rhs, evaluables))
                     ),
                 }
-
             }
-            TempOperation::Prefix(_, _) => {
-
+            TempOperation::Prefix(op, operand) => {
+                EvaluableToken {
+                    location: op.location().clone(),
+                    token: EvaluableTokens::PrefixOperator(
+                        op,
+                        b!(recursively_convert_temp(*operand, evaluables))
+                    ),
+                }
             }
             TempOperation::Value(p) => {
                 not_operator(evaluables[p].take().unwrap())

@@ -1,3 +1,4 @@
+use accessors_rs::Accessors;
 use nom::Err::Error;
 use nom::error::{ErrorKind, ParseError};
 use nom::Parser;
@@ -33,8 +34,9 @@ pub fn get_priority(operator: &OperatorTokens) -> usize {
     panic!()
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Accessors)]
 pub struct OperatorToken {
+    #[accessors(get)]
     location: Location,
     operator: OperatorTokens,
 }

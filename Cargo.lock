@@ -3,6 +3,17 @@
 version = 3
 
 [[package]]
+name = "accessors-rs"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1cf100db746f59122e97eb1123e2bb56ddca630ea7095ff8fbe43033d4903a64"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 1.0.109",
+]
+
+[[package]]
 name = "anstream"
 version = "0.6.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -412,6 +423,7 @@ dependencies = [
 name = "whython-7"
 version = "0.1.0"
 dependencies = [
+ "accessors-rs",
  "b-box",
  "clap",
  "color-print",
