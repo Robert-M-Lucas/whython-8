@@ -4,24 +4,24 @@ use nom::Parser;
 use nom_supreme::tag::complete::tag;
 use substring::Substring;
 
-use crate::root::nom_parser::parse::{Location, ParseResult, Span, ErrorTree};
+use crate::root::nom_parser::parse::{ErrorTree, Location, ParseResult, Span};
 use crate::root::nom_parser::parse_blocks::{braced_section, bracketed_section};
 use crate::root::nom_parser::parse_function::parse_line::{parse_lines, LineTokens};
 use crate::root::nom_parser::parse_name::{parse_full_name, parse_simple_name, NameToken};
 use crate::root::nom_parser::parse_parameters::{parse_parameters, Parameters};
 use crate::root::nom_parser::parse_toplevel::{TopLevelTokens, ToplevelTestFn};
 
+mod parse_assigner;
+mod parse_assignment;
 mod parse_break;
 pub(crate) mod parse_evaluable;
 mod parse_if;
 mod parse_initialisation;
 mod parse_line;
+mod parse_literal;
+mod parse_operator;
 mod parse_return;
 mod parse_while;
-mod parse_operator;
-mod parse_literal;
-mod parse_assigner;
-mod parse_assignment;
 
 #[derive(Debug)]
 pub struct FunctionToken {

@@ -1,4 +1,4 @@
-use crate::root::nom_parser::parse::{Location, ParseResult, Span, ErrorTree};
+use crate::root::nom_parser::parse::{ErrorTree, Location, ParseResult, Span};
 use crate::root::nom_parser::parse_function::parse_evaluable::EvaluableToken;
 use nom::bytes::complete::take_till;
 use nom::Err::Error;
@@ -18,7 +18,6 @@ pub struct NameToken {
     names: Vec<(NameConnectors, String)>,
     function_call: Option<Vec<EvaluableToken>>,
 }
-
 
 pub fn parse_full_name(s: Span) -> ParseResult<Span, NameToken> {
     // TODO: Handle function calls

@@ -1,11 +1,13 @@
+use crate::root::nom_parser::parse::{ErrorTree, Location, ParseResult, Span};
+use crate::root::nom_parser::parse_blocks::braced_section;
+use crate::root::nom_parser::parse_function::parse_literal::{
+    parse_literal, LiteralToken, LiteralTokens,
+};
+use crate::root::nom_parser::parse_function::parse_operator::{parse_operator, OperatorToken};
+use crate::root::nom_parser::parse_name::{parse_full_name, NameToken};
 use b_box::b;
 use nom::branch::alt;
 use nom::character::complete::{char, multispace0};
-use crate::root::nom_parser::parse::{ErrorTree, Location, ParseResult, Span};
-use crate::root::nom_parser::parse_blocks::braced_section;
-use crate::root::nom_parser::parse_function::parse_literal::{LiteralToken, LiteralTokens, parse_literal};
-use crate::root::nom_parser::parse_function::parse_operator::{OperatorToken, parse_operator};
-use crate::root::nom_parser::parse_name::{NameToken, parse_full_name};
 
 #[derive(Debug)]
 pub struct EvaluableToken {
@@ -14,7 +16,10 @@ pub struct EvaluableToken {
 }
 
 pub fn temp_from_token(s: Span, token: EvaluableTokens) -> TempEvaluableTokens {
-    TempEvaluableTokens::EvaluableToken(EvaluableToken { location: Location::from_span(s), token })
+    TempEvaluableTokens::EvaluableToken(EvaluableToken {
+        location: Location::from_span(s),
+        token,
+    })
 }
 
 #[derive(Debug)]
@@ -28,7 +33,7 @@ enum EvaluableTokens {
 #[derive(Debug)]
 enum TempEvaluableTokens {
     EvaluableToken(EvaluableToken),
-    Operator(OperatorToken)
+    Operator(OperatorToken),
 }
 
 pub fn parse_evaluable(s: Span, semicolon_terminated: bool) -> ParseResult<Span, EvaluableToken> {
@@ -62,14 +67,17 @@ pub fn parse_evaluable(s: Span, semicolon_terminated: bool) -> ParseResult<Span,
             let (ns, evaluable) = parse_evaluable(ns, false)?;
             evaluables.push(TempEvaluableTokens::EvaluableToken(evaluable));
             ns
-        }
-        else {
+        } else {
             let (ns, token) = alt((
-                |x| parse_literal(x)
-                    .map(|(s, t)| (s, temp_from_token(s, EvaluableTokens::Literal(t)))),
+                |x| {
+                    parse_literal(x)
+                        .map(|(s, t)| (s, temp_from_token(s, EvaluableTokens::Literal(t))))
+                },
                 |x| parse_operator(x).map(|(s, t)| (s, TempEvaluableTokens::Operator(t))),
-                |x| parse_full_name(x)
-                    .map(|(s, t)| (s, temp_from_token(s, EvaluableTokens::Name(t))))
+                |x| {
+                    parse_full_name(x)
+                        .map(|(s, t)| (s, temp_from_token(s, EvaluableTokens::Name(t))))
+                },
             ))(ns)?;
             evaluables.push(token);
             ns
@@ -81,11 +89,15 @@ pub fn parse_evaluable(s: Span, semicolon_terminated: bool) -> ParseResult<Span,
     enum TempOperation {
         Infix(Box<TempOperation>, OperatorToken, Box<TempOperation>),
         Prefix(OperatorToken, Box<TempOperation>),
-        Value(usize)
+        Value(usize),
     }
 
-    fn parse_prefix(section: &[(usize, TempEvaluableTokens)]) -> ParseResult<&[(usize, TempEvaluableTokens)], TempOperation> {
-        let TempEvaluableTokens::Operator(operator) = &section[0].1 else { panic!() };
+    fn parse_prefix(
+        section: &[(usize, TempEvaluableTokens)],
+    ) -> ParseResult<&[(usize, TempEvaluableTokens)], TempOperation> {
+        let TempEvaluableTokens::Operator(operator) = &section[0].1 else {
+            panic!()
+        };
 
         if section.len() < 2 {
             todo!()
@@ -95,15 +107,17 @@ pub fn parse_evaluable(s: Span, semicolon_terminated: bool) -> ParseResult<Span,
             (p, TempEvaluableTokens::EvaluableToken(_)) => {
                 (&section[2..], TempOperation::Value(*p))
             }
-            (_, TempEvaluableTokens::Operator(_)) => {
-                parse_prefix(&section[1..])?
-            }
+            (_, TempEvaluableTokens::Operator(_)) => parse_prefix(&section[1..])?,
         };
 
-        Ok((remaining, TempOperation::Prefix(operator.clone(), Box::new(operand))))
+        Ok((
+            remaining,
+            TempOperation::Prefix(operator.clone(), Box::new(operand)),
+        ))
     }
 
-    let enumerated: Vec<(usize, TempEvaluableTokens)> = evaluables.into_iter().enumerate().collect();
+    let enumerated: Vec<(usize, TempEvaluableTokens)> =
+        evaluables.into_iter().enumerate().collect();
 
     let mut base = None;
     let mut after = Vec::new();
@@ -136,10 +150,10 @@ pub fn parse_evaluable(s: Span, semicolon_terminated: bool) -> ParseResult<Span,
             }
             (_, TempEvaluableTokens::Operator(_)) => {
                 let (new_slice, value) = match parse_prefix(enumerated_slice) {
-                    Ok(r) => {
-                        r
+                    Ok(r) => r,
+                    Err(_) => {
+                        todo!()
                     }
-                    Err(_) => { todo!() }
                 };
                 enumerated_slice = new_slice;
                 value
@@ -148,8 +162,7 @@ pub fn parse_evaluable(s: Span, semicolon_terminated: bool) -> ParseResult<Span,
 
         if base.is_none() {
             base = Some(value);
-        }
-        else {
+        } else {
             after.push(Some((operator.unwrap(), value)));
         }
     }
@@ -158,16 +171,17 @@ pub fn parse_evaluable(s: Span, semicolon_terminated: bool) -> ParseResult<Span,
 
     for priority in operator_priority {
         for (pos, (op, _)) in after.iter().map(|x| x.as_ref().unwrap()).enumerate() {
-            if op.get_priority_t() != priority { continue; }
+            if op.get_priority_t() != priority {
+                continue;
+            }
 
             if pos == 0 {
                 let (op, rhs) = after.remove(pos).unwrap();
                 base = Some(TempOperation::Infix(b!(base.unwrap()), op, b!(rhs)))
-            }
-            else {
+            } else {
                 let (op, rhs) = after.remove(pos).unwrap();
-                let (lop, base) = after[pos-1].take().unwrap();
-                after[pos-1] = Some((lop, TempOperation::Infix(b!(base), op, b!(rhs))));
+                let (lop, base) = after[pos - 1].take().unwrap();
+                after[pos - 1] = Some((lop, TempOperation::Infix(b!(base), op, b!(rhs))));
             }
 
             break;
@@ -178,12 +192,16 @@ pub fn parse_evaluable(s: Span, semicolon_terminated: bool) -> ParseResult<Span,
 
     let mut evaluables: Vec<_> = enumerated.into_iter().map(|(_, e)| Some(e)).collect();
 
-
-    fn recursively_convert_temp(base: TempOperation, evaluables: &mut Vec<Option<TempEvaluableTokens>>) -> EvaluableToken {
+    fn recursively_convert_temp(
+        base: TempOperation,
+        evaluables: &mut Vec<Option<TempEvaluableTokens>>,
+    ) -> EvaluableToken {
         fn not_operator(te: TempEvaluableTokens) -> EvaluableToken {
             match te {
-                TempEvaluableTokens::EvaluableToken(e) => {e}
-                TempEvaluableTokens::Operator(_) => {panic!()}
+                TempEvaluableTokens::EvaluableToken(e) => e,
+                TempEvaluableTokens::Operator(_) => {
+                    panic!()
+                }
             }
         }
 
@@ -195,23 +213,18 @@ pub fn parse_evaluable(s: Span, semicolon_terminated: bool) -> ParseResult<Span,
                     token: EvaluableTokens::InfixOperator(
                         b!(lhs),
                         op,
-                        b!(recursively_convert_temp(*rhs, evaluables))
+                        b!(recursively_convert_temp(*rhs, evaluables)),
                     ),
                 }
             }
-            TempOperation::Prefix(op, operand) => {
-                EvaluableToken {
-                    location: op.location().clone(),
-                    token: EvaluableTokens::PrefixOperator(
-                        op,
-                        b!(recursively_convert_temp(*operand, evaluables))
-                    ),
-                }
-            }
-            TempOperation::Value(p) => {
-                not_operator(evaluables[p].take().unwrap())
-
-            }
+            TempOperation::Prefix(op, operand) => EvaluableToken {
+                location: op.location().clone(),
+                token: EvaluableTokens::PrefixOperator(
+                    op,
+                    b!(recursively_convert_temp(*operand, evaluables)),
+                ),
+            },
+            TempOperation::Value(p) => not_operator(evaluables[p].take().unwrap()),
         }
     }
 

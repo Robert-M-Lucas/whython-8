@@ -2,10 +2,10 @@ use nom::character::complete::{multispace0, multispace1};
 use nom::sequence::Tuple;
 use nom_supreme::tag::complete::tag;
 
-use crate::root::nom_parser::parse::{Location, ParseResult, Span, ErrorTree};
+use crate::root::nom_parser::parse::{ErrorTree, Location, ParseResult, Span};
 use crate::root::nom_parser::parse_blocks::bracketed_section;
-use crate::root::nom_parser::parse_function::parse_evaluable::{EvaluableToken, parse_evaluable};
-use crate::root::nom_parser::parse_function::parse_line::{LineTestFn, LineTokens, parse_lines};
+use crate::root::nom_parser::parse_function::parse_evaluable::{parse_evaluable, EvaluableToken};
+use crate::root::nom_parser::parse_function::parse_line::{parse_lines, LineTestFn, LineTokens};
 
 #[derive(Debug)]
 pub struct IfToken {
@@ -38,25 +38,26 @@ pub fn parse_if(s: Span) -> ParseResult<Span, IfToken> {
     loop {
         let (ns, _) = multispace0(s)?;
 
-        if ns.is_empty() { break; }
+        if ns.is_empty() {
+            break;
+        }
 
         let ns = if let Ok((ns, _)) = tag::<_, _, ErrorTree>("else")(ns) {
             ns
-        }
-        else {
+        } else {
             s = ns;
             break;
         };
 
-        let (ns, condition) = if let Ok((ns, _)) = (multispace1::<_, ErrorTree>, tag("if")).parse(ns) {
-            let (ns, _) = multispace0(ns)?;
-            let (ns, content) = bracketed_section(ns)?;
-            let (_, condition) = parse_evaluable(content, false)?;
-            (ns, Some(condition))
-        }
-        else {
-            (ns, None)
-        };
+        let (ns, condition) =
+            if let Ok((ns, _)) = (multispace1::<_, ErrorTree>, tag("if")).parse(ns) {
+                let (ns, _) = multispace0(ns)?;
+                let (ns, content) = bracketed_section(ns)?;
+                let (_, condition) = parse_evaluable(content, false)?;
+                (ns, Some(condition))
+            } else {
+                (ns, None)
+            };
 
         let (ns, _) = multispace0(ns)?;
 
@@ -66,26 +67,32 @@ pub fn parse_if(s: Span) -> ParseResult<Span, IfToken> {
         // ? Handle else if
         if let Some(condition) = condition {
             elifs.push((condition, contents));
-        }
-        else { // ? Handle else
-            return Ok((ns, IfToken {
-                location: Location::from_span(l),
-                if_condition,
-                if_contents,
-                elif_condition_contents: elifs,
-                else_contents: Some(contents),
-            }))
+        } else {
+            // ? Handle else
+            return Ok((
+                ns,
+                IfToken {
+                    location: Location::from_span(l),
+                    if_condition,
+                    if_contents,
+                    elif_condition_contents: elifs,
+                    else_contents: Some(contents),
+                },
+            ));
         }
 
         s = ns;
     }
 
     // ? Ended without else
-    return Ok((s, IfToken {
-        location: Location::from_span(l),
-        if_condition,
-        if_contents,
-        elif_condition_contents: elifs,
-        else_contents: None,
-    }))
+    return Ok((
+        s,
+        IfToken {
+            location: Location::from_span(l),
+            if_condition,
+            if_contents,
+            elif_condition_contents: elifs,
+            else_contents: None,
+        },
+    ));
 }

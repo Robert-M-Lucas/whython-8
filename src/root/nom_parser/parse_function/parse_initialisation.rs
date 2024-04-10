@@ -1,4 +1,4 @@
-use crate::root::nom_parser::parse::{Location, ParseResult, Span, ErrorTree};
+use crate::root::nom_parser::parse::{ErrorTree, Location, ParseResult, Span};
 use crate::root::nom_parser::parse_function::parse_break::parse_break;
 use crate::root::nom_parser::parse_function::parse_evaluable::{parse_evaluable, EvaluableToken};
 use crate::root::nom_parser::parse_function::parse_line::{LineTestFn, LineTokens};
