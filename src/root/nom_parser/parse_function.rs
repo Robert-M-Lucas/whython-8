@@ -35,21 +35,21 @@ pub struct FunctionToken {
 pub fn test_parse_function<'a>(s: Span<'a>) -> ParseResult<Span, ToplevelTestFn<'a>> {
     match (tag("fn"), require_ignored).parse(s) {
         Ok(_) => Ok((s, |x| {
-            parse_function(x).map(|(s, x)| (s, TopLevelTokens::Function(x)))
+            parse_function(x, None).map(|(s, x)| (s, TopLevelTokens::Function(x)))
         })),
         Err(e) => Err(e),
     }
 }
 
-pub fn parse_function(s: Span) -> ParseResult<Span, FunctionToken> {
-    let location = Location::from_span(s);
+pub fn parse_function(s: Span, allow_self: Option<NameToken>) -> ParseResult<Span, FunctionToken> {
+    let location = Location::from_span(&s);
     let (s, _) = tag("fn").parse(s)?;
     let (s, _) = require_ignored(s)?;
     let (s, name) = parse_simple_name(s)?;
     let (s, _) = discard_ignored(s)?;
 
     let (s, contents) = default_section(s, '(')?;
-    let (_, parameters) = parse_parameters(contents)?;
+    let (_, parameters) = parse_parameters(contents, allow_self)?;
 
     let (s, _) = discard_ignored(s)?;
 

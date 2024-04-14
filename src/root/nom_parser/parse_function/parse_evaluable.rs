@@ -18,7 +18,7 @@ pub struct EvaluableToken {
 
 pub fn temp_from_token(s: Span, token: EvaluableTokens) -> TempEvaluableTokens {
     TempEvaluableTokens::EvaluableToken(EvaluableToken {
-        location: Location::from_span(s),
+        location: Location::from_span(&s),
         token,
     })
 }

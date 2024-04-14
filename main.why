@@ -1,17 +1,3 @@
 fn main() ~ int {
     printb(true);
-    printb(true);
-    printb(false);
-    printb(false);
-    printi(9223372036854775808);
-    printi(-9223372036854775807);
-    printf(1.12351234123);
-    printf(1.12351234124);
-    printf(-1.12351234123);
-
-    printb(1.12351234123 == 1.12351234124);
-    printb(1.12351234123 == 1.12351234123);
-
-
-    return 7;
 }

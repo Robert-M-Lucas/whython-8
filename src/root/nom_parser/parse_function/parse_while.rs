@@ -38,7 +38,7 @@ pub fn parse_while(s: Span) -> ParseResult<Span, WhileToken> {
     Ok((
         s,
         WhileToken {
-            location: Location::from_span(l),
+            location: Location::from_span(&l),
             condition,
             contents: lines,
         },

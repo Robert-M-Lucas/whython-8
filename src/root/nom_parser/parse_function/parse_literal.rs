@@ -25,7 +25,7 @@ pub fn parse_literal(s: Span) -> ParseResult<Span, LiteralToken> {
     ))(s)?;
 
     let l = LiteralToken {
-        location: Location::from_span(s),
+        location: Location::from_span(&s),
         literal: l,
     };
 

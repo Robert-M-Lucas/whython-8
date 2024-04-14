@@ -74,7 +74,7 @@ pub fn parse_operator(s: Span) -> ParseResult<Span, OperatorToken> {
             return Ok((
                 s,
                 OperatorToken {
-                    location: Location::from_span(x),
+                    location: Location::from_span(&x),
                     operator: token,
                 },
             ));

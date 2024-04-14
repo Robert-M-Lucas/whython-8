@@ -29,13 +29,13 @@ pub fn test_parse_struct<'a>(s: Span<'a>) -> ParseResult<Span, ToplevelTestFn<'a
 }
 
 pub fn parse_struct(s: Span) -> ParseResult<Span, StructToken> {
-    let location = Location::from_span(s);
+    let location = Location::from_span(&s);
     let (s, _) = tag("struct").parse(s)?;
     let (s, _) = require_ignored(s)?;
     let (s, name) = parse_simple_name(s)?;
     let (s, _) = discard_ignored(s)?;
     let (s, contents) = default_section(s, '{')?;
-    let (_, parameters) = parse_parameters(contents)?;
+    let (_, parameters) = parse_parameters(contents, None)?;
 
     Ok((
         s,

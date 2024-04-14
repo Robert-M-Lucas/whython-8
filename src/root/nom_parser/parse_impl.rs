@@ -5,7 +5,7 @@ use nom_supreme::tag::complete::tag;
 use crate::root::nom_parser::parse::{Location, ParseResult, Span};
 use crate::root::nom_parser::parse_blocks::default_section;
 use crate::root::nom_parser::parse_function::{parse_function, FunctionToken};
-use crate::root::nom_parser::parse_name::parse_simple_name;
+use crate::root::nom_parser::parse_name::{NameToken, parse_simple_name};
 use crate::root::nom_parser::parse_toplevel::{TopLevelTokens, ToplevelTestFn};
 use crate::root::nom_parser::parse_util::{discard_ignored, require_ignored};
 
@@ -26,7 +26,7 @@ pub fn test_parse_impl<'a>(s: Span<'a>) -> ParseResult<Span, ToplevelTestFn<'a>>
 }
 
 pub fn parse_impl(s: Span) -> ParseResult<Span, ImplToken> {
-    let location = Location::from_span(s);
+    let location = Location::from_span(&s);
     let (s, _) = tag("impl").parse(s)?;
     let (s, _) = require_ignored(s)?;
     let (s, name) = parse_simple_name(s)?;
@@ -41,7 +41,7 @@ pub fn parse_impl(s: Span) -> ParseResult<Span, ImplToken> {
         if cs.is_empty() {
             break;
         }
-        let (cs, function) = parse_function(cs)?;
+        let (cs, function) = parse_function(cs, Some(NameToken::from_simple(&name)))?;
 
         functions.push(function);
         c = cs;

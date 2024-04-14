@@ -24,7 +24,7 @@ pub struct Location {
 }
 
 impl Location {
-    pub fn from_span(span: Span) -> Location {
+    pub fn from_span(span: &Span) -> Location {
         Location {
             path: span.extra.clone(),
             offset: span.location_offset(),
@@ -38,7 +38,7 @@ pub fn parse(path: PathBuf) -> Result<(), ()> {
     let path = Rc::new(path);
     let base = Span::new_extra(&text, &path);
 
-    println!("{:?}", parse_toplevel::parse_toplevel(base));
+    println!("{:#?}", parse_toplevel::parse_toplevel(base));
 
     // parse_toplevel(Span::new_extra(&text, &path)).unwrap();
 

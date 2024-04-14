@@ -24,7 +24,7 @@ pub fn test_parse_assignment<'a>(s: Span<'a>) -> ParseResult<Span, LineTestFn<'a
 
 pub fn parse_assignment(s: Span) -> ParseResult<Span, AssignmentToken> {
     let (s, _) = discard_ignored(s)?;
-    let location = Location::from_span(s);
+    let location = Location::from_span(&s);
     let (s, n) = parse_full_name(s)?;
     let (s, _) = discard_ignored(s)?;
     let (s, a) = parse_assigner(s)?;

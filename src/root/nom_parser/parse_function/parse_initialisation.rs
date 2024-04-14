@@ -44,7 +44,7 @@ pub fn parse_initialisation(s: Span) -> ParseResult<Span, InitialisationToken> {
     Ok((
         s,
         InitialisationToken {
-            location: Location::from_span(l),
+            location: Location::from_span(&l),
             name: name.to_string(),
             type_name,
             value,

@@ -73,7 +73,7 @@ pub fn parse_if(s: Span) -> ParseResult<Span, IfToken> {
             return Ok((
                 ns,
                 IfToken {
-                    location: Location::from_span(l),
+                    location: Location::from_span(&l),
                     if_condition,
                     if_contents,
                     elif_condition_contents: elifs,
@@ -89,7 +89,7 @@ pub fn parse_if(s: Span) -> ParseResult<Span, IfToken> {
     return Ok((
         s,
         IfToken {
-            location: Location::from_span(l),
+            location: Location::from_span(&l),
             if_condition,
             if_contents,
             elif_condition_contents: elifs,

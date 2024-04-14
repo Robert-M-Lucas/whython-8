@@ -33,7 +33,7 @@ pub fn parse_assigner(s: Span) -> ParseResult<Span, AssignmentOperatorToken> {
     Ok((
         ns,
         AssignmentOperatorToken {
-            location: Location::from_span(s),
+            location: Location::from_span(&s),
             assignment_operator: a,
         },
     ))

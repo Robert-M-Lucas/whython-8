@@ -28,7 +28,7 @@ pub fn parse_break(s: Span) -> ParseResult<Span, BreakToken> {
     Ok((
         s,
         BreakToken {
-            location: Location::from_span(l),
+            location: Location::from_span(&l),
         },
     ))
 }

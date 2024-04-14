@@ -28,7 +28,7 @@ pub fn parse_return(s: Span) -> ParseResult<Span, ReturnToken> {
     Ok((
         s,
         ReturnToken {
-            location: Location::from_span(l),
+            location: Location::from_span(&l),
             return_value: value,
         },
     ))
