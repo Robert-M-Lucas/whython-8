@@ -18,7 +18,7 @@ use runner::link;
 use crate::root::runner::run_wine_experimental;
 #[cfg(target_os = "linux")]
 use runner::link_gcc_experimental;
-use crate::root::nom_parser::parse::parse;
+use crate::root::parser::parse::parse;
 
 mod assembler;
 mod ast;
@@ -26,7 +26,7 @@ mod basic_ast;
 mod compiler;
 mod custom;
 mod name_resolver;
-mod nom_parser;
+mod parser;
 mod parser;
 mod runner;
 mod utils;
