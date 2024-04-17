@@ -1,6 +1,5 @@
 use crate::root::assembler::assemble::generate_assembly;
 use crate::root::name_resolver::processor::process;
-use crate::root::parser::parse::parse;
 use crate::root::utils::AnyError;
 use crate::time;
 use clap::Parser;
@@ -19,6 +18,7 @@ use runner::link;
 use crate::root::runner::run_wine_experimental;
 #[cfg(target_os = "linux")]
 use runner::link_gcc_experimental;
+use crate::root::nom_parser::parse::parse;
 
 mod assembler;
 mod ast;
@@ -48,8 +48,7 @@ pub struct Args {
 }
 
 pub fn main() {
-    nom_parser::parse::parse(PathBuf::from("parse_test.why")).ok();
-    return;
+
 
     // assemble("build/out").unwrap();
     // link_gcc_experimental("build/out").unwrap();
@@ -70,14 +69,9 @@ pub fn main_args(args: Args) -> Result<(), AnyError> {
         }
     }
 
-    let mut asts = Vec::new();
-    let mut files_followed = Vec::new();
     print!("Parsing... ");
     time!(
-        if let Err(e) = parse(PathBuf::from(&args.input), &mut asts, &mut files_followed) {
-            cprintln!("\n<r,bold>{}</>", e);
-            return Err(e.into());
-        }
+        let parsed = parse(PathBuf::from(&args.input)).unwrap();
     );
 
     print!("Processing... ");
