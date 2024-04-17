@@ -52,7 +52,7 @@ pub fn parse_line(s: Span) -> ParseResult<Span, LineTokens> {
         test_parse_initialisation,
         test_parse_while,
         test_parse_if,
-        // test_parse_assignment,
+        test_parse_assignment,
     ))
     .parse(s)
     {

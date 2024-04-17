@@ -1,5 +1,6 @@
-use std::fs;
+use std::{fs, thread};
 use std::process::Command;
+use std::time::Duration;
 
 use color_print::cprintln;
 

@@ -38,6 +38,7 @@ enum TempEvaluableTokens {
 }
 
 pub fn parse_evaluable(s: Span, semicolon_terminated: bool) -> ParseResult<Span, EvaluableToken> {
+    assert!(!s.is_empty());
     let mut s = s;
 
     let mut evaluables = Vec::new();
@@ -87,6 +88,7 @@ pub fn parse_evaluable(s: Span, semicolon_terminated: bool) -> ParseResult<Span,
         s = ns;
     }
 
+    #[derive(Debug)]
     enum TempOperation {
         Infix(Box<TempOperation>, OperatorToken, Box<TempOperation>),
         Prefix(OperatorToken, Box<TempOperation>),

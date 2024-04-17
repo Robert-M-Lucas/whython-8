@@ -19,6 +19,11 @@ pub struct AssignmentToken {
 
 // TODO: Find good way to implement?
 pub fn test_parse_assignment<'a>(s: Span<'a>) -> ParseResult<Span, LineTestFn<'a>> {
+    let (s, _) = discard_ignored(s)?;
+    let (s, _) = parse_full_name(s)?;
+    let (s, _) = discard_ignored(s)?;
+    let (s, _) = parse_assigner(s)?;
+
     Ok((s, |x| parse_assignment(x).map(|(s, x)| (s, LineTokens::Assignment(x)))))
 }
 

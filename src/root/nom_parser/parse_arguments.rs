@@ -10,7 +10,7 @@ pub fn parse_arguments(s: Span) -> ParseResult<Span, Vec<EvaluableToken>> {
 
     loop {
         let (ns, section) = if let Ok((ns, section)) = take_until::<_, _, ErrorTree>(",")(s) {
-            (ns, section)
+            (ns.take_split(1).0, section)
         }
         else {
             last = true;
