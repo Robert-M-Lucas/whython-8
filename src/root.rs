@@ -21,12 +21,7 @@ use runner::link_gcc_experimental;
 use crate::root::parser::parse::parse;
 
 mod assembler;
-mod ast;
-mod basic_ast;
-mod compiler;
 mod custom;
-mod name_resolver;
-mod parser;
 mod parser;
 mod runner;
 mod utils;
@@ -74,16 +69,7 @@ pub fn main_args(args: Args) -> Result<(), AnyError> {
         let parsed = parse(PathBuf::from(&args.input)).unwrap();
     );
 
-    print!("Processing... ");
-    time!(
-        let functions = match process(asts) {
-            Err(e) => {
-                cprintln!("\n<r,bold>{}</>", e);
-                return Err(e.into());
-            }
-            Ok(functions) => functions
-        };
-    );
+
 
     print!("Compiling... ");
     time!(generate_assembly(&args.output, functions););
