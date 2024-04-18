@@ -9,7 +9,6 @@ use crate::root::custom::types::bool::Bool;
 use crate::root::custom::types::float::Float;
 use crate::root::custom::types::int::Int;
 use crate::root::name_resolver::type_builder::TypedFunction;
-use crate::root::parser::line_info::LineInfo;
 
 pub fn add_function_signatures(existing: &mut Vec<(Option<isize>, Box<dyn TypedFunction>)>) {
     let signatures: [(Option<isize>, Box<dyn TypedFunction>); 3] = [

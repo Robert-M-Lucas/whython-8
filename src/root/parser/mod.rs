@@ -8,6 +8,6 @@ mod parse_impl;
 mod parse_name;
 mod parse_parameters;
 mod parse_struct;
-mod parse_toplevel;
+pub mod parse_toplevel;
 mod parse_util;
 mod soft_alt;

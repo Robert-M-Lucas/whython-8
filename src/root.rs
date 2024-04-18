@@ -1,30 +1,30 @@
-use crate::root::assembler::assemble::generate_assembly;
-use crate::root::name_resolver::processor::process;
+// use crate::root::assembler::assemble::generate_assembly;
+// use crate::root::name_resolver::processor::process;
 use crate::root::utils::AnyError;
 use crate::time;
 use clap::Parser;
 use color_print::cprintln;
-use runner::assemble;
 use std::fs;
 use std::io::ErrorKind;
 use std::path::PathBuf;
 
-#[cfg(target_os = "windows")]
-use crate::root::runner::run;
-#[cfg(target_os = "windows")]
-use runner::link;
-
-#[cfg(target_os = "linux")]
-use crate::root::runner::run_wine_experimental;
-#[cfg(target_os = "linux")]
-use runner::link_gcc_experimental;
-use crate::root::parser::parse::parse;
+// #[cfg(target_os = "windows")]
+// use crate::root::runner::run;
+// #[cfg(target_os = "windows")]
+// use runner::link;
+//
+// #[cfg(target_os = "linux")]
+// use crate::root::runner::run_wine_experimental;
+// #[cfg(target_os = "linux")]
+// use runner::link_gcc_experimental;
+// use crate::root::parser::parse::parse;
 
 mod assembler;
 mod custom;
 mod parser;
 mod runner;
 mod utils;
+mod name_resolver;
 
 /// Compiler for Whython files (.why)
 #[derive(Parser)]
@@ -70,48 +70,47 @@ pub fn main_args(args: Args) -> Result<(), AnyError> {
     );
 
 
+    // print!("Compiling... ");
+    // time!(generate_assembly(&args.output, functions););
+    //
+    // print!("Assembling (NASM)... ");
+    // time!(if assemble(&args.output).is_err() {
+    //     return Err(AnyError::Other);
+    // });
 
-    print!("Compiling... ");
-    time!(generate_assembly(&args.output, functions););
-
-    print!("Assembling (NASM)... ");
-    time!(if assemble(&args.output).is_err() {
-        return Err(AnyError::Other);
-    });
-
-    #[cfg(target_os = "windows")]
-    {
-        println!("Linking (MSVC - link.exe)... ");
-        time!(if link(&args.output).is_err() {
-            return Err(AnyError::Other);
-        });
-        if args.build {
-            println!("Skipping execution")
-        } else {
-            println!("Executing... ");
-            run(&args.output);
-        }
-    }
-    #[cfg(target_os = "linux")]
-    {
-        cprintln!("<yellow,bold>Compilation and execution on Linux may be buggy!</>");
-        println!("Linking (gcc)... ");
-        time!(
-            let res = link_gcc_experimental(&args.output);
-            if res.is_err() {
-                return Err(AnyError::Other);
-            }
-        );
-
-        if args.build {
-            println!("Skipping execution")
-        } else {
-            println!("Executing (wine)... ");
-            if run_wine_experimental(&args.output).is_err() {
-                return Err(AnyError::Other);
-            }
-        }
-    }
+    // #[cfg(target_os = "windows")]
+    // {
+    //     println!("Linking (MSVC - link.exe)... ");
+    //     time!(if link(&args.output).is_err() {
+    //         return Err(AnyError::Other);
+    //     });
+    //     if args.build {
+    //         println!("Skipping execution")
+    //     } else {
+    //         println!("Executing... ");
+    //         run(&args.output);
+    //     }
+    // }
+    // #[cfg(target_os = "linux")]
+    // {
+    //     cprintln!("<yellow,bold>Compilation and execution on Linux may be buggy!</>");
+    //     println!("Linking (gcc)... ");
+    //     time!(
+    //         let res = link_gcc_experimental(&args.output);
+    //         if res.is_err() {
+    //             return Err(AnyError::Other);
+    //         }
+    //     );
+    //
+    //     if args.build {
+    //         println!("Skipping execution")
+    //     } else {
+    //         println!("Executing (wine)... ");
+    //         if run_wine_experimental(&args.output).is_err() {
+    //             return Err(AnyError::Other);
+    //         }
+    //     }
+    // }
 
     cprintln!("<g,bold>Done!</>");
     Ok(())
