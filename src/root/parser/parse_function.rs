@@ -1,3 +1,4 @@
+use derive_getters::Getters;
 use nom::sequence::Tuple;
 use nom::Parser;
 use nom_supreme::tag::complete::tag;
@@ -23,7 +24,7 @@ mod parse_operator;
 mod parse_return;
 mod parse_while;
 
-#[derive(Debug)]
+#[derive(Debug, Getters)]
 pub struct FunctionToken {
     location: Location,
     name: String,

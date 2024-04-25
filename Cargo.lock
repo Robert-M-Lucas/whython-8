@@ -3,17 +3,6 @@
 version = 3
 
 [[package]]
-name = "accessors-rs"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1cf100db746f59122e97eb1123e2bb56ddca630ea7095ff8fbe43033d4903a64"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 1.0.109",
-]
-
-[[package]]
 name = "anstream"
 version = "0.6.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -160,6 +149,17 @@ name = "colorchoice"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "acbf1af155f9b9ef647e42cdc158db4b64a1b61f743629225fde6f3e0be2a7c7"
+
+[[package]]
+name = "derive-getters"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7a2c35ab6e03642397cdda1dd58abbc05d418aef8e36297f336d5aba060fe8df"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 1.0.109",
+]
 
 [[package]]
 name = "either"
@@ -423,10 +423,10 @@ dependencies = [
 name = "whython-7"
 version = "0.1.0"
 dependencies = [
- "accessors-rs",
  "b-box",
  "clap",
  "color-print",
+ "derive-getters",
  "either",
  "itertools",
  "lazy_static",

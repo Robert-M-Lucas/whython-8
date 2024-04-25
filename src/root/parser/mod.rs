@@ -3,7 +3,7 @@ mod parse_arguments;
 mod parse_blocks;
 mod parse_comments;
 mod parse_error;
-mod parse_function;
+pub mod parse_function;
 mod parse_impl;
 mod parse_name;
 mod parse_parameters;

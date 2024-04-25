@@ -2,6 +2,7 @@ use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
 use crate::root::parser::parse_name::{parse_simple_name, NameToken};
 use crate::root::parser::parse_parameters::{parse_parameters, Parameters};
 use crate::root::parser::parse_toplevel::{TopLevelTokens, ToplevelTestFn};
+use derive_getters::{Dissolve, Getters};
 use nom::character::complete::{ satisfy};
 use nom::sequence::Tuple;
 use nom::Err::Error;
@@ -12,7 +13,7 @@ use substring::Substring;
 use crate::root::parser::parse_blocks::default_section;
 use crate::root::parser::parse_util::{discard_ignored, require_ignored};
 
-#[derive(Debug)]
+#[derive(Debug, Getters, Dissolve)]
 pub struct StructToken {
     location: Location,
     name: String,

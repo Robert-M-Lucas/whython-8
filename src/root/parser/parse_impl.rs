@@ -1,3 +1,4 @@
+use derive_getters::{Dissolve, Getters};
 use nom::sequence::Tuple;
 use nom::Parser;
 use nom_supreme::tag::complete::tag;
@@ -9,12 +10,13 @@ use crate::root::parser::parse_name::{NameToken, parse_simple_name};
 use crate::root::parser::parse_toplevel::{TopLevelTokens, ToplevelTestFn};
 use crate::root::parser::parse_util::{discard_ignored, require_ignored};
 
-#[derive(Debug)]
+#[derive(Debug, Getters, Dissolve)]
 pub struct ImplToken {
     location: Location,
     name: String,
     functions: Vec<FunctionToken>,
 }
+
 
 pub fn test_parse_impl<'a>(s: Span<'a>) -> ParseResult<Span, ToplevelTestFn<'a>> {
     match (tag("impl"), require_ignored).parse(s) {

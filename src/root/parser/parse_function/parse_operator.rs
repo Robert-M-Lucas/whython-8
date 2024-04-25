@@ -1,5 +1,5 @@
 use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
-use accessors_rs::Accessors;
+use derive_getters::Getters;
 use nom::error::{ErrorKind, ParseError};
 use nom::Err::Error;
 use nom::Parser;
@@ -33,9 +33,8 @@ pub fn get_priority(operator: &OperatorTokens) -> usize {
     panic!()
 }
 
-#[derive(Debug, Clone, Accessors)]
+#[derive(Debug, Clone, Getters)]
 pub struct OperatorToken {
-    #[accessors(get)]
     location: Location,
     operator: OperatorTokens,
 }
