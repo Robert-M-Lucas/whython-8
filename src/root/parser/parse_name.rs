@@ -1,5 +1,6 @@
 use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
 use crate::root::parser::parse_function::parse_evaluable::EvaluableToken;
+use derive_getters::Dissolve;
 use nom::bytes::complete::take_till;
 use nom::Err::Error;
 use nom::InputTake;
@@ -9,12 +10,12 @@ use crate::root::parser::parse_blocks::{default_section, section};
 use crate::root::parser::parse_util::discard_ignored;
 
 #[derive(Debug)]
-enum NameConnectors {
+pub enum NameConnectors {
     NonStatic,
     Static,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Dissolve)]
 pub struct NameToken {
     location: Location,
     base: String,
@@ -34,7 +35,7 @@ impl NameToken {
 }
 
 pub fn parse_full_name(s: Span) -> ParseResult<Span, NameToken> {
-    // TODO: Handle function calls
+    // TODO: Handle indirection
 
     let (s, _) = discard_ignored(s)?;
 

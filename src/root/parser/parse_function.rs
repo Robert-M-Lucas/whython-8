@@ -12,17 +12,17 @@ use crate::root::parser::parse_parameters::{parse_parameters, Parameters};
 use crate::root::parser::parse_toplevel::{TopLevelTokens, ToplevelTestFn};
 use crate::root::parser::parse_util::{discard_ignored, require_ignored};
 
-mod parse_assigner;
-mod parse_assignment;
-mod parse_break;
-pub(crate) mod parse_evaluable;
-mod parse_if;
-mod parse_initialisation;
-mod parse_line;
-mod parse_literal;
-mod parse_operator;
-mod parse_return;
-mod parse_while;
+pub mod parse_assigner;
+pub mod parse_assignment;
+pub mod parse_break;
+pub mod parse_evaluable;
+pub mod parse_if;
+pub mod parse_initialisation;
+pub mod parse_line;
+pub mod parse_literal;
+pub mod parse_operator;
+pub mod parse_return;
+pub mod parse_while;
 
 #[derive(Debug, Getters)]
 pub struct FunctionToken {

@@ -420,7 +420,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "whython-7"
+name = "whython-8"
 version = "0.1.0"
 dependencies = [
  "b-box",

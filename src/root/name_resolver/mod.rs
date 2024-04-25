@@ -1,1 +1,1 @@
-mod resolve;
+pub mod resolve;

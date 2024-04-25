@@ -1,6 +1,7 @@
+use crate::root::name_resolver::resolve::resolve_names;
+use crate::root::parser::parse::parse;
 // use crate::root::assembler::assemble::generate_assembly;
 // use crate::root::name_resolver::processor::process;
-use crate::root::utils::AnyError;
 use crate::time;
 use clap::Parser;
 use color_print::cprintln;
@@ -19,12 +20,12 @@ use std::path::PathBuf;
 // use runner::link_gcc_experimental;
 // use crate::root::parser::parse::parse;
 
-mod assembler;
-mod custom;
-mod parser;
-mod runner;
-mod utils;
-mod name_resolver;
+pub mod parser;
+pub mod runner;
+pub mod utils;
+pub mod name_resolver;
+
+pub const POINTER_SIZE: usize = 8;
 
 /// Compiler for Whython files (.why)
 #[derive(Parser)]
@@ -54,12 +55,12 @@ pub fn main() {
     let _ = main_args(args);
 }
 
-pub fn main_args(args: Args) -> Result<(), AnyError> {
+pub fn main_args(args: Args) {
     if let Some(path) = PathBuf::from(&args.output).parent() {
         if let Err(e) = fs::create_dir_all(path) {
             if !matches!(e.kind(), ErrorKind::AlreadyExists) {
                 cprintln!("<r,bold>Failed to create directories for output files</>");
-                return Err(AnyError::Other);
+                panic!();
             }
         }
     }
@@ -68,6 +69,8 @@ pub fn main_args(args: Args) -> Result<(), AnyError> {
     time!(
         let parsed = parse(PathBuf::from(&args.input)).unwrap();
     );
+
+    resolve_names(parsed);
 
 
     // print!("Compiling... ");
@@ -113,5 +116,4 @@ pub fn main_args(args: Args) -> Result<(), AnyError> {
     // }
 
     cprintln!("<g,bold>Done!</>");
-    Ok(())
 }
