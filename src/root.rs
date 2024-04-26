@@ -1,4 +1,4 @@
-use crate::root::name_resolver::resolve::resolve_names;
+use name_resolver::resolve_names::resolve_names;
 use crate::root::parser::parse::parse;
 // use crate::root::assembler::assemble::generate_assembly;
 // use crate::root::name_resolver::processor::process;
@@ -8,6 +8,7 @@ use color_print::cprintln;
 use std::fs;
 use std::io::ErrorKind;
 use std::path::PathBuf;
+use crate::root::name_resolver::resolve::resolve;
 
 // #[cfg(target_os = "windows")]
 // use crate::root::runner::run;
@@ -70,7 +71,7 @@ pub fn main_args(args: Args) {
         let parsed = parse(PathBuf::from(&args.input)).unwrap();
     );
 
-    resolve_names(parsed);
+    resolve(parsed);
 
 
     // print!("Compiling... ");
