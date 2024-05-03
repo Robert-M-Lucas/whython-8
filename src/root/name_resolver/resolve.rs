@@ -1,13 +1,8 @@
-use std::collections::HashMap;
-use derive_getters::{Dissolve, Getters};
-use crate::root::name_resolver::resolve_function_contents::resolve_function_contents;
-use crate::root::name_resolver::resolve_names::{resolve_names, UserType};
-use crate::root::parser::parse_name::NameToken;
-use crate::root::parser::parse::Location;
-use crate::root::parser::parse_function::FunctionToken;
+use derive_getters::Getters;
+use crate::root::name_resolver::resolve_names::resolve_names;
 use crate::root::parser::parse_toplevel::TopLevelTokens;
 
-#[derive(Getters)]
+#[derive(Getters, Clone)]
 pub struct TypeRef {
     type_id: isize,
     indirection: usize
@@ -19,14 +14,23 @@ impl TypeRef {
     }
 }
 
+#[derive(Getters, Clone)]
+pub struct AddressedTypeRef {
+    local_address: isize,
+    type_ref: TypeRef
+}
 
-struct Function {
+impl AddressedTypeRef {
+    pub fn new(local_address: isize, type_ref: TypeRef) -> AddressedTypeRef {
+        AddressedTypeRef { local_address, type_ref }
+    }
+}
+
+pub struct FunctionSignature {
     id: isize,
     args: Vec<isize>
 }
 
 pub fn resolve(ast: Vec<TopLevelTokens>) {
     let (sized_types, type_names, unprocessed_functions) = resolve_names(ast);
-
-    resolve_function_contents(sized_types, type_names, unprocessed_functions);
 }

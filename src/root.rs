@@ -25,6 +25,7 @@ pub mod parser;
 pub mod runner;
 pub mod utils;
 pub mod name_resolver;
+pub mod builtin;
 
 pub const POINTER_SIZE: usize = 8;
 

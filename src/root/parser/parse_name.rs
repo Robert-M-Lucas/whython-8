@@ -1,6 +1,6 @@
 use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
 use crate::root::parser::parse_function::parse_evaluable::EvaluableToken;
-use derive_getters::Dissolve;
+use derive_getters::{Dissolve, Getters};
 use nom::bytes::complete::take_till;
 use nom::Err::Error;
 use nom::InputTake;
@@ -15,7 +15,7 @@ pub enum NameConnectors {
     Static,
 }
 
-#[derive(Debug, Dissolve)]
+#[derive(Debug, Dissolve, Getters)]
 pub struct NameToken {
     location: Location,
     base: String,
