@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+use std::rc::Rc;
 use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
 use crate::root::parser::parse_function::parse_evaluable::EvaluableToken;
 use derive_getters::{Dissolve, Getters};
@@ -16,17 +18,28 @@ pub enum NameConnectors {
 }
 
 #[derive(Debug, Dissolve, Getters)]
-pub struct NameToken {
+pub struct UnresolvedNameToken {
     location: Location,
+    file_location: Rc<PathBuf>,
+    containing_class: Option<String>,
+    indirection: usize,
     base: String,
     names: Vec<(NameConnectors, String)>,
     function_call: Option<Vec<EvaluableToken>>,
 }
 
-impl NameToken {
-    pub fn from_simple(s: &Span) -> NameToken {
-        NameToken {
-            location: Location::from_span(s),
+impl UnresolvedNameToken {
+    pub fn new_unresolved(
+        s: &Span,
+        containing_class: Option<String>,
+    ) -> UnresolvedNameToken {
+        let location = Location::from_span(s);
+        let file_location = location.path().clone();
+        UnresolvedNameToken {
+            location,
+            file_location,
+            containing_class,
+            indirection: 0,
             base: s.to_string(),
             names: Vec::new(),
             function_call: None
@@ -34,7 +47,7 @@ impl NameToken {
     }
 }
 
-pub fn parse_full_name(s: Span) -> ParseResult<Span, NameToken> {
+pub fn parse_full_name(s: Span, containing_class: Option<String>) -> ParseResult<Span, UnresolvedNameToken> {
     // TODO: Handle indirection
 
     let (s, _) = discard_ignored(s)?;
@@ -47,7 +60,7 @@ pub fn parse_full_name(s: Span) -> ParseResult<Span, NameToken> {
     let mut function_call = None;
 
     if let Ok((ns, contents)) = default_section(s, '(') {
-        function_call = Some(parse_arguments(contents)?.1);
+        function_call = Some(parse_arguments(contents, containing_class.as_ref().and_then(|s| Some(s.as_str())))?.1);
         s = ns;
     }
     else {
@@ -77,7 +90,7 @@ pub fn parse_full_name(s: Span) -> ParseResult<Span, NameToken> {
             names.push((connector, name.to_string()));
 
             if let Ok((ns, contents)) = default_section(ns, '(') {
-                function_call = Some(parse_arguments(contents)?.1);
+                function_call = Some(parse_arguments(contents, containing_class.as_ref().and_then(|s| Some(s.as_str())))?.1);
                 s = ns;
                 break;
             }
@@ -86,10 +99,15 @@ pub fn parse_full_name(s: Span) -> ParseResult<Span, NameToken> {
         }
     }
 
+    let file_location = location.path().clone();
+
     Ok((
         s,
-        NameToken {
+        UnresolvedNameToken {
             location,
+            file_location,
+            containing_class,
+            indirection: 0, // TODO
             base: base_name.to_string(),
             names,
             function_call,

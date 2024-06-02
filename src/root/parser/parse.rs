@@ -5,6 +5,7 @@ use nom_supreme::error::GenericErrorTree;
 use std::fs;
 use std::path::PathBuf;
 use std::rc::Rc;
+use derive_getters::Getters;
 use crate::root::parser::parse_toplevel::TopLevelTokens;
 
 pub type Span<'a> = LocatedSpan<&'a str, &'a Rc<PathBuf>>;
@@ -17,7 +18,7 @@ pub type ErrorTree<'a> = GenericErrorTree<
     Box<dyn std::error::Error + Send + Sync + 'static>,
 >;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Getters)]
 pub struct Location {
     path: Rc<PathBuf>,
     offset: usize,

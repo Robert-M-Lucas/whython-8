@@ -3,7 +3,7 @@ use crate::root::parser::parse_function::parse_literal::{
     parse_literal, LiteralToken, LiteralTokens,
 };
 use crate::root::parser::parse_function::parse_operator::{parse_operator, OperatorToken};
-use crate::root::parser::parse_name::{parse_full_name, NameToken};
+use crate::root::parser::parse_name::{parse_full_name, UnresolvedNameToken};
 use b_box::b;
 use nom::branch::alt;
 use nom::character::complete::{char};
@@ -25,7 +25,7 @@ pub fn temp_from_token(s: Span, token: EvaluableTokens) -> TempEvaluableTokens {
 
 #[derive(Debug)]
 enum EvaluableTokens {
-    Name(NameToken),
+    Name(UnresolvedNameToken),
     Literal(LiteralToken),
     InfixOperator(Box<EvaluableToken>, OperatorToken, Box<EvaluableToken>),
     PrefixOperator(OperatorToken, Box<EvaluableToken>),
@@ -37,7 +37,7 @@ enum TempEvaluableTokens {
     Operator(OperatorToken),
 }
 
-pub fn parse_evaluable(s: Span, semicolon_terminated: bool) -> ParseResult<Span, EvaluableToken> {
+pub fn parse_evaluable<'a, 'b>(s: Span<'a>, containing_class: Option<&'b str>, semicolon_terminated: bool) -> ParseResult<'a, Span<'a>, EvaluableToken> {
     assert!(!s.is_empty());
     let mut s = s;
 
@@ -66,7 +66,7 @@ pub fn parse_evaluable(s: Span, semicolon_terminated: bool) -> ParseResult<Span,
         }
 
         let ns = if let Ok((ns, _)) = default_section(s, '(') {
-            let (ns, evaluable) = parse_evaluable(ns, false)?;
+            let (ns, evaluable) = parse_evaluable(ns, containing_class.clone(), false)?;
             evaluables.push(TempEvaluableTokens::EvaluableToken(evaluable));
             ns
         } else {
@@ -77,7 +77,7 @@ pub fn parse_evaluable(s: Span, semicolon_terminated: bool) -> ParseResult<Span,
                 },
                 |x| parse_operator(x).map(|(s, t)| (s, TempEvaluableTokens::Operator(t))),
                 |x| {
-                    parse_full_name(x)
+                    parse_full_name(x, containing_class.and_then(|s| Some(s.to_string())))
                         .map(|(s, t)| (s, temp_from_token(s, EvaluableTokens::Name(t))))
                 },
             ))(ns)?;

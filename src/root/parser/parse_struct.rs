@@ -1,5 +1,5 @@
 use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
-use crate::root::parser::parse_name::{parse_simple_name, NameToken};
+use crate::root::parser::parse_name::{parse_simple_name, UnresolvedNameToken};
 use crate::root::parser::parse_parameters::{parse_parameters, Parameters};
 use crate::root::parser::parse_toplevel::{TopLevelTokens, ToplevelTestFn};
 use derive_getters::{Dissolve, Getters};

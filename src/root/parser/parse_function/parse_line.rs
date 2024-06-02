@@ -24,9 +24,10 @@ pub enum LineTokens {
     NoOp(EvaluableToken),
 }
 
-pub type LineTestFn<'a> = fn(Span<'a>) -> ParseResult<Span<'a>, LineTokens>;
+/// fn(line span, Option<class name>)
+pub type LineTestFn<'a, 'b> = fn(Span<'a>, Option<&'b str>) -> ParseResult<'a, Span<'a>, LineTokens>;
 
-pub fn parse_lines(contents: Span) -> ParseResult<(), Vec<LineTokens>> {
+pub fn parse_lines<'a, 'b>(contents: Span<'a>, containing_class: Option<&'b str>) -> ParseResult<'a, (), Vec<LineTokens>> {
     let mut lines = Vec::new();
 
     let mut c = contents;
@@ -36,7 +37,7 @@ pub fn parse_lines(contents: Span) -> ParseResult<(), Vec<LineTokens>> {
             break;
         }
 
-        let (cs, function) = parse_line(cs)?;
+        let (cs, function) = parse_line(cs, containing_class)?;
 
         lines.push(function);
         c = cs;
@@ -45,7 +46,7 @@ pub fn parse_lines(contents: Span) -> ParseResult<(), Vec<LineTokens>> {
     Ok(((), lines))
 }
 
-pub fn parse_line(s: Span) -> ParseResult<Span, LineTokens> {
+pub fn parse_line<'a, 'b>(s: Span<'a>, containing_class: Option<&'b str>) -> ParseResult<'a, Span<'a>, LineTokens> {
     if let Ok((_, parser)) = alt((
         test_parse_break,
         test_parse_return,
@@ -56,9 +57,9 @@ pub fn parse_line(s: Span) -> ParseResult<Span, LineTokens> {
     ))
     .parse(s)
     {
-        parser(s)
+        parser(s, containing_class)
     } else {
         // ? Default case is evaluable
-        parse_evaluable(s, true).map(|(s, e)| (s, LineTokens::NoOp(e)))
+        parse_evaluable(s, containing_class, true).map(|(s, e)| (s, LineTokens::NoOp(e)))
     }
 }

@@ -6,7 +6,7 @@ use nom_supreme::tag::complete::tag;
 use crate::root::parser::parse::{Location, ParseResult, Span};
 use crate::root::parser::parse_blocks::default_section;
 use crate::root::parser::parse_function::{parse_function, FunctionToken};
-use crate::root::parser::parse_name::{NameToken, parse_simple_name};
+use crate::root::parser::parse_name::{UnresolvedNameToken, parse_simple_name};
 use crate::root::parser::parse_toplevel::{TopLevelTokens, ToplevelTestFn};
 use crate::root::parser::parse_util::{discard_ignored, require_ignored};
 
@@ -43,7 +43,13 @@ pub fn parse_impl(s: Span) -> ParseResult<Span, ImplToken> {
         if cs.is_empty() {
             break;
         }
-        let (cs, function) = parse_function(cs, Some(NameToken::from_simple(&name)))?;
+
+        let (cs, function) = parse_function(
+            cs,
+            // ? Pass class name (type) to function in case needed for self
+            // ? Pass containing class as null as class does not contain itself
+            Some(UnresolvedNameToken::new_unresolved(&name, None))
+        )?;
 
         functions.push(function);
         c = cs;

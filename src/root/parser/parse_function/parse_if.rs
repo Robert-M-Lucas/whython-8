@@ -17,21 +17,21 @@ pub struct IfToken {
     else_contents: Option<Vec<LineTokens>>,
 }
 
-pub fn test_parse_if<'a>(s: Span<'a>) -> ParseResult<Span, LineTestFn<'a>> {
+pub fn test_parse_if<'a, 'b>(s: Span<'a>) -> ParseResult<Span, LineTestFn<'a, 'b>> {
     match tag("if")(s) {
-        Ok(_) => Ok((s, |x| parse_if(x).map(|(s, x)| (s, LineTokens::If(x))))),
+        Ok(_) => Ok((s, |x, c| parse_if(x, c).map(|(s, x)| (s, LineTokens::If(x))))),
         Err(e) => Err(e),
     }
 }
 
-pub fn parse_if(s: Span) -> ParseResult<Span, IfToken> {
+pub fn parse_if<'a, 'b>(s: Span<'a>, containing_class: Option<&'b str>) -> ParseResult<'a, Span<'a>, IfToken> {
     let (s, l) = tag("if")(s)?;
     let (s, _) = discard_ignored(s)?;
     let (s, content) = default_section(s, '(')?;
-    let (_, if_condition) = parse_evaluable(content, false)?;
+    let (_, if_condition) = parse_evaluable(content, containing_class,false)?;
     let (s, _) = discard_ignored(s)?;
     let (s, contents) = default_section(s, '{')?;
-    let (_, if_contents) = parse_lines(contents)?;
+    let (_, if_contents) = parse_lines(contents, containing_class)?;
 
     let mut elifs = Vec::new();
     let mut s = s;
@@ -54,7 +54,7 @@ pub fn parse_if(s: Span) -> ParseResult<Span, IfToken> {
             if let Ok((ns, _)) = (require_ignored, tag("if")).parse(ns) {
                 let (ns, _) = discard_ignored(ns)?;
                 let (ns, content) = default_section(ns, '(')?;
-                let (_, condition) = parse_evaluable(content, false)?;
+                let (_, condition) = parse_evaluable(content, containing_class, false)?;
                 (ns, Some(condition))
             } else {
                 (ns, None)
@@ -63,7 +63,7 @@ pub fn parse_if(s: Span) -> ParseResult<Span, IfToken> {
         let (ns, _) = discard_ignored(ns)?;
 
         let (ns, contents) = default_section(ns, '{')?;
-        let (_, contents) = parse_lines(contents)?;
+        let (_, contents) = parse_lines(contents, containing_class)?;
 
         // ? Handle else if
         if let Some(condition) = condition {

@@ -6,7 +6,7 @@ use crate::root::name_resolver::resolve::TypeRef;
 use crate::root::name_resolver::resolve_type_sizes::{resolve_type_sizes, UnsizedUserType};
 use crate::root::parser::parse::Location;
 use crate::root::parser::parse_function::FunctionToken;
-use crate::root::parser::parse_name::NameToken;
+use crate::root::parser::parse_name::UnresolvedNameToken;
 use crate::root::parser::parse_toplevel::TopLevelTokens;
 
 #[derive(Hash)]
@@ -19,8 +19,8 @@ impl TypeName {
         TypeName { name }
     }
 
-    pub fn from_name_token(name: NameToken) -> TypeName {
-        TypeName { name: name.dissolve().1 }
+    pub fn from_name_token(name: UnresolvedNameToken) -> TypeName {
+        TypeName { name: name.dissolve().4 }
     }
 }
 
@@ -34,6 +34,8 @@ impl Eq for TypeName {}
 
 pub trait Type {}
 
+
+/// A whython-code-defined type
 #[derive(Getters)]
 pub struct UserType {
     id: isize,

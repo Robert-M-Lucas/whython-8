@@ -7,7 +7,26 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Changes" />
+    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Changes">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/resolve_names.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/resolve_names.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_arguments.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_arguments.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_assignment.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_assignment.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_break.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_break.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_evaluable.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_evaluable.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_if.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_if.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_initialisation.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_initialisation.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_line.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_line.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_return.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_return.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_while.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_while.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_impl.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_impl.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_name.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_name.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_parameters.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_parameters.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_struct.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_struct.rs" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -23,21 +42,21 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "Robert-M-Lucas"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Robert-M-Lucas&quot;
   }
-}]]></component>
+}</component>
   <component name="GitToolBoxStore">
     <option name="projectConfigVersion" value="5" />
   </component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/Robert-M-Lucas/whython-8",
-    "accountId": "dcb8df19-0b39-47e1-9073-4a54f7034be8"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Robert-M-Lucas/whython-8.git&quot;,
+    &quot;accountId&quot;: &quot;dcb8df19-0b39-47e1-9073-4a54f7034be8&quot;
   }
-}]]></component>
+}</component>
   <component name="MacroExpansionManager">
     <option name="directoryName" value="u41t3cql" />
   </component>
@@ -121,6 +140,8 @@
       <workItem from="1714088146134" duration="1644000" />
       <workItem from="1714146213417" duration="17000" />
       <workItem from="1714715008037" duration="595000" />
+      <workItem from="1717343732407" duration="809000" />
+      <workItem from="1717345545230" duration="3705000" />
     </task>
     <task id="LOCAL-00001" summary="Changes">
       <option name="closed" value="true" />

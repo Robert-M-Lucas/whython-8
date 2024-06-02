@@ -12,19 +12,19 @@ pub struct ReturnToken {
     return_value: EvaluableToken,
 }
 
-pub fn test_parse_return<'a>(s: Span<'a>) -> ParseResult<Span, LineTestFn<'a>> {
+pub fn test_parse_return<'a, 'b>(s: Span<'a>) -> ParseResult<Span, LineTestFn<'a, 'b>> {
     match (tag("return"), require_ignored).parse(s) {
-        Ok(_) => Ok((s, |x| {
-            parse_return(x).map(|(s, x)| (s, LineTokens::Return(x)))
+        Ok(_) => Ok((s, |x, c| {
+            parse_return(x, c).map(|(s, x)| (s, LineTokens::Return(x)))
         })),
         Err(e) => Err(e),
     }
 }
 
-pub fn parse_return(s: Span) -> ParseResult<Span, ReturnToken> {
+pub fn parse_return<'a, 'b>(s: Span<'a>, containing_class: Option<&'b str>) -> ParseResult<'a, Span<'a>, ReturnToken> {
     let (s, l) = tag("return")(s)?;
     let (s, _) = require_ignored(s)?;
-    let (s, value) = parse_evaluable(s, true)?;
+    let (s, value) = parse_evaluable(s, containing_class, true)?;
     Ok((
         s,
         ReturnToken {

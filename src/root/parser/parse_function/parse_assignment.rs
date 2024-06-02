@@ -6,35 +6,35 @@ use crate::root::parser::parse_function::parse_assigner::{AssignmentOperatorToke
 use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, parse_evaluable};
 use crate::root::parser::parse_function::parse_initialisation::parse_initialisation;
 use crate::root::parser::parse_function::parse_line::{LineTestFn, LineTokens};
-use crate::root::parser::parse_name::{NameToken, parse_full_name};
+use crate::root::parser::parse_name::{UnresolvedNameToken, parse_full_name};
 use crate::root::parser::parse_util::discard_ignored;
 
 #[derive(Debug)]
 pub struct AssignmentToken {
     location: Location,
-    name: NameToken,
+    name: UnresolvedNameToken,
     assignment_operator: AssignmentOperatorToken,
     value: EvaluableToken,
 }
 
 // TODO: Find good way to implement?
-pub fn test_parse_assignment<'a>(s: Span<'a>) -> ParseResult<Span, LineTestFn<'a>> {
+pub fn test_parse_assignment<'a, 'b>(s: Span<'a>) -> ParseResult<'a, Span<'a>, LineTestFn<'a, 'b>> {
     let (s, _) = discard_ignored(s)?;
-    let (s, _) = parse_full_name(s)?;
+    let (s, _) = parse_full_name(s, None)?;
     let (s, _) = discard_ignored(s)?;
     let (s, _) = parse_assigner(s)?;
 
-    Ok((s, |x| parse_assignment(x).map(|(s, x)| (s, LineTokens::Assignment(x)))))
+    Ok((s, |x, c| parse_assignment(x, c).map(|(s, x)| (s, LineTokens::Assignment(x)))))
 }
 
-pub fn parse_assignment(s: Span) -> ParseResult<Span, AssignmentToken> {
+pub fn parse_assignment<'a, 'b>(s: Span<'a>, containing_class: Option<&'b str>) -> ParseResult<'a, Span<'a>, AssignmentToken> {
     let (s, _) = discard_ignored(s)?;
     let location = Location::from_span(&s);
-    let (s, n) = parse_full_name(s)?;
+    let (s, n) = parse_full_name(s, containing_class.and_then(|s| Some(s.to_string())))?;
     let (s, _) = discard_ignored(s)?;
     let (s, a) = parse_assigner(s)?;
     let (s, _) = discard_ignored(s)?;
-    let (s, e) = parse_evaluable(s, true)?;
+    let (s, e) = parse_evaluable(s, containing_class, true)?;
     Ok((s, AssignmentToken {
         location,
         name: n,

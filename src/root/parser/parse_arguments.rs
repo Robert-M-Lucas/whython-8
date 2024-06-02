@@ -3,7 +3,7 @@ use nom::InputTake;
 use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
 use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, parse_evaluable};
 
-pub fn parse_arguments(s: Span) -> ParseResult<Span, Vec<EvaluableToken>> {
+pub fn parse_arguments<'a, 'b>(s: Span<'a>, containing_class: Option<&'b str>) -> ParseResult<'a, Span<'a>, Vec<EvaluableToken>> {
     let mut s = s;
     let mut args = Vec::new();
     let mut last = false;
@@ -17,7 +17,7 @@ pub fn parse_arguments(s: Span) -> ParseResult<Span, Vec<EvaluableToken>> {
             s.take_split(s.len())
         };
 
-        args.push(parse_evaluable(section, false)?.1);
+        args.push(parse_evaluable(section, containing_class, false)?.1);
 
         s = ns;
         if last {

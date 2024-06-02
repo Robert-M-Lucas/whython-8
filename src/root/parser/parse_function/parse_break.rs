@@ -12,9 +12,9 @@ pub struct BreakToken {
     location: Location,
 }
 
-pub fn test_parse_break<'a>(s: Span<'a>) -> ParseResult<Span, LineTestFn<'a>> {
+pub fn test_parse_break<'a, 'b>(s: Span<'a>) -> ParseResult<Span, LineTestFn<'a, 'b>> {
     match tag("break")(s) {
-        Ok(_) => Ok((s, |x| {
+        Ok(_) => Ok((s, |x, _| {
             parse_break(x).map(|(s, x)| (s, LineTokens::Break(x)))
         })),
         Err(e) => Err(e),
