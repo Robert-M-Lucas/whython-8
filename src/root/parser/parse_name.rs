@@ -20,7 +20,6 @@ pub enum NameConnectors {
 #[derive(Debug, Dissolve, Getters)]
 pub struct UnresolvedNameToken {
     location: Location,
-    file_location: Rc<PathBuf>,
     containing_class: Option<String>,
     indirection: usize,
     base: String,
@@ -37,10 +36,23 @@ impl UnresolvedNameToken {
         let file_location = location.path().clone();
         UnresolvedNameToken {
             location,
-            file_location,
             containing_class,
             indirection: 0,
             base: s.to_string(),
+            names: Vec::new(),
+            function_call: None
+        }
+    }
+
+    pub fn new_unresolved_top(
+        s: String,
+        location: Location
+    ) -> UnresolvedNameToken {
+        UnresolvedNameToken {
+            location,
+            containing_class: None,
+            indirection: 0,
+            base: s,
             names: Vec::new(),
             function_call: None
         }
@@ -99,13 +111,10 @@ pub fn parse_full_name(s: Span, containing_class: Option<String>) -> ParseResult
         }
     }
 
-    let file_location = location.path().clone();
-
     Ok((
         s,
         UnresolvedNameToken {
             location,
-            file_location,
             containing_class,
             indirection: 0, // TODO
             base: base_name.to_string(),

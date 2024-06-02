@@ -26,6 +26,7 @@ pub mod runner;
 pub mod utils;
 pub mod name_resolver;
 pub mod builtin;
+pub mod shared;
 
 pub const POINTER_SIZE: usize = 8;
 
@@ -72,8 +73,10 @@ pub fn main_args(args: Args) {
         let parsed = parse(PathBuf::from(&args.input)).unwrap();
     );
 
-    resolve(parsed);
-
+    print!("Resolving Names... ");
+    time!(
+        let (global_table, unprocessed_functions) = resolve(parsed);;
+    );
 
     // print!("Compiling... ");
     // time!(generate_assembly(&args.output, functions););

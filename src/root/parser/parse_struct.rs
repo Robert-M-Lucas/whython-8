@@ -18,6 +18,13 @@ pub struct StructToken {
     location: Location,
     name: String,
     attributes: Parameters,
+    id: Option<isize>
+}
+
+impl StructToken {
+    pub fn set_id(&mut self, id: isize) {
+        self.id = Some(id);
+    }
 }
 
 pub fn test_parse_struct<'a>(s: Span<'a>) -> ParseResult<Span, ToplevelTestFn<'a>> {
@@ -44,6 +51,7 @@ pub fn parse_struct(s: Span) -> ParseResult<Span, StructToken> {
             location,
             name: name.to_string(),
             attributes: parameters,
+            id: None
         },
     ))
 }

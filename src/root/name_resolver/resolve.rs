@@ -1,5 +1,8 @@
 use derive_getters::Getters;
+use crate::root::builtin::register_builtin;
+use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
 use crate::root::name_resolver::resolve_names::resolve_names;
+use crate::root::parser::parse_function::FunctionToken;
 use crate::root::parser::parse_toplevel::TopLevelTokens;
 
 #[derive(Getters, Clone)]
@@ -26,11 +29,9 @@ impl AddressedTypeRef {
     }
 }
 
-pub struct FunctionSignature {
-    id: isize,
-    args: Vec<isize>
-}
-
-pub fn resolve(ast: Vec<TopLevelTokens>) {
-    let (sized_types, type_names, unprocessed_functions) = resolve_names(ast);
+pub fn resolve(ast: Vec<TopLevelTokens>) -> (GlobalDefinitionTable, Vec<(isize, FunctionToken)>) {
+    let mut global_table = GlobalDefinitionTable::default();
+    register_builtin(&mut global_table);
+    let unprocessed_functions = resolve_names(ast, &mut global_table);
+    (global_table, unprocessed_functions)
 }
