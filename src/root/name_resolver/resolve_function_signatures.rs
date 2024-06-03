@@ -1,6 +1,6 @@
 use derive_getters::Getters;
 use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable, NameResult, NameResultId};
-use crate::root::shared::types::TypeRef;
+use crate::root::shared::common::TypeRef;
 use crate::root::parser::parse_function::FunctionToken;
 
 #[derive(Getters)]

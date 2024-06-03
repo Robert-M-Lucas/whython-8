@@ -1,14 +1,18 @@
 use std::collections::HashMap;
+
 use derive_getters::Getters;
 use itertools::Itertools;
+
 use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable, NameResultId};
-use crate::root::shared::types::{ByteSize, FunctionID, TypeID, TypeRef};
 use crate::root::name_resolver::resolve_function_signatures::resolve_function_signature;
 use crate::root::name_resolver::resolve_type_sizes::{resolve_type_sizes, UnsizedUserType};
 use crate::root::parser::parse::Location;
 use crate::root::parser::parse_function::FunctionToken;
+use crate::root::parser::parse_function::parse_literal::LiteralToken;
 use crate::root::parser::parse_name::UnresolvedNameToken;
 use crate::root::parser::parse_toplevel::TopLevelTokens;
+use crate::root::shared::common::{LocalAddress, TypeRef};
+use crate::root::shared::common::{ByteSize, FunctionID, TypeID};
 use crate::root::shared::types::Type;
 
 // #[derive(Hash)]
@@ -72,6 +76,10 @@ impl Type for UserType {
 
     fn size(&self) -> ByteSize {
         self.size
+    }
+
+    fn instantiate_from_literal(&self, location: &LocalAddress, literal: &LiteralToken) -> String {
+        todo!()
     }
 }
 

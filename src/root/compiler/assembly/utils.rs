@@ -1,4 +1,4 @@
-use crate::root::shared::types::{ByteSize, FunctionID};
+use crate::root::shared::common::{ByteSize, FunctionID, LocalAddress};
 
 pub fn get_function_tag(id: FunctionID) -> String {
     if id.is_main() {
@@ -43,5 +43,15 @@ pub fn align_16_bytes_plus_8(bytes: ByteSize) -> ByteSize {
         ByteSize(bytes)
     } else {
         ByteSize(bytes + (16 % (24 - (bytes % 16))))
+    }
+}
+
+pub fn get_qword_stack_pointer(address: &LocalAddress) -> String {
+    let address = address.0;
+
+    if address >= 0 {
+        format!("qword [rbp+{address}]")
+    } else {
+        format!("qword [rbp{address}]")
     }
 }

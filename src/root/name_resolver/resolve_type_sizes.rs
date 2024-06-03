@@ -1,10 +1,11 @@
 use std::collections::HashMap;
-use derive_getters::{Dissolve, Getters};
+use derive_getters::Dissolve;
 use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
-use crate::root::shared::types::{ByteSize, TypeID, TypeRef};
+use crate::root::shared::common::TypeRef;
 use crate::root::name_resolver::resolve_names::UserType;
 use crate::root::parser::parse::Location;
 use crate::root::POINTER_SIZE;
+use crate::root::shared::common::{ByteSize, TypeID};
 
 #[derive(Dissolve)]
 pub struct UnsizedUserType {

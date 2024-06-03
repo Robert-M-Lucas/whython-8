@@ -5,12 +5,13 @@ use crate::root::parser::parse_function::parse_literal::{
 use crate::root::parser::parse_function::parse_operator::{parse_operator, OperatorToken};
 use crate::root::parser::parse_name::{parse_full_name, UnresolvedNameToken};
 use b_box::b;
+use derive_getters::Getters;
 use nom::branch::alt;
 use nom::character::complete::{char};
 use crate::root::parser::parse_blocks::default_section;
 use crate::root::parser::parse_util::discard_ignored;
 
-#[derive(Debug)]
+#[derive(Debug, Getters)]
 pub struct EvaluableToken {
     location: Location,
     token: EvaluableTokens,
@@ -24,7 +25,7 @@ pub fn temp_from_token(s: Span, token: EvaluableTokens) -> TempEvaluableTokens {
 }
 
 #[derive(Debug)]
-enum EvaluableTokens {
+pub enum EvaluableTokens {
     Name(UnresolvedNameToken),
     Literal(LiteralToken),
     InfixOperator(Box<EvaluableToken>, OperatorToken, Box<EvaluableToken>),

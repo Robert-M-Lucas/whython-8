@@ -12,7 +12,7 @@ use nom_supreme::tag::complete::tag;
 use substring::Substring;
 use crate::root::parser::parse_blocks::default_section;
 use crate::root::parser::parse_util::{discard_ignored, require_ignored};
-use crate::root::shared::types::TypeID;
+use crate::root::shared::common::TypeID;
 
 #[derive(Debug, Getters, Dissolve)]
 pub struct StructToken {

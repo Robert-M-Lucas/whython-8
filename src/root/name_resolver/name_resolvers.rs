@@ -4,10 +4,11 @@ use std::rc::Rc;
 use derive_getters::Getters;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
-use crate::root::shared::types::{AddressedTypeRef, FunctionID, Type, TypeID, TypeRef};
+use crate::root::shared::types::Type;
 use crate::root::parser::parse_function::FunctionToken;
 use crate::root::parser::parse_name::UnresolvedNameToken;
 use crate::root::parser::parse_struct::StructToken;
+use crate::root::shared::common::{AddressedTypeRef, FunctionID, TypeID, TypeRef};
 
 #[derive(Default)]
 pub struct ImplNode {

@@ -1,9 +1,13 @@
+use derive_getters::{Dissolve, Getters};
 use crate::root::parser::parse::{Location, ParseResult, Span};
 use nom::branch::alt;
 use nom::bytes::complete::tag;
+use crate::root::builtin::int::IntType;
 use crate::root::parser::parse_util::discard_ignored;
+use crate::root::shared::common::{Indirection, TypeID, TypeRef};
+use crate::root::shared::types::Type;
 
-#[derive(Debug)]
+#[derive(Debug, Dissolve, Getters)]
 pub struct LiteralToken {
     location: Location,
     literal: LiteralTokens,
@@ -13,6 +17,19 @@ pub struct LiteralToken {
 pub enum LiteralTokens {
     Bool(bool),
     Int(i64),
+}
+
+impl LiteralTokens {
+    pub fn default_type(&self) -> TypeRef {
+        match self {
+            LiteralTokens::Bool(_) => {
+                todo!()
+            }
+            LiteralTokens::Int(_) => {
+                TypeRef::new(IntType{}.id(), Indirection(0))
+            }
+        }
+    }
 }
 
 pub fn parse_literal(s: Span) -> ParseResult<Span, LiteralToken> {

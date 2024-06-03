@@ -1,5 +1,6 @@
 use std::collections::HashMap;
-use crate::root::shared::types::{AddressedTypeRef, ByteSize, Type, TypeID};
+use crate::root::shared::common::{AddressedTypeRef, ByteSize, LocalAddress, TypeID};
+use crate::root::shared::types::Type;
 
 /// Function-local table of defined variables. Only used within function processing
 #[derive(Default)]
@@ -32,6 +33,11 @@ impl LocalVariableTable {
 
     pub fn add_existing(&mut self, name: String, addressed_type_ref: AddressedTypeRef) {
         self.table.insert(name, addressed_type_ref);
+    }
+
+    pub fn add_new_unnamed(&mut self, size: ByteSize) -> LocalAddress {
+        self.stack_size += size;
+        LocalAddress(-(self.stack_size.0 as isize))
     }
 
     pub fn get_ref(&self, name: &str) -> Option<AddressedTypeRef> {

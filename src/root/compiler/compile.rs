@@ -2,7 +2,7 @@ use std::collections::{HashMap, HashSet};
 use crate::root::compiler::compile_function::compile_function;
 use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
 use crate::root::parser::parse_function::FunctionToken;
-use crate::root::shared::types::FunctionID;
+use crate::root::shared::common::FunctionID;
 
 pub fn compile(global_table: GlobalDefinitionTable, unprocessed_functions: HashMap<FunctionID, FunctionToken>) -> String {
     let mut unprocessed_functions = unprocessed_functions;

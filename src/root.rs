@@ -10,7 +10,8 @@ use std::io::ErrorKind;
 use std::path::PathBuf;
 use crate::root::compiler::compile::compile;
 use crate::root::name_resolver::resolve::resolve;
-use crate::root::shared::types::ByteSize;
+use shared::common::ByteSize;
+use crate::root::runner::{assemble, link_gcc, run};
 
 // #[cfg(target_os = "windows")]
 // use crate::root::runner::run;
@@ -84,47 +85,26 @@ pub fn main_args(args: Args) {
         fs::write(PathBuf::from(format!("{}.asm", &args.output)), assembly.as_bytes()).unwrap();
     );
 
-    // print!("Compiling... ");
-    // time!(generate_assembly(&args.output, functions););
-    //
-    // print!("Assembling (NASM)... ");
-    // time!(if assemble(&args.output).is_err() {
-    //     return Err(AnyError::Other);
-    // });
 
-    // #[cfg(target_os = "windows")]
-    // {
-    //     println!("Linking (MSVC - link.exe)... ");
-    //     time!(if link(&args.output).is_err() {
-    //         return Err(AnyError::Other);
-    //     });
-    //     if args.build {
-    //         println!("Skipping execution")
-    //     } else {
-    //         println!("Executing... ");
-    //         run(&args.output);
-    //     }
-    // }
-    // #[cfg(target_os = "linux")]
-    // {
-    //     cprintln!("<yellow,bold>Compilation and execution on Linux may be buggy!</>");
-    //     println!("Linking (gcc)... ");
-    //     time!(
-    //         let res = link_gcc_experimental(&args.output);
-    //         if res.is_err() {
-    //             return Err(AnyError::Other);
-    //         }
-    //     );
-    //
-    //     if args.build {
-    //         println!("Skipping execution")
-    //     } else {
-    //         println!("Executing (wine)... ");
-    //         if run_wine_experimental(&args.output).is_err() {
-    //             return Err(AnyError::Other);
-    //         }
-    //     }
-    // }
+    print!("Assembling (NASM)... ");
+    time!(
+        assemble(&args.output).unwrap();
+    );
+
+    #[cfg(target_os = "linux")]
+    {
+        println!("Linking (gcc)... ");
+        time!(
+            link_gcc(&args.output).unwrap();
+        );
+
+        if args.build {
+            println!("Skipping execution")
+        } else {
+            println!("Executing...");
+            run(&args.output);
+        }
+    }
 
     cprintln!("<g,bold>Done!</>");
 }

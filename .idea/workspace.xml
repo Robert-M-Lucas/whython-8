@@ -8,7 +8,41 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Improved name system">
+      <change afterPath="$PROJECT_DIR$/src/root/compiler/compile_evaluable.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/root/shared/common.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/a.out" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/out.asm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/run.sh" beforeDir="false" afterPath="$PROJECT_DIR$/reference/run.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/test.asm" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/test.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/kernel32.lib" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/legacy_stdio_definitions.lib" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/legacy_stdio_wide_specifiers.lib" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/msvcrt.lib" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/ucrt.lib" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/vcruntime.lib" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.why" beforeDir="false" afterPath="$PROJECT_DIR$/main.why" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/builtin/int.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/int.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/builtin/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/assembly/utils.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/assembly/utils.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/compile.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/compile_function.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile_function.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/local_variable_table.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/local_variable_table.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/resolve.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/resolve.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/resolve_function_signatures.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/resolve_function_signatures.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/resolve_names.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/resolve_names.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/resolve_type_sizes.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/resolve_type_sizes.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_evaluable.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_evaluable.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_literal.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_literal.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_name.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_name.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_struct.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_struct.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/runner.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/runner.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/shared/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/shared/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/shared/types.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/shared/types.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -75,6 +109,11 @@
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/reference" />
+    </key>
+  </component>
   <component name="RunManager" selected="Cargo.Run whython-8">
     <configuration name="Run whython-8" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
       <option name="command" value="run --package whython-8 --bin whython-8" />
@@ -131,6 +170,7 @@
       <workItem from="1717421826021" duration="5123000" />
       <workItem from="1717433176938" duration="1267000" />
       <workItem from="1717440462404" duration="599000" />
+      <workItem from="1717451075678" duration="2900000" />
     </task>
     <task id="LOCAL-00001" summary="Changes">
       <option name="closed" value="true" />

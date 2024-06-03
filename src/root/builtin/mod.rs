@@ -1,4 +1,4 @@
-mod int;
+pub mod int;
 
 use crate::root::builtin::int::IntType;
 use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable, ImplNode};
