@@ -14,7 +14,7 @@ pub fn resolve_function_signature(function_token: &FunctionToken, global_table: 
 
     let return_type = if let Some(type_name) = function_token.return_type() {
         // TODO
-        Some(match global_table.resolve_global_name_to_id(type_name).unwrap() {
+        Some(match global_table.resolve_global_name_to_id(type_name).unwrap().unwrap() {
             NameResultId::Function(_) => todo!(),
             NameResultId::Type(type_id) => type_id,
             NameResultId::NotFound => todo!()
@@ -27,7 +27,7 @@ pub fn resolve_function_signature(function_token: &FunctionToken, global_table: 
         args.push((
             arg_name.clone(),
             // TODO
-            match global_table.resolve_global_name_to_id(arg_type).unwrap() {
+            match global_table.resolve_global_name_to_id(arg_type).unwrap().unwrap() {
                 NameResultId::Function(_) => todo!(),
                 NameResultId::Type(type_ref) => type_ref,
                 NameResultId::NotFound => todo!()

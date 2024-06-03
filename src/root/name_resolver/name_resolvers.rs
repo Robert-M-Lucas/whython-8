@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 use std::rc::Rc;
 use derive_getters::Getters;
+use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::shared::types::{AddressedTypeRef, FunctionID, Type, TypeID, TypeRef};
 use crate::root::parser::parse_function::FunctionToken;
@@ -73,37 +74,6 @@ impl TopLevelNameTree {
 
     pub fn get_path_tree_fallible(&self, path: &Rc<PathBuf>) -> Option<&Box<FileLevelTree>> {
         self.table.get(path)
-    }
-}
-
-/// Function-local table of defined variables. Only used within function processing
-#[derive(Default)]
-struct LocalVariableTable {
-    table: HashMap<String, AddressedTypeRef>,
-    stack_size: usize
-}
-
-impl LocalVariableTable {
-
-    pub fn get_ref(&self, name: &str) -> Option<AddressedTypeRef> {
-        if let Some(r) = self.table.get(name) {
-            Some(r.clone())
-        }
-        else {
-            None
-        }
-    }
-
-    pub fn get_ref_and_type<'a>(&self, name: &str, type_defs: &'a HashMap<TypeID, Box<dyn Type>>) -> Option<(AddressedTypeRef, &'a dyn Type)> {
-        if let Some(r) = self.table.get(name) {
-            if let Some(t) = type_defs.get(r.type_ref().type_id()) {
-                return Some((r.clone(), t.as_ref()));
-            }
-            panic!("Type in VariableTable but no corresponding definition found!");
-        }
-        else {
-            None
-        }
     }
 }
 
@@ -225,7 +195,7 @@ impl GlobalDefinitionTable {
         todo!()
     }
 
-    pub fn resolve_global_name_to_id(&self, name: &UnresolvedNameToken) -> Result<NameResultId, ()> {
+    pub fn resolve_global_name_to_id(&self, name: &UnresolvedNameToken) -> Result<Option<NameResultId>, ()> {
         let path = name.location().path();
 
         fn search_file_level_tree(tree: &Box<FileLevelTree>, name: &UnresolvedNameToken) -> Result<Option<NameResultId>, ()> {
@@ -273,9 +243,10 @@ impl GlobalDefinitionTable {
 
         let tree = self.name_table.get_path_tree_fallible(path);
 
+        // * Search current file then others
         if let Some(tree) = tree {
             if let Some(found) = search_file_level_tree(tree, name)? {
-                return Ok(found);
+                return Ok(Some(found));
             }
         }
 
@@ -285,7 +256,7 @@ impl GlobalDefinitionTable {
             }
 
             if let Some(found) = search_file_level_tree(tree, name)? {
-                return Ok(found);
+                return Ok(Some(found));
             }
         }
 
@@ -310,10 +281,10 @@ impl GlobalDefinitionTable {
                 //     NameConnectors::Static => {}
                 // }
 
-                return Ok(NameResultId::Function(*function));
+                return Ok(Some(NameResultId::Function(*function)));
             }
             else {
-                return Ok(NameResultId::Type(TypeRef::new(*id, *name.indirection())));
+                return Ok(Some(NameResultId::Type(TypeRef::new(*id, *name.indirection()))));
             }
         }
 
@@ -323,9 +294,9 @@ impl GlobalDefinitionTable {
                 return Err(());
             }
 
-            return Ok(NameResultId::Function(*id))
+            return Ok(Some(NameResultId::Function(*id)))
         }
 
-        Err(())
+        Ok(None)
     }
 }

@@ -76,7 +76,7 @@ impl Type for UserType {
 }
 
 // ! Unoptimised
-pub fn resolve_names(ast: Vec<TopLevelTokens>, global_table: &mut GlobalDefinitionTable) -> Vec<(FunctionID, FunctionToken)> {
+pub fn resolve_names(ast: Vec<TopLevelTokens>, global_table: &mut GlobalDefinitionTable) -> HashMap<FunctionID, FunctionToken> {
     let mut ast = ast;
 
     // ? User types > 1; Builtin Types < -1
@@ -98,7 +98,7 @@ pub fn resolve_names(ast: Vec<TopLevelTokens>, global_table: &mut GlobalDefiniti
     }
 
     let mut unsized_final_types: HashMap<TypeID, UnsizedUserType> = HashMap::new();
-    let mut unprocessed_functions: Vec<(FunctionID, FunctionToken)> = Vec::new();
+    let mut unprocessed_functions: HashMap<FunctionID, FunctionToken> = HashMap::new();
 
     for symbol in ast {
         match symbol {
@@ -109,7 +109,7 @@ pub fn resolve_names(ast: Vec<TopLevelTokens>, global_table: &mut GlobalDefiniti
                 let attributes = attributes.into_iter()
                     .map(|(name, type_name)| {
                         // TODO
-                        let type_ref = match global_table.resolve_global_name_to_id(&type_name).unwrap() {
+                        let type_ref = match global_table.resolve_global_name_to_id(&type_name).unwrap().unwrap() {
                             NameResultId::Function(_) => todo!(),
                             NameResultId::Type(type_ref) => type_ref,
                             NameResultId::NotFound => todo!(),
@@ -122,7 +122,7 @@ pub fn resolve_names(ast: Vec<TopLevelTokens>, global_table: &mut GlobalDefiniti
             }
             TopLevelTokens::Impl(it) => {
                 // TODO
-                let type_ref = match global_table.resolve_global_name_to_id(&UnresolvedNameToken::new_unresolved_top(it.name().clone(), it.location().clone())).unwrap() {
+                let type_ref = match global_table.resolve_global_name_to_id(&UnresolvedNameToken::new_unresolved_top(it.name().clone(), it.location().clone())).unwrap().unwrap() {
                     NameResultId::Function(_) => todo!(),
                     NameResultId::Type(type_ref) => type_ref,
                     NameResultId::NotFound => todo!(),
@@ -136,13 +136,13 @@ pub fn resolve_names(ast: Vec<TopLevelTokens>, global_table: &mut GlobalDefiniti
                 for ft in it.dissolve().2 {
                     let function_id = global_table.add_from_function_token(&ft, Some(*type_ref.type_id()));
                     global_table.add_function_signature(function_id, resolve_function_signature(&ft, &global_table));
-                    unprocessed_functions.push((function_id, ft));
+                    unprocessed_functions.insert(function_id, ft);
                 }
             }
             TopLevelTokens::Function(ft) => {
                 let function_id = global_table.add_from_function_token(&ft, None);
                 global_table.add_function_signature(function_id, resolve_function_signature(&ft, &global_table));
-                unprocessed_functions.push((function_id, ft));
+                unprocessed_functions.insert(function_id, ft);
             }
         };
     }

@@ -8,6 +8,7 @@ use color_print::cprintln;
 use std::fs;
 use std::io::ErrorKind;
 use std::path::PathBuf;
+use crate::root::compiler::compile::compile;
 use crate::root::name_resolver::resolve::resolve;
 use crate::root::shared::types::ByteSize;
 
@@ -29,6 +30,7 @@ pub mod name_resolver;
 pub mod builtin;
 pub mod shared;
 pub mod compiler;
+pub mod assembler;
 
 pub const POINTER_SIZE: ByteSize = ByteSize(8);
 
@@ -40,7 +42,6 @@ pub struct Args {
     #[arg(short, long, default_value = "main.why")]
     pub input: String,
     /// Output files name without extension
-    /// Main input file
     #[arg(short, long, default_value = "build/out")]
     pub output: String,
     /// Only build - don't run
@@ -49,13 +50,6 @@ pub struct Args {
 }
 
 pub fn main() {
-
-
-    // assemble("build/out").unwrap();
-    // link_gcc_experimental("build/out").unwrap();
-    // run_wine_experimental("build/out").unwrap();
-    // return;
-
     let args = Args::parse();
     let _ = main_args(args);
 }
@@ -77,7 +71,17 @@ pub fn main_args(args: Args) {
 
     print!("Resolving Names... ");
     time!(
-        let (global_table, unprocessed_functions) = resolve(parsed);;
+        let (global_table, unprocessed_functions) = resolve(parsed);
+    );
+
+    print!("Compiling... ");
+    time!(
+        let assembly = compile(global_table, unprocessed_functions);
+    );
+
+    print!("Writing Assembly... ");
+    time!(
+        fs::write(PathBuf::from(format!("{}.asm", &args.output)), assembly.as_bytes()).unwrap();
     );
 
     // print!("Compiling... ");
