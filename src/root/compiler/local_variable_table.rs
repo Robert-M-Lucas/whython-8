@@ -1,16 +1,16 @@
 use std::collections::HashMap;
-use crate::root::shared::types::{AddressedTypeRef, Type, TypeID};
+use crate::root::shared::types::{AddressedTypeRef, ByteSize, Type, TypeID};
 
 /// Function-local table of defined variables. Only used within function processing
 #[derive(Default)]
 pub struct LocalVariableTable {
     outer: Option<Box<LocalVariableTable>>,
     table: HashMap<String, AddressedTypeRef>,
-    stack_size: usize
+    stack_size: ByteSize
 }
 
 impl LocalVariableTable {
-    pub fn stack_size(&self) -> usize {
+    pub fn stack_size(&self) -> ByteSize {
         self.stack_size
     }
 

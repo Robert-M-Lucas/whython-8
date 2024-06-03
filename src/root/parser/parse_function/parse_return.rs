@@ -1,3 +1,4 @@
+use derive_getters::Getters;
 use nom::sequence::Tuple;
 use nom_supreme::tag::complete::tag;
 
@@ -6,7 +7,7 @@ use crate::root::parser::parse_function::parse_evaluable::{parse_evaluable, Eval
 use crate::root::parser::parse_function::parse_line::{LineTestFn, LineTokens};
 use crate::root::parser::parse_util::require_ignored;
 
-#[derive(Debug)]
+#[derive(Debug, Getters)]
 pub struct ReturnToken {
     location: Location,
     return_value: EvaluableToken,

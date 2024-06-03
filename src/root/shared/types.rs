@@ -9,6 +9,12 @@ pub struct TypeID(pub isize);
 #[display(fmt = "FunctionID: {}", .0)]
 pub struct FunctionID(pub isize);
 
+impl FunctionID {
+    pub fn is_main(&self) -> bool {
+        self.0 == 0
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Hash, Display, Copy, Clone)]
 #[derive(Add, AddAssign, Sub, SubAssign)]
 #[display(fmt = "Indirection: {}", .0)]
@@ -20,7 +26,7 @@ impl Indirection {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Display, Copy, Clone)]
+#[derive(Debug, PartialEq, Eq, Hash, Display, Copy, Clone, Default)]
 #[derive(Add, AddAssign, Sub, SubAssign)]
 #[display(fmt = "ByteSize: {}", .0)]
 pub struct ByteSize(pub usize);

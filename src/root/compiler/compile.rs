@@ -29,6 +29,14 @@ pub fn compile(global_table: GlobalDefinitionTable, unprocessed_functions: HashM
     }
 
     let mut s = String::with_capacity(compiled_len);
+
+    s +=
+"    global main
+
+    section .text
+
+";
+
     for (_id, f) in compiled_functions {
         s += &f;
     }
