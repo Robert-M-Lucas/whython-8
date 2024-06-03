@@ -67,7 +67,7 @@ pub fn compile_function(fid: FunctionID, function: FunctionToken, global_table: 
 "{}:
     push rbp
     mov  rbp, rsp
-    sub  rsp, {},
+    sub  rsp, {}
     {}",
         get_function_tag(fid),
         if fid.is_main() { align_16_bytes(stack_size) } else { align_16_bytes_plus_8(stack_size) },
