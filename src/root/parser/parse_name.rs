@@ -10,6 +10,7 @@ use nom_supreme::error::{BaseErrorKind, Expectation};
 use crate::root::parser::parse_arguments::parse_arguments;
 use crate::root::parser::parse_blocks::{default_section, section};
 use crate::root::parser::parse_util::discard_ignored;
+use crate::root::shared::types::Indirection;
 
 #[derive(Debug)]
 pub enum NameConnectors {
@@ -21,7 +22,7 @@ pub enum NameConnectors {
 pub struct UnresolvedNameToken {
     location: Location,
     containing_class: Option<String>,
-    indirection: usize,
+    indirection: Indirection,
     base: String,
     names: Vec<(NameConnectors, String)>,
     function_call: Option<Vec<EvaluableToken>>,
@@ -37,7 +38,7 @@ impl UnresolvedNameToken {
         UnresolvedNameToken {
             location,
             containing_class,
-            indirection: 0,
+            indirection: Indirection(0),
             base: s.to_string(),
             names: Vec::new(),
             function_call: None
@@ -51,7 +52,7 @@ impl UnresolvedNameToken {
         UnresolvedNameToken {
             location,
             containing_class: None,
-            indirection: 0,
+            indirection: Indirection(0),
             base: s,
             names: Vec::new(),
             function_call: None
@@ -116,7 +117,7 @@ pub fn parse_full_name(s: Span, containing_class: Option<String>) -> ParseResult
         UnresolvedNameToken {
             location,
             containing_class,
-            indirection: 0, // TODO
+            indirection: Indirection(0), // TODO
             base: base_name.to_string(),
             names,
             function_call,

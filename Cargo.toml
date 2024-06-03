@@ -22,6 +22,7 @@ nom_locate = "4.2.0"
 nom-supreme = "0.8.0"
 substring = "1.4.5"
 derive-getters = "0.3.0"
+derive_more = "0.99.17"
 
 [profile.release]
 opt-level = 3

@@ -12,17 +12,18 @@ use nom_supreme::tag::complete::tag;
 use substring::Substring;
 use crate::root::parser::parse_blocks::default_section;
 use crate::root::parser::parse_util::{discard_ignored, require_ignored};
+use crate::root::shared::types::TypeID;
 
 #[derive(Debug, Getters, Dissolve)]
 pub struct StructToken {
     location: Location,
     name: String,
     attributes: Parameters,
-    id: Option<isize>
+    id: Option<TypeID>
 }
 
 impl StructToken {
-    pub fn set_id(&mut self, id: isize) {
+    pub fn set_id(&mut self, id: TypeID) {
         self.id = Some(id);
     }
 }

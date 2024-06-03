@@ -1,31 +1,31 @@
 use std::collections::HashMap;
 use derive_getters::{Dissolve, Getters};
 use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
-use crate::root::name_resolver::resolve::TypeRef;
+use crate::root::shared::types::{ByteSize, TypeID, TypeRef};
 use crate::root::name_resolver::resolve_names::UserType;
 use crate::root::parser::parse::Location;
 use crate::root::POINTER_SIZE;
 
 #[derive(Dissolve)]
 pub struct UnsizedUserType {
-    id: isize,
+    id: TypeID,
     attributes: Vec<(String, TypeRef)>,
     location: Location
 }
 
 impl UnsizedUserType {
-    pub fn new(id: isize, attributes: Vec<(String, TypeRef)>, location: Location) -> UnsizedUserType {
+    pub fn new(id: TypeID, attributes: Vec<(String, TypeRef)>, location: Location) -> UnsizedUserType {
         UnsizedUserType { id, attributes, location }
     }
 }
 
 pub fn resolve_type_sizes(
     unsized_type: UnsizedUserType,
-    final_types: &mut HashMap<isize, UserType>,
-    unsized_types: &mut HashMap<isize, UnsizedUserType>,
+    final_types: &mut HashMap<TypeID, UserType>,
+    unsized_types: &mut HashMap<TypeID, UnsizedUserType>,
     global_table: &GlobalDefinitionTable,
-    path: &mut Vec<isize>
-) -> usize {
+    path: &mut Vec<TypeID>
+) -> ByteSize {
     let (id, attributes, location) = unsized_type.dissolve();
 
     if path.contains(&id) {
@@ -34,17 +34,17 @@ pub fn resolve_type_sizes(
     }
     path.push(id);
 
-    let mut size: usize = 0;
+    let mut size: ByteSize = ByteSize(0);
     let mut processed_attributes: Vec<(usize, String, TypeRef)> = Vec::new();
 
     for (attribute_name, attribute_type) in attributes {
         let offset = size;
 
-        if *attribute_type.indirection() != 0 {
+        if attribute_type.indirection().has_indirection() {
             size += POINTER_SIZE;
         }
         else if let Some(sized_type) = final_types.get(&attribute_type.type_id()) {
-            size += sized_type.size();
+            size += *sized_type.size();
         }
         else {
             if let Some(unsized_type) = unsized_types.remove(&attribute_type.type_id()) {
@@ -60,7 +60,7 @@ pub fn resolve_type_sizes(
             }
         }
 
-        processed_attributes.push((offset, attribute_name, attribute_type));
+        processed_attributes.push((offset.0, attribute_name, attribute_type));
     }
 
     final_types.insert(id, UserType::new(id, size, processed_attributes, location));

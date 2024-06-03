@@ -2,22 +2,21 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 use std::rc::Rc;
 use derive_getters::Getters;
-use crate::root::name_resolver::resolve::{AddressedTypeRef, TypeRef};
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
-use crate::root::shared::types::Type;
+use crate::root::shared::types::{AddressedTypeRef, FunctionID, Type, TypeID, TypeRef};
 use crate::root::parser::parse_function::FunctionToken;
-use crate::root::parser::parse_name::{NameConnectors, UnresolvedNameToken};
+use crate::root::parser::parse_name::UnresolvedNameToken;
 use crate::root::parser::parse_struct::StructToken;
 
 #[derive(Default)]
 pub struct ImplNode {
-    functions: HashMap<String, isize>
+    functions: HashMap<String, FunctionID>
 }
 
 /// Contents of a `DefinitionTable`
 enum FileLevelTreeNode {
-    Function(isize),
-    Type(isize, ImplNode),
+    Function(FunctionID),
+    Type(TypeID, ImplNode),
 }
 
 /// Recursive tree containing all named objects/functions/types
@@ -27,12 +26,12 @@ struct FileLevelTree {
 }
 
 impl FileLevelTree {
-    pub fn add_type(&mut self, name: String, id: isize) {
+    pub fn add_type(&mut self, name: String, id: TypeID) {
         // TODO: Handle collision
         self.table.insert(name, FileLevelTreeNode::Type(id, ImplNode::default()));
     }
 
-    pub fn add_function_impl(&mut self, name: String, id: isize, containing_class: isize) -> bool {
+    pub fn add_function_impl(&mut self, name: String, id: FunctionID, containing_class: TypeID) -> bool {
         for (_, n) in &mut self.table {
             match n {
                 FileLevelTreeNode::Function(_) => {}
@@ -51,7 +50,7 @@ impl FileLevelTree {
         return false;
     }
 
-    pub fn add_function(&mut self, name: String, id: isize) {
+    pub fn add_function(&mut self, name: String, id: FunctionID) {
         self.table.insert(name, FileLevelTreeNode::Function(id));
     }
 }
@@ -95,7 +94,7 @@ impl LocalVariableTable {
         }
     }
 
-    pub fn get_ref_and_type<'a>(&self, name: &str, type_defs: &'a HashMap<isize, Box<dyn Type>>) -> Option<(AddressedTypeRef, &'a dyn Type)> {
+    pub fn get_ref_and_type<'a>(&self, name: &str, type_defs: &'a HashMap<TypeID, Box<dyn Type>>) -> Option<(AddressedTypeRef, &'a dyn Type)> {
         if let Some(r) = self.table.get(name) {
             if let Some(t) = type_defs.get(r.type_ref().type_id()) {
                 return Some((r.clone(), t.as_ref()));
@@ -111,11 +110,11 @@ impl LocalVariableTable {
 #[derive(Getters)]
 pub struct GlobalDefinitionTable {
     id_counter: isize,
-    type_definitions: HashMap<isize, Box<dyn Type>>,
-    function_signatures: HashMap<isize, FunctionSignature>,
+    type_definitions: HashMap<TypeID, Box<dyn Type>>,
+    function_signatures: HashMap<FunctionID, FunctionSignature>,
     name_table: TopLevelNameTree,
-    builtin_type_name_table: HashMap<String, (isize, ImplNode)>,
-    builtin_function_name_table: HashMap<String, isize>
+    builtin_type_name_table: HashMap<String, (TypeID, ImplNode)>,
+    builtin_function_name_table: HashMap<String, FunctionID>
 }
 
 
@@ -127,7 +126,7 @@ pub enum NameResult<'a> {
 }
 
 pub enum NameResultId {
-    Function(isize),
+    Function(FunctionID),
     Type(TypeRef),
     NotFound
 }
@@ -149,27 +148,27 @@ impl GlobalDefinitionTable {
         self.builtin_type_name_table.insert(name, (id, impl_node));
     }
 
-    pub fn register_builtin_function(&mut self, name: String, t: FunctionSignature, id: isize) {
+    pub fn register_builtin_function(&mut self, name: String, t: FunctionSignature, id: FunctionID) {
         self.function_signatures.insert(id, t);
         self.builtin_function_name_table.insert(name, id);
     }
 
-    pub fn add_from_struct_token(&mut self, st: &StructToken) -> isize {
+    pub fn add_from_struct_token(&mut self, st: &StructToken) -> TypeID {
         let file_level_tree = self.name_table.get_path_tree(st.location().path());
         self.id_counter += 1;
-        let id = self.id_counter - 1;
+        let id = TypeID(self.id_counter - 1);
 
         file_level_tree.add_type(st.name().clone(), id);
 
         id
     }
 
-    pub fn add_from_function_token(&mut self, ft: &FunctionToken, containing_class: Option<isize>) -> isize {
+    pub fn add_from_function_token(&mut self, ft: &FunctionToken, containing_class: Option<TypeID>) -> FunctionID {
         let id = if ft.name() == "main" {
-            0
+            FunctionID(0)
         } else {
             self.id_counter += 1;
-            self.id_counter - 1
+            FunctionID(self.id_counter - 1)
         };
 
 
@@ -189,11 +188,11 @@ impl GlobalDefinitionTable {
         id
     }
 
-    pub fn add_function_signature(&mut self, given_id: isize, function_signature: FunctionSignature) {
+    pub fn add_function_signature(&mut self, given_id: FunctionID, function_signature: FunctionSignature) {
         self.function_signatures.insert(given_id, function_signature);
     }
 
-    pub fn add_type(&mut self, given_id: isize, definition: Box<dyn Type>) {
+    pub fn add_type(&mut self, given_id: TypeID, definition: Box<dyn Type>) {
         // TODO: handle collisions
         self.type_definitions.insert(given_id, definition);
     }
@@ -237,7 +236,7 @@ impl GlobalDefinitionTable {
 
             match base {
                 FileLevelTreeNode::Function(fid) => {
-                    if name_iter.next().is_some() || *name.indirection() > 0 {
+                    if name_iter.next().is_some() || name.indirection().has_indirection() {
                         // TODO
                         return Err(());
                     }
@@ -320,7 +319,7 @@ impl GlobalDefinitionTable {
 
         if let Some(id) = self.builtin_function_name_table.get(name.base()) {
             // TODO
-            if !name.names().is_empty() || *name.indirection() != 0 {
+            if !name.names().is_empty() || name.indirection().has_indirection() {
                 return Err(());
             }
 

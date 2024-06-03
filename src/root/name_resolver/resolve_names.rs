@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use derive_getters::Getters;
 use itertools::Itertools;
 use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable, NameResultId};
-use crate::root::name_resolver::resolve::TypeRef;
+use crate::root::shared::types::{ByteSize, FunctionID, TypeID, TypeRef};
 use crate::root::name_resolver::resolve_function_signatures::resolve_function_signature;
 use crate::root::name_resolver::resolve_type_sizes::{resolve_type_sizes, UnsizedUserType};
 use crate::root::parser::parse::Location;
@@ -53,30 +53,30 @@ use crate::root::shared::types::Type;
 /// A whython-code-defined type
 #[derive(Getters)]
 pub struct UserType {
-    id: isize,
-    size: usize,
+    id: TypeID,
+    size: ByteSize,
     attributes: Vec<(usize, String, TypeRef)>,
     location: Location
 }
 
 impl UserType {
-    pub fn new(id: isize, size: usize, attributes: Vec<(usize, String, TypeRef)>, location: Location) -> UserType {
+    pub fn new(id: TypeID, size: ByteSize, attributes: Vec<(usize, String, TypeRef)>, location: Location) -> UserType {
         UserType { id, size, attributes, location }
     }
 }
 
 impl Type for UserType {
-    fn id(&self) -> isize {
+    fn id(&self) -> TypeID {
         self.id
     }
 
-    fn size(&self) -> usize {
+    fn size(&self) -> ByteSize {
         self.size
     }
 }
 
 // ! Unoptimised
-pub fn resolve_names(ast: Vec<TopLevelTokens>, global_table: &mut GlobalDefinitionTable) -> Vec<(isize, FunctionToken)> {
+pub fn resolve_names(ast: Vec<TopLevelTokens>, global_table: &mut GlobalDefinitionTable) -> Vec<(FunctionID, FunctionToken)> {
     let mut ast = ast;
 
     // ? User types > 1; Builtin Types < -1
@@ -97,8 +97,8 @@ pub fn resolve_names(ast: Vec<TopLevelTokens>, global_table: &mut GlobalDefiniti
         };
     }
 
-    let mut unsized_final_types: HashMap<isize, UnsizedUserType> = HashMap::new();
-    let mut unprocessed_functions: Vec<(isize, FunctionToken)> = Vec::new();
+    let mut unsized_final_types: HashMap<TypeID, UnsizedUserType> = HashMap::new();
+    let mut unprocessed_functions: Vec<(FunctionID, FunctionToken)> = Vec::new();
 
     for symbol in ast {
         match symbol {
@@ -129,7 +129,7 @@ pub fn resolve_names(ast: Vec<TopLevelTokens>, global_table: &mut GlobalDefiniti
                 };
 
                 // TODO
-                if *type_ref.indirection() != 0 {
+                if type_ref.indirection().has_indirection() {
                     panic!()
                 }
 
@@ -147,7 +147,7 @@ pub fn resolve_names(ast: Vec<TopLevelTokens>, global_table: &mut GlobalDefiniti
         };
     }
 
-    let mut final_types: HashMap<isize, UserType> = HashMap::new();
+    let mut final_types: HashMap<TypeID, UserType> = HashMap::new();
 
     while !unsized_final_types.is_empty() {
         let next_type_id = *unsized_final_types.keys().next().unwrap();

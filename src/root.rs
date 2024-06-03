@@ -9,6 +9,7 @@ use std::fs;
 use std::io::ErrorKind;
 use std::path::PathBuf;
 use crate::root::name_resolver::resolve::resolve;
+use crate::root::shared::types::ByteSize;
 
 // #[cfg(target_os = "windows")]
 // use crate::root::runner::run;
@@ -27,8 +28,9 @@ pub mod utils;
 pub mod name_resolver;
 pub mod builtin;
 pub mod shared;
+pub mod compiler;
 
-pub const POINTER_SIZE: usize = 8;
+pub const POINTER_SIZE: ByteSize = ByteSize(8);
 
 /// Compiler for Whython files (.why)
 #[derive(Parser)]
