@@ -30,8 +30,14 @@ impl AddressedTypeRef {
 }
 
 pub fn resolve(ast: Vec<TopLevelTokens>) -> (GlobalDefinitionTable, Vec<(isize, FunctionToken)>) {
-    let mut global_table = GlobalDefinitionTable::default();
+    let mut global_table = GlobalDefinitionTable::new();
     register_builtin(&mut global_table);
     let unprocessed_functions = resolve_names(ast, &mut global_table);
+
+    if !global_table.function_signatures().contains_key(&0) {
+        // NO MAIN!
+        todo!()
+    }
+
     (global_table, unprocessed_functions)
 }

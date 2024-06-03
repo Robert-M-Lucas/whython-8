@@ -108,7 +108,7 @@ impl LocalVariableTable {
     }
 }
 
-#[derive(Default, Getters)]
+#[derive(Getters)]
 pub struct GlobalDefinitionTable {
     id_counter: isize,
     type_definitions: HashMap<isize, Box<dyn Type>>,
@@ -133,6 +133,16 @@ pub enum NameResultId {
 }
 
 impl GlobalDefinitionTable {
+    pub fn new() -> GlobalDefinitionTable {
+        GlobalDefinitionTable {
+            id_counter: 1,
+            type_definitions: Default::default(),
+            function_signatures: Default::default(),
+            name_table: Default::default(),
+            builtin_type_name_table: Default::default(),
+            builtin_function_name_table: Default::default(),
+        }
+    }
     pub fn register_builtin_type(&mut self, name: String, t: Box<dyn Type>, impl_node: ImplNode) {
         let id = t.id();
         self.type_definitions.insert(id, t);
@@ -155,9 +165,13 @@ impl GlobalDefinitionTable {
     }
 
     pub fn add_from_function_token(&mut self, ft: &FunctionToken, containing_class: Option<isize>) -> isize {
+        let id = if ft.name() == "main" {
+            0
+        } else {
+            self.id_counter += 1;
+            self.id_counter - 1
+        };
 
-        self.id_counter += 1;
-        let id = self.id_counter - 1;
 
         if let Some(containing_class) = containing_class {
             for (_, file_level_tree) in &mut self.name_table.table {

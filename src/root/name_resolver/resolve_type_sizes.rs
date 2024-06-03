@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use derive_getters::{Dissolve, Getters};
+use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
 use crate::root::name_resolver::resolve::TypeRef;
 use crate::root::name_resolver::resolve_names::UserType;
 use crate::root::parser::parse::Location;
@@ -18,7 +19,13 @@ impl UnsizedUserType {
     }
 }
 
-pub fn resolve_type_sizes(unsized_type: UnsizedUserType, final_types: &mut HashMap<isize, UserType>, unsized_types: &mut HashMap<isize, UnsizedUserType>, path: &mut Vec<isize>) -> usize {
+pub fn resolve_type_sizes(
+    unsized_type: UnsizedUserType,
+    final_types: &mut HashMap<isize, UserType>,
+    unsized_types: &mut HashMap<isize, UnsizedUserType>,
+    global_table: &GlobalDefinitionTable,
+    path: &mut Vec<isize>
+) -> usize {
     let (id, attributes, location) = unsized_type.dissolve();
 
     if path.contains(&id) {
@@ -40,8 +47,17 @@ pub fn resolve_type_sizes(unsized_type: UnsizedUserType, final_types: &mut HashM
             size += sized_type.size();
         }
         else {
-            let unsized_type = unsized_types.remove(&attribute_type.type_id()).unwrap();
-            size += resolve_type_sizes(unsized_type, final_types, unsized_types, path);
+            if let Some(unsized_type) = unsized_types.remove(&attribute_type.type_id()) {
+                size += resolve_type_sizes(unsized_type, final_types, unsized_types, global_table, path);
+            }
+            else {
+                if let Some(builtin_type) = global_table.type_definitions().get(&attribute_type.type_id()) {
+                    size += builtin_type.size();
+                }
+                else {
+                    todo!()
+                }
+            }
         }
 
         processed_attributes.push((offset, attribute_name, attribute_type));

@@ -1,3 +1,12 @@
+struct A {
+    b: int,
+    c: int
+}
+
+fn check() -> A {
+
+}
+
 fn main() -> int {
     printb(true);
 }
