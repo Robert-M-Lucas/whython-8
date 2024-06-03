@@ -79,7 +79,7 @@ impl Type for UserType {
 pub fn resolve_names(ast: Vec<TopLevelTokens>, global_table: &mut GlobalDefinitionTable) -> Vec<(isize, FunctionToken)> {
     let mut ast = ast;
 
-    // ? User types > 1; Bultin Types < -1
+    // ? User types > 1; Builtin Types < -1
     // let mut type_names: HashMap<TypeName, isize> = HashMap::new();
     // ? (Name, (type, id)) - Type 0 means global
     // let mut function_names: HashMap<String, (isize, isize)> = HashMap::new();
@@ -108,26 +108,33 @@ pub fn resolve_names(ast: Vec<TopLevelTokens>, global_table: &mut GlobalDefiniti
                 // TODO: Process indirection
                 let attributes = attributes.into_iter()
                     .map(|(name, type_name)| {
-                        let id = match global_table.resolve_global_name_to_id(&type_name) {
+                        // TODO
+                        let type_ref = match global_table.resolve_global_name_to_id(&type_name).unwrap() {
                             NameResultId::Function(_) => todo!(),
-                            NameResultId::Type(type_id) => type_id,
+                            NameResultId::Type(type_ref) => type_ref,
                             NameResultId::NotFound => todo!(),
                         };
 
-                        (name, TypeRef::new(id, *type_name.indirection()))
+                        (name, type_ref)
                     }
                 ).collect_vec();
                 unsized_final_types.insert(id, UnsizedUserType::new(id, attributes, location));
             }
             TopLevelTokens::Impl(it) => {
-                let type_id = match global_table.resolve_global_name_to_id(&UnresolvedNameToken::new_unresolved_top(it.name().clone(), it.location().clone())) {
+                // TODO
+                let type_ref = match global_table.resolve_global_name_to_id(&UnresolvedNameToken::new_unresolved_top(it.name().clone(), it.location().clone())).unwrap() {
                     NameResultId::Function(_) => todo!(),
-                    NameResultId::Type(type_id) => type_id,
+                    NameResultId::Type(type_ref) => type_ref,
                     NameResultId::NotFound => todo!(),
                 };
 
+                // TODO
+                if *type_ref.indirection() != 0 {
+                    panic!()
+                }
+
                 for ft in it.dissolve().2 {
-                    let function_id = global_table.add_from_function_token(&ft, Some(type_id));
+                    let function_id = global_table.add_from_function_token(&ft, Some(*type_ref.type_id()));
                     global_table.add_function_signature(function_id, resolve_function_signature(&ft, &global_table));
                     unprocessed_functions.push((function_id, ft));
                 }

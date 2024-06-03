@@ -2,15 +2,15 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 use std::rc::Rc;
 use derive_getters::Getters;
-use crate::root::name_resolver::resolve::AddressedTypeRef;
+use crate::root::name_resolver::resolve::{AddressedTypeRef, TypeRef};
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::shared::types::Type;
 use crate::root::parser::parse_function::FunctionToken;
-use crate::root::parser::parse_name::UnresolvedNameToken;
+use crate::root::parser::parse_name::{NameConnectors, UnresolvedNameToken};
 use crate::root::parser::parse_struct::StructToken;
 
 #[derive(Default)]
-struct ImplNode {
+pub struct ImplNode {
     functions: HashMap<String, isize>
 }
 
@@ -71,6 +71,10 @@ impl TopLevelNameTree {
 
         self.table.get_mut(path).unwrap()
     }
+
+    pub fn get_path_tree_fallible(&self, path: &Rc<PathBuf>) -> Option<&Box<FileLevelTree>> {
+        self.table.get(path)
+    }
 }
 
 /// Function-local table of defined variables. Only used within function processing
@@ -109,7 +113,9 @@ pub struct GlobalDefinitionTable {
     id_counter: isize,
     type_definitions: HashMap<isize, Box<dyn Type>>,
     function_signatures: HashMap<isize, FunctionSignature>,
-    name_table: TopLevelNameTree
+    name_table: TopLevelNameTree,
+    builtin_type_name_table: HashMap<String, (isize, ImplNode)>,
+    builtin_function_name_table: HashMap<String, isize>
 }
 
 
@@ -122,11 +128,22 @@ pub enum NameResult<'a> {
 
 pub enum NameResultId {
     Function(isize),
-    Type(isize),
+    Type(TypeRef),
     NotFound
 }
 
 impl GlobalDefinitionTable {
+    pub fn register_builtin_type(&mut self, name: String, t: Box<dyn Type>, impl_node: ImplNode) {
+        let id = t.id();
+        self.type_definitions.insert(id, t);
+        self.builtin_type_name_table.insert(name, (id, impl_node));
+    }
+
+    pub fn register_builtin_function(&mut self, name: String, t: FunctionSignature, id: isize) {
+        self.function_signatures.insert(id, t);
+        self.builtin_function_name_table.insert(name, id);
+    }
+
     pub fn add_from_struct_token(&mut self, st: &StructToken) -> isize {
         let file_level_tree = self.name_table.get_path_tree(st.location().path());
         self.id_counter += 1;
@@ -195,7 +212,107 @@ impl GlobalDefinitionTable {
         todo!()
     }
 
-    pub fn resolve_global_name_to_id(&self, name: &UnresolvedNameToken) -> NameResultId {
-        todo!()
+    pub fn resolve_global_name_to_id(&self, name: &UnresolvedNameToken) -> Result<NameResultId, ()> {
+        let path = name.location().path();
+
+        fn search_file_level_tree(tree: &Box<FileLevelTree>, name: &UnresolvedNameToken) -> Result<Option<NameResultId>, ()> {
+            let base = name.base();
+
+            let Some(base) = tree.table.get(base) else { return Ok(None) };
+            let mut name_iter = name.names().iter();
+
+            match base {
+                FileLevelTreeNode::Function(fid) => {
+                    if name_iter.next().is_some() || *name.indirection() > 0 {
+                        // TODO
+                        return Err(());
+                    }
+                    Ok(Some(NameResultId::Function(*fid)))
+                }
+                FileLevelTreeNode::Type(tid, imp) => {
+                    Ok(Some(if let Some((connector, method_name)) = name_iter.next() {
+                        // TODO
+                        let Some(function) = imp.functions.get(method_name) else { return Err(()) };
+
+                        // TODO
+                        if name_iter.next().is_some() {
+                            return Err(());
+                        }
+
+                        // match connector {
+                        //     NameConnectors::NonStatic => {
+                        //         if !*function_signatures.get(function).unwrap().has_self() {
+                        //
+                        //             return Err(());
+                        //         }
+                        //     }
+                        //     NameConnectors::Static => {}
+                        // }
+
+                        NameResultId::Function(*function)
+                    }
+                    else {
+                        NameResultId::Type(TypeRef::new(*tid, *name.indirection()))
+                    }))
+                }
+            }
+        }
+
+        let tree = self.name_table.get_path_tree_fallible(path);
+
+        if let Some(tree) = tree {
+            if let Some(found) = search_file_level_tree(tree, name)? {
+                return Ok(found);
+            }
+        }
+
+        for (c_path, tree) in &self.name_table.table {
+            if path == c_path {
+                continue;
+            }
+
+            if let Some(found) = search_file_level_tree(tree, name)? {
+                return Ok(found);
+            }
+        }
+
+        if let Some((id, impl_node)) = self.builtin_type_name_table.get(name.base()) {
+            let mut name_iter = name.names().iter();
+            if let Some((connector, method_name)) = name_iter.next() {
+                // TODO
+                let Some(function) = impl_node.functions.get(method_name) else { return Err(()) };
+
+                // TODO
+                if name_iter.next().is_some() {
+                    return Err(());
+                }
+
+                // match connector {
+                //     NameConnectors::NonStatic => {
+                //         if !*function_signatures.get(function).unwrap().has_self() {
+                //
+                //             return Err(());
+                //         }
+                //     }
+                //     NameConnectors::Static => {}
+                // }
+
+                return Ok(NameResultId::Function(*function));
+            }
+            else {
+                return Ok(NameResultId::Type(TypeRef::new(*id, *name.indirection())));
+            }
+        }
+
+        if let Some(id) = self.builtin_function_name_table.get(name.base()) {
+            // TODO
+            if !name.names().is_empty() || *name.indirection() != 0 {
+                return Err(());
+            }
+
+            return Ok(NameResultId::Function(*id))
+        }
+
+        Err(())
     }
 }

@@ -13,9 +13,10 @@ pub fn resolve_function_signature(function_token: &FunctionToken, global_table: 
     let mut args = Vec::new();
 
     let return_type = if let Some(type_name) = function_token.return_type() {
-        Some(match global_table.resolve_global_name_to_id(type_name) {
+        // TODO
+        Some(match global_table.resolve_global_name_to_id(type_name).unwrap() {
             NameResultId::Function(_) => todo!(),
-            NameResultId::Type(type_id) => TypeRef::new(type_id, *type_name.indirection()),
+            NameResultId::Type(type_id) => type_id,
             NameResultId::NotFound => todo!()
         })
     } else {
@@ -25,9 +26,10 @@ pub fn resolve_function_signature(function_token: &FunctionToken, global_table: 
     for (arg_name, arg_type) in function_token.parameters() {
         args.push((
             arg_name.clone(),
-            match global_table.resolve_global_name_to_id(arg_type) {
+            // TODO
+            match global_table.resolve_global_name_to_id(arg_type).unwrap() {
                 NameResultId::Function(_) => todo!(),
-                NameResultId::Type(type_id) => TypeRef::new(type_id, *arg_type.indirection()),
+                NameResultId::Type(type_ref) => type_ref,
                 NameResultId::NotFound => todo!()
             }
         ))
