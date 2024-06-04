@@ -1,15 +1,14 @@
 use derive_getters::{Dissolve, Getters};
 use nom::sequence::Tuple;
-use nom::Parser;
+use nom::{Offset, Parser};
 use nom_supreme::tag::complete::tag;
 use substring::Substring;
-
 use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
 use crate::root::parser::parse_blocks::default_section;
-use crate::root::parser::parse_function::parse_line::{parse_lines, LineTokens};
+use crate::root::parser::parse_function::parse_line::{LineTokens, parse_lines};
 use crate::root::parser::parse_name::{parse_full_name, parse_simple_name, UnresolvedNameToken};
-use crate::root::parser::parse_parameters::{parse_parameters, Parameters};
-use crate::root::parser::parse_toplevel::{TopLevelTokens, ToplevelTestFn};
+use crate::root::parser::parse_parameters::{Parameters, parse_parameters};
+use crate::root::parser::parse_toplevel::{ToplevelTestFn, TopLevelTokens};
 use crate::root::parser::parse_util::{discard_ignored, require_ignored};
 
 pub mod parse_assigner;

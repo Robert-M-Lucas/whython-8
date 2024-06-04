@@ -27,6 +27,19 @@ macro_rules! time {
     };
 }
 
+// #[macro_export]
+// macro_rules! try {
+//     ($($tts:tt)*) => {
+//         match $($tts)* {
+//             Err(e) => {
+//                 println!("\n{}");
+//                 return;
+//             }
+//             Ok(v) => v
+//         }
+//     };
+// }
+
 #[macro_export]
 macro_rules! ret_time {
     ($out: expr, $($tts:tt)*) => {

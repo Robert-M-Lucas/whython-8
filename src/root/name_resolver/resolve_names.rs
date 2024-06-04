@@ -2,6 +2,8 @@ use std::collections::HashMap;
 
 use derive_getters::Getters;
 use itertools::Itertools;
+use crate::root::errors::name_resolver_errors::NRErrors;
+use crate::root::errors::WError;
 
 use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable, NameResultId};
 use crate::root::name_resolver::resolve_function_signatures::resolve_function_signature;
@@ -84,7 +86,7 @@ impl Type for UserType {
 }
 
 // ! Unoptimised
-pub fn resolve_names(ast: Vec<TopLevelTokens>, global_table: &mut GlobalDefinitionTable) -> HashMap<FunctionID, FunctionToken> {
+pub fn resolve_names(ast: Vec<TopLevelTokens>, global_table: &mut GlobalDefinitionTable) -> Result<HashMap<FunctionID, FunctionToken>, WError> {
     let mut ast = ast;
 
     // ? User types > 1; Builtin Types < -1
@@ -118,8 +120,8 @@ pub fn resolve_names(ast: Vec<TopLevelTokens>, global_table: &mut GlobalDefiniti
                     .map(|(name, type_name)| {
                         // TODO
                         let type_ref = match global_table.resolve_global_name_to_id(&type_name).unwrap().unwrap() {
-                            NameResultId::Function(_) => todo!(),
                             NameResultId::Type(type_ref) => type_ref,
+                            NameResultId::Function(_) => todo!(),
                             NameResultId::NotFound => todo!(),
                         };
 
@@ -136,9 +138,8 @@ pub fn resolve_names(ast: Vec<TopLevelTokens>, global_table: &mut GlobalDefiniti
                     NameResultId::NotFound => todo!(),
                 };
 
-                // TODO
                 if type_ref.indirection().has_indirection() {
-                    panic!()
+                    return WError::n(NRErrors::IndirectImpl, it.location().clone());
                 }
 
                 for ft in it.dissolve().2 {

@@ -1,4 +1,3 @@
-use name_resolver::resolve_names::resolve_names;
 use crate::root::parser::parse::parse;
 // use crate::root::assembler::assemble::generate_assembly;
 // use crate::root::name_resolver::processor::process;
@@ -11,6 +10,7 @@ use std::path::PathBuf;
 use crate::root::compiler::compile::compile;
 use crate::root::name_resolver::resolve::resolve;
 use shared::common::ByteSize;
+use crate::root::errors::WError;
 use crate::root::runner::{assemble, link_gcc, run};
 
 // #[cfg(target_os = "windows")]
@@ -32,6 +32,7 @@ pub mod builtin;
 pub mod shared;
 pub mod compiler;
 pub mod assembler;
+pub mod errors;
 
 pub const POINTER_SIZE: ByteSize = ByteSize(8);
 
@@ -52,10 +53,12 @@ pub struct Args {
 
 pub fn main() {
     let args = Args::parse();
-    let _ = main_args(args);
+    if let Err(e) = main_args(args) {
+        println!("\n{e}");
+    }
 }
 
-pub fn main_args(args: Args) {
+pub fn main_args(args: Args) -> Result<(), WError> {
     if let Some(path) = PathBuf::from(&args.output).parent() {
         if let Err(e) = fs::create_dir_all(path) {
             if !matches!(e.kind(), ErrorKind::AlreadyExists) {
@@ -72,7 +75,7 @@ pub fn main_args(args: Args) {
 
     print!("Resolving Names... ");
     time!(
-        let (global_table, unprocessed_functions) = resolve(parsed);
+        let (global_table, unprocessed_functions) = resolve(parsed)?;
     );
 
     print!("Compiling... ");
@@ -107,4 +110,5 @@ pub fn main_args(args: Args) {
     }
 
     cprintln!("<g,bold>Done!</>");
+    Ok(())
 }
