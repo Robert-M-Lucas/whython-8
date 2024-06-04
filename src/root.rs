@@ -80,7 +80,7 @@ pub fn main_args(args: Args) -> Result<(), WError> {
 
     print!("Compiling... ");
     time!(
-        let assembly = compile(global_table, unprocessed_functions);
+        let assembly = compile(global_table, unprocessed_functions)?;
     );
 
     print!("Writing Assembly... ");

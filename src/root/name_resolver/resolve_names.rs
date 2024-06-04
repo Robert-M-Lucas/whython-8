@@ -115,42 +115,45 @@ pub fn resolve_names(ast: Vec<TopLevelTokens>, global_table: &mut GlobalDefiniti
             TopLevelTokens::Struct(st) => {
                 let (location, _, attributes, id) = st.dissolve();
                 let id = id.unwrap();
-                // TODO: Process indirection
-                let attributes = attributes.into_iter()
-                    .map(|(name, type_name)| {
-                        // TODO
-                        let type_ref = match global_table.resolve_global_name_to_id(&type_name).unwrap().unwrap() {
-                            NameResultId::Type(type_ref) => type_ref,
-                            NameResultId::Function(_) => todo!(),
-                            NameResultId::NotFound => todo!(),
-                        };
 
-                        (name, type_ref)
+                let mut p_attributes = Vec::new();
+                for ((name, name_loc), (type_name, type_name_loc)) in attributes {
+                    let type_ref = match global_table.resolve_global_name_to_id(&type_name, &type_name_loc)? {
+                        NameResultId::Type(type_ref) => type_ref,
+                        NameResultId::Function(_) => todo!(),
+                        NameResultId::NotFound => todo!(),
+                    };
+
+                    for (e_name, _) in &p_attributes {
+                        if e_name == &name {
+                            return Err(WError::n(NRErrors::SameAttributeName(name), name_loc));
+                        }
                     }
-                ).collect_vec();
-                unsized_final_types.insert(id, UnsizedUserType::new(id, attributes, location));
+                    p_attributes.push((name, type_ref))
+                }
+                unsized_final_types.insert(id, UnsizedUserType::new(id, p_attributes, location));
             }
             TopLevelTokens::Impl(it) => {
                 // TODO
-                let type_ref = match global_table.resolve_global_name_to_id(&UnresolvedNameToken::new_unresolved_top(it.name().clone(), it.location().clone())).unwrap().unwrap() {
+                let type_ref = match global_table.resolve_global_name_to_id(&UnresolvedNameToken::new_unresolved_top(it.name().clone(), it.location().clone()), it.location())? {
                     NameResultId::Function(_) => todo!(),
                     NameResultId::Type(type_ref) => type_ref,
                     NameResultId::NotFound => todo!(),
                 };
 
                 if type_ref.indirection().has_indirection() {
-                    return WError::n(NRErrors::IndirectImpl, it.location().clone());
+                    return Err(WError::n(NRErrors::IndirectImpl, it.location().clone()));
                 }
 
                 for ft in it.dissolve().2 {
                     let function_id = global_table.add_from_function_token(&ft, Some(*type_ref.type_id()));
-                    global_table.add_function_signature(function_id, resolve_function_signature(&ft, &global_table));
+                    global_table.add_function_signature(function_id, resolve_function_signature(&ft, &global_table)?);
                     unprocessed_functions.insert(function_id, ft);
                 }
             }
             TopLevelTokens::Function(ft) => {
                 let function_id = global_table.add_from_function_token(&ft, None);
-                global_table.add_function_signature(function_id, resolve_function_signature(&ft, &global_table));
+                global_table.add_function_signature(function_id, resolve_function_signature(&ft, &global_table)?);
                 unprocessed_functions.insert(function_id, ft);
             }
         };
@@ -169,5 +172,5 @@ pub fn resolve_names(ast: Vec<TopLevelTokens>, global_table: &mut GlobalDefiniti
     }
 
     // (final_types, type_names, unprocessed_functions)
-    unprocessed_functions
+    Ok(unprocessed_functions)
 }

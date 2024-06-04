@@ -27,7 +27,7 @@ pub mod parse_while;
 pub struct FunctionToken {
     location: Location,
     name: String,
-    return_type: Option<UnresolvedNameToken>,
+    return_type: Option<(UnresolvedNameToken, Location)>,
     parameters: Parameters,
     lines: Vec<LineTokens>,
 }
@@ -59,8 +59,9 @@ pub fn parse_function(s: Span, allow_self: Option<UnresolvedNameToken>) -> Parse
 
     let (s, return_type) = if let Ok((s, _)) = tag::<_, _, ErrorTree>("->")(s) {
         let (s, _) = discard_ignored(s)?;
+        let location = Location::from_span(&s);
         let (s, return_type) = parse_full_name(s, containing_class.and_then(|s| Some(s.to_string())))?;
-        (discard_ignored(s)?.0, Some(return_type))
+        (discard_ignored(s)?.0, Some((return_type, location)))
     } else {
         (s, None)
     };

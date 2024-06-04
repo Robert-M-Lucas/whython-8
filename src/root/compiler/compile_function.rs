@@ -2,21 +2,22 @@ use std::collections::HashSet;
 use crate::root::compiler::assembly::utils::{align_16_bytes, align_16_bytes_plus_8, get_function_tag, get_qword_stack_pointer};
 use crate::root::compiler::compile_evaluable::compile_evaluable;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
+use crate::root::errors::WError;
 use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable, NameResultId};
 use crate::root::parser::parse_function::FunctionToken;
 use crate::root::parser::parse_function::parse_line::LineTokens;
 use crate::root::shared::common::{FunctionID, LocalAddress};
 use crate::root::shared::common::AddressedTypeRef;
 
-pub fn compile_function(fid: FunctionID, function: FunctionToken, global_table: &GlobalDefinitionTable) -> (String, HashSet<FunctionID>) {
+pub fn compile_function(fid: FunctionID, function: FunctionToken, global_table: &GlobalDefinitionTable) -> Result<(String, HashSet<FunctionID>), WError> {
     let mut local_variables = Box::new(LocalVariableTable::default());
 
     let (_location, _name, return_type, parameters, lines) = function.dissolve();
 
     let return_type = if fid.is_main() { None } else { return_type };
 
-    let return_type = return_type.and_then(
-        |t| Some(match global_table.resolve_global_name_to_id(&t).unwrap().unwrap() {
+    let return_type = if let Some((t, loc)) = return_type {
+        Some(match global_table.resolve_global_name_to_id(&t, &loc)? {
             NameResultId::Function(_) => todo!(),
             NameResultId::Type(type_ref) => {
                 if type_ref.indirection().has_indirection() {
@@ -25,12 +26,16 @@ pub fn compile_function(fid: FunctionID, function: FunctionToken, global_table: 
                 type_ref
             }
             NameResultId::NotFound => todo!()
-        }));
+        })
+    }
+    else {
+        None
+    };
 
     let mut param_address = LocalAddress(8);
 
-    for (param_name, param_type) in parameters {
-        let type_ref = match global_table.resolve_global_name_to_id(&param_type).unwrap().unwrap() {
+    for ((param_name, param_name_loc), (param_type, param_type_loc)) in parameters {
+        let type_ref = match global_table.resolve_global_name_to_id(&param_type, &param_type_loc)? {
             NameResultId::Function(_) => todo!(),
             NameResultId::Type(type_ref) => {
                 if type_ref.indirection().has_indirection() {
@@ -76,7 +81,7 @@ pub fn compile_function(fid: FunctionID, function: FunctionToken, global_table: 
         final_contents += "\n\tleave\n\tret"
     }
 
-    (final_contents, function_calls)
+    Ok((final_contents, function_calls))
 }
 
 fn recursively_compile_lines(fid: FunctionID, lines: &[LineTokens], return_variable: &Option<AddressedTypeRef>, local_variables: Box<LocalVariableTable>, global_table: &GlobalDefinitionTable, function_calls: &mut HashSet<FunctionID>) -> (String, Box<LocalVariableTable>) {

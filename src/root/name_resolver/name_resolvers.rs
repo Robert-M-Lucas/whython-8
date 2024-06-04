@@ -3,7 +3,10 @@ use std::path::PathBuf;
 use std::rc::Rc;
 use derive_getters::Getters;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
+use crate::root::errors::name_resolver_errors::NRErrors;
+use crate::root::errors::WError;
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
+use crate::root::parser::parse::Location;
 use crate::root::shared::types::Type;
 use crate::root::parser::parse_function::FunctionToken;
 use crate::root::parser::parse_name::UnresolvedNameToken;
@@ -196,10 +199,10 @@ impl GlobalDefinitionTable {
         todo!()
     }
 
-    pub fn resolve_global_name_to_id(&self, name: &UnresolvedNameToken) -> Result<Option<NameResultId>, ()> {
+    pub fn resolve_global_name_to_id(&self, name: &UnresolvedNameToken, location: &Location) -> Result<NameResultId, WError> {
         let path = name.location().path();
 
-        fn search_file_level_tree(tree: &Box<FileLevelTree>, name: &UnresolvedNameToken) -> Result<Option<NameResultId>, ()> {
+        fn search_file_level_tree(tree: &Box<FileLevelTree>, name: &UnresolvedNameToken, location: &Location) -> Result<Option<NameResultId>, WError> {
             let base = name.base();
 
             let Some(base) = tree.table.get(base) else { return Ok(None) };
@@ -207,20 +210,22 @@ impl GlobalDefinitionTable {
 
             match base {
                 FileLevelTreeNode::Function(fid) => {
-                    if name_iter.next().is_some() || name.indirection().has_indirection() {
+                    if let Some((_, next)) = name_iter.next() {
+                        return Err(WError::n(NRErrors::FunctionSubname(next.clone(), name.base().clone()), location.clone()));
+                    }
+                    if name.indirection().has_indirection() {
                         // TODO
-                        return Err(());
                     }
                     Ok(Some(NameResultId::Function(*fid)))
                 }
                 FileLevelTreeNode::Type(tid, imp) => {
                     Ok(Some(if let Some((connector, method_name)) = name_iter.next() {
-                        // TODO
-                        let Some(function) = imp.functions.get(method_name) else { return Err(()) };
+                        let Some(function) = imp.functions.get(method_name) else {
+                            return Err(WError::n(NRErrors::CannotFindMethod(method_name.clone(), name.base().clone()), location.clone()));
+                        };
 
-                        // TODO
-                        if name_iter.next().is_some() {
-                            return Err(());
+                        if let Some((_, next)) = name_iter.next() {
+                            return Err(WError::n(NRErrors::FunctionSubname(next.clone(), method_name.clone()), location.clone()));
                         }
 
                         // match connector {
@@ -246,8 +251,8 @@ impl GlobalDefinitionTable {
 
         // * Search current file then others
         if let Some(tree) = tree {
-            if let Some(found) = search_file_level_tree(tree, name)? {
-                return Ok(Some(found));
+            if let Some(found) = search_file_level_tree(tree, name, location)? {
+                return Ok(found);
             }
         }
 
@@ -256,20 +261,20 @@ impl GlobalDefinitionTable {
                 continue;
             }
 
-            if let Some(found) = search_file_level_tree(tree, name)? {
-                return Ok(Some(found));
+            if let Some(found) = search_file_level_tree(tree, name, location)? {
+                return Ok(found);
             }
         }
 
         if let Some((id, impl_node)) = self.builtin_type_name_table.get(name.base()) {
             let mut name_iter = name.names().iter();
             if let Some((connector, method_name)) = name_iter.next() {
-                // TODO
-                let Some(function) = impl_node.functions.get(method_name) else { return Err(()) };
+                let Some(function) = impl_node.functions.get(method_name) else {
+                    return Err(WError::n(NRErrors::CannotFindMethod(method_name.clone(), name.base().clone()), location.clone()));
+                };
 
-                // TODO
-                if name_iter.next().is_some() {
-                    return Err(());
+                if let Some((_, next)) = name_iter.next() {
+                    return Err(WError::n(NRErrors::FunctionSubname(next.clone(), method_name.clone()), location.clone()));
                 }
 
                 // match connector {
@@ -282,22 +287,24 @@ impl GlobalDefinitionTable {
                 //     NameConnectors::Static => {}
                 // }
 
-                return Ok(Some(NameResultId::Function(*function)));
+                return Ok(NameResultId::Function(*function));
             }
             else {
-                return Ok(Some(NameResultId::Type(TypeRef::new(*id, *name.indirection()))));
+                return Ok(NameResultId::Type(TypeRef::new(*id, *name.indirection())));
             }
         }
 
         if let Some(id) = self.builtin_function_name_table.get(name.base()) {
-            // TODO
-            if !name.names().is_empty() || name.indirection().has_indirection() {
-                return Err(());
+            if let Some((_, next)) = name.names().iter().next() {
+                return Err(WError::n(NRErrors::FunctionSubname(next.clone(), name.base().clone()), location.clone()));
+            }
+            if name.indirection().has_indirection() {
+                // TODO
             }
 
-            return Ok(Some(NameResultId::Function(*id)))
+            return Ok(NameResultId::Function(*id))
         }
 
-        Ok(None)
+        todo!()
     }
 }

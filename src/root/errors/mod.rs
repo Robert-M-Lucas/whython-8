@@ -29,7 +29,7 @@ impl WError {
 impl Display for WError {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         let text = if let Some(location) = &self.location {
-            cformat!("<r,bold>Error:</>\n    {}\n<c,bold>At:</>\n{}", self.error, location)
+            cformat!("<r,bold>Error:</>\n    {}\n{}\n", self.error, location)
         }
         else {
             cformat!("<r,bold>Error:</>\n    {}", self.error)

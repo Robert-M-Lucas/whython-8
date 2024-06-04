@@ -7,6 +7,7 @@ use nom_supreme::error::GenericErrorTree;
 use std::fs;
 use std::path::PathBuf;
 use std::rc::Rc;
+use color_print::cformat;
 use derive_getters::Getters;
 use crate::root::parser::parse_toplevel::TopLevelTokens;
 
@@ -43,30 +44,49 @@ const CHAR_LIMIT: usize = 61;
 
 impl Display for Location {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        writeln!(f, "{}", cformat!("<c,bold>In File:</>"))?;
+        writeln!(f, "    {}", self.path.as_path().to_string_lossy())?;
+        writeln!(f, "{}", cformat!("<c,bold>At:</>"))?;
+
         fn fail(f: &mut Formatter<'_>) -> std::fmt::Result {
             write!(f, "Failed to fetch file reference (has the file changed?")
         }
 
         let Ok(file) = fs::read_to_string(self.path.as_path()) else { return fail(f); };
 
+        let mut offset = 0usize;
+        let mut chars = file.chars();
+        for _ in 0..self.offset {
+            let Some(c) = chars.next() else { return fail(f); };
+            if c == '\n' {
+                offset = 0;
+            }
+            else {
+                offset += 1;
+            }
+        }
+        println!("O: {offset}");
+
         let mut line_iter = file.lines();
+
+        let largest_num_len = format!("{}", self.line + 2).len();
 
         if self.line > 1 {
             if self.line > 2 {
-                writeln!(f, "{} |  ...", self.line - 2)?;
+                writeln!(f, "{:0width$} |  ...", self.line - 2, width=largest_num_len)?;
             }
 
             let Some(line) = line_iter.nth(self.line as usize - 2) else { return fail(f); };
             let line = if line.chars().count() > CHAR_LIMIT { format!("{} ...", line.chars().take(CHAR_LIMIT - 4).collect::<String>()) } else { line.to_string() };
-            writeln!(f, "{} |  {}", self.line - 1, line)?;
+            writeln!(f, "{:0width$} |  {}", self.line - 1, line, width=largest_num_len)?;
         }
 
         let Some(line) = line_iter.next() else { return fail(f); };
         let (mut start, mut end) = (0usize, line.chars().count() - 1);
 
         if end > CHAR_LIMIT {
-            let start_dist = self.offset - start;
-            let end_dist = end - self.offset;
+            let start_dist = offset - start;
+            let end_dist = end - offset;
 
             if start_dist > end_dist {
                 let take_from_start = min(start_dist, CHAR_LIMIT / 2);
@@ -82,14 +102,14 @@ impl Display for Location {
 
         end += 1;
 
-        writeln!(f, "{} |  {}", self.line, line.chars().skip(start).take(end - start).collect::<String>())?;
-        writeln!(f, "E |  {}^Here", (0..(self.offset - start)).map(|_| ' ').collect::<String>())?;
+        writeln!(f, "{:0width$} |  {}", self.line, line.chars().skip(start).take(end - start).collect::<String>(), width=largest_num_len)?;
+        writeln!(f, "{:0width$} |  {}^Here", "E", (0..(offset - start)).map(|_| ' ').collect::<String>(), width=largest_num_len)?;
 
         if let Some(line) = line_iter.next() {
             let line = if line.chars().count() > CHAR_LIMIT { format!("{} ...", line.chars().take(CHAR_LIMIT - 4).collect::<String>()) } else { line.to_string() };
-            writeln!(f, "{} |  {}", self.line + 1, line)?;
+            writeln!(f, "{:0width$} |  {}", self.line + 1, line, width=largest_num_len)?;
             if line_iter.next().is_some() {
-                writeln!(f, "{} |  ...", self.line + 2)?;
+                writeln!(f, "{:0width$} |  ...", self.line + 2, width=largest_num_len)?;
             }
         }
 
