@@ -5,6 +5,7 @@ use nom_supreme::tag::complete::tag;
 use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
 use crate::root::parser::parse_function::parse_evaluable::{parse_evaluable, EvaluableToken};
 use crate::root::parser::parse_function::parse_line::{LineTestFn, LineTokens};
+use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::parser::parse_util::require_ignored;
 
 #[derive(Debug, Getters)]
@@ -22,7 +23,7 @@ pub fn test_parse_return<'a, 'b>(s: Span<'a>) -> ParseResult<Span, LineTestFn<'a
     }
 }
 
-pub fn parse_return<'a, 'b>(s: Span<'a>, containing_class: Option<&'b str>) -> ParseResult<'a, Span<'a>, ReturnToken> {
+pub fn parse_return<'a, 'b>(s: Span<'a>, containing_class: Option<&'b SimpleNameToken>) -> ParseResult<'a, Span<'a>, ReturnToken> {
     let (s, l) = tag("return")(s)?;
     let (s, _) = require_ignored(s)?;
     let (s, value) = parse_evaluable(s, containing_class, true)?;

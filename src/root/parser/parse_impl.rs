@@ -5,15 +5,15 @@ use nom_supreme::tag::complete::tag;
 
 use crate::root::parser::parse::{Location, ParseResult, Span};
 use crate::root::parser::parse_blocks::default_section;
-use crate::root::parser::parse_function::{parse_function, FunctionToken};
-use crate::root::parser::parse_name::{UnresolvedNameToken, parse_simple_name};
-use crate::root::parser::parse_toplevel::{TopLevelTokens, ToplevelTestFn};
+use crate::root::parser::parse_function::{FunctionToken, parse_function};
+use crate::root::parser::parse_name::{parse_simple_name, SimpleNameToken};
+use crate::root::parser::parse_toplevel::{ToplevelTestFn, TopLevelTokens};
 use crate::root::parser::parse_util::{discard_ignored, require_ignored};
 
 #[derive(Debug, Getters, Dissolve)]
 pub struct ImplToken {
     location: Location,
-    name: String,
+    name: SimpleNameToken,
     functions: Vec<FunctionToken>,
 }
 
@@ -47,8 +47,7 @@ pub fn parse_impl(s: Span) -> ParseResult<Span, ImplToken> {
         let (cs, function) = parse_function(
             cs,
             // ? Pass class name (type) to function in case needed for self
-            // ? Pass containing class as null as class does not contain itself
-            Some(UnresolvedNameToken::new_unresolved(&name, None))
+            Some(&name)
         )?;
 
         functions.push(function);
@@ -59,7 +58,7 @@ pub fn parse_impl(s: Span) -> ParseResult<Span, ImplToken> {
         s,
         ImplToken {
             location,
-            name: name.to_string(),
+            name,
             functions,
         },
     ))

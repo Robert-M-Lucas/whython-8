@@ -11,7 +11,6 @@ use crate::root::name_resolver::resolve_type_sizes::{resolve_type_sizes, Unsized
 use crate::root::parser::parse::Location;
 use crate::root::parser::parse_function::FunctionToken;
 use crate::root::parser::parse_function::parse_literal::LiteralToken;
-use crate::root::parser::parse_name::UnresolvedNameToken;
 use crate::root::parser::parse_toplevel::TopLevelTokens;
 use crate::root::shared::common::{LocalAddress, TypeRef};
 use crate::root::shared::common::{ByteSize, FunctionID, TypeID};

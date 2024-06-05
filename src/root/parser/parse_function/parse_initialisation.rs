@@ -1,21 +1,17 @@
-use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
-use crate::root::parser::parse_function::parse_break::parse_break;
-use crate::root::parser::parse_function::parse_evaluable::{parse_evaluable, EvaluableToken};
+use crate::root::parser::parse::{Location, ParseResult, Span};
+use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, FullNameWithIndirectionToken, parse_evaluable, parse_full_name};
 use crate::root::parser::parse_function::parse_line::{LineTestFn, LineTokens};
-use crate::root::parser::parse_name::{parse_full_name, parse_simple_name, UnresolvedNameToken};
-use nom::character::complete::{char};
+use nom::character::complete::char;
 use nom::sequence::Tuple;
-use nom::Err::Error;
-use nom_supreme::error::{BaseErrorKind, Expectation};
 use nom_supreme::tag::complete::tag;
-use substring::Substring;
+use crate::root::parser::parse_name::{SimpleNameToken, parse_simple_name};
 use crate::root::parser::parse_util::{discard_ignored, require_ignored};
 
 #[derive(Debug)]
 pub struct InitialisationToken {
     location: Location,
-    name: String,
-    type_name: UnresolvedNameToken,
+    name: SimpleNameToken,
+    type_name: FullNameWithIndirectionToken,
     value: EvaluableToken,
 }
 
@@ -28,14 +24,14 @@ pub fn test_parse_initialisation<'a, 'b>(s: Span<'a>) -> ParseResult<Span, LineT
     }
 }
 
-pub fn parse_initialisation<'a, 'b>(s: Span<'a>, containing_class: Option<&'b str>) -> ParseResult<'a, Span<'a>, InitialisationToken> {
+pub fn parse_initialisation<'a, 'b>(s: Span<'a>, containing_class: Option<&'b SimpleNameToken>) -> ParseResult<'a, Span<'a>, InitialisationToken> {
     let (s, l) = tag("let")(s)?;
     let (s, _) = require_ignored(s)?;
     let (s, name) = parse_simple_name(s)?;
     let (s, _) = discard_ignored(s)?;
     let (s, _) = char(':')(s)?;
     let (s, _) = discard_ignored(s)?;
-    let (s, type_name) = parse_full_name(s, containing_class.and_then(|s| Some(s.to_string())))?;
+    let (s, type_name) = parse_full_name(s, containing_class)?;
     let (s, _) = discard_ignored(s)?;
     let (s, _) = char('=')(s)?;
     let (s, _) = discard_ignored(s)?;
@@ -45,7 +41,7 @@ pub fn parse_initialisation<'a, 'b>(s: Span<'a>, containing_class: Option<&'b st
         s,
         InitialisationToken {
             location: Location::from_span(&l),
-            name: name.to_string(),
+            name,
             type_name,
             value,
         },

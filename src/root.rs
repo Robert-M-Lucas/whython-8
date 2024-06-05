@@ -70,7 +70,7 @@ pub fn main_args(args: Args) -> Result<(), WError> {
 
     print!("Parsing... ");
     time!(
-        let parsed = parse(PathBuf::from(&args.input)).unwrap();
+        let parsed = parse(PathBuf::from(&args.input))?;
     );
 
     print!("Resolving Names... ");

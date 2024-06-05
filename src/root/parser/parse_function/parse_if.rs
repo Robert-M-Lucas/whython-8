@@ -6,6 +6,7 @@ use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
 use crate::root::parser::parse_blocks::default_section;
 use crate::root::parser::parse_function::parse_evaluable::{parse_evaluable, EvaluableToken};
 use crate::root::parser::parse_function::parse_line::{parse_lines, LineTestFn, LineTokens};
+use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::parser::parse_util::{discard_ignored, require_ignored};
 
 #[derive(Debug)]
@@ -24,7 +25,7 @@ pub fn test_parse_if<'a, 'b>(s: Span<'a>) -> ParseResult<Span, LineTestFn<'a, 'b
     }
 }
 
-pub fn parse_if<'a, 'b>(s: Span<'a>, containing_class: Option<&'b str>) -> ParseResult<'a, Span<'a>, IfToken> {
+pub fn parse_if<'a, 'b>(s: Span<'a>, containing_class: Option<&'b SimpleNameToken>) -> ParseResult<'a, Span<'a>, IfToken> {
     let (s, l) = tag("if")(s)?;
     let (s, _) = discard_ignored(s)?;
     let (s, content) = default_section(s, '(')?;

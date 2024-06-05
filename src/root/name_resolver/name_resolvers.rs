@@ -10,7 +10,6 @@ use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse::Location;
 use crate::root::shared::types::Type;
 use crate::root::parser::parse_function::FunctionToken;
-use crate::root::parser::parse_name::UnresolvedNameToken;
 use crate::root::parser::parse_struct::StructToken;
 use crate::root::shared::common::{AddressedTypeRef, FunctionID, TypeID, TypeRef};
 
@@ -168,31 +167,14 @@ impl GlobalDefinitionTable {
     }
 
     pub fn add_type(&mut self, given_id: TypeID, definition: Box<dyn Type>) {
-        // TODO: handle collisions
         self.type_definitions.insert(given_id, definition);
     }
 
-    pub fn resolve_local_name(&self, name: &UnresolvedNameToken, local_variable_table: &LocalVariableTable) -> NameResult {
-        let temp_name = &name.names()[0].1;
-
-        if let Some((a, t)) =
-            local_variable_table.get_ref_and_type(
-                temp_name, &self.type_definitions
-            ) {
-            return NameResult::Variable(a, t);
-        }
+    pub fn resolve_name(&self, name: &UnresolvedNameToken, local_variable_table: &LocalVariableTable) -> NameResult {
         todo!()
     }
 
-    pub fn resolve_local_name_allow_function_calls(&self, name: &UnresolvedNameToken, local_variable_table: &mut LocalVariableTable) -> NameResult {
-        let temp_name = &name.names()[0].1;
-
-        if let Some((a, t)) =
-            local_variable_table.get_ref_and_type(
-                temp_name, &self.type_definitions
-            ) {
-            return NameResult::Variable(a, t);
-        }
+    pub fn resolve_global_name(&self, name: &UnresolvedNameToken) -> NameResult {
         todo!()
     }
 
@@ -224,16 +206,6 @@ impl GlobalDefinitionTable {
                         if let Some((_, next)) = name_iter.next() {
                             return Err(WError::n(NRErrors::FunctionSubname(next.clone(), method_name.clone()), location.clone()));
                         }
-
-                        // match connector {
-                        //     NameConnectors::NonStatic => {
-                        //         if !*function_signatures.get(function).unwrap().has_self() {
-                        //
-                        //             return Err(());
-                        //         }
-                        //     }
-                        //     NameConnectors::Static => {}
-                        // }
 
                         NameResultId::Function(*function)
                     }

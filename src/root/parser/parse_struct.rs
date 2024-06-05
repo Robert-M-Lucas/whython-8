@@ -1,23 +1,19 @@
-use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
-use crate::root::parser::parse_name::{parse_simple_name, UnresolvedNameToken};
-use crate::root::parser::parse_parameters::{parse_parameters, Parameters};
-use crate::root::parser::parse_toplevel::{TopLevelTokens, ToplevelTestFn};
+use crate::root::parser::parse::{Location, ParseResult, Span};
+use crate::root::parser::parse_parameters::{Parameters, parse_parameters};
+use crate::root::parser::parse_toplevel::{ToplevelTestFn, TopLevelTokens};
 use derive_getters::{Dissolve, Getters};
-use nom::character::complete::{ satisfy};
 use nom::sequence::Tuple;
-use nom::Err::Error;
-use nom::{IResult, Parser};
-use nom_supreme::error::{BaseErrorKind, Expectation};
+use nom::Parser;
 use nom_supreme::tag::complete::tag;
-use substring::Substring;
 use crate::root::parser::parse_blocks::default_section;
+use crate::root::parser::parse_name::{parse_simple_name, SimpleNameToken};
 use crate::root::parser::parse_util::{discard_ignored, require_ignored};
 use crate::root::shared::common::TypeID;
 
 #[derive(Debug, Getters, Dissolve)]
 pub struct StructToken {
     location: Location,
-    name: String,
+    name: SimpleNameToken,
     attributes: Parameters,
     id: Option<TypeID>
 }
@@ -50,7 +46,7 @@ pub fn parse_struct(s: Span) -> ParseResult<Span, StructToken> {
         s,
         StructToken {
             location,
-            name: name.to_string(),
+            name,
             attributes: parameters,
             id: None
         },

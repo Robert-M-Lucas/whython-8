@@ -11,6 +11,7 @@ use crate::root::parser::parse_function::parse_return::{test_parse_return, Retur
 use crate::root::parser::parse_function::parse_while::{test_parse_while, WhileToken};
 use nom::branch::alt;
 use nom::Parser;
+use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::parser::parse_util::discard_ignored;
 
 #[derive(Debug)]
@@ -25,9 +26,9 @@ pub enum LineTokens {
 }
 
 /// fn(line span, Option<class name>)
-pub type LineTestFn<'a, 'b> = fn(Span<'a>, Option<&'b str>) -> ParseResult<'a, Span<'a>, LineTokens>;
+pub type LineTestFn<'a, 'b> = fn(Span<'a>, Option<&'b SimpleNameToken>) -> ParseResult<'a, Span<'a>, LineTokens>;
 
-pub fn parse_lines<'a, 'b>(contents: Span<'a>, containing_class: Option<&'b str>) -> ParseResult<'a, (), Vec<LineTokens>> {
+pub fn parse_lines<'a, 'b>(contents: Span<'a>, containing_class: Option<&'b SimpleNameToken>) -> ParseResult<'a, (), Vec<LineTokens>> {
     let mut lines = Vec::new();
 
     let mut c = contents;
@@ -46,7 +47,7 @@ pub fn parse_lines<'a, 'b>(contents: Span<'a>, containing_class: Option<&'b str>
     Ok(((), lines))
 }
 
-pub fn parse_line<'a, 'b>(s: Span<'a>, containing_class: Option<&'b str>) -> ParseResult<'a, Span<'a>, LineTokens> {
+pub fn parse_line<'a, 'b>(s: Span<'a>, containing_class: Option<&'b SimpleNameToken>) -> ParseResult<'a, Span<'a>, LineTokens> {
     if let Ok((_, parser)) = alt((
         test_parse_break,
         test_parse_return,
