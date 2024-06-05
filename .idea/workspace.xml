@@ -7,15 +7,7 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Improved name evaluation">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/compile_function.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile_function.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/resolve_function_signatures.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/resolve_function_signatures.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/resolve_names.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/resolve_names.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_evaluable.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_evaluable.rs" afterDir="false" />
-    </list>
+    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Improved name evaluation" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -147,7 +139,7 @@
       <workItem from="1717458137866" duration="79000" />
       <workItem from="1717465660507" duration="7712000" />
       <workItem from="1717529235686" duration="1411000" />
-      <workItem from="1717561847985" duration="10182000" />
+      <workItem from="1717561847985" duration="16546000" />
     </task>
     <task id="LOCAL-00001" summary="Changes">
       <option name="closed" value="true" />
@@ -245,7 +237,15 @@
       <option name="project" value="LOCAL" />
       <updated>1717572031837</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Improved name evaluation">
+      <option name="closed" value="true" />
+      <created>1717578308406</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1717578308406</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

@@ -4,6 +4,7 @@ use crate::root::parser::parse::Location;
 
 pub mod parser_errors;
 pub mod name_resolver_errors;
+pub mod evaluable_errors;
 
 pub struct WError {
     error: String,

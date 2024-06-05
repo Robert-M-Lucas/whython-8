@@ -73,14 +73,15 @@ fn recursively_compile_lines(fid: FunctionID, lines: &[LineTokens], return_varia
             LineTokens::Initialisation(it) => {
                 let (name, type_name, value) = (it.name(), it.type_name(), it.value());
                 let address = global_table.add_local_variable_named(name.name().clone(), type_name, &mut local_variables)?;
-                compile_evaluable(fid, value, Some(address), &mut local_variables, global_table, function_calls);
+                contents += "\n";
+                contents += &compile_evaluable(fid, value, Some(address), &mut local_variables, global_table, function_calls)?.0;
             },
             LineTokens::Assignment(_) => todo!(),
             LineTokens::If(_) => todo!(),
             LineTokens::While(_) => todo!(),
             LineTokens::Return(rt) => {
                 if fid.is_main() {
-                    let (code, location) = compile_evaluable(fid, rt.return_value(), None, &mut local_variables, global_table, function_calls);
+                    let (code, location) = compile_evaluable(fid, rt.return_value(), None, &mut local_variables, global_table, function_calls)?;
                     let location = location.unwrap();
                     contents += "\n";
                     contents += &code;
@@ -93,7 +94,7 @@ fn recursively_compile_lines(fid: FunctionID, lines: &[LineTokens], return_varia
             LineTokens::Break(_) => todo!(),
             LineTokens::NoOp(et) => {
                 contents += "\n";
-                contents += &compile_evaluable(fid, et, None, &mut local_variables, global_table, function_calls).0;
+                contents += &compile_evaluable(fid, et, None, &mut local_variables, global_table, function_calls)?.0;
             }
         }
     }

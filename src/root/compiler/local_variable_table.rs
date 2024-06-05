@@ -48,4 +48,8 @@ impl LocalVariableTable {
             None
         }
     }
+
+    pub fn get_name(&self, name: &str) -> Option<AddressedTypeRef> {
+        self.table.get(name).and_then(|a| Some(a.clone()))
+    }
 }

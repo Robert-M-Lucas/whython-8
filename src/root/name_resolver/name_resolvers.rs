@@ -69,8 +69,7 @@ pub struct GlobalDefinitionTable {
 pub enum NameResult<'a> {
     Function(&'a FunctionSignature),
     Type(&'a dyn Type),
-    Variable(AddressedTypeRef, &'a dyn Type),
-    NotFound
+    Variable(AddressedTypeRef)
 }
 
 impl GlobalDefinitionTable {
@@ -230,5 +229,13 @@ impl GlobalDefinitionTable {
 
     pub fn get_type(&self, type_id: TypeID) -> &Box<dyn Type> {
         self.type_definitions.get(&type_id).as_ref().unwrap()
+    }
+
+    pub fn resolve_name(&mut self, name: &String, local_variable_table: &LocalVariableTable) -> Result<NameResult, WError> {
+        if let Some(variable) = local_variable_table.get_name(name) {
+            return Ok(NameResult::Variable(variable))
+        }
+
+        todo!()
     }
 }

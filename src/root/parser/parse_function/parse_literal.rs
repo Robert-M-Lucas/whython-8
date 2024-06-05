@@ -20,13 +20,13 @@ pub enum LiteralTokens {
 }
 
 impl LiteralTokens {
-    pub fn default_type(&self) -> TypeRef {
+    pub fn default_type(&self) -> TypeID {
         match self {
             LiteralTokens::Bool(_) => {
                 todo!()
             }
             LiteralTokens::Int(_) => {
-                TypeRef::new(IntType::id(), Indirection(0))
+                IntType::id()
             }
         }
     }

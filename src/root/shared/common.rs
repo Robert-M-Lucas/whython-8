@@ -36,7 +36,7 @@ pub struct ByteSize(pub usize);
 #[display(fmt = "LocalAddress: {}", .0)]
 pub struct LocalAddress(pub isize);
 
-#[derive(Getters, Clone)]
+#[derive(Getters, Clone, PartialEq)]
 pub struct TypeRef {
     type_id: TypeID,
     indirection: Indirection
