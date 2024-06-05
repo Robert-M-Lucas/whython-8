@@ -11,5 +11,9 @@ pub enum NRErrors {
     #[error("Cannot find method ({0}) of type ({1})")]
     CannotFindMethod(String, String),
     #[error("Two attributes found with the same name ({0})")]
-    SameAttributeName(String)
+    SameAttributeName(String),
+    #[error("Function reference cannot have indirection here")]
+    FunctionIndirectionError,
+    #[error("Identifier ({0}) not found")]
+    IdentifierNotFound(String)
 }

@@ -42,8 +42,12 @@ impl Location {
 
 const CHAR_LIMIT: usize = 61;
 
+
 impl Display for Location {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        // TODO: Inefficient!
+        // (Maybe fine because it is a 'bad' path?)
+
         writeln!(f, "{}", cformat!("<c,bold>In File:</>"))?;
         writeln!(f, "    {}", self.path.as_path().to_string_lossy())?;
         writeln!(f, "{}", cformat!("<c,bold>At:</>"))?;
@@ -65,7 +69,6 @@ impl Display for Location {
                 offset += 1;
             }
         }
-        println!("O: {offset}");
 
         let mut line_iter = file.lines();
 
@@ -103,7 +106,8 @@ impl Display for Location {
         end += 1;
 
         writeln!(f, "{:0width$} |  {}", self.line, line.chars().skip(start).take(end - start).collect::<String>(), width=largest_num_len)?;
-        writeln!(f, "{:0width$} |  {}^Here", "E", (0..(offset - start)).map(|_| ' ').collect::<String>(), width=largest_num_len)?;
+        let err_line = format!("{:0width$} |  {}^Here", "E", (0..(offset - start)).map(|_| ' ').collect::<String>(), width=largest_num_len);
+        writeln!(f, "{}", cformat!("<r,bold>{}</>", err_line))?;
 
         if let Some(line) = line_iter.next() {
             let line = if line.chars().count() > CHAR_LIMIT { format!("{} ...", line.chars().take(CHAR_LIMIT - 4).collect::<String>()) } else { line.to_string() };

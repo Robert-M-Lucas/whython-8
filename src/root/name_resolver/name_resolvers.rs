@@ -4,6 +4,7 @@ use std::rc::Rc;
 use derive_getters::Getters;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::name_resolver_errors::NRErrors;
+use crate::root::errors::name_resolver_errors::NRErrors::IdentifierNotFound;
 use crate::root::errors::WError;
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse::Location;
@@ -195,10 +196,6 @@ impl GlobalDefinitionTable {
         todo!()
     }
 
-    pub fn resolve_global_name(&self, name: &UnresolvedNameToken) -> NameResult {
-        todo!()
-    }
-
     pub fn resolve_global_name_to_id(&self, name: &UnresolvedNameToken, location: &Location) -> Result<NameResultId, WError> {
         let path = name.location().path();
 
@@ -214,7 +211,7 @@ impl GlobalDefinitionTable {
                         return Err(WError::n(NRErrors::FunctionSubname(next.clone(), name.base().clone()), location.clone()));
                     }
                     if name.indirection().has_indirection() {
-                        // TODO
+                        return Err(WError::n(NRErrors::FunctionIndirectionError, name.location().clone()));
                     }
                     Ok(Some(NameResultId::Function(*fid)))
                 }
@@ -299,12 +296,12 @@ impl GlobalDefinitionTable {
                 return Err(WError::n(NRErrors::FunctionSubname(next.clone(), name.base().clone()), location.clone()));
             }
             if name.indirection().has_indirection() {
-                // TODO
+                return Err(WError::n(NRErrors::FunctionIndirectionError, name.location().clone()));
             }
 
             return Ok(NameResultId::Function(*id))
         }
 
-        todo!()
+        Err(WError::n(IdentifierNotFound(name.base().clone()), name.location().clone()))
     }
 }
