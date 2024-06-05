@@ -53,12 +53,7 @@ pub fn resolve_type_sizes(
                 size += resolve_type_sizes(unsized_type, final_types, unsized_types, global_table, path);
             }
             else {
-                if let Some(builtin_type) = global_table.type_definitions().get(&attribute_type.type_id()) {
-                    size += builtin_type.size();
-                }
-                else {
-                    todo!()
-                }
+                size += global_table.get_type(*attribute_type.type_id()).size();
             }
         }
 

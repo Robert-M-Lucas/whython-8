@@ -1,3 +1,4 @@
+use derive_getters::Getters;
 use crate::root::parser::parse::{Location, ParseResult, Span};
 use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, FullNameWithIndirectionToken, parse_evaluable, parse_full_name};
 use crate::root::parser::parse_function::parse_line::{LineTestFn, LineTokens};
@@ -7,7 +8,7 @@ use nom_supreme::tag::complete::tag;
 use crate::root::parser::parse_name::{SimpleNameToken, parse_simple_name};
 use crate::root::parser::parse_util::{discard_ignored, require_ignored};
 
-#[derive(Debug)]
+#[derive(Debug, Getters)]
 pub struct InitialisationToken {
     location: Location,
     name: SimpleNameToken,

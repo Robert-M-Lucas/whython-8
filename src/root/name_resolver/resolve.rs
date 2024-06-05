@@ -13,7 +13,7 @@ pub fn resolve(ast: Vec<TopLevelTokens>) -> Result<(GlobalDefinitionTable, HashM
     register_builtin(&mut global_table);
     let unprocessed_functions = resolve_names(ast, &mut global_table)?;
 
-    if !global_table.function_signatures().contains_key(&FunctionID(0)) {
+    if !global_table.has_main() {
         return Err(WError::locationless(NRErrors::NoMain))
     }
 

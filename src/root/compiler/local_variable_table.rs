@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use crate::root::shared::common::{AddressedTypeRef, ByteSize, LocalAddress, TypeID};
+use crate::root::shared::common::{AddressedTypeRef, ByteSize, LocalAddress, TypeID, TypeRef};
 use crate::root::shared::types::Type;
 
 /// Function-local table of defined variables. Only used within function processing
@@ -43,18 +43,6 @@ impl LocalVariableTable {
     pub fn get_ref(&self, name: &str) -> Option<AddressedTypeRef> {
         if let Some(r) = self.table.get(name) {
             Some(r.clone())
-        }
-        else {
-            None
-        }
-    }
-
-    pub fn get_ref_and_type<'a>(&self, name: &str, type_defs: &'a HashMap<TypeID, Box<dyn Type>>) -> Option<(AddressedTypeRef, &'a dyn Type)> {
-        if let Some(r) = self.table.get(name) {
-            if let Some(t) = type_defs.get(r.type_ref().type_id()) {
-                return Some((r.clone(), t.as_ref()));
-            }
-            panic!("Type in VariableTable but no corresponding definition found!");
         }
         else {
             None

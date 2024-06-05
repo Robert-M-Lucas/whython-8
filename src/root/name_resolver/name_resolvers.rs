@@ -15,7 +15,8 @@ use crate::root::parser::parse_function::FunctionToken;
 use crate::root::parser::parse_function::parse_evaluable::{FullNameToken, FullNameTokens, FullNameWithIndirectionToken};
 use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::parser::parse_struct::StructToken;
-use crate::root::shared::common::{AddressedTypeRef, FunctionID, TypeID, TypeRef};
+use crate::root::POINTER_SIZE;
+use crate::root::shared::common::{AddressedTypeRef, ByteSize, FunctionID, TypeID, TypeRef};
 
 #[derive(Debug)]
 enum NameTreeEntry {
@@ -54,7 +55,6 @@ impl TopLevelNameTree {
     }
 }
 
-#[derive(Getters)]
 pub struct GlobalDefinitionTable {
     id_counter: isize,
     type_definitions: HashMap<TypeID, Box<dyn Type>>,
@@ -189,5 +189,46 @@ impl GlobalDefinitionTable {
 
 
         Err(WError::n(NRErrors::TypeNotFound(name.name().clone()), full_name.location().clone()))
+    }
+
+    pub fn get_size(&mut self, t: &TypeRef) -> ByteSize {
+        if t.indirection().has_indirection() {
+            POINTER_SIZE
+        }
+        else {
+            self.type_definitions.get(t.type_id()).unwrap().size()
+        }
+    }
+
+    pub fn add_local_variable_unnamed_base(&mut self, t: TypeRef, local_variable_table: &mut LocalVariableTable) -> AddressedTypeRef {
+        let size = self.get_size(&t);
+        let address = local_variable_table.add_new_unnamed(size);
+        AddressedTypeRef::new(address, t)
+    }
+
+    pub fn add_local_variable_unnamed(&mut self, t: &FullNameWithIndirectionToken, local_variable_table: &mut LocalVariableTable) -> Result<AddressedTypeRef, WError> {
+        let t = self.resolve_to_type_ref(t)?;
+        Ok(self.add_local_variable_unnamed_base(t, local_variable_table))
+    }
+
+    pub fn add_local_variable_named(&mut self, name: String, t: &FullNameWithIndirectionToken, local_variable_table: &mut LocalVariableTable) -> Result<AddressedTypeRef, WError> {
+        let t = self.resolve_to_type_ref(t)?;
+        let size = self.get_size(&t);
+        let address = local_variable_table.add_new_unnamed(size);
+        let address = AddressedTypeRef::new(address, t);
+        local_variable_table.add_existing(name, address.clone());
+        Ok(address)
+    }
+
+    pub fn get_function_signature(&self, function_id: FunctionID) -> &FunctionSignature {
+        self.function_signatures.get(&function_id).as_ref().unwrap()
+    }
+
+    pub fn has_main(&self) -> bool {
+        self.function_signatures.contains_key(&FunctionID(0))
+    }
+
+    pub fn get_type(&self, type_id: TypeID) -> &Box<dyn Type> {
+        self.type_definitions.get(&type_id).as_ref().unwrap()
     }
 }

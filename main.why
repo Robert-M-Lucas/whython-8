@@ -4,5 +4,6 @@ struct A {
 }
 
 fn main() -> int {
-    return 12;
+    let a: int = 13;
+    return a;
 }

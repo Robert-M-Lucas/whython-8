@@ -26,12 +26,10 @@ pub fn compile_function(fid: FunctionID, function: FunctionToken, global_table: 
     let mut param_address = LocalAddress(8);
 
     for (param_name, param_type) in parameters {
-        let type_ref = global_table.resolve_to_type_ref(&param_type)?;
+        let t = global_table.resolve_to_type_ref(&param_type)?;
+        global_table.add_local_variable_named(param_name.name().clone(), &param_type, &mut local_variables)?;
 
-        let size = global_table.type_definitions().get(type_ref.type_id()).unwrap().size();
-        local_variables.add_existing(param_name.name().clone(), AddressedTypeRef::new(param_address, type_ref));
-
-        param_address += LocalAddress(size.0 as isize);
+        param_address += LocalAddress(global_table.get_size(&t).0 as isize);
     }
 
     let return_variable = return_type.and_then(
@@ -42,7 +40,7 @@ pub fn compile_function(fid: FunctionID, function: FunctionToken, global_table: 
     );
 
     let mut function_calls = HashSet::new();
-    let (full_contents, local_variables) = recursively_compile_lines(fid, &lines, &return_variable, local_variables, global_table, &mut function_calls);
+    let (full_contents, local_variables) = recursively_compile_lines(fid, &lines, &return_variable, local_variables, global_table, &mut function_calls)?;
 
     let stack_size = local_variables.stack_size();
 
@@ -66,13 +64,17 @@ pub fn compile_function(fid: FunctionID, function: FunctionToken, global_table: 
     Ok((final_contents, function_calls))
 }
 
-fn recursively_compile_lines(fid: FunctionID, lines: &[LineTokens], return_variable: &Option<AddressedTypeRef>, local_variables: Box<LocalVariableTable>, global_table: &GlobalDefinitionTable, function_calls: &mut HashSet<FunctionID>) -> (String, Box<LocalVariableTable>) {
+fn recursively_compile_lines(fid: FunctionID, lines: &[LineTokens], return_variable: &Option<AddressedTypeRef>, local_variables: Box<LocalVariableTable>, global_table: &mut GlobalDefinitionTable, function_calls: &mut HashSet<FunctionID>) -> Result<(String, Box<LocalVariableTable>), WError> {
     let mut local_variables = local_variables.enter_block();
     let mut contents = String::new();
 
     for line in lines {
         match line {
-            LineTokens::Initialisation(_) => todo!(),
+            LineTokens::Initialisation(it) => {
+                let (name, type_name, value) = (it.name(), it.type_name(), it.value());
+                let address = global_table.add_local_variable_named(name.name().clone(), type_name, &mut local_variables)?;
+                compile_evaluable(fid, value, Some(address), &mut local_variables, global_table, function_calls);
+            },
             LineTokens::Assignment(_) => todo!(),
             LineTokens::If(_) => todo!(),
             LineTokens::While(_) => todo!(),
@@ -96,5 +98,5 @@ fn recursively_compile_lines(fid: FunctionID, lines: &[LineTokens], return_varia
         }
     }
 
-    (contents, local_variables.leave_block())
+    Ok((contents, local_variables.leave_block()))
 }

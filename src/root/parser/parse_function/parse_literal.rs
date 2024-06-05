@@ -26,7 +26,7 @@ impl LiteralTokens {
                 todo!()
             }
             LiteralTokens::Int(_) => {
-                TypeRef::new(IntType{}.id(), Indirection(0))
+                TypeRef::new(IntType::id(), Indirection(0))
             }
         }
     }

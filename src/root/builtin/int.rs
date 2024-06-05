@@ -8,10 +8,14 @@ use crate::root::shared::types::Type;
 #[UniqueTypeIdType = "u16"]
 pub struct IntType {}
 
-impl Type for IntType {
-    fn id(&self) -> TypeID {
+impl IntType {
+    pub const fn id() -> TypeID {
         TypeID(-(IntType::unique_type_id().0 as isize) - 1)
     }
+}
+
+impl Type for IntType {
+    fn id(&self) -> TypeID { Self::id() }
 
     fn size(&self) -> ByteSize {
         ByteSize(8)

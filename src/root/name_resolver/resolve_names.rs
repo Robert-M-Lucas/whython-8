@@ -19,44 +19,6 @@ use crate::root::shared::common::{LocalAddress, TypeRef};
 use crate::root::shared::common::{ByteSize, FunctionID, TypeID};
 use crate::root::shared::types::Type;
 
-// #[derive(Hash)]
-// pub struct TypeName {
-//     name: String,
-//     location: Location,
-// }
-//
-// impl TypeName {
-//     pub fn from_struct_token(st: &StructToken) -> TypeName {
-//         TypeName {
-//             name: st.name().clone(),
-//             location: st.location().clone(),
-//         }
-//     }
-//
-//     pub fn from_impl_token(it: &ImplToken) -> TypeName {
-//         TypeName {
-//             name: it.name().clone(),
-//             location: it.location().clone(),
-//         }
-//     }
-
-    // pub fn from_name_token(name: UnresolvedNameToken) -> TypeName {
-    //     let name: (Location, Rc<PathBuf>, Option<String>, usize, String, Vec<(NameConnectors, String)>, Option<Vec<EvaluableToken>>) = name.dissolve();
-    //     TypeName {
-    //         name: name.4,
-    //         location: name.0,
-    //     }
-    // }
-// }
-
-// impl PartialEq for TypeName {
-//     fn eq(&self, other: &Self) -> bool {
-//         self.name == other.name
-//     }
-// }
-//
-// impl Eq for TypeName {}
-
 
 /// A whython-code-defined type
 #[derive(Getters)]
