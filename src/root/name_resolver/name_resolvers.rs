@@ -10,6 +10,7 @@ use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse::Location;
 use crate::root::shared::types::Type;
 use crate::root::parser::parse_function::FunctionToken;
+use crate::root::parser::parse_function::parse_evaluable::FullNameWithIndirectionToken;
 use crate::root::parser::parse_struct::StructToken;
 use crate::root::shared::common::{AddressedTypeRef, FunctionID, TypeID, TypeRef};
 
@@ -99,12 +100,6 @@ pub enum NameResult<'a> {
     NotFound
 }
 
-pub enum NameResultId {
-    Function(FunctionID),
-    Type(TypeRef),
-    NotFound
-}
-
 impl GlobalDefinitionTable {
     pub fn new() -> GlobalDefinitionTable {
         GlobalDefinitionTable {
@@ -178,7 +173,8 @@ impl GlobalDefinitionTable {
         todo!()
     }
 
-    pub fn resolve_global_name_to_id(&self, name: &UnresolvedNameToken, location: &Location) -> Result<NameResultId, WError> {
+    pub fn resolve_global_name_to_id(&self, name: &FullNameWithIndirectionToken) -> Result<TypeRef, WError> {
+        let (indirection, full_name) = (name.indirection(), name.inner());
         let path = name.location().path();
 
         fn search_file_level_tree(tree: &Box<FileLevelTree>, name: &UnresolvedNameToken, location: &Location) -> Result<Option<NameResultId>, WError> {

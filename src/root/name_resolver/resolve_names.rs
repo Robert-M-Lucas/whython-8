@@ -1,3 +1,4 @@
+use std::any::Any;
 use std::collections::HashMap;
 
 use derive_getters::Getters;
@@ -5,11 +6,12 @@ use itertools::Itertools;
 use crate::root::errors::name_resolver_errors::NRErrors;
 use crate::root::errors::WError;
 
-use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable, NameResultId};
+use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable};
 use crate::root::name_resolver::resolve_function_signatures::resolve_function_signature;
 use crate::root::name_resolver::resolve_type_sizes::{resolve_type_sizes, UnsizedUserType};
 use crate::root::parser::parse::Location;
 use crate::root::parser::parse_function::FunctionToken;
+use crate::root::parser::parse_function::parse_evaluable::{FullNameToken, FullNameTokens};
 use crate::root::parser::parse_function::parse_literal::LiteralToken;
 use crate::root::parser::parse_toplevel::TopLevelTokens;
 use crate::root::shared::common::{LocalAddress, TypeRef};
@@ -117,11 +119,7 @@ pub fn resolve_names(ast: Vec<TopLevelTokens>, global_table: &mut GlobalDefiniti
 
                 let mut p_attributes = Vec::new();
                 for ((name, name_loc), (type_name, type_name_loc)) in attributes {
-                    let type_ref = match global_table.resolve_global_name_to_id(&type_name, &type_name_loc)? {
-                        NameResultId::Type(type_ref) => type_ref,
-                        NameResultId::Function(_) => todo!(),
-                        NameResultId::NotFound => todo!(),
-                    };
+                    let type_ref = global_table.resolve_global_name_to_id(&type_name)?;
 
                     for (e_name, _) in &p_attributes {
                         if e_name == &name {
@@ -133,19 +131,14 @@ pub fn resolve_names(ast: Vec<TopLevelTokens>, global_table: &mut GlobalDefiniti
                 unsized_final_types.insert(id, UnsizedUserType::new(id, p_attributes, location));
             }
             TopLevelTokens::Impl(it) => {
-                // TODO
-                let type_ref = match global_table.resolve_global_name_to_id(&UnresolvedNameToken::new_unresolved_top(it.name().clone(), it.location().clone()), it.location())? {
-                    NameResultId::Function(_) => todo!(),
-                    NameResultId::Type(type_ref) => type_ref,
-                    NameResultId::NotFound => todo!(),
-                };
-
-                if type_ref.indirection().has_indirection() {
-                    return Err(WError::n(NRErrors::IndirectImpl, it.location().clone()));
-                }
+                let (location, name, functions) = it.dissolve();
+                let type_id = *global_table.resolve_global_name_to_id(FullNameToken::new(
+                    location.clone(),
+                    FullNameTokens::Name(name, None)
+                ).with_no_indirection())?.type_id();
 
                 for ft in it.dissolve().2 {
-                    let function_id = global_table.add_from_function_token(&ft, Some(*type_ref.type_id()));
+                    let function_id = global_table.add_from_function_token(&ft, Some(type_id));
                     global_table.add_function_signature(function_id, resolve_function_signature(&ft, &global_table)?);
                     unprocessed_functions.insert(function_id, ft);
                 }

@@ -64,14 +64,21 @@ pub struct FullNameToken {
 }
 
 impl FullNameToken {
-    pub fn new(s: &Span, token: FullNameTokens) -> FullNameToken {
+    pub fn new(location: Location, token: FullNameTokens) -> FullNameToken {
         FullNameToken {
-            location: Location::from_span(s),
+            location,
             token,
         }
     }
 
-    fn to_evaluable(self) -> EvaluableToken {
+    pub fn with_no_indirection(self) -> FullNameWithIndirectionToken {
+        FullNameWithIndirectionToken {
+            indirection: Indirection(0),
+            inner: self
+        }
+    }
+
+    pub fn to_evaluable(self) -> EvaluableToken {
         let (location, token) = (self.location, self.token);
         let token = token.to_evaluable_token();
         EvaluableToken {

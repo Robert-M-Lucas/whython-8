@@ -10,4 +10,4 @@ pub mod parse_struct;
 pub mod parse_toplevel;
 pub mod parse_util;
 pub mod soft_alt;
-mod parse_name;
+pub mod parse_name;

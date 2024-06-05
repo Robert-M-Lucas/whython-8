@@ -3,7 +3,7 @@ use crate::root::compiler::assembly::utils::{align_16_bytes, align_16_bytes_plus
 use crate::root::compiler::compile_evaluable::compile_evaluable;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::WError;
-use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable, NameResultId};
+use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable};
 use crate::root::parser::parse_function::FunctionToken;
 use crate::root::parser::parse_function::parse_line::LineTokens;
 use crate::root::shared::common::{FunctionID, LocalAddress};
