@@ -231,7 +231,7 @@ impl GlobalDefinitionTable {
         self.type_definitions.get(&type_id).as_ref().unwrap()
     }
 
-    pub fn resolve_name(&mut self, name: &String, local_variable_table: &LocalVariableTable) -> Result<NameResult, WError> {
+    pub fn resolve_name(&mut self, name: &String, containing_class: Option<&String>, local_variable_table: &LocalVariableTable) -> Result<NameResult, WError> {
         if let Some(variable) = local_variable_table.get_name(name) {
             return Ok(NameResult::Variable(variable))
         }

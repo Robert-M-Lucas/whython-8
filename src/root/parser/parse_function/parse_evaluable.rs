@@ -33,7 +33,7 @@ pub enum EvaluableTokens {
     Name(SimpleNameToken, Option<SimpleNameToken>),
     StaticAccess(Box<EvaluableToken>, SimpleNameToken),
     DynamicAccess(Box<EvaluableToken>, SimpleNameToken),
-    FunctionCall(Box<EvaluableToken>, SimpleNameToken, Vec<EvaluableToken>),
+    FunctionCall(Box<EvaluableToken>, Vec<EvaluableToken>),
     Literal(LiteralToken),
     InfixOperator(Box<EvaluableToken>, OperatorToken, Box<EvaluableToken>),
     PrefixOperator(OperatorToken, Box<EvaluableToken>),
@@ -111,7 +111,9 @@ enum TempEvaluableTokensOne {
     Operator(OperatorToken),
     StaticAccess(SimpleNameToken),
     DynamicAccess(SimpleNameToken),
-    FunctionCall(SimpleNameToken, Vec<EvaluableToken>),
+    FunctionCall(SimpleNameToken, Option<SimpleNameToken>, Vec<EvaluableToken>),
+    StaticFunctionCall(SimpleNameToken, Vec<EvaluableToken>),
+    DynamicFunctionCall(SimpleNameToken, Vec<EvaluableToken>),
 }
 
 #[derive(Debug)]
@@ -230,7 +232,11 @@ pub fn parse_evaluable<'a, 'b>(s: Span<'a>, containing_class: Option<&SimpleName
                     Ok(if char::<Span, ErrorTree>('(')(x).is_ok() {
                         let (x, arguments) = default_section(x, '(')?;
                         let (_, arguments) = parse_arguments(arguments, containing_class)?;
-                        (x, TempEvaluableTokensOne::FunctionCall(section, arguments))
+                        (x, match kind {
+                            Kind::Static => TempEvaluableTokensOne::StaticFunctionCall(section, arguments),
+                            Kind::Dynamic => TempEvaluableTokensOne::DynamicFunctionCall(section, arguments),
+                            Kind::None => TempEvaluableTokensOne::FunctionCall(section, containing_class.and_then(|x| Some(x.clone())), arguments)
+                        })
                     }
                     else {
                         match kind {
@@ -279,13 +285,31 @@ pub fn parse_evaluable<'a, 'b>(s: Span<'a>, containing_class: Option<&SimpleName
                     None => todo!(), // Must have previous
                 }
             }
-            TempEvaluableTokensOne::FunctionCall(n, a) => {
+            TempEvaluableTokensOne::FunctionCall(n, c, a) => {
+                new_evaluables.push(TempEvaluableTokensTwo::EvaluableToken(EvaluableToken {
+                    location: n.location().clone(),
+                    token: EvaluableTokens::FunctionCall(b!(EvaluableToken { location: n.location().clone(), token: EvaluableTokens::Name(n, c) }), a),
+                }))
+            }
+            TempEvaluableTokensOne::DynamicFunctionCall(n, a) => {
                 match new_evaluables.pop() {
                     Some(TempEvaluableTokensTwo::Operator(_)) => todo!(), // Can't be operator
                     Some(TempEvaluableTokensTwo::EvaluableToken(e)) => {
                         new_evaluables.push(TempEvaluableTokensTwo::EvaluableToken(EvaluableToken {
                             location: e.location.clone(),
-                            token: EvaluableTokens::FunctionCall(b!(e), n, a),
+                            token: EvaluableTokens::FunctionCall(b!(EvaluableToken { location: n.location().clone(), token: EvaluableTokens::DynamicAccess(b!(e), n) }), a),
+                        }))
+                    },
+                    None => todo!(), // Must have previous
+                }
+            }
+            TempEvaluableTokensOne::StaticFunctionCall(n, a) => {
+                match new_evaluables.pop() {
+                    Some(TempEvaluableTokensTwo::Operator(_)) => todo!(), // Can't be operator
+                    Some(TempEvaluableTokensTwo::EvaluableToken(e)) => {
+                        new_evaluables.push(TempEvaluableTokensTwo::EvaluableToken(EvaluableToken {
+                            location: e.location.clone(),
+                            token: EvaluableTokens::FunctionCall(b!(EvaluableToken { location: n.location().clone(), token: EvaluableTokens::StaticAccess(b!(e), n) }), a),
                         }))
                     },
                     None => todo!(), // Must have previous

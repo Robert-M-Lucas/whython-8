@@ -1,0 +1,153 @@
+Index: src/root/compiler/compile_evaluable.rs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>use std::collections::HashSet;\nuse crate::root::compiler::local_variable_table::LocalVariableTable;\nuse crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;\nuse crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, EvaluableTokens};\nuse crate::root::shared::common::{FunctionID, TypeRef};\nuse crate::root::shared::common::AddressedTypeRef;\n\npub fn compile_evaluable(fid: FunctionID, et: &EvaluableToken, target: Option<AddressedTypeRef>, local_variables: &mut LocalVariableTable, global_table: &GlobalDefinitionTable, function_calls: &mut HashSet<FunctionID>) -> (String, Option<AddressedTypeRef>) {\n    let et = et.token();\n\n    match et {\n        EvaluableTokens::Name(_, _) => todo!(),\n        EvaluableTokens::Literal(literal) => {\n            let (address, t, tid) = if let Some(target) = target {\n                let (address, tid) = target.dissolve();\n                if tid.indirection().has_indirection() {\n                    todo!()\n                }\n                let t = global_table.type_definitions().get(tid.type_id()).unwrap();\n                (address, t, tid)\n            }\n            else {\n                let tid = literal.literal().default_type();\n                if tid.indirection().has_indirection() {\n                    todo!()\n                }\n                let t = global_table.type_definitions().get(tid.type_id()).unwrap();\n                let address = local_variables.add_new_unnamed(t.size());\n                (address, t, tid)\n            };\n\n            (t.instantiate_from_literal(&address, literal), Some(AddressedTypeRef::new(address, tid)))\n        }\n        EvaluableTokens::InfixOperator(_, _, _) => todo!(),\n        EvaluableTokens::PrefixOperator(_, _) => todo!(),\n        EvaluableTokens::DynamicAccess(_, _) => todo!(),\n        EvaluableTokens::StaticAccess(_, _) => todo!(),\n        EvaluableTokens::FunctionCall(_, _, _) => todo!()\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/root/compiler/compile_evaluable.rs b/src/root/compiler/compile_evaluable.rs
+--- a/src/root/compiler/compile_evaluable.rs	(revision 2faf4af5e5473a64a986ce274d5ce52ff3cc43f7)
++++ b/src/root/compiler/compile_evaluable.rs	(date 1717590981611)
+@@ -5,7 +5,15 @@
+ use crate::root::shared::common::{FunctionID, TypeRef};
+ use crate::root::shared::common::AddressedTypeRef;
+ 
+-pub fn compile_evaluable(fid: FunctionID, et: &EvaluableToken, target: Option<AddressedTypeRef>, local_variables: &mut LocalVariableTable, global_table: &GlobalDefinitionTable, function_calls: &mut HashSet<FunctionID>) -> (String, Option<AddressedTypeRef>) {
++pub fn compile_evaluable(
++    fid: FunctionID,
++    et: &EvaluableToken,
++    target: Option<AddressedTypeRef>,
++    local_variables: &mut LocalVariableTable,
++    global_table: &GlobalDefinitionTable,
++    function_calls: &mut HashSet<FunctionID>
++) -> (String, Option<AddressedTypeRef>) {
++
+     let et = et.token();
+ 
+     match et {
+@@ -21,10 +29,7 @@
+             }
+             else {
+                 let tid = literal.literal().default_type();
+-                if tid.indirection().has_indirection() {
+-                    todo!()
+-                }
+-                let t = global_table.type_definitions().get(tid.type_id()).unwrap();
++                let t = global_table.type_definitions().get(&tid).unwrap();
+                 let address = local_variables.add_new_unnamed(t.size());
+                 (address, t, tid)
+             };
+Index: src/root/parser/parse_function/parse_literal.rs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>use derive_getters::{Dissolve, Getters};\nuse crate::root::parser::parse::{Location, ParseResult, Span};\nuse nom::branch::alt;\nuse nom::bytes::complete::tag;\nuse crate::root::builtin::int::IntType;\nuse crate::root::parser::parse_util::discard_ignored;\nuse crate::root::shared::common::{Indirection, TypeID, TypeRef};\nuse crate::root::shared::types::Type;\n\n#[derive(Debug, Dissolve, Getters)]\npub struct LiteralToken {\n    location: Location,\n    literal: LiteralTokens,\n}\n\n#[derive(Debug)]\npub enum LiteralTokens {\n    Bool(bool),\n    Int(i64),\n}\n\nimpl LiteralTokens {\n    pub fn default_type(&self) -> TypeRef {\n        match self {\n            LiteralTokens::Bool(_) => {\n                todo!()\n            }\n            LiteralTokens::Int(_) => {\n                TypeRef::new(IntType{}.id(), Indirection(0))\n            }\n        }\n    }\n}\n\npub fn parse_literal(s: Span) -> ParseResult<Span, LiteralToken> {\n    let (s, _) = discard_ignored(s)?;\n\n    let (ns, l) = alt((\n        |x| tag(\"true\")(x).map(|(s, _)| (s, LiteralTokens::Bool(true))),\n        |x| tag(\"false\")(x).map(|(s, _)| (s, LiteralTokens::Bool(false))),\n        |x| nom::character::complete::i64(x).map(|(s, i)| (s, LiteralTokens::Int(i))),\n    ))(s)?;\n\n    let l = LiteralToken {\n        location: Location::from_span(&s),\n        literal: l,\n    };\n\n    Ok((ns, l))\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/root/parser/parse_function/parse_literal.rs b/src/root/parser/parse_function/parse_literal.rs
+--- a/src/root/parser/parse_function/parse_literal.rs	(revision 2faf4af5e5473a64a986ce274d5ce52ff3cc43f7)
++++ b/src/root/parser/parse_function/parse_literal.rs	(date 1717590906072)
+@@ -20,13 +20,13 @@
+ }
+ 
+ impl LiteralTokens {
+-    pub fn default_type(&self) -> TypeRef {
++    pub fn default_type(&self) -> TypeID {
+         match self {
+             LiteralTokens::Bool(_) => {
+                 todo!()
+             }
+             LiteralTokens::Int(_) => {
+-                TypeRef::new(IntType{}.id(), Indirection(0))
++                IntType{}.id()
+             }
+         }
+     }
+Index: src/root/errors/evaluable_errors.rs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/root/errors/evaluable_errors.rs b/src/root/errors/evaluable_errors.rs
+new file mode 100644
+--- /dev/null	(date 1717590981605)
++++ b/src/root/errors/evaluable_errors.rs	(date 1717590981605)
+@@ -0,0 +1,7 @@
++use thiserror::Error;
++
++#[derive(Error, Debug)]
++pub enum EvaluableErrors {
++    #[error("Names cannot contain character '{0}' (UTF-8 Code: {1:?})")]
++    BadName(char, Vec<u8>),
++}
+Index: src/root/errors/mod.rs
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>use std::fmt::{Display, Formatter};\nuse color_print::cformat;\nuse crate::root::parser::parse::Location;\n\npub mod parser_errors;\npub mod name_resolver_errors;\n\npub struct WError {\n    error: String,\n    location: Option<Location> // ! Important, don't do file reads unless necessary (i.e. Display)\n}\n\nimpl WError {\n    pub fn n(error: impl Display, location: Location) -> WError {\n        WError {\n            error: format!(\"{error}\"),\n            location: Some(location)\n        }\n    }\n\n    pub fn locationless(error: impl Display) -> WError {\n        WError {\n            error: format!(\"{error}\"),\n            location: None\n        }\n    }\n}\n\nimpl Display for WError {\n    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {\n        let text = if let Some(location) = &self.location {\n            cformat!(\"<r,bold>Error:</>\\n    {}\\n{}\\n\", self.error, location)\n        }\n        else {\n            cformat!(\"<r,bold>Error:</>\\n    {}\", self.error)\n        };\n        f.write_str(&text)\n    }\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/root/errors/mod.rs b/src/root/errors/mod.rs
+--- a/src/root/errors/mod.rs	(revision 2faf4af5e5473a64a986ce274d5ce52ff3cc43f7)
++++ b/src/root/errors/mod.rs	(date 1717590981609)
+@@ -4,6 +4,7 @@
+ 
+ pub mod parser_errors;
+ pub mod name_resolver_errors;
++mod evaluable_errors;
+ 
+ pub struct WError {
+     error: String,
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"AutoImportSettings\">\n    <option name=\"autoReloadType\" value=\"ALL\" />\n  </component>\n  <component name=\"CargoProjects\">\n    <cargoProject FILE=\"$PROJECT_DIR$/Cargo.toml\" />\n  </component>\n  <component name=\"ChangeListManager\">\n    <list default=\"true\" id=\"6ca282eb-dc8c-4af0-945c-cd77d70c6194\" name=\"Changes\" comment=\"Improved name evaluation\">\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/src/root/compiler/compile_function.rs\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/root/compiler/compile_function.rs\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/src/root/name_resolver/resolve_function_signatures.rs\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/root/name_resolver/resolve_function_signatures.rs\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/src/root/name_resolver/resolve_names.rs\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/root/name_resolver/resolve_names.rs\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/src/root/parser/mod.rs\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/root/parser/mod.rs\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/src/root/parser/parse_function/parse_evaluable.rs\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/root/parser/parse_function/parse_evaluable.rs\" afterDir=\"false\" />\n    </list>\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\n  </component>\n  <component name=\"FileTemplateManagerImpl\">\n    <option name=\"RECENT_TEMPLATES\">\n      <list>\n        <option value=\"Rust File\" />\n      </list>\n    </option>\n  </component>\n  <component name=\"Git.Settings\">\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\n  </component>\n  <component name=\"GitHubPullRequestSearchHistory\">{\n  &quot;lastFilter&quot;: {\n    &quot;state&quot;: &quot;OPEN&quot;,\n    &quot;assignee&quot;: &quot;Robert-M-Lucas&quot;\n  }\n}</component>\n  <component name=\"GitToolBoxStore\">\n    <option name=\"projectConfigVersion\" value=\"5\" />\n  </component>\n  <component name=\"GithubPullRequestsUISettings\">{\n  &quot;selectedUrlAndAccountId&quot;: {\n    &quot;url&quot;: &quot;https://github.com/Robert-M-Lucas/whython-8.git&quot;,\n    &quot;accountId&quot;: &quot;dcb8df19-0b39-47e1-9073-4a54f7034be8&quot;\n  }\n}</component>\n  <component name=\"MacroExpansionManager\">\n    <option name=\"directoryName\" value=\"u41t3cql\" />\n  </component>\n  <component name=\"MarkdownSettingsMigration\">\n    <option name=\"stateVersion\" value=\"1\" />\n  </component>\n  <component name=\"ProjectColorInfo\">{\n  &quot;customColor&quot;: &quot;&quot;,\n  &quot;associatedIndex&quot;: 4\n}</component>\n  <component name=\"ProjectId\" id=\"2fc6i4TePml2Qz8qTHaDmtI2SGg\" />\n  <component name=\"ProjectViewState\">\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\n    <option name=\"showLibraryContents\" value=\"true\" />\n  </component>\n  <component name=\"PropertiesComponent\">{\n  &quot;keyToString&quot;: {\n    &quot;Cargo.Run whython-8.executor&quot;: &quot;Run&quot;,\n    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,\n    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,\n    &quot;RunOnceActivity.rust.reset.selective.auto.import&quot;: &quot;true&quot;,\n    &quot;git-widget-placeholder&quot;: &quot;master&quot;,\n    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,\n    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,\n    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,\n    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,\n    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,\n    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,\n    &quot;org.rust.cargo.project.model.PROJECT_DISCOVERY&quot;: &quot;true&quot;,\n    &quot;org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon&quot;: &quot;&quot;,\n    &quot;org.rust.first.attach.projects&quot;: &quot;true&quot;,\n    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settingsdialog.IDE.editor.colors.Rust&quot;,\n    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;\n  }\n}</component>\n  <component name=\"RecentsManager\">\n    <key name=\"MoveFile.RECENT_KEYS\">\n      <recent name=\"$PROJECT_DIR$/reference\" />\n    </key>\n  </component>\n  <component name=\"RunManager\" selected=\"Cargo.Run whython-8\">\n    <configuration name=\"Run whython-8\" type=\"CargoCommandRunConfiguration\" factoryName=\"Cargo Command\">\n      <option name=\"command\" value=\"run --package whython-8 --bin whython-8\" />\n      <option name=\"workingDirectory\" value=\"file://$PROJECT_DIR$\" />\n      <envs />\n      <option name=\"emulateTerminal\" value=\"true\" />\n      <option name=\"channel\" value=\"DEFAULT\" />\n      <option name=\"requiredFeatures\" value=\"true\" />\n      <option name=\"allFeatures\" value=\"false\" />\n      <option name=\"withSudo\" value=\"false\" />\n      <option name=\"buildTarget\" value=\"REMOTE\" />\n      <option name=\"backtrace\" value=\"SHORT\" />\n      <option name=\"isRedirectInput\" value=\"false\" />\n      <option name=\"redirectInputPath\" value=\"\" />\n      <method v=\"2\">\n        <option name=\"CARGO.BUILD_TASK_PROVIDER\" enabled=\"true\" />\n      </method>\n    </configuration>\n    <configuration name=\"Test whython-8\" type=\"CargoCommandRunConfiguration\" factoryName=\"Cargo Command\">\n      <option name=\"command\" value=\"test --workspace\" />\n      <option name=\"workingDirectory\" value=\"file://$PROJECT_DIR$\" />\n      <envs />\n      <option name=\"emulateTerminal\" value=\"true\" />\n      <option name=\"channel\" value=\"DEFAULT\" />\n      <option name=\"requiredFeatures\" value=\"true\" />\n      <option name=\"allFeatures\" value=\"false\" />\n      <option name=\"withSudo\" value=\"false\" />\n      <option name=\"buildTarget\" value=\"REMOTE\" />\n      <option name=\"backtrace\" value=\"SHORT\" />\n      <option name=\"isRedirectInput\" value=\"false\" />\n      <option name=\"redirectInputPath\" value=\"\" />\n      <method v=\"2\">\n        <option name=\"CARGO.BUILD_TASK_PROVIDER\" enabled=\"true\" />\n      </method>\n    </configuration>\n  </component>\n  <component name=\"RustProjectSettings\">\n    <option name=\"toolchainHomeDirectory\" value=\"$USER_HOME$/.cargo/bin\" />\n  </component>\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\n  <component name=\"TaskManager\">\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\n      <changelist id=\"6ca282eb-dc8c-4af0-945c-cd77d70c6194\" name=\"Changes\" comment=\"\" />\n      <created>1714088144106</created>\n      <option name=\"number\" value=\"Default\" />\n      <option name=\"presentableId\" value=\"Default\" />\n      <updated>1714088144106</updated>\n      <workItem from=\"1714088146134\" duration=\"1644000\" />\n      <workItem from=\"1714146213417\" duration=\"17000\" />\n      <workItem from=\"1714715008037\" duration=\"595000\" />\n      <workItem from=\"1717343732407\" duration=\"809000\" />\n      <workItem from=\"1717345545230\" duration=\"11015000\" />\n      <workItem from=\"1717415115440\" duration=\"945000\" />\n      <workItem from=\"1717421826021\" duration=\"5123000\" />\n      <workItem from=\"1717433176938\" duration=\"1267000\" />\n      <workItem from=\"1717440462404\" duration=\"599000\" />\n      <workItem from=\"1717451075678\" duration=\"2900000\" />\n      <workItem from=\"1717458053238\" duration=\"62000\" />\n      <workItem from=\"1717458137866\" duration=\"79000\" />\n      <workItem from=\"1717465660507\" duration=\"7712000\" />\n      <workItem from=\"1717529235686\" duration=\"1411000\" />\n      <workItem from=\"1717561847985\" duration=\"10182000\" />\n    </task>\n    <task id=\"LOCAL-00001\" summary=\"Changes\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1714089790504</created>\n      <option name=\"number\" value=\"00001\" />\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1714089790504</updated>\n    </task>\n    <task id=\"LOCAL-00002\" summary=\"Improved name system\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1717349672242</created>\n      <option name=\"number\" value=\"00002\" />\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1717349672242</updated>\n    </task>\n    <task id=\"LOCAL-00003\" summary=\"Improved name system\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1717355914137</created>\n      <option name=\"number\" value=\"00003\" />\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1717355914137</updated>\n    </task>\n    <task id=\"LOCAL-00004\" summary=\"Improved name system\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1717432257327</created>\n      <option name=\"number\" value=\"00004\" />\n      <option name=\"presentableId\" value=\"LOCAL-00004\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1717432257327</updated>\n    </task>\n    <task id=\"LOCAL-00005\" summary=\"Improved name system\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1717432916642</created>\n      <option name=\"number\" value=\"00005\" />\n      <option name=\"presentableId\" value=\"LOCAL-00005\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1717432916642</updated>\n    </task>\n    <task id=\"LOCAL-00006\" summary=\"Improved name system\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1717434442792</created>\n      <option name=\"number\" value=\"00006\" />\n      <option name=\"presentableId\" value=\"LOCAL-00006\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1717434442792</updated>\n    </task>\n    <task id=\"LOCAL-00007\" summary=\"Began adding error system\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1717469659146</created>\n      <option name=\"number\" value=\"00007\" />\n      <option name=\"presentableId\" value=\"LOCAL-00007\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1717469659146</updated>\n    </task>\n    <task id=\"LOCAL-00008\" summary=\"Improved error handling\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1717473113692</created>\n      <option name=\"number\" value=\"00008\" />\n      <option name=\"presentableId\" value=\"LOCAL-00008\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1717473113692</updated>\n    </task>\n    <task id=\"LOCAL-00009\" summary=\"Improved error handling\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1717473365560</created>\n      <option name=\"number\" value=\"00009\" />\n      <option name=\"presentableId\" value=\"LOCAL-00009\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1717473365560</updated>\n    </task>\n    <task id=\"LOCAL-00010\" summary=\"Improved error handling\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1717562697947</created>\n      <option name=\"number\" value=\"00010\" />\n      <option name=\"presentableId\" value=\"LOCAL-00010\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1717562697947</updated>\n    </task>\n    <task id=\"LOCAL-00011\" summary=\"Improved name evaluation\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1717570846946</created>\n      <option name=\"number\" value=\"00011\" />\n      <option name=\"presentableId\" value=\"LOCAL-00011\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1717570846946</updated>\n    </task>\n    <task id=\"LOCAL-00012\" summary=\"Improved name evaluation\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1717572031837</created>\n      <option name=\"number\" value=\"00012\" />\n      <option name=\"presentableId\" value=\"LOCAL-00012\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1717572031837</updated>\n    </task>\n    <option name=\"localTasksCounter\" value=\"13\" />\n    <servers />\n  </component>\n  <component name=\"TypeScriptGeneratedFilesManager\">\n    <option name=\"version\" value=\"3\" />\n  </component>\n  <component name=\"VcsManagerConfiguration\">\n    <MESSAGE value=\"Changes\" />\n    <MESSAGE value=\"Improved name system\" />\n    <MESSAGE value=\"Began adding error system\" />\n    <MESSAGE value=\"Improved error handling\" />\n    <MESSAGE value=\"Improved name evaluation\" />\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"Improved name evaluation\" />\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision 2faf4af5e5473a64a986ce274d5ce52ff3cc43f7)
++++ b/.idea/workspace.xml	(date 1717590906506)
+@@ -7,15 +7,7 @@
+     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
+   </component>
+   <component name="ChangeListManager">
+-    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Improved name evaluation">
+-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/root/compiler/compile_function.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile_function.rs" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/resolve_function_signatures.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/resolve_function_signatures.rs" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/resolve_names.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/resolve_names.rs" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/root/parser/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/mod.rs" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_evaluable.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_evaluable.rs" afterDir="false" />
+-    </list>
++    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Improved name evaluation" />
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+@@ -147,7 +139,7 @@
+       <workItem from="1717458137866" duration="79000" />
+       <workItem from="1717465660507" duration="7712000" />
+       <workItem from="1717529235686" duration="1411000" />
+-      <workItem from="1717561847985" duration="10182000" />
++      <workItem from="1717561847985" duration="16546000" />
+     </task>
+     <task id="LOCAL-00001" summary="Changes">
+       <option name="closed" value="true" />
+@@ -245,7 +237,15 @@
+       <option name="project" value="LOCAL" />
+       <updated>1717572031837</updated>
+     </task>
+-    <option name="localTasksCounter" value="13" />
++    <task id="LOCAL-00013" summary="Improved name evaluation">
++      <option name="closed" value="true" />
++      <created>1717578308406</created>
++      <option name="number" value="00013" />
++      <option name="presentableId" value="LOCAL-00013" />
++      <option name="project" value="LOCAL" />
++      <updated>1717578308406</updated>
++    </task>
++    <option name="localTasksCounter" value="14" />
+     <servers />
+   </component>
+   <component name="TypeScriptGeneratedFilesManager">
