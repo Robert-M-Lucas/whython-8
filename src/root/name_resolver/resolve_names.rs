@@ -44,7 +44,7 @@ impl Type for UserType {
         self.size
     }
 
-    fn instantiate_from_literal(&self, location: &LocalAddress, literal: &LiteralToken) -> String {
+    fn instantiate_from_literal(&self, location: &LocalAddress, literal: &LiteralToken) -> Result<String, WError> {
         todo!()
     }
 }

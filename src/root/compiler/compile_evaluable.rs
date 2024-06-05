@@ -21,12 +21,12 @@ pub fn compile_evaluable(
 
     Ok(match et {
         EvaluableTokens::Name(name, containing_class) => {
-            match global_table.resolve_name(name.name(), local_variables, containing_class.as_ref().map(|x| x.name()))? {
+            match global_table.resolve_name(name.name(), containing_class.as_ref().map(|x| x.name()), local_variables)? {
                 NameResult::Function(_) => todo!(), // Cannot use a function without a call
                 NameResult::Type(_) => todo!(), // Cannot evaluate a type
                 NameResult::Variable(address) => {
                     let target = global_table.add_local_variable_unnamed_base(address.type_ref().clone(), local_variables);
-                    (copy(*address.local_address(), *target.local_address(), global_table.get_size(target.type_ref())), Some(target))
+                    (copy(*address.local_address(), *target.local_address(), global_table.get_size(target.type_ref())), target)
                 }
             }
         },
@@ -35,13 +35,17 @@ pub fn compile_evaluable(
             let address = global_table.add_local_variable_unnamed_base(TypeRef::new(tid.clone(), Indirection(0)), local_variables);
             let t = global_table.get_type(tid);
 
-            (t.instantiate_from_literal(address.local_address(), literal), Some(address))
+            (t.instantiate_from_literal(address.local_address(), literal)?, address)
         }
         EvaluableTokens::InfixOperator(_, _, _) => todo!(),
         EvaluableTokens::PrefixOperator(_, _) => todo!(),
         EvaluableTokens::DynamicAccess(_, _) => todo!(), // Accessed methods must be called
         EvaluableTokens::StaticAccess(_, _) => todo!(), // Accessed methods must be called
-        EvaluableTokens::FunctionCall(_, _) => todo!()
+        EvaluableTokens::FunctionCall(inner, args) => {
+            let (s, slf, fid) = compile_evaluable_function_only(fid, inner, local_variables, global_table, function_calls)?;
+            function_calls.insert(fid);
+            todo!()
+        }
     })
 }
 
@@ -60,7 +64,7 @@ pub fn compile_evaluable_into(
 
     Ok(match et {
         EvaluableTokens::Name(name, containing_class) => {
-            match global_table.resolve_name(name.name(), local_variables, containing_class.as_ref().map(|x| x.name()))? {
+            match global_table.resolve_name(name.name(), containing_class.as_ref().map(|x| x.name()), local_variables)? {
                 NameResult::Function(_) => todo!(), // Cannot use a function without a call
                 NameResult::Type(_) => todo!(), // Cannot evaluate a type
                 NameResult::Variable(address) => {
@@ -77,14 +81,16 @@ pub fn compile_evaluable_into(
             }
             let t = global_table.get_type(*target.type_ref().type_id());
 
-            t.instantiate_from_literal(target.local_address(), literal)
+            t.instantiate_from_literal(target.local_address(), literal)?
         }
         EvaluableTokens::InfixOperator(_, _, _) => todo!(),
         EvaluableTokens::PrefixOperator(_, _) => todo!(),
         EvaluableTokens::DynamicAccess(_, _) => todo!(), // Accessed methods must be called
         EvaluableTokens::StaticAccess(_, _) => todo!(), // Accessed methods must be called
         EvaluableTokens::FunctionCall(inner, args) => {
-
+            let (s, slf, fid) = compile_evaluable_function_only(fid, inner, local_variables, global_table, function_calls)?;
+            function_calls.insert(fid);
+            todo!()
         }
     })
 }
@@ -98,40 +104,24 @@ pub fn compile_evaluable_reference(
     function_calls: &mut HashSet<FunctionID>
 ) -> Result<(String, AddressedTypeRef), WError> {
 
-    let et = et.token();
+    let ets = et.token();
 
-    Ok(match et {
+    Ok(match ets {
         EvaluableTokens::Name(name, containing_class) => {
-            match global_table.resolve_name(name.name(), local_variables, containing_class.as_ref().map(|x| x.name()))? {
-                NameResult::Function(_) => todo!(),
-                NameResult::Type(_) => todo!(),
+            match global_table.resolve_name(name.name(), containing_class.as_ref().map(|x| x.name()), local_variables)? {
+                NameResult::Function(_) => todo!(), // Cannot use a function without a call
+                NameResult::Type(_) => todo!(), // Cannot evaluate a type
                 NameResult::Variable(address) => {
                     ("".to_string(), address)
                 }
             }
         },
-        EvaluableTokens::Literal(literal) => {
-            let (address, t) = if let Some(target) = target {
-                if target.type_ref().indirection().has_indirection() {
-                    return Err(WError::n(EvaluableErrors::BadIndirection(target.type_ref().indirection().0, 0), literal.location().clone()));
-                }
-                let t = global_table.get_type(*target.type_ref().type_id());
-                (target, t)
-            }
-            else {
-                let tid = literal.literal().default_type();
-                let address = global_table.add_local_variable_unnamed_base(TypeRef::new(tid.clone(), Indirection(0)), local_variables);
-                let t = global_table.get_type(tid);
-                (address, t)
-            };
-
-            (t.instantiate_from_literal(address.local_address(), literal), Some(address))
-        }
-        EvaluableTokens::InfixOperator(_, _, _) => todo!(),
-        EvaluableTokens::PrefixOperator(_, _) => todo!(),
-        EvaluableTokens::DynamicAccess(_, _) => todo!(),
-        EvaluableTokens::StaticAccess(_, _) => todo!(),
-        EvaluableTokens::FunctionCall(_, _) => todo!()
+        EvaluableTokens::Literal(_) => compile_evaluable(fid, et, local_variables, global_table, function_calls)?,
+        EvaluableTokens::InfixOperator(_, _, _) => compile_evaluable(fid, et, local_variables, global_table, function_calls)?,
+        EvaluableTokens::PrefixOperator(_, _) => compile_evaluable(fid, et, local_variables, global_table, function_calls)?,
+        EvaluableTokens::DynamicAccess(_, _) => todo!(), // Accessed methods must be called
+        EvaluableTokens::StaticAccess(_, _) => todo!(), // Accessed methods must be called
+        EvaluableTokens::FunctionCall(_, _) => compile_evaluable(fid, et, local_variables, global_table, function_calls)?
     })
 }
 
@@ -139,7 +129,6 @@ pub fn compile_evaluable_reference(
 pub fn compile_evaluable_function_only(
     fid: FunctionID,
     et: &EvaluableToken,
-    target: Option<AddressedTypeRef>,
     local_variables: &mut LocalVariableTable,
     global_table: &mut GlobalDefinitionTable,
     function_calls: &mut HashSet<FunctionID>
@@ -147,49 +136,7 @@ pub fn compile_evaluable_function_only(
 
     let et = et.token();
 
-    Ok(match et {
-        EvaluableTokens::Name(name, containing_class) => {
-            match global_table.resolve_name(name.name(), local_variables)? {
-                NameResult::Function(_) => todo!(),
-                NameResult::Type(_) => todo!(),
-                NameResult::Variable(address) => {
-                    if let Some(target) = target {
-                        if target.type_ref() != address.type_ref() {
-                            todo!()
-                        }
-
-                        (copy(*address.local_address(), *target.local_address(), global_table.get_size(target.type_ref())), Some(target))
-                    }
-                    else {
-                        let target = global_table.add_local_variable_unnamed_base(address.type_ref().clone(), local_variables);
-                        (copy(*address.local_address(), *target.local_address(), global_table.get_size(target.type_ref())), Some(target))
-                    }
-                }
-            }
-        },
-        EvaluableTokens::Literal(literal) => {
-            let (address, t) = if let Some(target) = target {
-                if target.type_ref().indirection().has_indirection() {
-                    return Err(WError::n(EvaluableErrors::BadIndirection(target.type_ref().indirection().0, 0), literal.location().clone()));
-                }
-                let t = global_table.get_type(*target.type_ref().type_id());
-                (target, t)
-            }
-            else {
-                let tid = literal.literal().default_type();
-                let address = global_table.add_local_variable_unnamed_base(TypeRef::new(tid.clone(), Indirection(0)), local_variables);
-                let t = global_table.get_type(tid);
-                (address, t)
-            };
-
-            (t.instantiate_from_literal(address.local_address(), literal), Some(address))
-        }
-        EvaluableTokens::InfixOperator(_, _, _) => todo!(),
-        EvaluableTokens::PrefixOperator(_, _) => todo!(),
-        EvaluableTokens::DynamicAccess(_, _) => todo!(),
-        EvaluableTokens::StaticAccess(_, _) => todo!(),
-        EvaluableTokens::FunctionCall(_, _) => todo!()
-    })
+    todo!()
 }
 
 /// Will ignore everything other than type
@@ -203,47 +150,5 @@ pub fn compile_evaluable_type_only(
 
     let et = et.token();
 
-    Ok(match et {
-        EvaluableTokens::Name(name, containing_class) => {
-            match global_table.resolve_name(name.name(), local_variables)? {
-                NameResult::Function(_) => todo!(),
-                NameResult::Type(_) => todo!(),
-                NameResult::Variable(address) => {
-                    if let Some(target) = target {
-                        if target.type_ref() != address.type_ref() {
-                            todo!()
-                        }
-
-                        (copy(*address.local_address(), *target.local_address(), global_table.get_size(target.type_ref())), Some(target))
-                    }
-                    else {
-                        let target = global_table.add_local_variable_unnamed_base(address.type_ref().clone(), local_variables);
-                        (copy(*address.local_address(), *target.local_address(), global_table.get_size(target.type_ref())), Some(target))
-                    }
-                }
-            }
-        },
-        EvaluableTokens::Literal(literal) => {
-            let (address, t) = if let Some(target) = target {
-                if target.type_ref().indirection().has_indirection() {
-                    return Err(WError::n(EvaluableErrors::BadIndirection(target.type_ref().indirection().0, 0), literal.location().clone()));
-                }
-                let t = global_table.get_type(*target.type_ref().type_id());
-                (target, t)
-            }
-            else {
-                let tid = literal.literal().default_type();
-                let address = global_table.add_local_variable_unnamed_base(TypeRef::new(tid.clone(), Indirection(0)), local_variables);
-                let t = global_table.get_type(tid);
-                (address, t)
-            };
-
-            (t.instantiate_from_literal(address.local_address(), literal), Some(address))
-        }
-        EvaluableTokens::InfixOperator(_, _, _) => todo!(),
-        EvaluableTokens::PrefixOperator(_, _) => todo!(),
-        EvaluableTokens::DynamicAccess(_, _) => todo!(),
-        EvaluableTokens::StaticAccess(_, _) => todo!(),
-        EvaluableTokens::FunctionCall(_, _) => todo!()
-    })
+    todo!()
 }
