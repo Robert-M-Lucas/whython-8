@@ -9,7 +9,7 @@ use std::path::PathBuf;
 use std::rc::Rc;
 use color_print::cformat;
 use derive_getters::Getters;
-use crate::root::errors::WError;
+use crate::root::errors::WErr;
 use crate::root::parser::parse_toplevel::TopLevelTokens;
 
 pub type Span<'a> = LocatedSpan<&'a str, &'a Rc<PathBuf>>;
@@ -122,7 +122,7 @@ impl Display for Location {
     }
 }
 
-pub fn parse(path: PathBuf) -> Result<Vec<TopLevelTokens>, WError> {
+pub fn parse(path: PathBuf) -> Result<Vec<TopLevelTokens>, WErr> {
     let text = fs::read_to_string(&path).unwrap();
     let path = Rc::new(path);
     let base = Span::new_extra(&text, &path);

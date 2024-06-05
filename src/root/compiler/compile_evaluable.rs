@@ -1,8 +1,9 @@
 use std::collections::HashSet;
 use crate::root::compiler::assembly::utils::copy;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
-use crate::root::errors::evaluable_errors::EvaluableErrors;
-use crate::root::errors::WError;
+use crate::root::errors::evaluable_errors::EvalErrs;
+use crate::root::errors::name_resolver_errors::NRErrors;
+use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable, NameResult};
 use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, EvaluableTokens};
 use crate::root::shared::common::{FunctionID, Indirection, TypeRef};
@@ -15,15 +16,15 @@ pub fn compile_evaluable(
     local_variables: &mut LocalVariableTable,
     global_table: &mut GlobalDefinitionTable,
     function_calls: &mut HashSet<FunctionID>
-) -> Result<(String, AddressedTypeRef), WError> {
+) -> Result<(String, AddressedTypeRef), WErr> {
 
     let et = et.token();
 
     Ok(match et {
         EvaluableTokens::Name(name, containing_class) => {
-            match global_table.resolve_name(name.name(), containing_class.as_ref().map(|x| x.name()), local_variables)? {
-                NameResult::Function(_) => todo!(), // Cannot use a function without a call
-                NameResult::Type(_) => todo!(), // Cannot evaluate a type
+            match global_table.resolve_name(name, containing_class.as_ref(), local_variables)? {
+                NameResult::Function(_) => return Err(WErr::n(EvalErrs::FunctionMustBeCalled(name.name().clone()), name.location().clone())),
+                NameResult::Type(_) => return Err(WErr::n(EvalErrs::CannotEvalStandaloneType(name.name().clone()), name.location().clone())),
                 NameResult::Variable(address) => {
                     let target = global_table.add_local_variable_unnamed_base(address.type_ref().clone(), local_variables);
                     (copy(*address.local_address(), *target.local_address(), global_table.get_size(target.type_ref())), target)
@@ -40,9 +41,9 @@ pub fn compile_evaluable(
         EvaluableTokens::InfixOperator(_, _, _) => todo!(),
         EvaluableTokens::PrefixOperator(_, _) => todo!(),
         EvaluableTokens::DynamicAccess(_, _) => todo!(), // Accessed methods must be called
-        EvaluableTokens::StaticAccess(_, _) => todo!(), // Accessed methods must be called
+        EvaluableTokens::StaticAccess(_, n) => return Err(WErr::n(NRErrors::CannotFindConstantAttribute(n.name().clone()), n.location().clone())), // Accessed methods must be called
         EvaluableTokens::FunctionCall(inner, args) => {
-            let (s, slf, fid) = compile_evaluable_function_only(fid, inner, local_variables, global_table, function_calls)?;
+            let (slf, fid) = compile_evaluable_function_only(fid, inner, local_variables, global_table, function_calls)?;
             function_calls.insert(fid);
             todo!()
         }
@@ -58,15 +59,15 @@ pub fn compile_evaluable_into(
     local_variables: &mut LocalVariableTable,
     global_table: &mut GlobalDefinitionTable,
     function_calls: &mut HashSet<FunctionID>
-) -> Result<String, WError> {
+) -> Result<String, WErr> {
 
     let et = et.token();
 
     Ok(match et {
         EvaluableTokens::Name(name, containing_class) => {
-            match global_table.resolve_name(name.name(), containing_class.as_ref().map(|x| x.name()), local_variables)? {
-                NameResult::Function(_) => todo!(), // Cannot use a function without a call
-                NameResult::Type(_) => todo!(), // Cannot evaluate a type
+            match global_table.resolve_name(name, containing_class.as_ref(), local_variables)? {
+                NameResult::Function(_) => return Err(WErr::n(EvalErrs::FunctionMustBeCalled(name.name().clone()), name.location().clone())),
+                NameResult::Type(_) => return Err(WErr::n(EvalErrs::CannotEvalStandaloneType(name.name().clone()), name.location().clone())),
                 NameResult::Variable(address) => {
                     if address.type_ref() != target.type_ref() {
                         todo!() // Mismatched types
@@ -77,7 +78,7 @@ pub fn compile_evaluable_into(
         },
         EvaluableTokens::Literal(literal) => {
             if target.type_ref().indirection().has_indirection() {
-                return Err(WError::n(EvaluableErrors::BadIndirection(target.type_ref().indirection().0, 0), literal.location().clone()));
+                return Err(WErr::n(EvalErrs::BadIndirection(target.type_ref().indirection().0, 0), literal.location().clone()));
             }
             let t = global_table.get_type(*target.type_ref().type_id());
 
@@ -86,9 +87,9 @@ pub fn compile_evaluable_into(
         EvaluableTokens::InfixOperator(_, _, _) => todo!(),
         EvaluableTokens::PrefixOperator(_, _) => todo!(),
         EvaluableTokens::DynamicAccess(_, _) => todo!(), // Accessed methods must be called
-        EvaluableTokens::StaticAccess(_, _) => todo!(), // Accessed methods must be called
+        EvaluableTokens::StaticAccess(_, n) => return Err(WErr::n(NRErrors::CannotFindConstantAttribute(n.name().clone()), n.location().clone())), // Accessed methods must be called
         EvaluableTokens::FunctionCall(inner, args) => {
-            let (s, slf, fid) = compile_evaluable_function_only(fid, inner, local_variables, global_table, function_calls)?;
+            let (slf, fid) = compile_evaluable_function_only(fid, inner, local_variables, global_table, function_calls)?;
             function_calls.insert(fid);
             todo!()
         }
@@ -102,15 +103,15 @@ pub fn compile_evaluable_reference(
     local_variables: &mut LocalVariableTable,
     global_table: &mut GlobalDefinitionTable,
     function_calls: &mut HashSet<FunctionID>
-) -> Result<(String, AddressedTypeRef), WError> {
+) -> Result<(String, AddressedTypeRef), WErr> {
 
     let ets = et.token();
 
     Ok(match ets {
         EvaluableTokens::Name(name, containing_class) => {
-            match global_table.resolve_name(name.name(), containing_class.as_ref().map(|x| x.name()), local_variables)? {
-                NameResult::Function(_) => todo!(), // Cannot use a function without a call
-                NameResult::Type(_) => todo!(), // Cannot evaluate a type
+            match global_table.resolve_name(name, containing_class.as_ref(), local_variables)? {
+                NameResult::Function(_) => return Err(WErr::n(EvalErrs::FunctionMustBeCalled(name.name().clone()), name.location().clone())),
+                NameResult::Type(_) => return Err(WErr::n(EvalErrs::CannotEvalStandaloneType(name.name().clone()), name.location().clone())),
                 NameResult::Variable(address) => {
                     ("".to_string(), address)
                 }
@@ -120,7 +121,7 @@ pub fn compile_evaluable_reference(
         EvaluableTokens::InfixOperator(_, _, _) => compile_evaluable(fid, et, local_variables, global_table, function_calls)?,
         EvaluableTokens::PrefixOperator(_, _) => compile_evaluable(fid, et, local_variables, global_table, function_calls)?,
         EvaluableTokens::DynamicAccess(_, _) => todo!(), // Accessed methods must be called
-        EvaluableTokens::StaticAccess(_, _) => todo!(), // Accessed methods must be called
+        EvaluableTokens::StaticAccess(_, n) => return Err(WErr::n(NRErrors::CannotFindConstantAttribute(n.name().clone()), n.location().clone())), // Accessed methods must be called
         EvaluableTokens::FunctionCall(_, _) => compile_evaluable(fid, et, local_variables, global_table, function_calls)?
     })
 }
@@ -132,7 +133,7 @@ pub fn compile_evaluable_function_only(
     local_variables: &mut LocalVariableTable,
     global_table: &mut GlobalDefinitionTable,
     function_calls: &mut HashSet<FunctionID>
-) -> Result<(String, Option<AddressedTypeRef>, FunctionID), WError> {
+) -> Result<(Option<AddressedTypeRef>, FunctionID), WErr> {
 
     let et = et.token();
 
@@ -146,7 +147,7 @@ pub fn compile_evaluable_type_only(
     local_variables: &mut LocalVariableTable,
     global_table: &mut GlobalDefinitionTable,
     function_calls: &mut HashSet<FunctionID>
-) -> Result<(String, TypeRef), WError> {
+) -> Result<TypeRef, WErr> {
 
     let et = et.token();
 

@@ -1,11 +1,11 @@
 use std::collections::{HashMap, HashSet};
 use crate::root::compiler::compile_function::compile_function;
-use crate::root::errors::WError;
+use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
 use crate::root::parser::parse_function::FunctionToken;
 use crate::root::shared::common::FunctionID;
 
-pub fn compile(mut global_table: GlobalDefinitionTable, unprocessed_functions: HashMap<FunctionID, FunctionToken>) -> Result<String, WError> {
+pub fn compile(mut global_table: GlobalDefinitionTable, unprocessed_functions: HashMap<FunctionID, FunctionToken>) -> Result<String, WErr> {
     let mut unprocessed_functions = unprocessed_functions;
     let mut compiled_functions = HashMap::new();
     let mut compiled_len = 0usize;

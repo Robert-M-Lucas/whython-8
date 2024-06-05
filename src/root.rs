@@ -10,7 +10,7 @@ use std::path::PathBuf;
 use crate::root::compiler::compile::compile;
 use crate::root::name_resolver::resolve::resolve;
 use shared::common::ByteSize;
-use crate::root::errors::WError;
+use crate::root::errors::WErr;
 use crate::root::runner::{assemble, link_gcc, run};
 
 // #[cfg(target_os = "windows")]
@@ -58,7 +58,7 @@ pub fn main() {
     }
 }
 
-pub fn main_args(args: Args) -> Result<(), WError> {
+pub fn main_args(args: Args) -> Result<(), WErr> {
     if let Some(path) = PathBuf::from(&args.output).parent() {
         if let Err(e) = fs::create_dir_all(path) {
             if !matches!(e.kind(), ErrorKind::AlreadyExists) {

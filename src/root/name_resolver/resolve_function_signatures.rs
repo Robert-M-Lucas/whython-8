@@ -1,5 +1,5 @@
 use derive_getters::Getters;
-use crate::root::errors::WError;
+use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable};
 use crate::root::shared::common::TypeRef;
 use crate::root::parser::parse_function::FunctionToken;
@@ -11,7 +11,7 @@ pub struct FunctionSignature {
     return_type: Option<TypeRef>
 }
 
-pub fn resolve_function_signature(function_token: &FunctionToken, global_table: &mut GlobalDefinitionTable) -> Result<FunctionSignature, WError> {
+pub fn resolve_function_signature(function_token: &FunctionToken, global_table: &mut GlobalDefinitionTable) -> Result<FunctionSignature, WErr> {
     let mut args = Vec::new();
 
     let return_type = if let Some(type_name) = function_token.return_type() {

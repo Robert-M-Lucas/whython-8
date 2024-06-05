@@ -21,5 +21,9 @@ pub enum NRErrors {
     #[error("Type ({0}) not found")]
     TypeNotFound(String),
     #[error("Expected type, not method or attribute")]
-    ExpectedTypeNotMethodOrAttribute
+    ExpectedTypeNotMethodOrAttribute,
+    #[error("Cannot find name ({0})")]
+    CannotFindName(String),
+    #[error("Cannot find constant attribute ({0})")]
+    CannotFindConstantAttribute(String)
 }

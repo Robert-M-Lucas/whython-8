@@ -1,6 +1,6 @@
 use unique_type_id::UniqueTypeId;
 use crate::root::compiler::assembly::utils::get_qword_stack_pointer;
-use crate::root::errors::WError;
+use crate::root::errors::WErr;
 use crate::root::parser::parse_function::parse_literal::{LiteralToken, LiteralTokens};
 use crate::root::shared::common::{AddressedTypeRef, ByteSize, FunctionID, LocalAddress, TypeID};
 use crate::root::shared::types::Type;
@@ -22,7 +22,7 @@ impl Type for IntType {
         ByteSize(8)
     }
 
-    fn instantiate_from_literal(&self, location: &LocalAddress, literal: &LiteralToken) -> Result<String, WError> {
+    fn instantiate_from_literal(&self, location: &LocalAddress, literal: &LiteralToken) -> Result<String, WErr> {
         let location = get_qword_stack_pointer(location);
         Ok(match literal.literal() {
             LiteralTokens::Bool(value) => {

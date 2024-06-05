@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use derive_getters::Getters;
 use itertools::Itertools;
 use crate::root::errors::name_resolver_errors::NRErrors;
-use crate::root::errors::WError;
+use crate::root::errors::WErr;
 
 use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable};
 use crate::root::name_resolver::resolve_function_signatures::resolve_function_signature;
@@ -44,13 +44,13 @@ impl Type for UserType {
         self.size
     }
 
-    fn instantiate_from_literal(&self, location: &LocalAddress, literal: &LiteralToken) -> Result<String, WError> {
+    fn instantiate_from_literal(&self, location: &LocalAddress, literal: &LiteralToken) -> Result<String, WErr> {
         todo!()
     }
 }
 
 // ! Unoptimised
-pub fn resolve_names(ast: Vec<TopLevelTokens>, global_table: &mut GlobalDefinitionTable) -> Result<HashMap<FunctionID, FunctionToken>, WError> {
+pub fn resolve_names(ast: Vec<TopLevelTokens>, global_table: &mut GlobalDefinitionTable) -> Result<HashMap<FunctionID, FunctionToken>, WErr> {
     let mut ast = ast;
 
     // ? User types > 1; Builtin Types < -1
@@ -86,7 +86,7 @@ pub fn resolve_names(ast: Vec<TopLevelTokens>, global_table: &mut GlobalDefiniti
 
                     for (e_name, _) in &p_attributes {
                         if e_name.name() == name.name() {
-                            return Err(WError::n(NRErrors::SameAttributeName(name.name().clone()), name.location().clone()));
+                            return Err(WErr::n(NRErrors::SameAttributeName(name.name().clone()), name.location().clone()));
                         }
                     }
                     p_attributes.push((name, type_ref))

@@ -3,14 +3,14 @@ use crate::root::builtin::int::IntType;
 use crate::root::compiler::assembly::utils::{align_16_bytes, align_16_bytes_plus_8, get_function_tag, get_qword_stack_pointer};
 use crate::root::compiler::compile_evaluable::{compile_evaluable, compile_evaluable_into, compile_evaluable_reference};
 use crate::root::compiler::local_variable_table::LocalVariableTable;
-use crate::root::errors::WError;
+use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable};
 use crate::root::parser::parse_function::FunctionToken;
 use crate::root::parser::parse_function::parse_line::LineTokens;
 use crate::root::shared::common::{FunctionID, Indirection, LocalAddress, TypeRef};
 use crate::root::shared::common::AddressedTypeRef;
 
-pub fn compile_function(fid: FunctionID, function: FunctionToken, global_table: &mut GlobalDefinitionTable) -> Result<(String, HashSet<FunctionID>), WError> {
+pub fn compile_function(fid: FunctionID, function: FunctionToken, global_table: &mut GlobalDefinitionTable) -> Result<(String, HashSet<FunctionID>), WErr> {
     let mut local_variables = Box::new(LocalVariableTable::default());
 
     let (_location, _name, return_type, parameters, lines) = function.dissolve();
@@ -65,7 +65,7 @@ pub fn compile_function(fid: FunctionID, function: FunctionToken, global_table: 
     Ok((final_contents, function_calls))
 }
 
-fn recursively_compile_lines(fid: FunctionID, lines: &[LineTokens], return_variable: &Option<AddressedTypeRef>, local_variables: Box<LocalVariableTable>, global_table: &mut GlobalDefinitionTable, function_calls: &mut HashSet<FunctionID>) -> Result<(String, Box<LocalVariableTable>), WError> {
+fn recursively_compile_lines(fid: FunctionID, lines: &[LineTokens], return_variable: &Option<AddressedTypeRef>, local_variables: Box<LocalVariableTable>, global_table: &mut GlobalDefinitionTable, function_calls: &mut HashSet<FunctionID>) -> Result<(String, Box<LocalVariableTable>), WErr> {
     let mut local_variables = local_variables.enter_block();
     let mut contents = String::new();
 

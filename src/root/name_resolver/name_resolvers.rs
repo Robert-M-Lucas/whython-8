@@ -7,7 +7,7 @@ use either::{Either, Left, Right};
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::name_resolver_errors::NRErrors;
 use crate::root::errors::name_resolver_errors::NRErrors::IdentifierNotFound;
-use crate::root::errors::WError;
+use crate::root::errors::WErr;
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse::Location;
 use crate::root::shared::types::Type;
@@ -66,9 +66,9 @@ pub struct GlobalDefinitionTable {
 }
 
 
-pub enum NameResult<'a> {
-    Function(&'a FunctionSignature),
-    Type(&'a dyn Type),
+pub enum NameResult {
+    Function(FunctionID),
+    Type(TypeID),
     Variable(AddressedTypeRef)
 }
 
@@ -138,7 +138,7 @@ impl GlobalDefinitionTable {
     }
 
 
-    pub fn resolve_to_type_ref(&mut self, name: &FullNameWithIndirectionToken) -> Result<TypeRef, WError> {
+    pub fn resolve_to_type_ref(&mut self, name: &FullNameWithIndirectionToken) -> Result<TypeRef, WErr> {
         let (indirection, full_name) = (name.indirection(), name.inner());
 
         fn find_error_point(name: &FullNameToken, prev_location: &Location) -> Location {
@@ -151,7 +151,7 @@ impl GlobalDefinitionTable {
 
         let (name, containing) = match full_name.token() {
             FullNameTokens::Name(n, c) => (n, c),
-            _ => Err(WError::n(NRErrors::ExpectedTypeNotMethodOrAttribute, find_error_point(full_name, full_name.location())))?
+            _ => Err(WErr::n(NRErrors::ExpectedTypeNotMethodOrAttribute, find_error_point(full_name, full_name.location())))?
         };
 
         let name = if name.name() == "Self" && containing.is_some() {
@@ -163,7 +163,7 @@ impl GlobalDefinitionTable {
                 Some(match val {
                     NameTreeEntry::Type(t) => Ok(TypeRef::new(*t, *indirection)),
                     NameTreeEntry::Function(_) => {
-                        Err(WError::n(NRErrors::FoundFunctionNotType(name.name().clone()), full_name.location().clone()))
+                        Err(WErr::n(NRErrors::FoundFunctionNotType(name.name().clone()), full_name.location().clone()))
                     }
                 })
             }
@@ -186,8 +186,11 @@ impl GlobalDefinitionTable {
             return Ok(TypeRef::new(*r, *indirection))
         }
 
+        if let Some(r) = self.builtin_function_name_table.get(name.name()) {
+            return Err(WErr::n(NRErrors::FoundFunctionNotType(name.name().clone()), full_name.location().clone()))
+        }
 
-        Err(WError::n(NRErrors::TypeNotFound(name.name().clone()), full_name.location().clone()))
+        Err(WErr::n(NRErrors::TypeNotFound(name.name().clone()), full_name.location().clone()))
     }
 
     pub fn get_size(&mut self, t: &TypeRef) -> ByteSize {
@@ -205,12 +208,12 @@ impl GlobalDefinitionTable {
         AddressedTypeRef::new(address, t)
     }
 
-    pub fn add_local_variable_unnamed(&mut self, t: &FullNameWithIndirectionToken, local_variable_table: &mut LocalVariableTable) -> Result<AddressedTypeRef, WError> {
+    pub fn add_local_variable_unnamed(&mut self, t: &FullNameWithIndirectionToken, local_variable_table: &mut LocalVariableTable) -> Result<AddressedTypeRef, WErr> {
         let t = self.resolve_to_type_ref(t)?;
         Ok(self.add_local_variable_unnamed_base(t, local_variable_table))
     }
 
-    pub fn add_local_variable_named(&mut self, name: String, t: &FullNameWithIndirectionToken, local_variable_table: &mut LocalVariableTable) -> Result<AddressedTypeRef, WError> {
+    pub fn add_local_variable_named(&mut self, name: String, t: &FullNameWithIndirectionToken, local_variable_table: &mut LocalVariableTable) -> Result<AddressedTypeRef, WErr> {
         let t = self.resolve_to_type_ref(t)?;
         let size = self.get_size(&t);
         let address = local_variable_table.add_new_unnamed(size);
@@ -231,11 +234,41 @@ impl GlobalDefinitionTable {
         self.type_definitions.get(&type_id).as_ref().unwrap()
     }
 
-    pub fn resolve_name(&mut self, name: &String, containing_class: Option<&String>, local_variable_table: &LocalVariableTable) -> Result<NameResult, WError> {
-        if let Some(variable) = local_variable_table.get_name(name) {
+    pub fn resolve_name(&mut self, name: &SimpleNameToken, containing_class: Option<&SimpleNameToken>, local_variable_table: &LocalVariableTable) -> Result<NameResult, WErr> {
+        if let Some(variable) = local_variable_table.get_name(name.name()) {
             return Ok(NameResult::Variable(variable))
         }
 
-        todo!()
+        let process_tree = |tree: &NameTree| -> Option<_> {
+            if let Some(val) = tree.get_entry(name.name()) {
+                Some(match val {
+                    NameTreeEntry::Type(t) => Ok(NameResult::Type(*t)),
+                    NameTreeEntry::Function(f) => Ok(NameResult::Function(*f)),
+                })
+            }
+            else {
+                None
+            }
+        };
+
+        if let Some(r) = process_tree(self.name_table.get_tree_mut(name.location().path().clone())) {
+            return r;
+        }
+
+        for (_, tree) in self.name_table.table.iter().filter(|(p, _)| *p != name.location().path()) {
+            if let Some(r) = process_tree(tree) {
+                return r;
+            }
+        }
+
+        if let Some(r) = self.builtin_type_name_table.get(name.name()) {
+            return Ok(NameResult::Type(*r));
+        }
+
+        if let Some(r) = self.builtin_function_name_table.get(name.name()) {
+            return Ok(NameResult::Function(*r));
+        }
+
+        Err(WErr::n(NRErrors::CannotFindName(name.name().clone()), name.location().clone()))
     }
 }
