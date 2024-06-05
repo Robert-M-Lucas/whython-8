@@ -7,16 +7,16 @@ use nom_supreme::error::GenericErrorTree;
 use nom_supreme::tag::complete::tag;
 use nom_supreme::tag::TagError;
 
-const OPERATOR_MAPS: [(&str, OperatorTokens, bool); 4] = [
-    ("+", OperatorTokens::Add, false),
-    ("-", OperatorTokens::Subtract, false),
-    ("==", OperatorTokens::Equals, false),
-    ("!", OperatorTokens::Not, true),
+const OPERATOR_MAPS: [(&str, OperatorTokens, bool, &'static str); 4] = [
+    ("+", OperatorTokens::Add, false, "add"),
+    ("-", OperatorTokens::Subtract, false, "sub"),
+    ("==", OperatorTokens::Equals, false, "eq"),
+    ("!", OperatorTokens::Not, true, "not"),
 ];
 
 // TODO: Implement functionally
 pub fn is_prefix_op(operator: &OperatorTokens) -> bool {
-    for (_, op, prefix) in &OPERATOR_MAPS {
+    for (_, op, prefix, _) in &OPERATOR_MAPS {
         if operator == op {
             return *prefix;
         }
@@ -24,8 +24,17 @@ pub fn is_prefix_op(operator: &OperatorTokens) -> bool {
     panic!()
 }
 
+pub fn get_method_name(operator: &OperatorTokens) -> &'static str {
+    for (_, op, _, name) in &OPERATOR_MAPS {
+        if operator == op {
+            return *name;
+        }
+    }
+    panic!()
+}
+
 pub fn get_priority(operator: &OperatorTokens) -> usize {
-    for (p, (_, op, _)) in OPERATOR_MAPS.iter().enumerate() {
+    for (p, (_, op, _, _)) in OPERATOR_MAPS.iter().enumerate() {
         if operator == op {
             return p;
         }
@@ -68,7 +77,7 @@ impl OperatorTokens {
 }
 
 pub fn parse_operator(s: Span) -> ParseResult<Span, OperatorToken> {
-    for (operator, token, _) in OPERATOR_MAPS {
+    for (operator, token, _, _) in OPERATOR_MAPS {
         if let Ok((s, x)) = tag::<_, _, ErrorTree>(operator)(s) {
             return Ok((
                 s,
@@ -83,7 +92,7 @@ pub fn parse_operator(s: Span) -> ParseResult<Span, OperatorToken> {
     Err(Error(GenericErrorTree::Alt(
         OPERATOR_MAPS
             .iter()
-            .map(|(t, _, _)| GenericErrorTree::from_tag(s, *t))
+            .map(|(t, _, _, _)| GenericErrorTree::from_tag(s, *t))
             .collect(),
     )))
 }

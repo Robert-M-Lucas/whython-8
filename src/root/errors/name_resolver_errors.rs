@@ -7,7 +7,7 @@ pub enum NRErrors {
     #[error("Cannot create 'impl' for an indirect type")]
     IndirectImpl,
     #[error("Cannot find the subname ({0}) of a function ({1})")]
-    FunctionSubname(String, String),
+    NoFunctionSubname(String, String),
     #[error("Cannot find method ({0}) of type ({1})")]
     CannotFindMethod(String, String),
     #[error("Two attributes found with the same name ({0})")]

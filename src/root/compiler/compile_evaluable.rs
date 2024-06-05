@@ -6,6 +6,7 @@ use crate::root::errors::name_resolver_errors::NRErrors;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable, NameResult};
 use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, EvaluableTokens};
+use crate::root::parser::parse_function::parse_operator::get_method_name;
 use crate::root::shared::common::{FunctionID, Indirection, TypeRef};
 use crate::root::shared::common::AddressedTypeRef;
 
@@ -84,7 +85,7 @@ pub fn compile_evaluable_into(
 
             t.instantiate_from_literal(target.local_address(), literal)?
         }
-        EvaluableTokens::InfixOperator(_, _, _) => todo!(),
+        EvaluableTokens::InfixOperator(lhs, op, rhs) => todo!(),
         EvaluableTokens::PrefixOperator(_, _) => todo!(),
         EvaluableTokens::DynamicAccess(_, _) => todo!(), // Accessed methods must be called
         EvaluableTokens::StaticAccess(_, n) => return Err(WErr::n(NRErrors::CannotFindConstantAttribute(n.name().clone()), n.location().clone())), // Accessed methods must be called

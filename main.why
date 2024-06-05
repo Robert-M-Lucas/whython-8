@@ -4,7 +4,7 @@ struct A {
 }
 
 fn main() -> int {
-    let a: int = int::hi;
+    let a: int = 100 + 100;
     let b: int = a;
     return b;
 }
