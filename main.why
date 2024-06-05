@@ -3,6 +3,6 @@ struct A {
     b: int
 }
 
-fn main() !-> int {
+fn main() -> int {
     return 12;
 }

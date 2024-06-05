@@ -13,6 +13,7 @@ use crate::root::parser::parse::Location;
 use crate::root::parser::parse_function::FunctionToken;
 use crate::root::parser::parse_function::parse_evaluable::{FullNameToken, FullNameTokens};
 use crate::root::parser::parse_function::parse_literal::LiteralToken;
+use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::parser::parse_toplevel::TopLevelTokens;
 use crate::root::shared::common::{LocalAddress, TypeRef};
 use crate::root::shared::common::{ByteSize, FunctionID, TypeID};
@@ -62,12 +63,12 @@ use crate::root::shared::types::Type;
 pub struct UserType {
     id: TypeID,
     size: ByteSize,
-    attributes: Vec<(usize, String, TypeRef)>,
+    attributes: Vec<(usize, SimpleNameToken, TypeRef)>,
     location: Location
 }
 
 impl UserType {
-    pub fn new(id: TypeID, size: ByteSize, attributes: Vec<(usize, String, TypeRef)>, location: Location) -> UserType {
+    pub fn new(id: TypeID, size: ByteSize, attributes: Vec<(usize, SimpleNameToken, TypeRef)>, location: Location) -> UserType {
         UserType { id, size, attributes, location }
     }
 }
@@ -117,13 +118,13 @@ pub fn resolve_names(ast: Vec<TopLevelTokens>, global_table: &mut GlobalDefiniti
                 let (location, _, attributes, id) = st.dissolve();
                 let id = id.unwrap();
 
-                let mut p_attributes = Vec::new();
-                for ((name, name_loc), (type_name, type_name_loc)) in attributes {
-                    let type_ref = global_table.resolve_global_name_to_id(&type_name)?;
+                let mut p_attributes: Vec<(SimpleNameToken, TypeRef)> = Vec::new();
+                for (name, type_name) in attributes {
+                    let type_ref = global_table.resolve_to_type_ref(&type_name)?;
 
                     for (e_name, _) in &p_attributes {
-                        if e_name == &name {
-                            return Err(WError::n(NRErrors::SameAttributeName(name), name_loc));
+                        if e_name.name() == name.name() {
+                            return Err(WError::n(NRErrors::SameAttributeName(name.name().clone()), name.location().clone()));
                         }
                     }
                     p_attributes.push((name, type_ref))
@@ -132,20 +133,22 @@ pub fn resolve_names(ast: Vec<TopLevelTokens>, global_table: &mut GlobalDefiniti
             }
             TopLevelTokens::Impl(it) => {
                 let (location, name, functions) = it.dissolve();
-                let type_id = *global_table.resolve_global_name_to_id(FullNameToken::new(
+                let type_id = *global_table.resolve_to_type_ref(&FullNameToken::new(
                     location.clone(),
                     FullNameTokens::Name(name, None)
                 ).with_no_indirection())?.type_id();
 
-                for ft in it.dissolve().2 {
+                for ft in functions {
                     let function_id = global_table.add_from_function_token(&ft, Some(type_id));
-                    global_table.add_function_signature(function_id, resolve_function_signature(&ft, &global_table)?);
+                    let signature = resolve_function_signature(&ft, global_table)?;
+                    global_table.add_function_signature(function_id, signature);
                     unprocessed_functions.insert(function_id, ft);
                 }
             }
             TopLevelTokens::Function(ft) => {
                 let function_id = global_table.add_from_function_token(&ft, None);
-                global_table.add_function_signature(function_id, resolve_function_signature(&ft, &global_table)?);
+                let signature = resolve_function_signature(&ft, global_table)?;
+                global_table.add_function_signature(function_id, signature);
                 unprocessed_functions.insert(function_id, ft);
             }
         };

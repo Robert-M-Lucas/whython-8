@@ -9,24 +9,15 @@ use crate::root::parser::parse_function::parse_line::LineTokens;
 use crate::root::shared::common::{FunctionID, LocalAddress};
 use crate::root::shared::common::AddressedTypeRef;
 
-pub fn compile_function(fid: FunctionID, function: FunctionToken, global_table: &GlobalDefinitionTable) -> Result<(String, HashSet<FunctionID>), WError> {
+pub fn compile_function(fid: FunctionID, function: FunctionToken, global_table: &mut GlobalDefinitionTable) -> Result<(String, HashSet<FunctionID>), WError> {
     let mut local_variables = Box::new(LocalVariableTable::default());
 
     let (_location, _name, return_type, parameters, lines) = function.dissolve();
 
     let return_type = if fid.is_main() { None } else { return_type };
 
-    let return_type = if let Some((t, loc)) = return_type {
-        Some(match global_table.resolve_global_name_to_id(&t, &loc)? {
-            NameResultId::Function(_) => todo!(),
-            NameResultId::Type(type_ref) => {
-                if type_ref.indirection().has_indirection() {
-                    todo!()
-                }
-                type_ref
-            }
-            NameResultId::NotFound => todo!()
-        })
+    let return_type = if let Some(t) = return_type {
+        Some(global_table.resolve_to_type_ref(&t)?)
     }
     else {
         None
@@ -34,20 +25,11 @@ pub fn compile_function(fid: FunctionID, function: FunctionToken, global_table: 
 
     let mut param_address = LocalAddress(8);
 
-    for ((param_name, param_name_loc), (param_type, param_type_loc)) in parameters {
-        let type_ref = match global_table.resolve_global_name_to_id(&param_type, &param_type_loc)? {
-            NameResultId::Function(_) => todo!(),
-            NameResultId::Type(type_ref) => {
-                if type_ref.indirection().has_indirection() {
-                    todo!()
-                }
-                type_ref
-            }
-            NameResultId::NotFound => todo!()
-        };
+    for (param_name, param_type) in parameters {
+        let type_ref = global_table.resolve_to_type_ref(&param_type)?;
 
         let size = global_table.type_definitions().get(type_ref.type_id()).unwrap().size();
-        local_variables.add_existing(param_name, AddressedTypeRef::new(param_address, type_ref));
+        local_variables.add_existing(param_name.name().clone(), AddressedTypeRef::new(param_address, type_ref));
 
         param_address += LocalAddress(size.0 as isize);
     }

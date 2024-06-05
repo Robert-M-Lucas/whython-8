@@ -15,5 +15,11 @@ pub enum NRErrors {
     #[error("Function reference cannot have indirection here")]
     FunctionIndirectionError,
     #[error("Identifier ({0}) not found")]
-    IdentifierNotFound(String)
+    IdentifierNotFound(String),
+    #[error("Expected type ({0}), found function of same name")]
+    FoundFunctionNotType(String),
+    #[error("Type ({0}) not found")]
+    TypeNotFound(String),
+    #[error("Expected type, not method or attribute")]
+    ExpectedTypeNotMethodOrAttribute
 }

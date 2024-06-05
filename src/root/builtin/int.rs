@@ -1,7 +1,7 @@
 use unique_type_id::UniqueTypeId;
 use crate::root::compiler::assembly::utils::get_qword_stack_pointer;
 use crate::root::parser::parse_function::parse_literal::{LiteralToken, LiteralTokens};
-use crate::root::shared::common::{AddressedTypeRef, ByteSize, LocalAddress, TypeID};
+use crate::root::shared::common::{AddressedTypeRef, ByteSize, FunctionID, LocalAddress, TypeID};
 use crate::root::shared::types::Type;
 
 #[derive(UniqueTypeId)]

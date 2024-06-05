@@ -9,7 +9,7 @@ pub fn compile_evaluable(fid: FunctionID, et: &EvaluableToken, target: Option<Ad
     let et = et.token();
 
     match et {
-        EvaluableTokens::Name(_) => todo!(),
+        EvaluableTokens::Name(_, _) => todo!(),
         EvaluableTokens::Literal(literal) => {
             let (address, t, tid) = if let Some(target) = target {
                 let (address, tid) = target.dissolve();
@@ -32,6 +32,9 @@ pub fn compile_evaluable(fid: FunctionID, et: &EvaluableToken, target: Option<Ad
             (t.instantiate_from_literal(&address, literal), Some(AddressedTypeRef::new(address, tid)))
         }
         EvaluableTokens::InfixOperator(_, _, _) => todo!(),
-        EvaluableTokens::PrefixOperator(_, _) => todo!()
+        EvaluableTokens::PrefixOperator(_, _) => todo!(),
+        EvaluableTokens::DynamicAccess(_, _) => todo!(),
+        EvaluableTokens::StaticAccess(_, _) => todo!(),
+        EvaluableTokens::FunctionCall(_, _, _) => todo!()
     }
 }

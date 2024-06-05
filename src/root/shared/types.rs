@@ -1,5 +1,5 @@
 use crate::root::parser::parse_function::parse_literal::LiteralToken;
-use crate::root::shared::common::{AddressedTypeRef, ByteSize, LocalAddress, TypeID};
+use crate::root::shared::common::{AddressedTypeRef, ByteSize, FunctionID, LocalAddress, TypeID};
 
 pub trait Type {
     fn id(&self) -> TypeID;

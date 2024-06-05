@@ -4,18 +4,19 @@ use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
 use crate::root::shared::common::TypeRef;
 use crate::root::name_resolver::resolve_names::UserType;
 use crate::root::parser::parse::Location;
+use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::POINTER_SIZE;
 use crate::root::shared::common::{ByteSize, TypeID};
 
 #[derive(Dissolve)]
 pub struct UnsizedUserType {
     id: TypeID,
-    attributes: Vec<(String, TypeRef)>,
+    attributes: Vec<(SimpleNameToken, TypeRef)>,
     location: Location
 }
 
 impl UnsizedUserType {
-    pub fn new(id: TypeID, attributes: Vec<(String, TypeRef)>, location: Location) -> UnsizedUserType {
+    pub fn new(id: TypeID, attributes: Vec<(SimpleNameToken, TypeRef)>, location: Location) -> UnsizedUserType {
         UnsizedUserType { id, attributes, location }
     }
 }
@@ -36,7 +37,7 @@ pub fn resolve_type_sizes(
     path.push(id);
 
     let mut size: ByteSize = ByteSize(0);
-    let mut processed_attributes: Vec<(usize, String, TypeRef)> = Vec::new();
+    let mut processed_attributes: Vec<(usize, SimpleNameToken, TypeRef)> = Vec::new();
 
     for (attribute_name, attribute_type) in attributes {
         let offset = size;

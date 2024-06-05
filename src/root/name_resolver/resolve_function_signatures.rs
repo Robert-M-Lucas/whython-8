@@ -11,12 +11,11 @@ pub struct FunctionSignature {
     return_type: Option<TypeRef>
 }
 
-pub fn resolve_function_signature(function_token: &FunctionToken, global_table: &GlobalDefinitionTable) -> Result<FunctionSignature, WError> {
+pub fn resolve_function_signature(function_token: &FunctionToken, global_table: &mut GlobalDefinitionTable) -> Result<FunctionSignature, WError> {
     let mut args = Vec::new();
 
-    let return_type = if let Some((type_name, location)) = function_token.return_type() {
-        // TODO
-        Some(global_table.resolve_global_name_to_id(type_name)?)
+    let return_type = if let Some(type_name) = function_token.return_type() {
+        Some(global_table.resolve_to_type_ref(type_name)?)
     } else {
         None
     };
@@ -24,7 +23,7 @@ pub fn resolve_function_signature(function_token: &FunctionToken, global_table: 
     for (arg_name, arg_type) in function_token.parameters() {
         args.push((
             arg_name.clone(),
-            global_table.resolve_global_name_to_id(arg_type)?
+            global_table.resolve_to_type_ref(arg_type)?
         ))
     }
 
