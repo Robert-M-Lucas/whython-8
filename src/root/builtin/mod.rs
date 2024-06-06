@@ -11,7 +11,7 @@ pub fn register_builtin(global_table: &mut GlobalDefinitionTable) {
     register_int(global_table);
 }
 
-pub type InlineFunctionGenerator = fn(&[LocalAddress], Option<LocalAddress>) -> Result<String, WErr>;
+pub type InlineFunctionGenerator = fn(&[LocalAddress], Option<LocalAddress>) -> String;
 
 pub trait BuiltinInlineFunction {
     fn id(&self) -> FunctionID;

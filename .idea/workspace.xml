@@ -7,20 +7,14 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Continued compiler work">
-      <change afterPath="$PROJECT_DIR$/src/root/builtin/int/add.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/root/compiler/compile_function_call.rs" afterDir="false" />
+    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Started adding support for inline functions">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/int.rs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/builtin/int/add.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/int/add.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/builtin/int/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/int/mod.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/root/builtin/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/resolve_function_signatures.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/resolve_function_signatures.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_name.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_name.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/assembly/utils.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/assembly/utils.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/compile_function.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile_function.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/root/shared/common.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/shared/common.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/types.toml" beforeDir="false" afterPath="$PROJECT_DIR$/types.toml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -156,7 +150,7 @@
       <workItem from="1717529235686" duration="1411000" />
       <workItem from="1717561847985" duration="16546000" />
       <workItem from="1717596741505" duration="3353000" />
-      <workItem from="1717612974234" duration="5108000" />
+      <workItem from="1717612974234" duration="5811000" />
     </task>
     <task id="LOCAL-00001" summary="Changes">
       <option name="closed" value="true" />
@@ -294,7 +288,15 @@
       <option name="project" value="LOCAL" />
       <updated>1717614696137</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="Started adding support for inline functions">
+      <option name="closed" value="true" />
+      <created>1717677552390</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1717677552390</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -310,6 +312,7 @@
     <MESSAGE value="Began working on evaluation system" />
     <MESSAGE value="Improved errors" />
     <MESSAGE value="Continued compiler work" />
-    <option name="LAST_COMMIT_MESSAGE" value="Continued compiler work" />
+    <MESSAGE value="Started adding support for inline functions" />
+    <option name="LAST_COMMIT_MESSAGE" value="Started adding support for inline functions" />
   </component>
 </project>

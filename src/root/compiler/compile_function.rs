@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 use crate::root::builtin::int::IntType;
-use crate::root::compiler::assembly::utils::{align_16_bytes, align_16_bytes_plus_8, get_function_tag, get_qword_stack_pointer};
+use crate::root::compiler::assembly::utils::{align_16_bytes, align_16_bytes_plus_8, get_function_tag};
 use crate::root::compiler::compile_evaluable::{compile_evaluable, compile_evaluable_into, compile_evaluable_reference};
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::WErr;
@@ -86,7 +86,7 @@ fn recursively_compile_lines(fid: FunctionID, lines: &[LineTokens], return_varia
                     let code = compile_evaluable_into(fid, rt.return_value(), address.clone(), &mut local_variables, global_table, function_calls)?;
                     contents += "\n";
                     contents += &code;
-                    contents += &format!("\n\tmov rax, {}", get_qword_stack_pointer(address.local_address()));
+                    contents += &format!("\n\tmov rax, qword {}", address.local_address());
                 }
                 else {
                     todo!()

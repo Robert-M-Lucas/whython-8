@@ -1,3 +1,4 @@
+use std::fmt::{Display, Formatter, write};
 use derive_more::{Add, AddAssign, Display, Sub, SubAssign};
 use derive_getters::{Dissolve, Getters};
 
@@ -41,10 +42,20 @@ impl Indirection {
 #[display(fmt = "ByteSize: {}", .0)]
 pub struct ByteSize(pub usize);
 
-#[derive(Debug, PartialEq, Eq, Hash, Display, Copy, Clone)]
+#[derive(Debug, PartialEq, Eq, Hash, Copy, Clone)]
 #[derive(Add, AddAssign, Sub, SubAssign)]
-#[display(fmt = "LocalAddress: {}", .0)]
 pub struct LocalAddress(pub isize);
+
+impl Display for LocalAddress {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        if self.0 >= 0 {
+            write!(f, "[rbp+{}]", self.0)
+        }
+        else {
+            write!(f, "[rbp{}]", self.0)
+        }
+    }
+}
 
 #[derive(Getters, Clone, PartialEq)]
 pub struct TypeRef {

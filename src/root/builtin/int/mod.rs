@@ -3,7 +3,6 @@ mod add;
 use b_box::b;
 use unique_type_id::UniqueTypeId;
 use crate::root::builtin::int::add::IntAdd;
-use crate::root::compiler::assembly::utils::get_qword_stack_pointer;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
 use crate::root::parser::parse_function::parse_literal::{LiteralToken, LiteralTokens};
@@ -33,18 +32,17 @@ impl Type for IntType {
     }
 
     fn instantiate_from_literal(&self, location: &LocalAddress, literal: &LiteralToken) -> Result<String, WErr> {
-        let location = get_qword_stack_pointer(location);
         Ok(match literal.literal() {
             LiteralTokens::Bool(value) => {
                 if *value {
-                    format!("\tmov {location}, 0")
+                    format!("    mov qword {location}, 0")
                 }
                 else {
-                    format!("\tmov {location}, 1")
+                    format!("    mov qword {location}, 1")
                 }
             }
             LiteralTokens::Int(value) => {
-                format!("\tmov {location}, {value}")
+                format!("    mov qword {location}, {value}")
             }
         })
     }

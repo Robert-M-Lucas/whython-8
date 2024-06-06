@@ -299,7 +299,7 @@ impl GlobalDefinitionTable {
 
     pub fn call_function(&self, function: FunctionID, arguments: &[LocalAddress], return_address: Option<LocalAddress>) -> Result<String, WErr> {
         if let Some(inline) = self.inline_functions.get(&function) {
-            return inline(arguments, return_address);
+            return Ok(inline(arguments, return_address));
         }
 
         call_function(function, arguments, return_address)

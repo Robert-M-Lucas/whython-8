@@ -28,8 +28,14 @@ impl BuiltinInlineFunction for IntAdd {
     }
 
     fn inline(&self) -> InlineFunctionGenerator {
-        |args: &[LocalAddress], return_addr: Option<LocalAddress>| -> Result<String, WErr> {
-            todo!()
+        |args: &[LocalAddress], return_into: Option<LocalAddress>| -> String {
+            let lhs = args[0];
+            let rhs = args[1];
+            let return_into = return_into.unwrap();
+            format!(
+"    mov rax, qword {lhs}
+    add rax, qword {rhs}
+    mov qword {return_into}, rax")
         }
     }
 
