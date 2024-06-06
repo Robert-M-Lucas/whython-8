@@ -14,34 +14,6 @@ const OPERATOR_MAPS: [(&str, OperatorTokens, bool, &'static str); 4] = [
     ("!", OperatorTokens::Not, true, "not"),
 ];
 
-// TODO: Implement functionally
-pub fn is_prefix_op(operator: &OperatorTokens) -> bool {
-    for (_, op, prefix, _) in &OPERATOR_MAPS {
-        if operator == op {
-            return *prefix;
-        }
-    }
-    panic!()
-}
-
-pub fn get_method_name(operator: &OperatorTokens) -> &'static str {
-    for (_, op, _, name) in &OPERATOR_MAPS {
-        if operator == op {
-            return *name;
-        }
-    }
-    panic!()
-}
-
-pub fn get_priority(operator: &OperatorTokens) -> usize {
-    for (p, (_, op, _, _)) in OPERATOR_MAPS.iter().enumerate() {
-        if operator == op {
-            return p;
-        }
-    }
-    panic!()
-}
-
 #[derive(Debug, Clone, Getters)]
 pub struct OperatorToken {
     location: Location,
@@ -50,11 +22,11 @@ pub struct OperatorToken {
 
 impl OperatorToken {
     pub fn is_prefix_opt_t(&self) -> bool {
-        is_prefix_op(&self.operator)
+        self.operator.is_prefix_op()
     }
 
     pub fn get_priority_t(&self) -> usize {
-        get_priority(&self.operator)
+        self.operator.get_priority()
     }
 }
 
@@ -67,12 +39,41 @@ pub enum OperatorTokens {
 }
 
 impl OperatorTokens {
-    pub fn is_prefix_opt_t(&self) -> bool {
-        is_prefix_op(&self)
+    // TODO: Implement functionally
+    pub fn is_prefix_op(&self) -> bool {
+        for (_, op, prefix, _) in &OPERATOR_MAPS {
+            if self == op {
+                return *prefix;
+            }
+        }
+        panic!()
     }
 
-    pub fn get_priority_t(&self) -> usize {
-        get_priority(&self)
+    pub fn get_method_name(&self) -> &'static str {
+        for (_, op, _, name) in &OPERATOR_MAPS {
+            if self == op {
+                return *name;
+            }
+        }
+        panic!()
+    }
+
+    pub fn get_priority(&self) -> usize {
+        for (p, (_, op, _, _)) in OPERATOR_MAPS.iter().enumerate() {
+            if self == op {
+                return p;
+            }
+        }
+        panic!()
+    }
+
+    pub fn to_str(&self) -> &'static str {
+        for (s, op, _, _) in &OPERATOR_MAPS {
+            if self == op {
+                return *s;
+            }
+        }
+        panic!()
     }
 }
 

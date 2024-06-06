@@ -24,14 +24,15 @@ use crate::root::shared::types::Type;
 #[derive(Getters)]
 pub struct UserType {
     id: TypeID,
+    name: String,
     size: ByteSize,
     attributes: Vec<(usize, SimpleNameToken, TypeRef)>,
     location: Location
 }
 
 impl UserType {
-    pub fn new(id: TypeID, size: ByteSize, attributes: Vec<(usize, SimpleNameToken, TypeRef)>, location: Location) -> UserType {
-        UserType { id, size, attributes, location }
+    pub fn new(id: TypeID, name: String, size: ByteSize, attributes: Vec<(usize, SimpleNameToken, TypeRef)>, location: Location) -> UserType {
+        UserType { id, name, size, attributes, location }
     }
 }
 
@@ -42,6 +43,10 @@ impl Type for UserType {
 
     fn size(&self) -> ByteSize {
         self.size
+    }
+
+    fn name(&self) -> &str {
+        &self.name
     }
 
     fn instantiate_from_literal(&self, location: &LocalAddress, literal: &LiteralToken) -> Result<String, WErr> {
@@ -77,7 +82,7 @@ pub fn resolve_names(ast: Vec<TopLevelTokens>, global_table: &mut GlobalDefiniti
     for symbol in ast {
         match symbol {
             TopLevelTokens::Struct(st) => {
-                let (location, _, attributes, id) = st.dissolve();
+                let (location, name, attributes, id) = st.dissolve();
                 let id = id.unwrap();
 
                 let mut p_attributes: Vec<(SimpleNameToken, TypeRef)> = Vec::new();
@@ -91,7 +96,7 @@ pub fn resolve_names(ast: Vec<TopLevelTokens>, global_table: &mut GlobalDefiniti
                     }
                     p_attributes.push((name, type_ref))
                 }
-                unsized_final_types.insert(id, UnsizedUserType::new(id, p_attributes, location));
+                unsized_final_types.insert(id, UnsizedUserType::new(id, name.take_name(), p_attributes, location));
             }
             TopLevelTokens::Impl(it) => {
                 let (location, name, functions) = it.dissolve();

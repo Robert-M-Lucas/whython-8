@@ -24,6 +24,10 @@ impl SimpleNameToken {
             name: s.to_string()
         }
     }
+
+    pub fn take_name(self) -> String {
+        self.name
+    }
 }
 
 pub fn parse_simple_name<'a>(s: Span<'a>) -> ParseResult<'a, Span, SimpleNameToken> {

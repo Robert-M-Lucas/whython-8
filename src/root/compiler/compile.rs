@@ -16,7 +16,10 @@ pub fn compile(mut global_table: GlobalDefinitionTable, unprocessed_functions: H
         let current_function = *open_set.iter().next().unwrap();
         open_set.remove(&current_function);
 
-        let current_function_token = unprocessed_functions.remove(&current_function).unwrap();
+        let Some(current_function_token) = unprocessed_functions.remove(&current_function)
+            else {
+                continue; // Inline function
+            };
 
         let (compiled, called_functions) = compile_function(current_function, current_function_token, &mut global_table)?;
         compiled_len += compiled.len() + 10;

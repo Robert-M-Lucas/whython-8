@@ -15,7 +15,7 @@ use crate::root::parser::parse::Location;
 use crate::root::shared::types::Type;
 use crate::root::parser::parse_function::FunctionToken;
 use crate::root::parser::parse_function::parse_evaluable::{FullNameToken, FullNameTokens, FullNameWithIndirectionToken};
-use crate::root::parser::parse_function::parse_operator::OperatorToken;
+use crate::root::parser::parse_function::parse_operator::{OperatorToken};
 use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::parser::parse_struct::StructToken;
 use crate::root::POINTER_SIZE;
@@ -90,10 +90,10 @@ impl GlobalDefinitionTable {
             builtin_function_name_table: Default::default(),
         }
     }
-    pub fn register_builtin_type(&mut self, name: String, t: Box<dyn Type>) {
+    pub fn register_builtin_type(&mut self, t: Box<dyn Type>) {
         let id = t.id();
+        self.builtin_type_name_table.insert(t.name().to_string(), id);
         self.type_definitions.insert(id, t);
-        self.builtin_type_name_table.insert(name, id);
     }
 
     // pub fn register_builtin_function(&mut self, name: String, t: FunctionSignature, id: FunctionID) {
@@ -260,6 +260,10 @@ impl GlobalDefinitionTable {
         self.type_definitions.get(&type_id).as_ref().unwrap()
     }
 
+    pub fn get_type_name(&self, type_ref: &TypeRef) -> String {
+        format!("{:&^1$}", self.get_type(*type_ref.type_id()).name(), type_ref.indirection().0)
+    }
+
     pub fn resolve_name(&mut self, name: &SimpleNameToken, containing_class: Option<&SimpleNameToken>, local_variable_table: &LocalVariableTable) -> Result<NameResult, WErr> {
         if let Some(variable) = local_variable_table.get_name(name.name()) {
             return Ok(NameResult::Variable(variable))
@@ -296,6 +300,16 @@ impl GlobalDefinitionTable {
         }
 
         Err(WErr::n(NRErrors::CannotFindName(name.name().clone()), name.location().clone()))
+    }
+
+    pub fn get_operator_function(&self, lhs: TypeID, operator: &OperatorToken) -> Result<FunctionID, WErr> {
+        let op_name = operator.operator().get_method_name();
+        self.impl_definitions.get(&lhs).and_then(|f| f.get(op_name)).ok_or(
+            WErr::n(
+                NRErrors::OpMethodNotImplemented(op_name.to_string(), self.get_type(lhs).name().to_string(), operator.operator().to_str().to_string()),
+                operator.location().clone()
+            )
+        ).copied()
     }
 
     pub fn call_function(&self, function: FunctionID, arguments: &[LocalAddress], return_address: Option<LocalAddress>) -> Result<String, WErr> {

@@ -7,5 +7,7 @@ pub trait Type {
 
     fn size(&self) -> ByteSize;
 
+    fn name(&self) -> &str;
+
     fn instantiate_from_literal(&self, location: &LocalAddress, literal: &LiteralToken) -> Result<String, WErr>;
 }

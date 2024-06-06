@@ -10,7 +10,7 @@ use crate::root::shared::common::{AddressedTypeRef, ByteSize, FunctionID, LocalA
 use crate::root::shared::types::Type;
 
 pub fn register_int(global_table: &mut GlobalDefinitionTable) {
-    global_table.register_builtin_type("int".to_string(), b!(IntType{}));
+    global_table.register_builtin_type(b!(IntType{}));
     global_table.register_inline_function(&IntAdd{});
 }
 
@@ -29,6 +29,10 @@ impl Type for IntType {
 
     fn size(&self) -> ByteSize {
         ByteSize(8)
+    }
+
+    fn name(&self) -> &str {
+        "int"
     }
 
     fn instantiate_from_literal(&self, location: &LocalAddress, literal: &LiteralToken) -> Result<String, WErr> {

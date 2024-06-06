@@ -11,13 +11,14 @@ use crate::root::shared::common::{ByteSize, TypeID};
 #[derive(Dissolve)]
 pub struct UnsizedUserType {
     id: TypeID,
+    name: String,
     attributes: Vec<(SimpleNameToken, TypeRef)>,
     location: Location
 }
 
 impl UnsizedUserType {
-    pub fn new(id: TypeID, attributes: Vec<(SimpleNameToken, TypeRef)>, location: Location) -> UnsizedUserType {
-        UnsizedUserType { id, attributes, location }
+    pub fn new(id: TypeID, name: String, attributes: Vec<(SimpleNameToken, TypeRef)>, location: Location) -> UnsizedUserType {
+        UnsizedUserType { id, name, attributes, location }
     }
 }
 
@@ -28,7 +29,7 @@ pub fn resolve_type_sizes(
     global_table: &GlobalDefinitionTable,
     path: &mut Vec<TypeID>
 ) -> ByteSize {
-    let (id, attributes, location) = unsized_type.dissolve();
+    let (id, name, attributes, location) = unsized_type.dissolve();
 
     if path.contains(&id) {
         // TODO: Circular type def error
@@ -60,7 +61,7 @@ pub fn resolve_type_sizes(
         processed_attributes.push((offset.0, attribute_name, attribute_type));
     }
 
-    final_types.insert(id, UserType::new(id, size, processed_attributes, location));
+    final_types.insert(id, UserType::new(id, name, size, processed_attributes, location));
 
     size
 }

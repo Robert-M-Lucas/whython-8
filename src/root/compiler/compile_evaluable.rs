@@ -1,12 +1,13 @@
+use std::any::Any;
 use std::collections::HashSet;
 use crate::root::compiler::assembly::utils::copy;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::evaluable_errors::EvalErrs;
+use crate::root::errors::evaluable_errors::EvalErrs::{OpNoReturn, OpWrongReturnType};
 use crate::root::errors::name_resolver_errors::NRErrors;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable, NameResult};
 use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, EvaluableTokens};
-use crate::root::parser::parse_function::parse_operator::get_method_name;
 use crate::root::shared::common::{FunctionID, Indirection, TypeRef};
 use crate::root::shared::common::AddressedTypeRef;
 
@@ -85,7 +86,52 @@ pub fn compile_evaluable_into(
 
             t.instantiate_from_literal(target.local_address(), literal)?
         }
-        EvaluableTokens::InfixOperator(lhs, op, rhs) => todo!(),
+        EvaluableTokens::InfixOperator(lhs, op, rhs) => {
+            if op.is_prefix_opt_t() {
+                return Err(WErr::n(EvalErrs::FoundPrefixNotInfixOp(op.operator().to_str().to_string()), op.location().clone()));
+            }
+
+            let (mut code, lhs) = compile_evaluable(fid, lhs, local_variables, global_table, function_calls)?;
+            code += "\n";
+            let op_fn = global_table.get_operator_function(*lhs.type_ref().type_id(), op)?;
+            let signature = global_table.get_function_signature(op_fn);
+
+            if signature.args().len() != 2 {
+                return Err(
+                    WErr::n(
+                        EvalErrs::OpWrongArgumentCount(
+                            op.operator().to_str().to_string(),
+                            global_table.get_type(*lhs.type_ref().type_id()).name().to_string(),
+                            op.operator().get_method_name().to_string(),
+                            signature.args().len()
+                        ),
+                        op.location().clone()
+                    )
+                );
+            }
+
+            match signature.return_type() {
+                None => {
+                    return Err(WErr::n(OpNoReturn(global_table.get_type_name(target.type_ref())), op.location().clone()))
+                }
+                Some(rt) => {
+                    if rt != target.type_ref() {
+                        return Err(WErr::n(OpWrongReturnType(global_table.get_type_name(target.type_ref()), global_table.get_type_name(rt)), op.location().clone()))
+                    }
+                }
+            }
+
+            let rhs_type_target = signature.args()[1].1.clone();
+            let rhs_box = global_table.add_local_variable_unnamed_base(rhs_type_target, local_variables);
+            code += &compile_evaluable_into(fid, rhs, rhs_box.clone(), local_variables, global_table, function_calls)?;
+            code += "\n";
+
+            code += &global_table.call_function(op_fn, &[*lhs.local_address(), *rhs_box.local_address()], Some(*target.local_address()))?;
+
+            function_calls.insert(op_fn);
+
+            code
+        },
         EvaluableTokens::PrefixOperator(_, _) => todo!(),
         EvaluableTokens::DynamicAccess(_, _) => todo!(), // Accessed methods must be called
         EvaluableTokens::StaticAccess(_, n) => return Err(WErr::n(NRErrors::CannotFindConstantAttribute(n.name().clone()), n.location().clone())), // Accessed methods must be called

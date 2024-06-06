@@ -25,5 +25,7 @@ pub enum NRErrors {
     #[error("Cannot find name ({0})")]
     CannotFindName(String),
     #[error("Cannot find constant attribute ({0})")]
-    CannotFindConstantAttribute(String)
+    CannotFindConstantAttribute(String),
+    #[error("Method ({0}) not implemented for type ({1}) required for operator ({2})")]
+    OpMethodNotImplemented(String, String, String)
 }
