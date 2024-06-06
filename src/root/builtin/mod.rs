@@ -1,15 +1,22 @@
 pub mod int;
 
-use crate::root::builtin::int::IntType;
+use crate::root::builtin::int::{IntType, register_int};
+use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable};
+use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
+use crate::root::shared::common::{FunctionID, LocalAddress, TypeID};
 use crate::root::shared::types::Type;
 
 pub fn register_builtin(global_table: &mut GlobalDefinitionTable) {
-    let types: [(String, Box<dyn Type>); 1] = [
-        ("int".to_string(), Box::new(IntType{}))
-    ];
+    register_int(global_table);
+}
 
-    for (n, t) in types {
-        global_table.register_builtin_type(n, t);
-    }
+pub type InlineFunctionGenerator = fn(&[LocalAddress], Option<LocalAddress>) -> Result<String, WErr>;
+
+pub trait BuiltinInlineFunction {
+    fn id(&self) -> FunctionID;
+    fn name(&self) -> &'static str;
+    fn signature(&self) -> FunctionSignature;
+    fn inline(&self) -> InlineFunctionGenerator;
+    fn parent_type(&self) -> Option<TypeID>;
 }

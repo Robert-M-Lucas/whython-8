@@ -1,4 +1,5 @@
 use std::cmp::min;
+use std::ffi::OsStr;
 use std::fmt::{Display, Formatter};
 use crate::root::parser::parse_toplevel;
 use nom::IResult;
@@ -9,6 +10,7 @@ use std::path::PathBuf;
 use std::rc::Rc;
 use color_print::cformat;
 use derive_getters::Getters;
+use lazy_static::lazy_static;
 use crate::root::errors::WErr;
 use crate::root::parser::parse_toplevel::TopLevelTokens;
 
@@ -21,6 +23,10 @@ pub type ErrorTree<'a> = GenericErrorTree<
     &'static str,
     Box<dyn std::error::Error + Send + Sync + 'static>,
 >;
+
+lazy_static! {
+    static ref BUILTIN_PATH: &'static OsStr = OsStr::new("builtin");
+}
 
 #[derive(Debug, Clone, Getters, Hash)]
 pub struct Location {
@@ -39,6 +45,18 @@ impl Location {
             line: span.location_line(),
         }
     }
+
+    pub fn builtin() -> Location {
+        Location {
+            path: Rc::new(PathBuf::from(*BUILTIN_PATH)),
+            offset: 0,
+            line: 0
+        }
+    }
+
+    pub fn is_builtin(&self) -> bool {
+        self.path.as_os_str() == *BUILTIN_PATH
+    }
 }
 
 const CHAR_LIMIT: usize = 61;
@@ -48,6 +66,11 @@ impl Display for Location {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         // TODO: Inefficient!
         // (Maybe fine because it is a 'bad' path?)
+
+        if self.path.as_os_str() == *BUILTIN_PATH {
+            writeln!(f, "{}", cformat!("<c,bold>Builtin Definition</>"))?;
+            return Ok(())
+        }
 
         writeln!(f, "{}", cformat!("<c,bold>In File:</>"))?;
         writeln!(f, "    {}", self.path.as_path().to_string_lossy())?;

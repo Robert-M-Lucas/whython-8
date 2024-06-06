@@ -17,6 +17,13 @@ impl SimpleNameToken {
             name: s.to_string()
         }
     }
+
+    pub fn new_builtin(s: String) -> SimpleNameToken {
+        SimpleNameToken {
+            location: Location::builtin(),
+            name: s.to_string()
+        }
+    }
 }
 
 pub fn parse_simple_name<'a>(s: Span<'a>) -> ParseResult<'a, Span, SimpleNameToken> {

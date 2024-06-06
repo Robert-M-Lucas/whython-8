@@ -1,9 +1,19 @@
+mod add;
+
+use b_box::b;
 use unique_type_id::UniqueTypeId;
+use crate::root::builtin::int::add::IntAdd;
 use crate::root::compiler::assembly::utils::get_qword_stack_pointer;
 use crate::root::errors::WErr;
+use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
 use crate::root::parser::parse_function::parse_literal::{LiteralToken, LiteralTokens};
 use crate::root::shared::common::{AddressedTypeRef, ByteSize, FunctionID, LocalAddress, TypeID};
 use crate::root::shared::types::Type;
+
+pub fn register_int(global_table: &mut GlobalDefinitionTable) {
+    global_table.register_builtin_type("int".to_string(), b!(IntType{}));
+    global_table.register_inline_function(&IntAdd{});
+}
 
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]

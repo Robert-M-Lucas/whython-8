@@ -5,6 +5,16 @@ use derive_getters::{Dissolve, Getters};
 #[display(fmt = "TypeID: {}", .0)]
 pub struct TypeID(pub isize);
 
+impl TypeID {
+    pub fn with_indirection(self, indirection: usize) -> TypeRef {
+        TypeRef::new(self, Indirection(indirection))
+    }
+
+    pub fn immediate(self) -> TypeRef {
+        TypeRef::new(self, Indirection(0))
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Hash, Display, Copy, Clone)]
 #[display(fmt = "FunctionID: {}", .0)]
 pub struct FunctionID(pub isize);

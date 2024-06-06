@@ -4,6 +4,8 @@ use std::path::PathBuf;
 use std::rc::Rc;
 use derive_getters::Getters;
 use either::{Either, Left, Right};
+use crate::root::builtin::{BuiltinInlineFunction, InlineFunctionGenerator};
+use crate::root::compiler::compile_function_call::call_function;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::name_resolver_errors::NRErrors;
 use crate::root::errors::name_resolver_errors::NRErrors::IdentifierNotFound;
@@ -16,7 +18,7 @@ use crate::root::parser::parse_function::parse_evaluable::{FullNameToken, FullNa
 use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::parser::parse_struct::StructToken;
 use crate::root::POINTER_SIZE;
-use crate::root::shared::common::{AddressedTypeRef, ByteSize, FunctionID, TypeID, TypeRef};
+use crate::root::shared::common::{AddressedTypeRef, ByteSize, FunctionID, LocalAddress, TypeID, TypeRef};
 
 #[derive(Debug)]
 enum NameTreeEntry {
@@ -55,11 +57,13 @@ impl TopLevelNameTree {
     }
 }
 
+
 pub struct GlobalDefinitionTable {
     id_counter: isize,
     type_definitions: HashMap<TypeID, Box<dyn Type>>,
     impl_definitions: HashMap<TypeID, HashMap<String, FunctionID>>,
     function_signatures: HashMap<FunctionID, FunctionSignature>,
+    inline_functions: HashMap<FunctionID, InlineFunctionGenerator>,
     name_table: TopLevelNameTree,
     builtin_type_name_table: HashMap<String, TypeID>,
     builtin_function_name_table: HashMap<String, FunctionID>
@@ -79,6 +83,7 @@ impl GlobalDefinitionTable {
             type_definitions: Default::default(),
             impl_definitions: Default::default(),
             function_signatures: Default::default(),
+            inline_functions: Default::default(),
             name_table: Default::default(),
             builtin_type_name_table: Default::default(),
             builtin_function_name_table: Default::default(),
@@ -90,9 +95,29 @@ impl GlobalDefinitionTable {
         self.builtin_type_name_table.insert(name, id);
     }
 
-    pub fn register_builtin_function(&mut self, name: String, t: FunctionSignature, id: FunctionID) {
-        self.function_signatures.insert(id, t);
-        self.builtin_function_name_table.insert(name, id);
+    // pub fn register_builtin_function(&mut self, name: String, t: FunctionSignature, id: FunctionID) {
+    //     self.function_signatures.insert(id, t);
+    //     self.builtin_function_name_table.insert(name, id);
+    // }
+
+    fn get_impl_mut(&mut self, t: TypeID) -> &mut HashMap<String, FunctionID> {
+        if !self.impl_definitions.contains_key(&t) {
+            self.impl_definitions.insert(t, Default::default());
+        }
+
+        self.impl_definitions.get_mut(&t).unwrap()
+    }
+
+    pub fn register_inline_function(&mut self, inline: &dyn BuiltinInlineFunction) {
+        self.function_signatures.insert(inline.id(), inline.signature());
+        self.inline_functions.insert(inline.id(), inline.inline());
+
+        if let Some(parent) = inline.parent_type() {
+            self.get_impl_mut(parent).insert(inline.name().to_string(), inline.id());
+        }
+        else {
+            self.builtin_function_name_table.insert(inline.name().to_string(), inline.id());
+        }
     }
 
     pub fn add_from_struct_token(&mut self, st: &StructToken) -> TypeID {
@@ -270,5 +295,13 @@ impl GlobalDefinitionTable {
         }
 
         Err(WErr::n(NRErrors::CannotFindName(name.name().clone()), name.location().clone()))
+    }
+
+    pub fn call_function(&self, function: FunctionID, arguments: &[LocalAddress], return_address: Option<LocalAddress>) -> Result<String, WErr> {
+        if let Some(inline) = self.inline_functions.get(&function) {
+            return inline(arguments, return_address);
+        }
+
+        call_function(function, arguments, return_address)
     }
 }

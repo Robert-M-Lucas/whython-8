@@ -1,4 +1,5 @@
 use derive_getters::Getters;
+use itertools::Itertools;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable};
 use crate::root::shared::common::TypeRef;
@@ -9,6 +10,15 @@ use crate::root::parser::parse_name::SimpleNameToken;
 pub struct FunctionSignature {
     args: Vec<(SimpleNameToken, TypeRef)>,
     return_type: Option<TypeRef>
+}
+
+impl FunctionSignature {
+    pub fn new_inline_builtin(args: &[(&str, TypeRef)], return_type: Option<TypeRef>) -> FunctionSignature {
+        FunctionSignature {
+            args: args.into_iter().map(|(name, t)| (SimpleNameToken::new_builtin(name.to_string()), t.clone())).collect_vec(),
+            return_type
+        }
+    }
 }
 
 pub fn resolve_function_signature(function_token: &FunctionToken, global_table: &mut GlobalDefinitionTable) -> Result<FunctionSignature, WErr> {
