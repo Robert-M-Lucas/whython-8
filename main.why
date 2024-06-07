@@ -1,7 +1,10 @@
-
 impl int {
     fn sub(lhs: int, rhs: int) -> int {
-        return lhs + rhs + rhs;
+        return lhs == rhs;
+    }
+
+    fn eq(lhs: int, rhs: int) -> int {
+        return lhs + rhs + 1;
     }
 }
 

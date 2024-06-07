@@ -1,0 +1,6 @@
+Add support for multiple functions with the same name but different signatures
+Allow operators to be both prefix and infix i.e. -a or a - b
+Fix evaluables such as (a + b) or (a + b) + c or a + b + c not working
+Add rich parser errors
+Add all errors in
+All other todos, of course

@@ -217,7 +217,18 @@ pub fn compile_evaluable_type_only(
             let tid = literal.literal().default_type();
             TypeRef::new(tid.clone(), Indirection(0))
         }
-        EvaluableTokens::InfixOperator(_, _, _) => todo!(),
+        EvaluableTokens::InfixOperator(lhs, op, _) => {
+            if op.is_prefix_opt_t() {
+                return Err(WErr::n(EvalErrs::FoundPrefixNotInfixOp(op.operator().to_str().to_string()), op.location().clone()));
+            }
+
+            // let (mut code, lhs) = compile_evaluable(fid, lhs, local_variables, global_table, function_calls)?;
+            let lhs_type = compile_evaluable_type_only(fid, lhs, local_variables, global_table, function_calls)?;
+            // code += "\n";
+            let op_fn = global_table.get_operator_function(*lhs_type.type_id(), op)?;
+            let signature = global_table.get_function_signature(op_fn);
+            signature.return_type().as_ref().unwrap().clone()
+        },
         EvaluableTokens::PrefixOperator(_, _) => todo!(),
         EvaluableTokens::DynamicAccess(_, _) => todo!(), // Accessed methods must be called
         EvaluableTokens::StaticAccess(_, n) => return Err(WErr::n(NRErrors::CannotFindConstantAttribute(n.name().clone()), n.location().clone())), // Accessed methods must be called
