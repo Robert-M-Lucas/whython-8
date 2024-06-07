@@ -7,20 +7,8 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Improved function call code">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/out.asm" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.asm" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/out.o" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/out.out" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.out" afterDir="false" />
+    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Got functions working (maybe)">
       <change beforePath="$PROJECT_DIR$/main.why" beforeDir="false" afterPath="$PROJECT_DIR$/main.why" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/compile.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/compile_evaluable.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile_evaluable.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/compile_function.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile_function.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/compile_function_call.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile_function_call.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/local_variable_table.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/local_variable_table.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_return.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_return.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -164,7 +152,7 @@
       <workItem from="1717718549578" duration="18000" />
       <workItem from="1717763561634" duration="6367000" />
       <workItem from="1717781715695" duration="1569000" />
-      <workItem from="1717788640969" duration="5217000" />
+      <workItem from="1717788640969" duration="5582000" />
     </task>
     <task id="LOCAL-00001" summary="Changes">
       <option name="closed" value="true" />
@@ -334,7 +322,15 @@
       <option name="project" value="LOCAL" />
       <updated>1717769943602</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="Got functions working (maybe)">
+      <option name="closed" value="true" />
+      <created>1717794101530</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1717794101530</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -365,6 +361,7 @@
     <MESSAGE value="Added first inline function" />
     <MESSAGE value="Added ability for first inline function to run" />
     <MESSAGE value="Improved function call code" />
-    <option name="LAST_COMMIT_MESSAGE" value="Improved function call code" />
+    <MESSAGE value="Got functions working (maybe)" />
+    <option name="LAST_COMMIT_MESSAGE" value="Got functions working (maybe)" />
   </component>
 </project>

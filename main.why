@@ -1,7 +1,7 @@
 
 impl int {
     fn sub(lhs: int, rhs: int) -> int {
-        return lhs + rhs;
+        return lhs + rhs + rhs;
     }
 }
 
