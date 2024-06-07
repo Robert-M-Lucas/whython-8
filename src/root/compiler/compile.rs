@@ -43,6 +43,7 @@ pub fn compile(mut global_table: GlobalDefinitionTable, unprocessed_functions: H
 
     for (_id, f) in compiled_functions {
         s += &f;
+        s += "\n\n";
     }
 
     Ok(s)

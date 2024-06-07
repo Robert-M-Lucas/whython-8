@@ -7,21 +7,20 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Added ability for first inline function to run">
+    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Improved function call code">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/out.asm" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.asm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/out.o" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/out.out" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.out" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.why" beforeDir="false" afterPath="$PROJECT_DIR$/main.why" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/int/add.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/int/add.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/int/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/int/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/compile.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/root/compiler/compile_evaluable.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile_evaluable.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/compile_function.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile_function.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/root/compiler/compile_function_call.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile_function_call.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/errors/name_resolver_errors.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/errors/name_resolver_errors.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/resolve_names.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/resolve_names.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/resolve_type_sizes.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/resolve_type_sizes.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/utils.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/utils.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/local_variable_table.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/local_variable_table.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_return.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_return.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,26 +67,26 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Cargo.Run whython-8.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.rust.reset.selective.auto.import": "true",
-    "git-widget-placeholder": "master",
-    "ignore.virus.scanning.warn.message": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "org.rust.cargo.project.model.PROJECT_DISCOVERY": "true",
-    "org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon": "",
-    "org.rust.first.attach.projects": "true",
-    "settings.editor.selected.configurable": "language.rust.cargo.check",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Cargo.Run whython-8.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.rust.reset.selective.auto.import&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;org.rust.cargo.project.model.PROJECT_DISCOVERY&quot;: &quot;true&quot;,
+    &quot;org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon&quot;: &quot;&quot;,
+    &quot;org.rust.first.attach.projects&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;language.rust.cargo.check&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/root/builtin/int" />
@@ -163,7 +162,9 @@
       <workItem from="1717713109026" duration="2727000" />
       <workItem from="1717718007731" duration="134000" />
       <workItem from="1717718549578" duration="18000" />
-      <workItem from="1717763561634" duration="6192000" />
+      <workItem from="1717763561634" duration="6367000" />
+      <workItem from="1717781715695" duration="1569000" />
+      <workItem from="1717788640969" duration="5217000" />
     </task>
     <task id="LOCAL-00001" summary="Changes">
       <option name="closed" value="true" />
@@ -325,7 +326,15 @@
       <option name="project" value="LOCAL" />
       <updated>1717705529640</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="Improved function call code">
+      <option name="closed" value="true" />
+      <created>1717769943602</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1717769943602</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -355,6 +364,7 @@
     <MESSAGE value="Started adding support for inline functions" />
     <MESSAGE value="Added first inline function" />
     <MESSAGE value="Added ability for first inline function to run" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added ability for first inline function to run" />
+    <MESSAGE value="Improved function call code" />
+    <option name="LAST_COMMIT_MESSAGE" value="Improved function call code" />
   </component>
 </project>

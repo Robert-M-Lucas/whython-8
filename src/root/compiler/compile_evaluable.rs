@@ -203,5 +203,41 @@ pub fn compile_evaluable_type_only(
 
     let et = et.token();
 
+    Ok(match et {
+        EvaluableTokens::Name(name, containing_class) => {
+            match global_table.resolve_name(name, containing_class.as_ref(), local_variables)? {
+                NameResult::Function(_) => return Err(WErr::n(EvalErrs::FunctionMustBeCalled(name.name().clone()), name.location().clone())),
+                NameResult::Type(_) => return Err(WErr::n(EvalErrs::CannotEvalStandaloneType(name.name().clone()), name.location().clone())),
+                NameResult::Variable(address) => {
+                    address.type_ref().clone()
+                }
+            }
+        },
+        EvaluableTokens::Literal(literal) => {
+            let tid = literal.literal().default_type();
+            TypeRef::new(tid.clone(), Indirection(0))
+        }
+        EvaluableTokens::InfixOperator(_, _, _) => todo!(),
+        EvaluableTokens::PrefixOperator(_, _) => todo!(),
+        EvaluableTokens::DynamicAccess(_, _) => todo!(), // Accessed methods must be called
+        EvaluableTokens::StaticAccess(_, n) => return Err(WErr::n(NRErrors::CannotFindConstantAttribute(n.name().clone()), n.location().clone())), // Accessed methods must be called
+        EvaluableTokens::FunctionCall(inner, args) => {
+            todo!()
+        }
+    })
+}
+
+/// Will ignore everything other than type with a target type
+pub fn compile_evaluable_type_only_into(
+    fid: FunctionID,
+    et: &EvaluableToken,
+    target: TypeRef,
+    local_variables: &mut LocalVariableTable,
+    global_table: &mut GlobalDefinitionTable,
+    function_calls: &mut HashSet<FunctionID>
+) -> Result<bool, WErr> {
+
+    let et = et.token();
+
     todo!()
 }

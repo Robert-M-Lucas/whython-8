@@ -1,10 +1,11 @@
 
 impl int {
     fn sub(lhs: int, rhs: int) -> int {
-        return 2;
+        return lhs + rhs;
     }
 }
 
 fn main() -> int {
     return 3 - 2;
 }
+
