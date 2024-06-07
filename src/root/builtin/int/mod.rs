@@ -10,13 +10,13 @@ use crate::root::shared::common::{AddressedTypeRef, ByteSize, FunctionID, LocalA
 use crate::root::shared::types::Type;
 
 pub fn register_int(global_table: &mut GlobalDefinitionTable) {
-    global_table.register_builtin_type(b!(IntType{}));
-    global_table.register_inline_function(&IntAdd{});
+    global_table.register_builtin_type(b!(IntType));
+    global_table.register_inline_function(&IntAdd);
 }
 
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
-pub struct IntType {}
+pub struct IntType;
 
 impl IntType {
     pub const fn id() -> TypeID {

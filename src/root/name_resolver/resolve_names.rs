@@ -126,7 +126,7 @@ pub fn resolve_names(ast: Vec<TopLevelTokens>, global_table: &mut GlobalDefiniti
     while !unsized_final_types.is_empty() {
         let next_type_id = *unsized_final_types.keys().next().unwrap();
         let unsized_type = unsized_final_types.remove(&next_type_id).unwrap();
-        resolve_type_sizes(unsized_type, &mut final_types, &mut unsized_final_types, global_table, &mut Vec::new());
+        resolve_type_sizes(unsized_type, &mut final_types, &mut unsized_final_types, global_table)?;
     }
 
     for (id, user_type) in final_types {

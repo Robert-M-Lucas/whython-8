@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 use derive_getters::Dissolve;
+use crate::root::errors::name_resolver_errors::NRErrors;
+use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
 use crate::root::shared::common::TypeRef;
 use crate::root::name_resolver::resolve_names::UserType;
@@ -27,15 +29,10 @@ pub fn resolve_type_sizes(
     final_types: &mut HashMap<TypeID, UserType>,
     unsized_types: &mut HashMap<TypeID, UnsizedUserType>,
     global_table: &GlobalDefinitionTable,
-    path: &mut Vec<TypeID>
-) -> ByteSize {
+) -> Result<ByteSize, WErr> {
     let (id, name, attributes, location) = unsized_type.dissolve();
 
-    if path.contains(&id) {
-        // TODO: Circular type def error
-        todo!();
-    }
-    path.push(id);
+    println!("{}: {}", id, &name);
 
     let mut size: ByteSize = ByteSize(0);
     let mut processed_attributes: Vec<(usize, SimpleNameToken, TypeRef)> = Vec::new();
@@ -50,11 +47,17 @@ pub fn resolve_type_sizes(
             size += *sized_type.size();
         }
         else {
-            if let Some(unsized_type) = unsized_types.remove(&attribute_type.type_id()) {
-                size += resolve_type_sizes(unsized_type, final_types, unsized_types, global_table, path);
+            if let Some(sized_type) = global_table.try_get_type(*attribute_type.type_id()) {
+                size += sized_type.size();
             }
             else {
-                size += global_table.get_type(*attribute_type.type_id()).size();
+                if let Some(unsized_type) = unsized_types.remove(&attribute_type.type_id()) {
+                    size += resolve_type_sizes(unsized_type, final_types, unsized_types, global_table)?;
+                }
+                else {
+                    // Type not in unsized_types or type table due to circular definition
+                    return Err(WErr::n(NRErrors::CircularType(name), attribute_name.location().clone()));
+                }
             }
         }
 
@@ -63,5 +66,5 @@ pub fn resolve_type_sizes(
 
     final_types.insert(id, UserType::new(id, name, size, processed_attributes, location));
 
-    size
+    Ok(size)
 }

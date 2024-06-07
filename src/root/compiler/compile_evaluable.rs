@@ -1,6 +1,8 @@
 use std::any::Any;
 use std::collections::HashSet;
+use either::Left;
 use crate::root::compiler::assembly::utils::copy;
+use crate::root::compiler::compile_function_call::call_function;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::evaluable_errors::EvalErrs;
 use crate::root::errors::evaluable_errors::EvalErrs::{OpNoReturn, OpWrongReturnType};
@@ -91,9 +93,12 @@ pub fn compile_evaluable_into(
                 return Err(WErr::n(EvalErrs::FoundPrefixNotInfixOp(op.operator().to_str().to_string()), op.location().clone()));
             }
 
-            let (mut code, lhs) = compile_evaluable(fid, lhs, local_variables, global_table, function_calls)?;
-            code += "\n";
-            let op_fn = global_table.get_operator_function(*lhs.type_ref().type_id(), op)?;
+            let mut code = String::new();
+
+            // let (mut code, lhs) = compile_evaluable(fid, lhs, local_variables, global_table, function_calls)?;
+            let lhs_type = compile_evaluable_type_only(fid, lhs, local_variables, global_table, function_calls)?;
+            // code += "\n";
+            let op_fn = global_table.get_operator_function(*lhs_type.type_id(), op)?;
             let signature = global_table.get_function_signature(op_fn);
 
             if signature.args().len() != 2 {
@@ -101,7 +106,7 @@ pub fn compile_evaluable_into(
                     WErr::n(
                         EvalErrs::OpWrongArgumentCount(
                             op.operator().to_str().to_string(),
-                            global_table.get_type(*lhs.type_ref().type_id()).name().to_string(),
+                            global_table.get_type(*lhs_type.type_id()).name().to_string(),
                             op.operator().get_method_name().to_string(),
                             signature.args().len()
                         ),
@@ -121,14 +126,14 @@ pub fn compile_evaluable_into(
                 }
             }
 
-            let rhs_type_target = signature.args()[1].1.clone();
-            let rhs_box = global_table.add_local_variable_unnamed_base(rhs_type_target, local_variables);
-            code += &compile_evaluable_into(fid, rhs, rhs_box.clone(), local_variables, global_table, function_calls)?;
-            code += "\n";
+            // let rhs_type_target = signature.args()[1].1.clone();
+            // let rhs_box = global_table.add_local_variable_unnamed_base(rhs_type_target, local_variables);
+            // code += &compile_evaluable_into(fid, rhs, rhs_box.clone(), local_variables, global_table, function_calls)?;
+            // code += "\n";
 
-            code += &global_table.call_function(op_fn, &[*lhs.local_address(), *rhs_box.local_address()], Some(*target.local_address()))?;
+            let (c, _) = call_function(fid, op_fn, &[Left(lhs), Left(rhs)], Some(target), global_table, local_variables, function_calls)?;
 
-            function_calls.insert(op_fn);
+            code += &c;
 
             code
         },

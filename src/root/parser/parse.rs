@@ -29,8 +29,8 @@ lazy_static! {
     static ref BUILTIN_PATH: &'static OsStr = OsStr::new("builtin");
 }
 
-#[derive(Debug, Clone, Getters, Hash)]
-pub struct Location {
+#[derive(Debug, Clone, Hash)]
+struct InnerLocation {
     path: Rc<PathBuf>,
     /// Offset in the line, counted from 0
     offset: usize,
@@ -38,25 +38,37 @@ pub struct Location {
     line: u32,
 }
 
+#[derive(Debug, Clone, Hash)]
+pub struct Location {
+    inner_location: Option<InnerLocation>
+}
+
 impl Location {
     pub fn from_span(span: &Span) -> Location {
         Location {
-            path: span.extra.clone(),
-            offset: span.location_offset(),
-            line: span.location_line(),
+            inner_location: Some(
+                InnerLocation {
+                    path: span.extra.clone(),
+                    offset: span.location_offset(),
+                    line: span.location_line(),
+                }
+            )
         }
+
+    }
+
+    pub fn path(&self) -> Option<&Rc<PathBuf>> {
+        self.inner_location.as_ref().and_then(|l| Some(&l.path))
     }
 
     pub fn builtin() -> Location {
         Location {
-            path: Rc::new(PathBuf::from(*BUILTIN_PATH)),
-            offset: 0,
-            line: 0
+            inner_location: None
         }
     }
 
     pub fn is_builtin(&self) -> bool {
-        self.path.as_os_str() == *BUILTIN_PATH
+        self.inner_location.is_none()
     }
 }
 
@@ -68,24 +80,25 @@ impl Display for Location {
         // TODO: Inefficient!
         // (Maybe fine because it is a 'bad' path?)
 
-        if self.path.as_os_str() == *BUILTIN_PATH {
+        if self.inner_location.is_none() {
             writeln!(f, "{}", cformat!("<c,bold>Builtin Definition</>"))?;
             return Ok(())
         }
+        let location = self.inner_location.as_ref().unwrap();
 
         writeln!(f, "{}", cformat!("<c,bold>In File:</>"))?;
-        writeln!(f, "    {}", self.path.as_path().to_string_lossy())?;
+        writeln!(f, "    {}", location.path.as_path().to_string_lossy())?;
         writeln!(f, "{}", cformat!("<c,bold>At:</>"))?;
 
         fn fail(f: &mut Formatter<'_>) -> std::fmt::Result {
             write!(f, "Failed to fetch file reference (has the file changed?")
         }
 
-        let Ok(file) = fs::read_to_string(self.path.as_path()) else { return fail(f); };
+        let Ok(file) = fs::read_to_string(location.path.as_path()) else { return fail(f); };
 
         let mut offset = 0usize;
         let mut chars = file.chars();
-        for _ in 0..self.offset {
+        for _ in 0..location.offset {
             let Some(c) = chars.next() else { return fail(f); };
             if c == '\n' {
                 offset = 0;
@@ -97,16 +110,16 @@ impl Display for Location {
 
         let mut line_iter = file.lines();
 
-        let largest_num_len = format!("{}", self.line + 2).len();
+        let largest_num_len = format!("{}", location.line + 2).len();
 
-        if self.line > 1 {
-            if self.line > 2 {
-                writeln!(f, "{:0width$} |  ...", self.line - 2, width=largest_num_len)?;
+        if location.line > 1 {
+            if location.line > 2 {
+                writeln!(f, "{:0width$} |  ...", location.line - 2, width=largest_num_len)?;
             }
 
-            let Some(line) = line_iter.nth(self.line as usize - 2) else { return fail(f); };
+            let Some(line) = line_iter.nth(location.line as usize - 2) else { return fail(f); };
             let line = if line.chars().count() > CHAR_LIMIT { format!("{} ...", line.chars().take(CHAR_LIMIT - 4).collect::<String>()) } else { line.to_string() };
-            writeln!(f, "{:0width$} |  {}", self.line - 1, line, width=largest_num_len)?;
+            writeln!(f, "{:0width$} |  {}", location.line - 1, line, width=largest_num_len)?;
         }
 
         let Some(line) = line_iter.next() else { return fail(f); };
@@ -130,15 +143,15 @@ impl Display for Location {
 
         end += 1;
 
-        writeln!(f, "{:0width$} |  {}", self.line, line.chars().skip(start).take(end - start).collect::<String>(), width=largest_num_len)?;
+        writeln!(f, "{:0width$} |  {}", location.line, line.chars().skip(start).take(end - start).collect::<String>(), width=largest_num_len)?;
         let err_line = format!("{:0width$} |  {}^Here", "E", (0..(offset - start)).map(|_| ' ').collect::<String>(), width=largest_num_len);
         writeln!(f, "{}", cformat!("<r,bold>{}</>", err_line))?;
 
         if let Some(line) = line_iter.next() {
             let line = if line.chars().count() > CHAR_LIMIT { format!("{} ...", line.chars().take(CHAR_LIMIT - 4).collect::<String>()) } else { line.to_string() };
-            writeln!(f, "{:0width$} |  {}", self.line + 1, line, width=largest_num_len)?;
+            writeln!(f, "{:0width$} |  {}", location.line + 1, line, width=largest_num_len)?;
             if line_iter.next().is_some() {
-                writeln!(f, "{:0width$} |  ...", self.line + 2, width=largest_num_len)?;
+                writeln!(f, "{:0width$} |  ...", location.line + 2, width=largest_num_len)?;
             }
         }
 

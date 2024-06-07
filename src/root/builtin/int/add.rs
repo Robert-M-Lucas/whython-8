@@ -9,7 +9,7 @@ use crate::root::shared::common::{FunctionID, Indirection, LocalAddress, TypeID,
 
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
-pub struct IntAdd {}
+pub struct IntAdd;
 
 impl BuiltinInlineFunction for IntAdd {
     fn id(&self) -> FunctionID {

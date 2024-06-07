@@ -2,6 +2,7 @@ use std::io;
 use std::io::ErrorKind;
 use std::ops::{Add, Rem, Sub};
 use std::process::ExitStatus;
+use color_print::cprintln;
 
 pub fn try_run_program(name: &str, exit_status: io::Result<ExitStatus>) -> Result<ExitStatus, ()> {
     match exit_status {
@@ -54,4 +55,8 @@ pub fn align<T: Copy + Sub<Output = T> + Rem<Output = T> + Add<Output = T>>(
     alignment: T,
 ) -> T {
     num + (alignment - (num % alignment)) % alignment
+}
+
+pub fn warn(msg: &str) {
+    cprintln!("<y,bold>WARNING:</> <y>{}</>", msg);
 }

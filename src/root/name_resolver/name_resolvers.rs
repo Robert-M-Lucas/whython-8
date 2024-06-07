@@ -122,7 +122,8 @@ impl GlobalDefinitionTable {
     }
 
     pub fn add_from_struct_token(&mut self, st: &StructToken) -> TypeID {
-        let file_level_tree = self.name_table.get_tree_mut(st.location().path().clone());
+        // TODO
+        let file_level_tree = self.name_table.get_tree_mut(st.location().path().clone().unwrap().clone());
         self.id_counter += 1;
         let id = TypeID(self.id_counter - 1);
 
@@ -148,7 +149,8 @@ impl GlobalDefinitionTable {
             self.impl_definitions.get_mut(&containing_class).unwrap().insert(ft.name().name().clone(), id);
         }
         else {
-            let file_level_tree = self.name_table.get_tree_mut(ft.location().path().clone());
+            // TODO
+            let file_level_tree = self.name_table.get_tree_mut(ft.location().path().unwrap().clone());
             file_level_tree.add_entry(ft.name().name().clone(), NameTreeEntry::Function(id));
         }
 
@@ -162,7 +164,6 @@ impl GlobalDefinitionTable {
     pub fn add_type(&mut self, given_id: TypeID, definition: Box<dyn Type>) {
         self.type_definitions.insert(given_id, definition);
     }
-
 
     pub fn resolve_to_type_ref(&mut self, name: &FullNameWithIndirectionToken) -> Result<TypeRef, WErr> {
         let (indirection, full_name) = (name.indirection(), name.inner());
@@ -198,11 +199,12 @@ impl GlobalDefinitionTable {
             }
         };
 
-        if let Some(r) = process_tree(self.name_table.get_tree_mut(full_name.location().path().clone())) {
+        // TODO
+        if let Some(r) = process_tree(self.name_table.get_tree_mut(full_name.location().path().unwrap().clone())) {
             return r;
         }
 
-        for (_, tree) in self.name_table.table.iter().filter(|(p, _)| *p != full_name.location().path()) {
+        for (_, tree) in self.name_table.table.iter().filter(|(p, _)| *p != full_name.location().path().unwrap()) {
             if let Some(r) = process_tree(tree) {
                 return r;
             }
@@ -260,6 +262,10 @@ impl GlobalDefinitionTable {
         self.type_definitions.get(&type_id).as_ref().unwrap()
     }
 
+    pub fn try_get_type(&self, type_id: TypeID) -> Option<&Box<dyn Type>> {
+        self.type_definitions.get(&type_id).as_ref().map(|x| *x)
+    }
+
     pub fn get_type_name(&self, type_ref: &TypeRef) -> String {
         format!("{:&^1$}", self.get_type(*type_ref.type_id()).name(), type_ref.indirection().0)
     }
@@ -281,11 +287,13 @@ impl GlobalDefinitionTable {
             }
         };
 
-        if let Some(r) = process_tree(self.name_table.get_tree_mut(name.location().path().clone())) {
+        // TODO
+        if let Some(r) = process_tree(self.name_table.get_tree_mut(name.location().path().unwrap().clone())) {
             return r;
         }
 
-        for (_, tree) in self.name_table.table.iter().filter(|(p, _)| *p != name.location().path()) {
+        // TODO
+        for (_, tree) in self.name_table.table.iter().filter(|(p, _)| *p != name.location().path().unwrap()) {
             if let Some(r) = process_tree(tree) {
                 return r;
             }
@@ -312,11 +320,9 @@ impl GlobalDefinitionTable {
         ).copied()
     }
 
-    pub fn call_function(&self, function: FunctionID, arguments: &[LocalAddress], return_address: Option<LocalAddress>) -> Result<String, WErr> {
-        if let Some(inline) = self.inline_functions.get(&function) {
-            return Ok(inline(arguments, return_address));
-        }
-
-        call_function(function, arguments, return_address)
+    pub fn get_function(&self, function: FunctionID) -> (&FunctionSignature, Option<&InlineFunctionGenerator>) {
+        let signature = self.get_function_signature(function);
+        let inline = self.inline_functions.get(&function);
+        (signature, inline)
     }
 }

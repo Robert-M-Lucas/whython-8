@@ -27,5 +27,7 @@ pub enum NRErrors {
     #[error("Cannot find constant attribute ({0})")]
     CannotFindConstantAttribute(String),
     #[error("Method ({0}) not implemented for type ({1}) required for operator ({2})")]
-    OpMethodNotImplemented(String, String, String)
+    OpMethodNotImplemented(String, String, String),
+    #[error("Size of type ({0}) cannot be determined due to circular definition with no indirection")]
+    CircularType(String)
 }
