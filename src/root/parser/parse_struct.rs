@@ -40,7 +40,7 @@ pub fn parse_struct(s: Span) -> ParseResult<Span, StructToken> {
     let (s, name) = parse_simple_name(s)?;
     let (s, _) = discard_ignored(s)?;
     let (s, contents) = default_section(s, '{')?;
-    let (_, parameters) = parse_parameters(contents, None)?;
+    let (_, (parameters, _)) = parse_parameters(contents, None)?;
 
     Ok((
         s,

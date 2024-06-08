@@ -29,6 +29,7 @@ pub struct FunctionToken {
     location: Location,
     name: SimpleNameToken,
     return_type: Option<FullNameWithIndirectionToken>,
+    dynamic: bool,
     parameters: Parameters,
     lines: Vec<LineTokens>,
 }
@@ -54,7 +55,7 @@ pub fn parse_function<'a, 'b>(s: Span<'a>, allow_self: Option<&'b SimpleNameToke
     // } else { None };
 
     let (s, contents) = default_section(s, '(')?;
-    let (_, parameters) = parse_parameters(contents, allow_self)?;
+    let (_, (parameters, has_self)) = parse_parameters(contents, allow_self)?;
 
     let (s, _) = discard_ignored(s)?;
 
@@ -74,6 +75,7 @@ pub fn parse_function<'a, 'b>(s: Span<'a>, allow_self: Option<&'b SimpleNameToke
     Ok((
         s,
         FunctionToken {
+            dynamic: has_self,
             location,
             name,
             return_type,

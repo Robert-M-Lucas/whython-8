@@ -1,9 +1,7 @@
 
-3. Allow operators to be both prefix and infix i.e. -a or a - b
+3. Add function/method calling
 4. Finish off evaluable compilation
 5. Finish of handling of remaining lines
 6. Add rich parser errors
 7. Add all errors in
 8. All other todos, of course
-
-?. Add support for multiple functions with the same name but different signatures ?

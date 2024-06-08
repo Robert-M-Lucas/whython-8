@@ -9,15 +9,15 @@ use crate::root::shared::common::{FunctionID, Indirection, LocalAddress, TypeID,
 
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
-pub struct IntAdd;
+pub struct IntSub;
 
-impl BuiltinInlineFunction for IntAdd {
+impl BuiltinInlineFunction for IntSub {
     fn id(&self) -> FunctionID {
-        FunctionID(-(IntAdd::unique_type_id().0 as isize) - 1)
+        FunctionID(-(IntSub::unique_type_id().0 as isize) - 1)
     }
 
     fn name(&self) -> &'static str {
-        "add"
+        "sub"
     }
 
     fn signature(&self) -> FunctionSignature {
@@ -35,7 +35,7 @@ impl BuiltinInlineFunction for IntAdd {
             let return_into = return_into.unwrap();
             format!(
 "    mov rax, qword {lhs}
-    add rax, qword {rhs}
+    sub rax, qword {rhs}
     mov qword {return_into}, rax")
         }
     }

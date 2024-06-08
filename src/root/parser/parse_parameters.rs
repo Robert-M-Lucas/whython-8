@@ -7,15 +7,18 @@ use crate::root::parser::parse_util::discard_ignored;
 
 pub type Parameters = Vec<(SimpleNameToken, FullNameWithIndirectionToken)>;
 
-pub fn parse_parameters<'a, 'b>(s: Span<'a>, mut allow_self: Option<&'b SimpleNameToken>) -> ParseResult<'a, (), Parameters> {
+pub fn parse_parameters<'a, 'b>(s: Span<'a>, mut allow_self: Option<&'b SimpleNameToken>) -> ParseResult<'a, (), (Parameters, bool)> {
     let (mut s, _) = discard_ignored(s)?;
 
     let mut parameters = Vec::new();
+
+    let mut has_self = false;
 
     while !s.is_empty() {
         let (ns, name) = parse_simple_name(s)?;
 
         let (ns, p_type) = if allow_self.is_some() && parameters.is_empty() && *name.name() == "self" {
+            has_self = true;
             let s = allow_self.take().unwrap();
             (ns, FullNameWithIndirectionToken::from_simple(s.clone(), Some(s.clone()), name.location().clone()))
         }
@@ -40,5 +43,5 @@ pub fn parse_parameters<'a, 'b>(s: Span<'a>, mut allow_self: Option<&'b SimpleNa
         s = ns;
     }
 
-    Ok(((), parameters))
+    Ok(((), (parameters, has_self)))
 }

@@ -11,7 +11,9 @@ pub enum EvalErrs {
     // #[error("Operator ({0}) can only be used as a prefix operator, not infix")]
     // FoundPrefixNotInfixOp(String),
     #[error("Infix operator ({0}) can only be used for type ({1}) if method ({2}) accepting 2 arguments is implemented for ({1}). ({2}) implementation only accepts ({3}) arguments")]
-    OpWrongArgumentCount(String, String, String, usize),
+    InfixOpWrongArgumentCount(String, String, String, usize),
+    #[error("Prefix operator ({0}) can only be used for type ({1}) if method ({2}) accepting 1 arguments is implemented for ({1}). ({2}) implementation only accepts ({3}) arguments")]
+    PrefixOpWrongArgumentCount(String, String, String, usize),
     #[error("Expected operation to return type ({0}) but found ({1})")]
     OpWrongReturnType(String, String),
     #[error("Expected operation to return type ({0}) but found no return")]

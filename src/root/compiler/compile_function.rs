@@ -13,7 +13,7 @@ use crate::root::shared::common::AddressedTypeRef;
 pub fn compile_function(fid: FunctionID, function: FunctionToken, global_table: &mut GlobalDefinitionTable) -> Result<(String, HashSet<FunctionID>), WErr> {
     let mut local_variables = LocalVariableTable::new();
 
-    let (_location, _name, return_type, parameters, lines) = function.dissolve();
+    let (_location, _name, return_type, _, parameters, lines) = function.dissolve();
 
     let return_type = if fid.is_main() { None } else { return_type };
 
@@ -67,7 +67,10 @@ fn recursively_compile_lines(fid: FunctionID, lines: &[LineTokens], return_varia
     local_variables.enter_block();
     let mut contents = String::new();
 
+    let mut last_is_return = false;
+
     for line in lines {
+        last_is_return = false;
         match line {
             LineTokens::Initialisation(it) => {
                 let (name, type_name, value) = (it.name(), it.type_name(), it.value());
@@ -79,6 +82,7 @@ fn recursively_compile_lines(fid: FunctionID, lines: &[LineTokens], return_varia
             LineTokens::If(_) => todo!(),
             LineTokens::While(_) => todo!(),
             LineTokens::Return(rt) => {
+                last_is_return = true;
                 if fid.is_main() {
                     if rt.return_value().is_none() {
                         todo!()
@@ -116,6 +120,10 @@ fn recursively_compile_lines(fid: FunctionID, lines: &[LineTokens], return_varia
                 contents += &compile_evaluable_reference(fid, et, local_variables, global_table, function_calls)?.0;
             }
         }
+    }
+
+    if (return_variable.is_some() || fid.is_main()) && !last_is_return {
+        todo!()
     }
 
     local_variables.leave_block();

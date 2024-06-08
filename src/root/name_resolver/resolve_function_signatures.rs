@@ -8,13 +8,15 @@ use crate::root::parser::parse_name::SimpleNameToken;
 
 #[derive(Getters)]
 pub struct FunctionSignature {
+    dynamic: bool,
     args: Vec<(SimpleNameToken, TypeRef)>,
     return_type: Option<TypeRef>
 }
 
 impl FunctionSignature {
-    pub fn new_inline_builtin(args: &[(&str, TypeRef)], return_type: Option<TypeRef>) -> FunctionSignature {
+    pub fn new_inline_builtin(dynamic: bool, args: &[(&str, TypeRef)], return_type: Option<TypeRef>) -> FunctionSignature {
         FunctionSignature {
+            dynamic,
             args: args.into_iter().map(|(name, t)| (SimpleNameToken::new_builtin(name.to_string()), t.clone())).collect_vec(),
             return_type
         }
@@ -37,7 +39,9 @@ pub fn resolve_function_signature(function_token: &FunctionToken, global_table: 
         ))
     }
 
+
     Ok(FunctionSignature {
+        dynamic: *function_token.dynamic(),
         args,
         return_type
     })

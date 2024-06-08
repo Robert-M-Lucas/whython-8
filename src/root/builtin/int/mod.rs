@@ -1,8 +1,10 @@
 mod add;
+mod sub;
 
 use b_box::b;
 use unique_type_id::UniqueTypeId;
 use crate::root::builtin::int::add::IntAdd;
+use crate::root::builtin::int::sub::IntSub;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
 use crate::root::parser::parse_function::parse_literal::{LiteralToken, LiteralTokens};
@@ -12,6 +14,7 @@ use crate::root::shared::types::Type;
 pub fn register_int(global_table: &mut GlobalDefinitionTable) {
     global_table.register_builtin_type(b!(IntType));
     global_table.register_inline_function(&IntAdd);
+    global_table.register_inline_function(&IntSub);
 }
 
 #[derive(UniqueTypeId)]

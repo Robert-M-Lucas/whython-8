@@ -1,14 +1,11 @@
 impl int {
-    fn sub(lhs: int, rhs: int) -> int {
-        return lhs == rhs;
-    }
-
-    fn eq(lhs: int, rhs: int) -> int {
-        return (lhs + rhs) + 1;
+    fn p_sub(self) -> Self {
+        return 0 - self;
     }
 }
 
 fn main() -> int {
-    return 3 - 2;
+    let x: int = -12;
+    return -x;
 }
 
