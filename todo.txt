@@ -1,4 +1,5 @@
 
+2. Add support for builtin function
 3. Add function/method calling
 4. Finish off evaluable compilation
 5. Finish of handling of remaining lines
