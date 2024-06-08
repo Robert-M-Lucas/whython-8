@@ -2,6 +2,24 @@
 
     section .text
 
+_2:
+    push rbp
+    mov rbp, rsp
+    
+    mov rax, qword [rbp+16]
+    mov qword [rbp-16], rax
+    mov rax, qword [rbp+24]
+    mov qword [rbp-24], rax
+    mov rax, qword [rbp-16]
+    add rax, qword [rbp-24]
+    mov qword [rbp-8], rax
+    mov qword [rbp-32], 1
+    mov rax, qword [rbp-8]
+    add rax, qword [rbp-32]
+    mov qword [rbp+32], rax
+    leave
+    ret
+
 main:
     push rbp
     mov rbp, rsp
@@ -37,24 +55,6 @@ _1:
     call _2
     add rsp, 48
     mov rax, qword [rbp-32]
-    mov qword [rbp+32], rax
-    leave
-    ret
-
-_2:
-    push rbp
-    mov rbp, rsp
-    
-    mov rax, qword [rbp+16]
-    mov qword [rbp-16], rax
-    mov rax, qword [rbp+24]
-    mov qword [rbp-24], rax
-    mov rax, qword [rbp-16]
-    add rax, qword [rbp-24]
-    mov qword [rbp-8], rax
-    mov qword [rbp-32], 1
-    mov rax, qword [rbp-8]
-    add rax, qword [rbp-32]
     mov qword [rbp+32], rax
     leave
     ret

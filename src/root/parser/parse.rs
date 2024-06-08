@@ -11,6 +11,7 @@ use std::rc::Rc;
 use color_print::cformat;
 use derive_getters::Getters;
 use lazy_static::lazy_static;
+use nom_supreme::final_parser::ExtractContext;
 use crate::root::errors::parser_errors::ParseError;
 use crate::root::errors::WErr;
 use crate::root::parser::parse_toplevel::TopLevelTokens;
@@ -166,8 +167,9 @@ pub fn parse(path: PathBuf) -> Result<Vec<TopLevelTokens>, WErr> {
 
     let (remaining, output) = match parse_toplevel::parse_toplevel(base) {
         Ok(v) => v,
-        Err(_) => {
+        Err(e) => {
             // TODO:
+            println!("{:?}", e);
             return Err(WErr::n(ParseError::ParserErrorsNotImplemented, Location::builtin()));
         }
     };

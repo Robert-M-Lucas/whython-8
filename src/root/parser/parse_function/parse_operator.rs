@@ -7,11 +7,24 @@ use nom_supreme::error::GenericErrorTree;
 use nom_supreme::tag::complete::tag;
 use nom_supreme::tag::TagError;
 
-const OPERATOR_MAPS: [(&str, OperatorTokens, bool, &'static str); 4] = [
-    ("+", OperatorTokens::Add, false, "add"),
-    ("-", OperatorTokens::Subtract, false, "sub"),
-    ("==", OperatorTokens::Equals, false, "eq"),
-    ("!", OperatorTokens::Not, true, "not"),
+#[derive(PartialEq, Debug)]
+pub enum PrefixOrInfix {
+    Prefix,
+    Infix,
+    Both
+}
+
+#[derive(Copy, Clone, Debug)]
+pub enum PrefixOrInfixEx {
+    Prefix,
+    Infix
+}
+
+const OPERATOR_MAPS: [(&str, OperatorTokens, PrefixOrInfix, &'static str); 4] = [
+    ("+", OperatorTokens::Add, PrefixOrInfix::Both, "add"),
+    ("-", OperatorTokens::Subtract, PrefixOrInfix::Both, "sub"),
+    ("==", OperatorTokens::Equals, PrefixOrInfix::Infix, "eq"),
+    ("!", OperatorTokens::Not, PrefixOrInfix::Prefix, "not"),
 ];
 
 #[derive(Debug, Clone, Getters)]
@@ -43,19 +56,55 @@ impl OperatorTokens {
     pub fn is_prefix_op(&self) -> bool {
         for (_, op, prefix, _) in &OPERATOR_MAPS {
             if self == op {
-                return *prefix;
+                return match prefix {
+                    PrefixOrInfix::Prefix => true,
+                    PrefixOrInfix::Infix => false,
+                    PrefixOrInfix::Both => true
+                }
             }
         }
         panic!()
     }
 
-    pub fn get_method_name(&self) -> &'static str {
-        for (_, op, _, name) in &OPERATOR_MAPS {
+    pub fn is_infix_op(&self) -> bool {
+        for (_, op, prefix, _) in &OPERATOR_MAPS {
             if self == op {
-                return *name;
+                return match prefix {
+                    PrefixOrInfix::Prefix => false,
+                    PrefixOrInfix::Infix => true,
+                    PrefixOrInfix::Both => true
+                }
             }
         }
         panic!()
+    }
+
+    pub fn get_method_name(&self, kind: PrefixOrInfixEx) -> Option<String> {
+        for (_, op, p_kind, name) in &OPERATOR_MAPS {
+            if self == op {
+                return match p_kind {
+                    PrefixOrInfix::Prefix => {
+                        match kind {
+                            PrefixOrInfixEx::Prefix => Some(format!("p_{name}")),
+                            PrefixOrInfixEx::Infix => None
+                        }
+                    }
+                    PrefixOrInfix::Infix => {
+                        match kind {
+                            PrefixOrInfixEx::Prefix => None,
+                            PrefixOrInfixEx::Infix => Some(name.to_string())
+                        }
+                    }
+                    PrefixOrInfix::Both => {
+                        match kind {
+                            PrefixOrInfixEx::Prefix => Some(format!("p_{name}")),
+                            PrefixOrInfixEx::Infix => Some(name.to_string())
+                        }
+                    }
+                };
+            }
+        }
+        None
     }
 
     pub fn get_priority(&self) -> usize {

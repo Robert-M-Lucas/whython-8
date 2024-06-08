@@ -10,6 +10,7 @@ use crate::root::errors::name_resolver_errors::NRErrors;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable, NameResult};
 use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, EvaluableTokens};
+use crate::root::parser::parse_function::parse_operator::PrefixOrInfixEx;
 use crate::root::shared::common::{FunctionID, Indirection, TypeRef};
 use crate::root::shared::common::AddressedTypeRef;
 
@@ -89,16 +90,16 @@ pub fn compile_evaluable_into(
             t.instantiate_from_literal(target.local_address(), literal)?
         }
         EvaluableTokens::InfixOperator(lhs, op, rhs) => {
-            if op.is_prefix_opt_t() {
-                return Err(WErr::n(EvalErrs::FoundPrefixNotInfixOp(op.operator().to_str().to_string()), op.location().clone()));
-            }
+            // if op.is_prefix_opt_t() {
+            //     return Err(WErr::n(EvalErrs::FoundPrefixNotInfixOp(op.operator().to_str().to_string()), op.location().clone()));
+            // }
 
             let mut code = String::new();
 
             // let (mut code, lhs) = compile_evaluable(fid, lhs, local_variables, global_table, function_calls)?;
             let lhs_type = compile_evaluable_type_only(fid, lhs, local_variables, global_table, function_calls)?;
             // code += "\n";
-            let op_fn = global_table.get_operator_function(*lhs_type.type_id(), op)?;
+            let op_fn = global_table.get_operator_function(*lhs_type.type_id(), op, PrefixOrInfixEx::Infix)?;
             let signature = global_table.get_function_signature(op_fn);
 
             if signature.args().len() != 2 {
@@ -107,7 +108,7 @@ pub fn compile_evaluable_into(
                         EvalErrs::OpWrongArgumentCount(
                             op.operator().to_str().to_string(),
                             global_table.get_type(*lhs_type.type_id()).name().to_string(),
-                            op.operator().get_method_name().to_string(),
+                            op.operator().get_method_name(PrefixOrInfixEx::Infix).unwrap(),
                             signature.args().len()
                         ),
                         op.location().clone()
@@ -218,14 +219,14 @@ pub fn compile_evaluable_type_only(
             TypeRef::new(tid.clone(), Indirection(0))
         }
         EvaluableTokens::InfixOperator(lhs, op, _) => {
-            if op.is_prefix_opt_t() {
-                return Err(WErr::n(EvalErrs::FoundPrefixNotInfixOp(op.operator().to_str().to_string()), op.location().clone()));
-            }
+            // if op.is_prefix_opt_t() {
+            //     return Err(WErr::n(EvalErrs::FoundPrefixNotInfixOp(op.operator().to_str().to_string()), op.location().clone()));
+            // }
 
             // let (mut code, lhs) = compile_evaluable(fid, lhs, local_variables, global_table, function_calls)?;
             let lhs_type = compile_evaluable_type_only(fid, lhs, local_variables, global_table, function_calls)?;
             // code += "\n";
-            let op_fn = global_table.get_operator_function(*lhs_type.type_id(), op)?;
+            let op_fn = global_table.get_operator_function(*lhs_type.type_id(), op, PrefixOrInfixEx::Infix)?;
             let signature = global_table.get_function_signature(op_fn);
             signature.return_type().as_ref().unwrap().clone()
         },

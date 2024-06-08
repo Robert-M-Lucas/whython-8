@@ -15,7 +15,7 @@ use crate::root::parser::parse::Location;
 use crate::root::shared::types::Type;
 use crate::root::parser::parse_function::FunctionToken;
 use crate::root::parser::parse_function::parse_evaluable::{FullNameToken, FullNameTokens, FullNameWithIndirectionToken};
-use crate::root::parser::parse_function::parse_operator::{OperatorToken};
+use crate::root::parser::parse_function::parse_operator::{OperatorToken, PrefixOrInfixEx};
 use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::parser::parse_struct::StructToken;
 use crate::root::POINTER_SIZE;
@@ -310,14 +310,23 @@ impl GlobalDefinitionTable {
         Err(WErr::n(NRErrors::CannotFindName(name.name().clone()), name.location().clone()))
     }
 
-    pub fn get_operator_function(&self, lhs: TypeID, operator: &OperatorToken) -> Result<FunctionID, WErr> {
-        let op_name = operator.operator().get_method_name();
-        self.impl_definitions.get(&lhs).and_then(|f| f.get(op_name)).ok_or(
-            WErr::n(
-                NRErrors::OpMethodNotImplemented(op_name.to_string(), self.get_type(lhs).name().to_string(), operator.operator().to_str().to_string()),
-                operator.location().clone()
-            )
-        ).copied()
+    pub fn get_operator_function(&self, lhs: TypeID, operator: &OperatorToken, kind: PrefixOrInfixEx) -> Result<FunctionID, WErr> {
+        let op_name = operator.operator().get_method_name(kind);
+
+        if let Some(op_name) = op_name {
+            self.impl_definitions.get(&lhs).and_then(|f| f.get(&op_name)).ok_or(
+                WErr::n(
+                    NRErrors::OpMethodNotImplemented(op_name.to_string(), self.get_type(lhs).name().to_string(), operator.operator().to_str().to_string()),
+                    operator.location().clone()
+                )
+            ).copied()
+        }
+        else {
+            Err(WErr::n(match kind {
+                PrefixOrInfixEx::Prefix => NRErrors::OpCantBePrefix(operator.operator().to_str().to_string()),
+                PrefixOrInfixEx::Infix => NRErrors::OpCantBeInfix(operator.operator().to_str().to_string()),
+            }, operator.location().clone()))
+        }
     }
 
     pub fn get_function(&self, function: FunctionID) -> (&FunctionSignature, Option<&InlineFunctionGenerator>) {

@@ -28,6 +28,10 @@ pub enum NRErrors {
     CannotFindConstantAttribute(String),
     #[error("Method ({0}) not implemented for type ({1}) required for operator ({2})")]
     OpMethodNotImplemented(String, String, String),
+    #[error("Operator ({0}) cannot be used as a prefix operator")]
+    OpCantBePrefix(String),
+    #[error("Operator ({0}) cannot be used as an infix operator")]
+    OpCantBeInfix(String),
     #[error("Size of type ({0}) cannot be determined due to circular definition with no indirection")]
     CircularType(String)
 }
