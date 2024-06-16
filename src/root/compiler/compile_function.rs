@@ -1,7 +1,8 @@
 use std::collections::HashSet;
-use crate::root::builtin::int::IntType;
-use crate::root::compiler::assembly::utils::{align_16_bytes, align_16_bytes_plus_8, get_function_tag};
+use crate::root::builtin::types::int::IntType;
+use crate::root::compiler::assembly::utils::{align_16_bytes, align_16_bytes_plus_8};
 use crate::root::compiler::compile_evaluable::{compile_evaluable, compile_evaluable_into, compile_evaluable_reference};
+use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable};
@@ -10,7 +11,7 @@ use crate::root::parser::parse_function::parse_line::LineTokens;
 use crate::root::shared::common::{FunctionID, Indirection, LocalAddress, TypeRef};
 use crate::root::shared::common::AddressedTypeRef;
 
-pub fn compile_function(fid: FunctionID, function: FunctionToken, global_table: &mut GlobalDefinitionTable) -> Result<(String, HashSet<FunctionID>), WErr> {
+pub fn compile_function(fid: FunctionID, function: FunctionToken, global_table: &mut GlobalDefinitionTable, global_tracker: &mut GlobalTracker) -> Result<String, WErr> {
     let mut local_variables = LocalVariableTable::new();
 
     let (_location, _name, return_type, _, parameters, lines) = function.dissolve();
@@ -41,8 +42,7 @@ pub fn compile_function(fid: FunctionID, function: FunctionToken, global_table: 
         ))
     );
 
-    let mut function_calls = HashSet::new();
-    let full_contents = recursively_compile_lines(fid, &lines, &return_variable, &mut local_variables, global_table, &mut function_calls)?;
+    let full_contents = recursively_compile_lines(fid, &lines, &return_variable, &mut local_variables, global_table, global_tracker)?;
 
     // let stack_size = local_variables.stack_size();
 
@@ -52,7 +52,7 @@ pub fn compile_function(fid: FunctionID, function: FunctionToken, global_table: 
     push rbp
     mov rbp, rsp
     {}",
-        get_function_tag(fid),
+        fid.string_id(),
         full_contents
     );
 
@@ -60,10 +60,13 @@ pub fn compile_function(fid: FunctionID, function: FunctionToken, global_table: 
         final_contents += "\n\tleave\n\tret"
     }
 
-    Ok((final_contents, function_calls))
+    Ok(final_contents)
 }
 
-fn recursively_compile_lines(fid: FunctionID, lines: &[LineTokens], return_variable: &Option<AddressedTypeRef>, local_variables: &mut LocalVariableTable, global_table: &mut GlobalDefinitionTable, function_calls: &mut HashSet<FunctionID>) -> Result<String, WErr> {
+fn recursively_compile_lines(fid: FunctionID, lines: &[LineTokens], return_variable: &Option<AddressedTypeRef>, local_variables: &mut LocalVariableTable, global_table: &mut GlobalDefinitionTable, global_tracker: &mut GlobalTracker) -> Result<String, WErr> {
+    for i in lines {
+        println!("{:#?}", i);
+    }
     local_variables.enter_block();
     let mut contents = String::new();
 
@@ -76,7 +79,7 @@ fn recursively_compile_lines(fid: FunctionID, lines: &[LineTokens], return_varia
                 let (name, type_name, value) = (it.name(), it.type_name(), it.value());
                 let address = global_table.add_local_variable_named(name.name().clone(), type_name, local_variables)?;
                 contents += "\n";
-                contents += &compile_evaluable_into(fid, value, address, local_variables, global_table, function_calls)?;
+                contents += &compile_evaluable_into(fid, value, address, local_variables, global_table, global_tracker)?;
             },
             LineTokens::Assignment(_) => todo!(),
             LineTokens::If(_) => todo!(),
@@ -89,7 +92,7 @@ fn recursively_compile_lines(fid: FunctionID, lines: &[LineTokens], return_varia
                     }
 
                     let address = global_table.add_local_variable_unnamed_base(TypeRef::new(IntType::id(), Indirection(0)), local_variables);
-                    let code = compile_evaluable_into(fid, rt.return_value().as_ref().unwrap(), address.clone(), local_variables, global_table, function_calls)?;
+                    let code = compile_evaluable_into(fid, rt.return_value().as_ref().unwrap(), address.clone(), local_variables, global_table, global_tracker)?;
                     contents += "\n";
                     contents += &code;
                     contents += &format!("\n\tmov rax, qword {}", address.local_address());
@@ -100,7 +103,7 @@ fn recursively_compile_lines(fid: FunctionID, lines: &[LineTokens], return_varia
                             todo!()
                         }
 
-                        let code = compile_evaluable_into(fid, return_value, return_variable.clone().unwrap(), local_variables, global_table, function_calls)?;
+                        let code = compile_evaluable_into(fid, return_value, return_variable.clone().unwrap(), local_variables, global_table, global_tracker)?;
                         contents += "\n";
                         contents += &code;
                     }
@@ -117,7 +120,7 @@ fn recursively_compile_lines(fid: FunctionID, lines: &[LineTokens], return_varia
             LineTokens::Break(_) => todo!(),
             LineTokens::NoOp(et) => {
                 contents += "\n";
-                contents += &compile_evaluable_reference(fid, et, local_variables, global_table, function_calls)?.0;
+                contents += &compile_evaluable_reference(fid, et, local_variables, global_table, global_tracker)?.0;
             }
         }
     }

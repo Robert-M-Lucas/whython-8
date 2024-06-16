@@ -1,19 +1,7 @@
 use std::fmt::format;
 use crate::root::shared::common::{ByteSize, FunctionID, LocalAddress};
 
-pub fn get_function_tag(id: FunctionID) -> String {
-    if id.is_main() {
-        return "main".to_string();
-    }
 
-    let id = id.0;
-    if id > 0 {
-        format!("_{id}")
-    }
-    else {
-        format!("__{}", -id)
-    }
-}
 
 pub fn get_jump_tag(id: FunctionID, jump_id: usize) -> String {
     if id.is_main() {

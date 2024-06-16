@@ -24,6 +24,20 @@ impl FunctionID {
     pub fn is_main(&self) -> bool {
         self.0 == 0
     }
+
+    pub fn string_id(&self) -> String {
+        if self.is_main() {
+            return "main".to_string();
+        }
+
+        let id = self.0;
+        if id > 0 {
+            format!("_{id}")
+        }
+        else {
+            format!("__{}", -id)
+        }
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Hash, Display, Copy, Clone)]

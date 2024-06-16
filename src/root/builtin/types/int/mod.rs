@@ -1,20 +1,27 @@
 mod add;
 mod sub;
+mod p_sub;
+mod printi;
 
 use b_box::b;
 use unique_type_id::UniqueTypeId;
-use crate::root::builtin::int::add::IntAdd;
-use crate::root::builtin::int::sub::IntSub;
+use crate::root::builtin::t_id;
+use crate::root::builtin::types::int::add::IntAdd;
+use crate::root::builtin::types::int::p_sub::IntPSub;
+use crate::root::builtin::types::int::printi::PrintI;
+use crate::root::builtin::types::int::sub::IntSub;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
 use crate::root::parser::parse_function::parse_literal::{LiteralToken, LiteralTokens};
-use crate::root::shared::common::{AddressedTypeRef, ByteSize, FunctionID, LocalAddress, TypeID};
+use crate::root::shared::common::{ByteSize, LocalAddress, TypeID};
 use crate::root::shared::types::Type;
 
 pub fn register_int(global_table: &mut GlobalDefinitionTable) {
     global_table.register_builtin_type(b!(IntType));
     global_table.register_inline_function(&IntAdd);
     global_table.register_inline_function(&IntSub);
+    global_table.register_inline_function(&IntPSub);
+    global_table.register_inline_function(&PrintI);
 }
 
 #[derive(UniqueTypeId)]
@@ -23,7 +30,7 @@ pub struct IntType;
 
 impl IntType {
     pub const fn id() -> TypeID {
-        TypeID(-(IntType::unique_type_id().0 as isize) - 1)
+        t_id(IntType::unique_type_id().0)
     }
 }
 

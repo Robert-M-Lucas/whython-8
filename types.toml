@@ -1,3 +1,10 @@
 IntType=0
 IntAdd=1
 IntSub=2
+IntPSub=3
+P=4
+Pr=5
+Pri=6
+Prin=7
+Print=8
+PrintI=9

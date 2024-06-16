@@ -1,11 +1,21 @@
-impl int {
-    fn p_sub(self) -> Self {
-        return 0 - self;
-    }
+fn test_two(a: int) -> int {
+    return a + a;
+}
+
+fn test(a: int) -> int {
+    return test_two(a) + 1;
 }
 
 fn main() -> int {
-    let x: int = -12;
-    return -x;
+    let x: int = 3;
+    printi(x);
+    printi(x);
+    printi(x);
+    printi(x);
+    printi(x);
+    printi(x);
+    printi(x);
+    printi(x);
+    return test(x);
 }
 
