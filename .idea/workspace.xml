@@ -7,30 +7,9 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Printing and function calls">
-      <change afterPath="$PROJECT_DIR$/src/root/builtin/functions/mod.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/root/builtin/types/int/p_sub.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/root/builtin/types/int/printi.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/root/builtin/types/mod.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/root/compiler/global_tracker.rs" afterDir="false" />
+    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Testing">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/out.asm" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.asm" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/out.o" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/out.out" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.out" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.why" beforeDir="false" afterPath="$PROJECT_DIR$/main.why" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/int/add.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/int/add.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/int/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/int/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/int/sub.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/int/sub.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/assembly/utils.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/assembly/utils.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/compile.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/compile_evaluable.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile_evaluable.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/compile_function.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile_function.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/compile_function_call.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile_function_call.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_literal.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_literal.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/shared/common.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/shared/common.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/types.toml" beforeDir="false" afterPath="$PROJECT_DIR$/types.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/todo.txt" beforeDir="false" afterPath="$PROJECT_DIR$/todo.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -189,7 +168,7 @@
       <workItem from="1717823358306" duration="20000" />
       <workItem from="1717823384677" duration="3880000" />
       <workItem from="1717830463295" duration="1441000" />
-      <workItem from="1718550169655" duration="7343000" />
+      <workItem from="1718550169655" duration="8186000" />
     </task>
     <task id="LOCAL-00001" summary="Changes">
       <option name="closed" value="true" />
@@ -407,7 +386,15 @@
       <option name="project" value="LOCAL" />
       <updated>1718558711741</updated>
     </task>
-    <option name="localTasksCounter" value="28" />
+    <task id="LOCAL-00028" summary="Testing">
+      <option name="closed" value="true" />
+      <created>1718558898901</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1718558898901</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -439,10 +426,10 @@
     <MESSAGE value="Added ability for first inline function to run" />
     <MESSAGE value="Improved function call code" />
     <MESSAGE value="Got functions working (maybe)" />
-    <MESSAGE value="Testing" />
     <MESSAGE value="Todo" />
     <MESSAGE value="Improved operator support" />
     <MESSAGE value="Printing and function calls" />
-    <option name="LAST_COMMIT_MESSAGE" value="Printing and function calls" />
+    <MESSAGE value="Testing" />
+    <option name="LAST_COMMIT_MESSAGE" value="Testing" />
   </component>
 </project>
