@@ -1,21 +1,9 @@
-fn test_two(a: int) -> int {
-    return a + a;
-}
-
-fn test(a: int) -> int {
-    return test_two(a) + 1;
+fn r(a: int) {
+    printi(a);
+    r(a + 1);
 }
 
 fn main() -> int {
-    let x: int = 3;
-    printi(x);
-    printi(x);
-    printi(x);
-    printi(x);
-    printi(x);
-    printi(x);
-    printi(x);
-    printi(x);
-    return test(x);
+    r(1);
+    return 255;
 }
-
