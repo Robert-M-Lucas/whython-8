@@ -129,7 +129,7 @@ pub fn call_function(
         local_variables.enter_block();
 
         // ? Arguments
-        for arg in args {
+        for arg in args.iter().rev() {
             let into = global_table.add_local_variable_unnamed_base(arg.type_ref().clone(), local_variables);
             code += "\n";
             code += &copy(*arg.local_address(), *into.local_address(), global_table.get_size(into.type_ref()));

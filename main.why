@@ -1,9 +1,12 @@
-fn r(a: int) {
+fn fib(a: int, b: int) {
     printi(a);
-    r(a + 1);
+    let d: int = a + b;
+    let c: int = b;
+    exit(12);
+    fib(c, d);
 }
 
 fn main() -> int {
-    r(1);
+    fib(0, 1);
     return 255;
 }

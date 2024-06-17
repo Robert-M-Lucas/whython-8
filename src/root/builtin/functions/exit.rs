@@ -9,21 +9,21 @@ use crate::root::shared::common::{FunctionID, Indirection, LocalAddress, TypeID,
 
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
-pub struct PrintI;
+pub struct ExitFunction;
 
-impl PrintI {
+impl ExitFunction {
     pub const fn id() -> FunctionID {
-        f_id(PrintI::unique_type_id().0)
+        f_id(ExitFunction::unique_type_id().0)
     }
 }
 
-impl BuiltinInlineFunction for PrintI {
+impl BuiltinInlineFunction for ExitFunction {
     fn id(&self) -> FunctionID {
         Self::id()
     }
 
     fn name(&self) -> &'static str {
-        "printi"
+        "exit"
     }
 
     fn signature(&self) -> FunctionSignature {
@@ -38,23 +38,10 @@ impl BuiltinInlineFunction for PrintI {
         |args: &[LocalAddress], _, gt, sz| -> String {
             let lhs = &args[0];
 
-            let id = format!("{}_fstr", Self::id().string_id());
-
-            let data = format!("{id} db `Integer: %d\\n`,0");
-
-            gt.add_readonly_data(&id, &data);
-
-            let lhs = args[0];
-            format!(
-                "
-    mov rdi, {id}
-    mov rsi, {lhs}
-    mov al, 0
-    sub rsp, {sz}
-    extern printf
-    call printf
-    add rsp, {sz}
-    ")
+            // 0 us exit syscall
+            format!("    mov rax, 60
+    mov rdi, {lhs}
+    syscall")
         }
     }
 

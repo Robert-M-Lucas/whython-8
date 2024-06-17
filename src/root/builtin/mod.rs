@@ -1,6 +1,7 @@
 pub mod types;
 pub mod functions;
 
+use crate::root::builtin::functions::register_functions;
 use crate::root::builtin::types::int::register_int;
 use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::errors::WErr;
@@ -10,6 +11,7 @@ use crate::root::shared::common::{ByteSize, FunctionID, LocalAddress, TypeID};
 use crate::root::shared::types::Type;
 
 pub fn register_builtin(global_table: &mut GlobalDefinitionTable) {
+    register_functions(global_table);
     register_int(global_table);
 }
 

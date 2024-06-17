@@ -56,9 +56,9 @@ pub fn compile_function(fid: FunctionID, function: FunctionToken, global_table: 
         full_contents
     );
 
-    if fid.is_main() {
-        final_contents += "\n\tleave\n\tret"
-    }
+    // if fid.is_main() {
+        final_contents += "\n\tleave\n\tret";
+    // }
 
     Ok(final_contents)
 }
