@@ -81,6 +81,13 @@ impl TypeRef {
     pub fn new(type_id: TypeID, indirection: Indirection) -> TypeRef {
         TypeRef { type_id, indirection }
     }
+
+    pub fn plus_one_indirect(&self) -> TypeRef {
+        TypeRef {
+            type_id: self.type_id,
+            indirection: Indirection(self.indirection.0 + 1)
+        }
+    }
 }
 
 #[derive(Getters, Clone, Dissolve)]

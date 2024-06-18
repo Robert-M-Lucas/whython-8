@@ -1,4 +1,4 @@
-
+use derive_getters::Getters;
 use nom::sequence::Tuple;
 use nom_supreme::tag::complete::tag;
 use crate::root::parser::parse::{Location, ParseResult, Span};
@@ -9,7 +9,7 @@ use crate::root::parser::parse_function::parse_line::{LineTestFn, LineTokens};
 use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::parser::parse_util::discard_ignored;
 
-#[derive(Debug)]
+#[derive(Debug, Getters)]
 pub struct AssignmentToken {
     location: Location,
     name: FullNameWithIndirectionToken,

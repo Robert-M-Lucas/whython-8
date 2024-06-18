@@ -23,6 +23,8 @@ nom-supreme = "0.8.0"
 substring = "1.4.5"
 derive-getters = "0.4.0"
 derive_more = "0.99.17"
+pinned-init = "0.0.7"
+arr_macro = "0.2.1"
 
 [profile.release]
 opt-level = 3

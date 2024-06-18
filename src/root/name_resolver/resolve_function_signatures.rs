@@ -21,6 +21,14 @@ impl FunctionSignature {
             return_type
         }
     }
+
+    pub fn new_custom(dynamic: bool, args: Vec<(SimpleNameToken, TypeRef)>, return_type: Option<TypeRef>) -> FunctionSignature {
+        FunctionSignature {
+            dynamic,
+            args,
+            return_type
+        }
+    }
 }
 
 pub fn resolve_function_signature(function_token: &FunctionToken, global_table: &mut GlobalDefinitionTable) -> Result<FunctionSignature, WErr> {

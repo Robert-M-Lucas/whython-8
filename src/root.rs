@@ -33,6 +33,7 @@ pub mod shared;
 pub mod compiler;
 pub mod assembler;
 pub mod errors;
+mod ob;
 
 pub const POINTER_SIZE: ByteSize = ByteSize(8);
 

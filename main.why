@@ -1,11 +1,11 @@
 fn main() -> int {
     let a: int = 0;
-    let b: int = 0;
 
-    while (a == 0) {
+    while (true) {
+        &a += 1;
         printi(a);
 
-        if (b == 0) {
+        if (a == 12) {
             break;
         }
     }

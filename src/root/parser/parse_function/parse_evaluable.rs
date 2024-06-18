@@ -215,7 +215,7 @@ pub fn parse_evaluable<'a, 'b>(s: Span<'a>, containing_class: Option<&SimpleName
         // Recursively parse bracketed sections
         let ns = if let Ok((ns, inner)) = default_section(s, '(') {
             let (_, evaluable) = parse_evaluable(inner, containing_class.clone(), false)?;
-            evaluables.push(TempEvaluableTokensOne::EvaluableToken(error_on_assignment(evaluable)?));
+            evaluables.push(TempEvaluableTokensOne::EvaluableToken(evaluable));
             ns
         }
         // Parse evaluable
@@ -478,5 +478,5 @@ pub fn parse_evaluable<'a, 'b>(s: Span<'a>, containing_class: Option<&SimpleName
 
     let conv = recursively_convert_temp(base.unwrap(), &mut evaluables);
 
-    Ok((s, Left(conv)))
+    Ok((s, conv))
 }

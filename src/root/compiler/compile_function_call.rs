@@ -9,7 +9,7 @@ use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
 use crate::root::parser::parse_function::parse_evaluable::EvaluableToken;
-use crate::root::shared::common::{AddressedTypeRef, ByteSize, FunctionID, LocalAddress};
+use crate::root::shared::common::{AddressedTypeRef, ByteSize, FunctionID, LocalAddress, TypeRef};
 use crate::root::utils::warn;
 
 
@@ -27,12 +27,10 @@ pub fn call_function(
     warn("Unchecked Function Arguments");
 
     if let Some(inline) = global_table.get_function(fid).1 {
-
-
         let inline_o = inline.clone();
         let mut code = AssemblyBuilder::new();
 
-        let return_into = if let Some(expected_return) = global_table.get_function(fid).0.return_type().clone() {
+        let return_into = if let Some(expected_return) = global_table.get_function(fid).0.get().return_type().clone() {
             if let Some(return_address) = return_address {
                 if return_address.type_ref() != &expected_return {
                     todo!()
@@ -53,7 +51,7 @@ pub fn call_function(
         // TODO: Check arg lengths
 
         let mut args = Vec::new();
-        let signature_args = global_table.get_function(fid).0.args().iter().map(|(_, t)| t.clone()).collect_vec();
+        let signature_args = global_table.get_function(fid).0.get().args().iter().map(|(_, t)| t.clone()).collect_vec();
 
         for (i, a) in arguments.iter().enumerate() {
             match a {
@@ -79,7 +77,7 @@ pub fn call_function(
         // TODO: Check args length
         let mut args = Vec::new();
         let mut size = ByteSize(0);
-        let signature_args = global_table.get_function(fid).0.args().iter().map(|(_, t)| t.clone()).collect_vec();
+        let signature_args = global_table.get_function(fid).0.get().args().iter().map(|(_, t)| t.clone()).collect_vec();
 
         for (i, a) in arguments.iter().enumerate() {
             match a {
@@ -98,7 +96,7 @@ pub fn call_function(
         }
 
         // ? Let return value remain after stack up
-        let return_addr = if let Some(return_type) = global_table.get_function(fid).0.return_type().clone() {
+        let return_addr = if let Some(return_type) = global_table.get_function(fid).0.get().return_type().clone() {
             let s = global_table.get_size(&return_type);
             size += s;
 

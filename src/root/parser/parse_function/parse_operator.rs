@@ -20,19 +20,20 @@ pub enum PrefixOrInfixEx {
     Infix
 }
 
-const OPERATOR_MAPS: [(&str, OperatorTokens, PrefixOrInfix, &'static str); 5] = [
-    ("+", OperatorTokens::Add, PrefixOrInfix::Both, "add"),
-    ("-", OperatorTokens::Subtract, PrefixOrInfix::Both, "sub"),
-    ("==", OperatorTokens::Equals, PrefixOrInfix::Infix, "eq"),
-    ("!", OperatorTokens::Not, PrefixOrInfix::Prefix, "not"),
-    ("+=", OperatorTokens::Not, PrefixOrInfix::Infix, "as_add"),
-];
-
 #[derive(Debug, Clone, Getters)]
 pub struct OperatorToken {
     location: Location,
     operator: OperatorTokens,
 }
+
+const OPERATOR_MAPS: [(&str, OperatorTokens, PrefixOrInfix, &'static str); 6] = [
+    ("+=", OperatorTokens::Not, PrefixOrInfix::Infix, "as_add"),
+    ("&", OperatorTokens::Reference, PrefixOrInfix::Prefix, "ref"),
+    ("+", OperatorTokens::Add, PrefixOrInfix::Both, "add"),
+    ("-", OperatorTokens::Subtract, PrefixOrInfix::Both, "sub"),
+    ("==", OperatorTokens::Equals, PrefixOrInfix::Infix, "eq"),
+    ("!", OperatorTokens::Not, PrefixOrInfix::Prefix, "not"),
+];
 
 impl OperatorToken {
     pub fn is_prefix_opt_t(&self) -> bool {
@@ -50,7 +51,8 @@ pub enum OperatorTokens {
     Subtract,
     Not,
     Equals,
-    AsAdd
+    AsAdd,
+    Reference
 }
 
 impl OperatorTokens {

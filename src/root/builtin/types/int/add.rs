@@ -44,3 +44,40 @@ impl BuiltinInlineFunction for IntAdd {
         Some(IntType::id())
     }
 }
+
+#[derive(UniqueTypeId)]
+#[UniqueTypeIdType = "u16"]
+pub struct IntAsAdd;
+
+impl BuiltinInlineFunction for IntAsAdd {
+    fn id(&self) -> FunctionID {
+        f_id(IntAsAdd::unique_type_id().0)
+    }
+
+    fn name(&self) -> &'static str {
+        "as_add"
+    }
+
+    fn signature(&self) -> FunctionSignature {
+        FunctionSignature::new_inline_builtin(
+            true,
+            &[("lhs", IntType::id().with_indirection(1)), ("rhs", IntType::id().immediate())],
+            None
+        )
+    }
+
+    fn inline(&self) -> InlineFunctionGenerator {
+        |args: &[LocalAddress], return_into: Option<LocalAddress>, _, _| -> String {
+            let lhs = args[0];
+            let rhs = args[1];
+            format!(
+"    mov rax, qword {lhs}
+    mov rdx, qword {rhs}
+    add qword [rax], rdx\n")
+        }
+    }
+
+    fn parent_type(&self) -> Option<TypeID> {
+        Some(IntType::id())
+    }
+}

@@ -54,7 +54,7 @@ pub fn parse_line<'a, 'b>(s: Span<'a>, containing_class: Option<&'b SimpleNameTo
         test_parse_initialisation,
         test_parse_while,
         test_parse_if,
-        test_parse_assignment,
+        // test_parse_assignment,
     ))
     .parse(s)
     {
