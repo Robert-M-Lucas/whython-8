@@ -1,3 +1,4 @@
+use derive_getters::Getters;
 use nom::character::complete::{satisfy};
 use nom::sequence::Tuple;
 use nom::Parser;
@@ -10,7 +11,7 @@ use crate::root::parser::parse_function::parse_line::{parse_lines, LineTestFn, L
 use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::parser::parse_util::{discard_ignored, require_ignored};
 
-#[derive(Debug)]
+#[derive(Debug, Getters)]
 pub struct WhileToken {
     location: Location,
     condition: EvaluableToken,

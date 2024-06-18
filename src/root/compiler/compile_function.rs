@@ -45,7 +45,7 @@ pub fn compile_function(fid: FunctionID, function: FunctionToken, global_table: 
         ))
     );
 
-    let full_contents = recursively_compile_lines(fid, &lines, &return_variable, &mut local_variables, global_table, global_tracker)?;
+    let full_contents = recursively_compile_lines(fid, &lines, &return_variable, &None, &mut local_variables, global_table, global_tracker)?;
 
     // let stack_size = local_variables.stack_size();
 
@@ -66,7 +66,7 @@ pub fn compile_function(fid: FunctionID, function: FunctionToken, global_table: 
     Ok(final_contents)
 }
 
-fn recursively_compile_lines(fid: FunctionID, lines: &[LineTokens], return_variable: &Option<AddressedTypeRef>, local_variables: &mut LocalVariableTable, global_table: &mut GlobalDefinitionTable, global_tracker: &mut GlobalTracker) -> Result<String, WErr> {
+fn recursively_compile_lines(fid: FunctionID, lines: &[LineTokens], return_variable: &Option<AddressedTypeRef>, break_tag: &Option<&str>, local_variables: &mut LocalVariableTable, global_table: &mut GlobalDefinitionTable, global_tracker: &mut GlobalTracker) -> Result<String, WErr> {
     local_variables.enter_block();
     let mut contents = AssemblyBuilder::new();
 
@@ -86,23 +86,56 @@ fn recursively_compile_lines(fid: FunctionID, lines: &[LineTokens], return_varia
                 contents.other(&compile_evaluable_into(fid, if_token.if_condition(), condition_addr.clone(), local_variables, global_table, global_tracker)?);
                 contents.line(&format!("cmp byte {}, 0", condition_addr.local_address()));
 
-                let end_if_tag = global_tracker.get_unique_tag(fid);
-                contents.line(&format!("jz {end_if_tag}"));
-                contents.other(&recursively_compile_lines(fid, if_token.if_contents(), &None, local_variables, global_table, global_tracker)?);
+                let end_tag = global_tracker.get_unique_tag(fid);
+                let mut next_tag = global_tracker.get_unique_tag(fid);
 
-                if let Some(else_contents) = if_token.else_contents() {
-                    let end_else_tag = global_tracker.get_unique_tag(fid);
-                    contents.line(&format!("jmp {end_else_tag}"));
-                    contents.line(&format!("{end_if_tag}:"));
-                    contents.other(&recursively_compile_lines(fid, else_contents, &None, local_variables, global_table, global_tracker)?);
-                    contents.line(&format!("{end_else_tag}:"));
+                if !if_token.elif_condition_contents().is_empty() || if_token.else_contents().is_some() {
+                    contents.line(&format!("jz {next_tag}"));
                 }
                 else {
-                    contents.line(&format!("{end_if_tag}:"));
+                    contents.line(&format!("jz {end_tag}"));
                 }
 
+                contents.other(&recursively_compile_lines(fid, if_token.if_contents(), return_variable, break_tag, local_variables, global_table, global_tracker)?);
+
+                for (elif_condition, elif_content) in if_token.elif_condition_contents() {
+                    contents.line(&format!("jmp {end_tag}"));
+                    contents.line(&format!("{next_tag}:"));
+                    next_tag = global_tracker.get_unique_tag(fid);
+
+                    let condition_addr = global_table.add_local_variable_unnamed_base(BoolType::id().immediate(), local_variables);
+                    contents.other(&compile_evaluable_into(fid, elif_condition, condition_addr.clone(), local_variables, global_table, global_tracker)?);
+                    contents.line(&format!("cmp byte {}, 0", condition_addr.local_address()));
+                    contents.line(&format!("jz {next_tag}"));
+                    contents.other(&recursively_compile_lines(fid, elif_content, return_variable, break_tag, local_variables, global_table, global_tracker)?);
+                }
+
+                if let Some(else_contents) = if_token.else_contents() {
+                    contents.line(&format!("jmp {end_tag}"));
+                    contents.line(&format!("{next_tag}:"));
+                    next_tag = global_tracker.get_unique_tag(fid);
+                    contents.other(&recursively_compile_lines(fid, else_contents, return_variable, break_tag, local_variables, global_table, global_tracker)?);
+                }
+
+                contents.line(&format!("{next_tag}:"));
+                contents.line(&format!("{end_tag}:"));
             },
-            LineTokens::While(_) => todo!(),
+            LineTokens::While(while_token) => {
+                let start_tag = global_tracker.get_unique_tag(fid);
+                let end_tag = global_tracker.get_unique_tag(fid);
+
+                contents.line(&format!("{start_tag}:"));
+
+                let condition_addr = global_table.add_local_variable_unnamed_base(BoolType::id().immediate(), local_variables);
+                contents.other(&compile_evaluable_into(fid, while_token.condition(), condition_addr.clone(), local_variables, global_table, global_tracker)?);
+                contents.line(&format!("cmp byte {}, 0", condition_addr.local_address()));
+                contents.line(&format!("jz {end_tag}"));
+
+                contents.other(&recursively_compile_lines(fid, while_token.contents(), return_variable, &Some(&end_tag), local_variables, global_table, global_tracker)?);
+
+                contents.line(&format!("jmp {start_tag}"));
+                contents.line(&format!("{end_tag}:"))
+            },
             LineTokens::Return(rt) => {
                 last_is_return = true;
                 if fid.is_main() {
@@ -132,7 +165,14 @@ fn recursively_compile_lines(fid: FunctionID, lines: &[LineTokens], return_varia
                 contents.line("leave");
                 contents.line("ret");
             }
-            LineTokens::Break(_) => todo!(),
+            LineTokens::Break(_) => {
+                if let Some(break_tag) = break_tag {
+                    contents.line(&format!("jmp {break_tag}"));
+                }
+                else {
+                    todo!()
+                }
+            },
             LineTokens::NoOp(et) => {
                 contents.other(&compile_evaluable_reference(fid, et, local_variables, global_table, global_tracker)?.0);
             }

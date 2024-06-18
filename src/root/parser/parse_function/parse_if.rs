@@ -52,14 +52,14 @@ pub fn parse_if<'a, 'b>(s: Span<'a>, containing_class: Option<&'b SimpleNameToke
         };
 
         let (ns, condition) =
-            if let Ok((ns, _)) = (require_ignored, tag("if")).parse(ns) {
-                let (ns, _) = discard_ignored(ns)?;
-                let (ns, content) = default_section(ns, '(')?;
-                let (_, condition) = parse_evaluable(content, containing_class, false)?;
-                (ns, Some(condition))
-            } else {
-                (ns, None)
-            };
+        if let Ok((ns, _)) = (require_ignored, tag("if")).parse(ns) {
+            let (ns, _) = discard_ignored(ns)?;
+            let (ns, content) = default_section(ns, '(')?;
+            let (_, condition) = parse_evaluable(content, containing_class, false)?;
+            (ns, Some(condition))
+        } else {
+            (ns, None)
+        };
 
         let (ns, _) = discard_ignored(ns)?;
 

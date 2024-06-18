@@ -60,9 +60,14 @@ impl Type for IntType {
                 }
             }
             LiteralTokens::Int(value) => {
-                let full_hex = format!("{:016x}", value);
-                format!("    mov dword {location}, 0x{}
+                if *value < 2147483648 {
+                    format!("    mov qword {location}, {value}\n")
+                }
+                else {
+                    let full_hex = format!("{:016x}", value);
+                    format!("    mov dword {location}, 0x{}
     mov dword {}, 0x{}\n", &full_hex[8..], *location + LocalAddress(4), &full_hex[..8])
+                }
             }
         })
     }
