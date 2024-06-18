@@ -1,15 +1,18 @@
-fn main() -> int {
-    let i: int = 3;
-    let j: int = 4;
-    let x: bool = true;
-    printb(x);
+fn fib(a: int, b: int) {
+    printi(a);
 
-    if (x) {
-        printi(i);
-        return 13;
+    if (a == 233) {
+        exit(10);
     }
-    else {
-        printi(j);
-        return 12;
-    }
+
+    let c: int = b;
+    let d: int = a + b;
+
+    fib(c, d);
+}
+
+fn main() -> int {
+    fib(0, 1);
+
+    return 1;
 }

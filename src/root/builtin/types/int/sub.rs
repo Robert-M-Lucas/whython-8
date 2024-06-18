@@ -36,7 +36,7 @@ impl BuiltinInlineFunction for IntSub {
             format!(
 "    mov rax, qword {lhs}
     sub rax, qword {rhs}
-    mov qword {return_into}, rax")
+    mov qword {return_into}, rax\n")
         }
     }
 

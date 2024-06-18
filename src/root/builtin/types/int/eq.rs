@@ -1,6 +1,8 @@
 use unique_type_id::UniqueTypeId;
 use crate::root::builtin::{BuiltinInlineFunction, InlineFunctionGenerator, f_id};
+use crate::root::builtin::types::bool::BoolType;
 use crate::root::builtin::types::int::IntType;
+use crate::root::builtin::types::int::printi::PrintI;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::NameResult::Function;
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
@@ -9,34 +11,48 @@ use crate::root::shared::common::{FunctionID, Indirection, LocalAddress, TypeID,
 
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
-pub struct IntAdd;
+pub struct IntEq;
 
-impl BuiltinInlineFunction for IntAdd {
+impl IntEq {
+    pub const fn id() -> FunctionID {
+        f_id(IntEq::unique_type_id().0)
+    }
+}
+
+impl BuiltinInlineFunction for IntEq {
     fn id(&self) -> FunctionID {
-        f_id(IntAdd::unique_type_id().0)
+        IntEq::id()
     }
 
     fn name(&self) -> &'static str {
-        "add"
+        "eq"
     }
 
     fn signature(&self) -> FunctionSignature {
         FunctionSignature::new_inline_builtin(
             true,
             &[("lhs", IntType::id().immediate()), ("rhs", IntType::id().immediate())],
-            Some(IntType::id().immediate())
+            Some(BoolType::id().immediate())
         )
     }
 
     fn inline(&self) -> InlineFunctionGenerator {
-        |args: &[LocalAddress], return_into: Option<LocalAddress>, _, _| -> String {
+        |args: &[LocalAddress], return_into: Option<LocalAddress>, gt, _| -> String {
             let lhs = args[0];
             let rhs = args[1];
             let return_into = return_into.unwrap();
+            let j = gt.get_unique_tag(IntEq::id());
+            let j2 = gt.get_unique_tag(IntEq::id());
+
             format!(
 "    mov rax, qword {lhs}
-    add rax, qword {rhs}
-    mov qword {return_into}, rax\n")
+    cmp rax, qword {rhs}
+    jz {j}
+    mov byte {return_into}, 0
+    jmp {j2}
+    {j}:
+    mov byte {return_into}, 1
+    {j2}:\n")
         }
     }
 

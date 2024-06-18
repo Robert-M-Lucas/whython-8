@@ -41,7 +41,7 @@ impl BuiltinInlineFunction for ExitFunction {
             // 0 us exit syscall
             format!("    mov rax, 60
     mov rdi, {lhs}
-    syscall")
+    syscall\n")
         }
     }
 

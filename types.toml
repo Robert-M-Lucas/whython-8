@@ -1,0 +1,9 @@
+IntAdd=0
+IntSub=1
+IntPSub=2
+PrintI=3
+IntEq=4
+IntType=5
+PrintB=6
+BoolType=7
+ExitFunction=8

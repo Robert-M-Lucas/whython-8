@@ -35,7 +35,7 @@ impl BuiltinInlineFunction for IntPSub {
             format!(
 "    mov rax, qword {lhs}
     neg rax
-    mov qword {return_into}, rax")
+    mov qword {return_into}, rax\n")
         }
     }
 

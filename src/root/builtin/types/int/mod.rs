@@ -2,11 +2,13 @@ mod add;
 mod sub;
 mod p_sub;
 mod printi;
+mod eq;
 
 use b_box::b;
 use unique_type_id::UniqueTypeId;
 use crate::root::builtin::t_id;
 use crate::root::builtin::types::int::add::IntAdd;
+use crate::root::builtin::types::int::eq::IntEq;
 use crate::root::builtin::types::int::p_sub::IntPSub;
 use crate::root::builtin::types::int::printi::PrintI;
 use crate::root::builtin::types::int::sub::IntSub;
@@ -21,6 +23,7 @@ pub fn register_int(global_table: &mut GlobalDefinitionTable) {
     global_table.register_inline_function(&IntAdd);
     global_table.register_inline_function(&IntSub);
     global_table.register_inline_function(&IntPSub);
+    global_table.register_inline_function(&IntEq);
     global_table.register_inline_function(&PrintI);
 }
 
