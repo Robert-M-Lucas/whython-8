@@ -6,12 +6,14 @@ use crate::root::parser::parse_function::parse_literal::{
 use crate::root::parser::parse_function::parse_operator::{OperatorToken, parse_operator};
 use b_box::b;
 use derive_getters::Getters;
+use either::{Either, Left, Right};
 use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::character::complete::char;
 use crate::root::parser::parse_arguments::parse_arguments;
 use crate::root::parser::parse_name::{SimpleNameToken, parse_simple_name};
 use crate::root::parser::parse_blocks::default_section;
+use crate::root::parser::parse_function::parse_assignment::AssignmentToken;
 use crate::root::parser::parse_util::discard_ignored;
 use crate::root::shared::common::Indirection;
 
@@ -171,6 +173,15 @@ pub fn parse_full_name<'a, 'b>(s: Span<'a>, containing_class: Option<&SimpleName
     }
 }
 
+// pub fn error_on_assignment(either: Either<EvaluableToken, AssignmentToken>) -> Result<EvaluableToken, ErrorTree<'static>> {
+//     match either {
+//         Left(val) => {Ok(val)}
+//         Right(_) => {
+//             todo!()
+//         }
+//     }
+// }
+
 pub fn parse_evaluable<'a, 'b>(s: Span<'a>, containing_class: Option<&SimpleNameToken>, semicolon_terminated: bool) -> ParseResult<'a, Span<'a>, EvaluableToken> {
     assert!(!s.is_empty());
     let mut s = s;
@@ -204,7 +215,7 @@ pub fn parse_evaluable<'a, 'b>(s: Span<'a>, containing_class: Option<&SimpleName
         // Recursively parse bracketed sections
         let ns = if let Ok((ns, inner)) = default_section(s, '(') {
             let (_, evaluable) = parse_evaluable(inner, containing_class.clone(), false)?;
-            evaluables.push(TempEvaluableTokensOne::EvaluableToken(evaluable));
+            evaluables.push(TempEvaluableTokensOne::EvaluableToken(error_on_assignment(evaluable)?));
             ns
         }
         // Parse evaluable
@@ -467,5 +478,5 @@ pub fn parse_evaluable<'a, 'b>(s: Span<'a>, containing_class: Option<&SimpleName
 
     let conv = recursively_convert_temp(base.unwrap(), &mut evaluables);
 
-    Ok((s, conv))
+    Ok((s, Left(conv)))
 }

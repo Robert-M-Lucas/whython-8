@@ -20,11 +20,12 @@ pub enum PrefixOrInfixEx {
     Infix
 }
 
-const OPERATOR_MAPS: [(&str, OperatorTokens, PrefixOrInfix, &'static str); 4] = [
+const OPERATOR_MAPS: [(&str, OperatorTokens, PrefixOrInfix, &'static str); 5] = [
     ("+", OperatorTokens::Add, PrefixOrInfix::Both, "add"),
     ("-", OperatorTokens::Subtract, PrefixOrInfix::Both, "sub"),
     ("==", OperatorTokens::Equals, PrefixOrInfix::Infix, "eq"),
     ("!", OperatorTokens::Not, PrefixOrInfix::Prefix, "not"),
+    ("+=", OperatorTokens::Not, PrefixOrInfix::Infix, "as_add"),
 ];
 
 #[derive(Debug, Clone, Getters)]
@@ -48,7 +49,8 @@ pub enum OperatorTokens {
     Add,
     Subtract,
     Not,
-    Equals
+    Equals,
+    AsAdd
 }
 
 impl OperatorTokens {
