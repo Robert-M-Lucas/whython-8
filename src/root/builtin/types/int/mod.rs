@@ -4,6 +4,7 @@ mod p_sub;
 mod printi;
 mod eq;
 
+use std::fmt::format;
 use b_box::b;
 use unique_type_id::UniqueTypeId;
 use crate::root::builtin::t_id;
@@ -59,7 +60,9 @@ impl Type for IntType {
                 }
             }
             LiteralTokens::Int(value) => {
-                format!("    mov qword {location}, {value}\n")
+                let full_hex = format!("{:016x}", value);
+                format!("    mov dword {location}, 0x{}
+    mov dword {}, 0x{}\n", &full_hex[8..], *location + LocalAddress(4), &full_hex[..8])
             }
         })
     }

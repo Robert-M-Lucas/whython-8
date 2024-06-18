@@ -38,7 +38,7 @@ impl BuiltinInlineFunction for PrintI {
         |args: &[LocalAddress], _, gt, sz| -> String {
             let id = format!("{}_fstr", Self::id().string_id());
 
-            let data = format!("{id} db `Integer: %d\\n`,0");
+            let data = format!("{id} db `Integer: %ld\\n`,0");
 
             gt.add_readonly_data(&id, &data);
 

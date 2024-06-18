@@ -1,7 +1,7 @@
 fn fib(a: int, b: int) {
-    printi(a);
+    printi(b);
 
-    if (a == 233) {
+    if (a == 24157817) {
         exit(10);
     }
 
@@ -12,7 +12,11 @@ fn fib(a: int, b: int) {
 }
 
 fn main() -> int {
+    printi(-100000000000);
+    exit(2);
+
     fib(0, 1);
+
 
     return 1;
 }
