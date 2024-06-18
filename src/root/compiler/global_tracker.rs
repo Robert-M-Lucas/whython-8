@@ -6,7 +6,8 @@ use crate::root::shared::common::FunctionID;
 pub struct GlobalTracker {
     function_calls: HashSet<FunctionID>,
     readonly_contents: HashSet<String>,
-    readonly_data_section: String
+    readonly_data_section: String,
+    unique_tag_counter: usize
 }
 
 impl GlobalTracker {
@@ -28,5 +29,11 @@ impl GlobalTracker {
             self.readonly_data_section += "\n    ";
             self.readonly_data_section += data;
         }
+    }
+
+    pub fn get_unique_tag(&mut self, function: FunctionID) -> String {
+        let r = format!("{}_{}", function.string_id(), self.unique_tag_counter);
+        self.unique_tag_counter += 1;
+        r
     }
 }

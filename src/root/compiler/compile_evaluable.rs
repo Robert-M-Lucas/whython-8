@@ -111,8 +111,6 @@ pub fn compile_evaluable_into(
             t.instantiate_from_literal(target.local_address(), literal)?
         }
         EvaluableTokens::InfixOperator(lhs, op, rhs) => {
-            let mut code = String::new();
-
             let lhs_type = compile_evaluable_type_only(fid, lhs, local_variables, global_table, global_tracker)?;
             let op_fn = global_table.get_operator_function(*lhs_type.type_id(), op, PrefixOrInfixEx::Infix)?;
             let signature = global_table.get_function_signature(op_fn);
@@ -144,13 +142,9 @@ pub fn compile_evaluable_into(
 
             let (c, _) = call_function(fid, op_fn, &[Left(lhs), Left(rhs)], Some(target), global_table, local_variables, global_tracker)?;
 
-            code += &c;
-
-            code
+            c
         },
         EvaluableTokens::PrefixOperator(op, lhs) => {
-            let mut code = String::new();
-
             let lhs_type = compile_evaluable_type_only(fid, lhs, local_variables, global_table, global_tracker)?;
             let op_fn = global_table.get_operator_function(*lhs_type.type_id(), op, PrefixOrInfixEx::Prefix)?;
             let signature = global_table.get_function_signature(op_fn);
@@ -181,10 +175,7 @@ pub fn compile_evaluable_into(
             }
 
             let (c, _) = call_function(fid, op_fn, &[Left(lhs)], Some(target), global_table, local_variables, global_tracker)?;
-
-            code += &c;
-
-            code
+            c
         },
         EvaluableTokens::DynamicAccess(_, _) => todo!(), // Accessed methods must be called
         EvaluableTokens::StaticAccess(_, n) => return Err(WErr::n(NRErrors::CannotFindConstantAttribute(n.name().clone()), n.location().clone())), // Accessed methods must be called
@@ -225,7 +216,7 @@ pub fn compile_evaluable_reference(
                 NameResult::Function(_) => return Err(WErr::n(EvalErrs::FunctionMustBeCalled(name.name().clone()), name.location().clone())),
                 NameResult::Type(_) => return Err(WErr::n(EvalErrs::CannotEvalStandaloneType(name.name().clone()), name.location().clone())),
                 NameResult::Variable(address) => {
-                    ("".to_string(), Some(address))
+                    (String::new(), Some(address))
                 }
             }
         },

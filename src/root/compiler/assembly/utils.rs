@@ -1,4 +1,5 @@
 use std::fmt::format;
+use crate::root::assembler::assembly_builder::AssemblyBuilder;
 use crate::root::shared::common::{ByteSize, FunctionID, LocalAddress};
 
 
@@ -82,36 +83,34 @@ pub fn copy(from: LocalAddress, to: LocalAddress, amount: ByteSize) -> String {
     let to = to.0;
     let mut written = 0;
 
-    let mut output = String::new();
+    let mut output = AssemblyBuilder::new();
 
     loop {
         let to_write = amount.0 - written;
         if to_write >= 8 {
-            output += &format!("    mov rax, qword {}\n", LocalAddress(from + written as isize));
-            output += &format!("    mov qword {}, rax", &LocalAddress(to + written as isize));
+            output.line(&format!("mov rax, qword {}", LocalAddress(from + written as isize)));
+            output.line(&format!("mov qword {}, rax", &LocalAddress(to + written as isize)));
             written += 8;
         }
         else if to_write >= 4 {
-            output += &format!("    mov rax, dword {}\n", LocalAddress(from + written as isize));
-            output += &format!("    mov dword {}, rax", &LocalAddress(to + written as isize));
+            output.line(&format!("mov eax, dword {}", LocalAddress(from + written as isize)));
+            output.line(&format!("mov dword {}, eax", &LocalAddress(to + written as isize)));
             written += 4;
         }
         else if to_write >= 2 {
-            output += &format!("    mov rax, word {}\n", LocalAddress(from + written as isize));
-            output += &format!("    mov word {}, rax", &LocalAddress(to + written as isize));
+            output.line(&format!("mov ax, word {}", LocalAddress(from + written as isize)));
+            output.line(&format!("mov word {}, ax", &LocalAddress(to + written as isize)));
             written += 2;
         }
         else if to_write >= 1 {
-            output += &format!("    mov rax, byte {}\n", LocalAddress(from + written as isize));
-            output += &format!("    mov byte {}, rax", &LocalAddress(to + written as isize));
+            output.line(&format!("mov al, byte {}", LocalAddress(from + written as isize)));
+            output.line(&format!("mov byte {}, al", &LocalAddress(to + written as isize)));
             written += 1;
         }
         else {
             break;
         }
         if written == amount.0 { break; }
-        output += "\n";
     }
-
-    output
+    output.finish()
 }

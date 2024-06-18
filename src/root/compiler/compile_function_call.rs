@@ -1,6 +1,7 @@
 use std::collections::HashSet;
 use either::Either;
 use itertools::Itertools;
+use crate::root::assembler::assembly_builder::AssemblyBuilder;
 use crate::root::compiler::assembly::utils::{align_16_bytes, align_16_bytes_plus_8, copy};
 use crate::root::compiler::compile_evaluable::{compile_evaluable, compile_evaluable_into};
 use crate::root::compiler::global_tracker::GlobalTracker;
@@ -29,7 +30,7 @@ pub fn call_function(
 
 
         let inline_o = inline.clone();
-        let mut code = String::new();
+        let mut code = AssemblyBuilder::new();
 
         let return_into = if let Some(expected_return) = global_table.get_function(fid).0.return_type().clone() {
             if let Some(return_address) = return_address {
@@ -59,12 +60,7 @@ pub fn call_function(
                 Either::Left(eval) => {
                     let into = global_table.add_local_variable_unnamed_base(signature_args[i].clone(), local_variables);
                     let c = compile_evaluable_into(parent_fid, eval, into.clone(), local_variables, global_table, global_tracker)?;
-
-                    if i != 0 {
-                        code += "\n";
-                    }
-
-                    code += &c;
+                    code.other(&c);
                     args.push(*into.local_address());
                 }
                 Either::Right(addr) => {
@@ -74,12 +70,11 @@ pub fn call_function(
             }
         }
 
-        code += "\n";
-        code += &inline_o(&args, return_into.as_ref().map(|x| *x.local_address()), global_tracker, local_variables.stack_size());
-        Ok((code, return_into))
+        code.other(&inline_o(&args, return_into.as_ref().map(|x| *x.local_address()), global_tracker, local_variables.stack_size()));
+        Ok((code.finish(), return_into))
     }
     else {
-        let mut code = String::new();
+        let mut code = AssemblyBuilder::new();
 
         // TODO: Check args length
         let mut args = Vec::new();
@@ -92,10 +87,7 @@ pub fn call_function(
                     let into = global_table.add_local_variable_unnamed_base(signature_args[i].clone(), local_variables);
                     size += global_table.get_size(into.type_ref());
                     let c = compile_evaluable_into(parent_fid, eval, into.clone(), local_variables, global_table, global_tracker)?;
-                    if i != 0 {
-                        code += "\n";
-                    }
-                    code += &c;
+                    code.other(&c);
                     args.push(into);
                 }
                 Either::Right(addr) => {
@@ -131,13 +123,12 @@ pub fn call_function(
         // ? Arguments
         for arg in args.iter().rev() {
             let into = global_table.add_local_variable_unnamed_base(arg.type_ref().clone(), local_variables);
-            code += "\n";
-            code += &copy(*arg.local_address(), *into.local_address(), global_table.get_size(into.type_ref()));
+            code.other(&copy(*arg.local_address(), *into.local_address(), global_table.get_size(into.type_ref())));
         }
 
-        code += &format!("\n    sub rsp, {}", local_variables.stack_size().0);
-        code += &format!("\n    call {}", fid.string_id());
-        code += &format!("\n    add rsp, {}", local_variables.stack_size().0);
+        code.line(&format!("sub rsp, {}", local_variables.stack_size().0));
+        code.line(&format!("call {}", fid.string_id()));
+        code.line(&format!("add rsp, {}", local_variables.stack_size().0));
 
         // ? Leave block (invalidate parameters)
         local_variables.leave_block();
@@ -147,14 +138,13 @@ pub fn call_function(
                 todo!()
             }
 
-            code += "\n";
-            code += &copy(*return_addr.as_ref().unwrap().local_address(), *return_address.local_address(), global_table.get_size(return_addr.as_ref().unwrap().type_ref()));
+            code.other(&copy(*return_addr.as_ref().unwrap().local_address(), *return_address.local_address(), global_table.get_size(return_addr.as_ref().unwrap().type_ref())));
             Some(return_address)
         }
         else {
             return_addr
         };
 
-        Ok((code, return_addr))
+        Ok((code.finish(), return_addr))
     }
 }

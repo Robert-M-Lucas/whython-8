@@ -1,12 +1,15 @@
-fn fib(a: int, b: int) {
-    printi(a);
-    let d: int = a + b;
-    let c: int = b;
-    exit(12);
-    fib(c, d);
-}
-
 fn main() -> int {
-    fib(0, 1);
-    return 255;
+    let i: int = 3;
+    let j: int = 4;
+    let x: bool = true;
+    printb(x);
+
+    if (x) {
+        printi(i);
+        return 13;
+    }
+    else {
+        printi(j);
+        return 12;
+    }
 }

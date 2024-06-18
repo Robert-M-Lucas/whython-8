@@ -5,62 +5,54 @@ section .text
 main:
     push rbp
     mov rbp, rsp
-    
-    mov qword [rbp-8], 0
-    mov qword [rbp-16], 1
-    mov rax, qword [rbp-16]
-    mov qword [rbp-40], rax
-    mov rax, qword [rbp-8]
-    mov qword [rbp-48], rax
-    sub rsp, 48
-    call _1
-    add rsp, 48
-    mov qword [rbp-40], 255
-	mov rax, qword [rbp-40]
-	leave
-	ret
-
-_1:
-    push rbp
-    mov rbp, rsp
-    
-    mov rax, qword [rbp+16]
-    mov qword [rbp-8], rax
-
-    mov rdi, __10_fstr
-    mov rsi, [rbp-8]
+    mov qword [rbp-8], 3
+    mov qword [rbp-16], 4
+    mov byte [rbp-17], 1
+    mov al, byte [rbp-17]
+    mov byte [rbp-18], al
+    mov rdi, __6_fstr
+    mov rsi, 0
+    mov sil, [rbp-18]
     mov al, 0
-    sub rsp, 8
+    sub rsp, 18
     extern printf
     call printf
-    add rsp, 8
-    
-    mov rax, qword [rbp+16]
-    mov qword [rbp-24], rax
-    mov rax, qword [rbp+24]
-    mov qword [rbp-32], rax
-    mov rax, qword [rbp-24]
-    add rax, qword [rbp-32]
-    mov qword [rbp-16], rax
-    mov rax, qword [rbp+24]
-    mov qword [rbp-40], rax
-    mov qword [rbp-48], 12
-    mov rax, 60
-    mov rdi, [rbp-48]
-    syscall
-    mov rax, qword [rbp-40]
-    mov qword [rbp-56], rax
+    add rsp, 18
+    mov al, byte [rbp-17]
+    mov byte [rbp-19], al
+    cmp byte [rbp-19], 0
+    jz main_0
+    mov rax, qword [rbp-8]
+    mov qword [rbp-27], rax
+    mov rdi, __4_fstr
+    mov rsi, [rbp-27]
+    mov al, 0
+    sub rsp, 27
+    extern printf
+    call printf
+    add rsp, 27
+    mov qword [rbp-35], 13
+    mov rax, qword [rbp-35]
+    leave
+    ret
+    jmp main_1
+    main_0:
     mov rax, qword [rbp-16]
-    mov qword [rbp-64], rax
-    mov rax, qword [rbp-64]
-    mov qword [rbp-88], rax
-    mov rax, qword [rbp-56]
-    mov qword [rbp-96], rax
-    sub rsp, 96
-    call _1
-    add rsp, 96
-	leave
-	ret
+    mov qword [rbp-27], rax
+    mov rdi, __4_fstr
+    mov rsi, [rbp-27]
+    mov al, 0
+    sub rsp, 27
+    extern printf
+    call printf
+    add rsp, 27
+    mov qword [rbp-35], 12
+    mov rax, qword [rbp-35]
+    leave
+    ret
+    main_1:
 
-section .data
-    __10_fstr db `Integer: %d\n`,0
+
+section .data_readonly
+    __6_fstr db `Boolean: %d\n`,0
+    __4_fstr db `Integer: %d\n`,0

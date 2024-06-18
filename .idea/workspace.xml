@@ -7,19 +7,23 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Testing">
-      <change afterPath="$PROJECT_DIR$/src/root/builtin/functions/exit.rs" afterDir="false" />
+    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Added exit functions">
+      <change afterPath="$PROJECT_DIR$/build.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/root/builtin/types/bool/mod.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/root/builtin/types/bool/printb.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/test.asm" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/out.asm" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.asm" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/out.o" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/out.out" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.out" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.why" beforeDir="false" afterPath="$PROJECT_DIR$/main.why" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/functions/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/functions/mod.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/root/builtin/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/int/printi.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/int/printi.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/assembly/utils.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/assembly/utils.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/root/compiler/compile_function.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile_function.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/compile_function_call.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile_function_call.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/types.toml" beforeDir="false" afterPath="$PROJECT_DIR$/types.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/global_tracker.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/global_tracker.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_if.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_if.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/types.toml" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -72,9 +76,10 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.rust.reset.selective.auto.import": "true",
+    "Shell Script.Test Asm.executor": "Run",
     "git-widget-placeholder": "master",
     "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "/home/robertlucas/RustroverProjects/whython-8/src/root/builtin/int",
+    "last_opened_file_path": "/home/robertlucas/RustroverProjects/whython-8/src/root/builtin/types",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -83,12 +88,13 @@
     "org.rust.cargo.project.model.PROJECT_DISCOVERY": "true",
     "org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon": "",
     "org.rust.first.attach.projects": "true",
-    "settings.editor.selected.configurable": "terminal",
+    "settings.editor.selected.configurable": "preferences.keymap",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/root/builtin/types" />
       <recent name="$PROJECT_DIR$/src/root/builtin/int" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
@@ -133,6 +139,26 @@
         <option name="CARGO.BUILD_TASK_PROVIDER" enabled="true" />
       </method>
     </configuration>
+    <configuration name="Test Asm" type="ShConfigurationType">
+      <option name="SCRIPT_TEXT" value="nasm -f elf64 test/test.asm &amp;&amp; gcc test/test.o -o test/test.out &amp;&amp; test/test.out" />
+      <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
+      <option name="SCRIPT_PATH" value="" />
+      <option name="SCRIPT_OPTIONS" value="" />
+      <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
+      <option name="SCRIPT_WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="INDEPENDENT_INTERPRETER_PATH" value="true" />
+      <option name="INTERPRETER_PATH" value="/usr/bin/zsh" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="EXECUTE_IN_TERMINAL" value="false" />
+      <option name="EXECUTE_SCRIPT_FILE" value="false" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Cargo.Run whython-8" />
+      <item itemvalue="Cargo.Test whython-8" />
+      <item itemvalue="Shell Script.Test Asm" />
+    </list>
   </component>
   <component name="RustProjectSettings">
     <option name="toolchainHomeDirectory" value="$USER_HOME$/.cargo/bin" />
@@ -179,7 +205,10 @@
       <workItem from="1717823384677" duration="3880000" />
       <workItem from="1717830463295" duration="1441000" />
       <workItem from="1718550169655" duration="8186000" />
-      <workItem from="1718634915504" duration="1659000" />
+      <workItem from="1718634915504" duration="4156000" />
+      <workItem from="1718662583156" duration="76000" />
+      <workItem from="1718662664188" duration="1506000" />
+      <workItem from="1718712543316" duration="2954000" />
     </task>
     <task id="LOCAL-00001" summary="Changes">
       <option name="closed" value="true" />
@@ -405,7 +434,15 @@
       <option name="project" value="LOCAL" />
       <updated>1718558898901</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="Added exit functions">
+      <option name="closed" value="true" />
+      <created>1718636633009</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1718636633009</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -441,7 +478,8 @@
     <MESSAGE value="Improved operator support" />
     <MESSAGE value="Printing and function calls" />
     <MESSAGE value="Testing" />
-    <option name="LAST_COMMIT_MESSAGE" value="Testing" />
+    <MESSAGE value="Added exit functions" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added exit functions" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

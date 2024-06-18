@@ -53,7 +53,7 @@ section .text
     }
 
     if !global_tracker.readonly_data_section().is_empty() {
-        s += "section .data";
+        s += "section .data_readonly";
         s += global_tracker.readonly_data_section();
     }
 
