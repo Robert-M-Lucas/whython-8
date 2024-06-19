@@ -7,40 +7,12 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Cargo fix">
+    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Cargo clippy">
+      <change afterPath="$PROJECT_DIR$/src/root/builtin/types/bool/and.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/assembler/assembly_builder.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/assembler/assembly_builder.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/assembly/utils.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/assembly/utils.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/compile_evaluable.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile_evaluable.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/compile_function.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile_function.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/compile_function_call.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile_function_call.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/local_variable_table.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/local_variable_table.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/errors/evaluable_errors.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/errors/evaluable_errors.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/errors/name_resolver_errors.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/errors/name_resolver_errors.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/resolve_function_signatures.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/resolve_function_signatures.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/resolve_names.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/resolve_names.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/resolve_type_sizes.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/resolve_type_sizes.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/ob.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/ob.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_assigner.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_assigner.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_assignment.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_assignment.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_break.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_break.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_evaluable.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_evaluable.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_if.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_if.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_initialisation.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_initialisation.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_line.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_line.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/bool/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/bool/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/bool/printb.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/bool/printb.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_operator.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_operator.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_return.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_return.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_while.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_while.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_impl.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_impl.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_name.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_name.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_parameters.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_parameters.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_struct.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_struct.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/runner.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/runner.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/utils.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/utils.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -96,7 +68,7 @@
     "Shell Script.Test Asm.executor": "Run",
     "git-widget-placeholder": "master",
     "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "/home/robertlucas/RustroverProjects/whython-8/src/root/builtin/types/int",
+    "last_opened_file_path": "/home/robertlucas/RustroverProjects/whython-8/src/root/builtin/types/bool",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -111,6 +83,7 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/root/builtin/types/bool" />
       <recent name="$PROJECT_DIR$/src/root/builtin/types/int" />
       <recent name="$PROJECT_DIR$/src/root/builtin/types" />
       <recent name="$PROJECT_DIR$/src/root/builtin/int" />
@@ -229,7 +202,8 @@
       <workItem from="1718712543316" duration="2954000" />
       <workItem from="1718795303825" duration="753000" />
       <workItem from="1718796063772" duration="209000" />
-      <workItem from="1718796277728" duration="2810000" />
+      <workItem from="1718796277728" duration="3728000" />
+      <workItem from="1718803029458" duration="420000" />
     </task>
     <task id="LOCAL-00001" summary="Changes">
       <option name="closed" value="true" />
@@ -479,7 +453,15 @@
       <option name="project" value="LOCAL" />
       <updated>1718798188305</updated>
     </task>
-    <option name="localTasksCounter" value="32" />
+    <task id="LOCAL-00032" summary="Cargo clippy">
+      <option name="closed" value="true" />
+      <created>1718799244388</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1718799244388</updated>
+    </task>
+    <option name="localTasksCounter" value="33" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -518,7 +500,8 @@
     <MESSAGE value="Added exit functions" />
     <MESSAGE value="More operators" />
     <MESSAGE value="Cargo fix" />
-    <option name="LAST_COMMIT_MESSAGE" value="Cargo fix" />
+    <MESSAGE value="Cargo clippy" />
+    <option name="LAST_COMMIT_MESSAGE" value="Cargo clippy" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

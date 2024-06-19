@@ -1,9 +1,5 @@
 fn main() -> int {
-    let a: int = 30;
-
-    &a %= 7;
-
-    printi(a);
+    printb(true);
 
     return 2;
 }

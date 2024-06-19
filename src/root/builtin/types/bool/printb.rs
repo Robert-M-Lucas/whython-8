@@ -34,17 +34,30 @@ impl BuiltinInlineFunction for PrintB {
 
     fn inline(&self) -> InlineFunctionGenerator {
         |args: &[LocalAddress], _, gt, sz| -> String {
-            let id = format!("{}_fstr", Self::id().string_id());
+            let id_false = format!("{}_f_fstr", Self::id().string_id());
+            let id_true = format!("{}_t_fstr", Self::id().string_id());
 
-            let data = format!("{id} db `Boolean: %ld\\n`,0");
+            let data_false = format!("{id_false} db `Boolean: False`,0");
+            let data_true = format!("{id_true} db `Boolean: True`,0");
 
-            gt.add_readonly_data(&id, &data);
+            gt.add_readonly_data(&id_false, &data_false);
+            gt.add_readonly_data(&id_true, &data_true);
+
+            let jmp_false = gt.get_unique_tag(PrintB::id());
+            let jmp_end = gt.get_unique_tag(PrintB::id());
 
             let lhs = args[0];
             format!(
-"    mov rdi, {id}
+"
+    mov al, byte {lhs}
+    cmp al, 0
+    jz {jmp_false}
+    mov rdi, {id_true}
+    jmp {jmp_end}
+    {jmp_false}:
+    mov rdi, {id_false}
+    {jmp_end}:
     mov rsi, 0
-    mov sil, {lhs}
     mov al, 0
     sub rsp, {sz}
     extern printf

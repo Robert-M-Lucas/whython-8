@@ -5,31 +5,28 @@ section .text
 main:
     push rbp
     mov rbp, rsp
-    mov qword [rbp-8], 30
-    mov rax, rbp
-    add rax, -8
-    mov qword [rbp-16], rax
-    mov qword [rbp-24], 7
-    mov rcx, qword [rbp-16]
-    mov rax, qword [rcx]
-    mov rdx, 0
-    mov rbx, qword [rbp-24]
-    idiv rbx
-    mov qword [rcx], rdx
-    mov rax, qword [rbp-8]
-    mov qword [rbp-32], rax
-    mov rdi, __4_fstr
-    mov rsi, [rbp-32]
+    mov byte [rbp-1], 1
+
+    mov al, byte [rbp-1]
+    cmp al, 0
+    jz __7_0
+    mov rdi, __7_t_fstr
+    jmp __7_1
+    __7_0:
+    mov rdi, __7_f_fstr
+    __7_1:
+    mov rsi, 0
     mov al, 0
-    sub rsp, 32
+    sub rsp, 1
     extern printf
     call printf
-    add rsp, 32
-    mov qword [rbp-40], 2
-    mov rax, qword [rbp-40]
+    add rsp, 1
+    mov qword [rbp-9], 2
+    mov rax, qword [rbp-9]
     leave
     ret
 
 
 section .data_readonly
-    __4_fstr db `Integer: %ld\n`,0
+    __7_f_fstr db `Boolean: False`,0
+    __7_t_fstr db `Boolean: True`,0

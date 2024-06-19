@@ -19,19 +19,17 @@ pub enum PrefixOrInfixEx {
     Infix
 }
 
-#[derive(Debug, Clone, Getters)]
-pub struct OperatorToken {
-    location: Location,
-    operator: OperatorTokens,
-}
-
-const OPERATOR_MAPS: [(&str, OperatorTokens, PrefixOrInfix, &str); 14] = [
+const OPERATOR_MAPS: [(&str, OperatorTokens, PrefixOrInfix, &str); 18] = [
     ("+=", OperatorTokens::AsAdd, PrefixOrInfix::Infix, "as_add"),
     ("-=", OperatorTokens::AsSub, PrefixOrInfix::Infix, "as_sub"),
     ("*=", OperatorTokens::AsMul, PrefixOrInfix::Infix, "as_mul"),
     ("/=", OperatorTokens::AsDiv, PrefixOrInfix::Infix, "as_div"),
     ("%=", OperatorTokens::AsMod, PrefixOrInfix::Infix, "as_mod"),
     ("&", OperatorTokens::Reference, PrefixOrInfix::Prefix, "ref"),
+    ("&&", OperatorTokens::And, PrefixOrInfix::Prefix, "and"),
+    ("&=", OperatorTokens::AsAnd, PrefixOrInfix::Prefix, "as_and"),
+    ("||", OperatorTokens::Or, PrefixOrInfix::Prefix, "or"),
+    ("|=", OperatorTokens::AsOr, PrefixOrInfix::Prefix, "as_or"),
     ("+", OperatorTokens::Add, PrefixOrInfix::Both, "add"),
     ("-", OperatorTokens::Subtract, PrefixOrInfix::Both, "sub"),
     ("*", OperatorTokens::Multiply, PrefixOrInfix::Both, "mul"),
@@ -41,6 +39,12 @@ const OPERATOR_MAPS: [(&str, OperatorTokens, PrefixOrInfix, &str); 14] = [
     ("=", OperatorTokens::Assign, PrefixOrInfix::Infix, "assign"),
     ("!", OperatorTokens::Not, PrefixOrInfix::Prefix, "not"),
 ];
+
+#[derive(Debug, Clone, Getters)]
+pub struct OperatorToken {
+    location: Location,
+    operator: OperatorTokens,
+}
 
 impl OperatorToken {
     pub fn is_prefix_opt_t(&self) -> bool {
@@ -61,11 +65,15 @@ pub enum OperatorTokens {
     Modulo,
     Not,
     Equals,
+    And,
+    Or,
     AsAdd,
     AsSub,
     AsMul,
     AsDiv,
     AsMod,
+    AsAnd,
+    AsOr,
     Reference,
     Assign
 }
