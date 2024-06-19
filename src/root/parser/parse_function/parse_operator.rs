@@ -26,12 +26,20 @@ pub struct OperatorToken {
     operator: OperatorTokens,
 }
 
-const OPERATOR_MAPS: [(&str, OperatorTokens, PrefixOrInfix, &'static str); 6] = [
-    ("+=", OperatorTokens::Not, PrefixOrInfix::Infix, "as_add"),
+const OPERATOR_MAPS: [(&str, OperatorTokens, PrefixOrInfix, &'static str); 14] = [
+    ("+=", OperatorTokens::AsAdd, PrefixOrInfix::Infix, "as_add"),
+    ("-=", OperatorTokens::AsSub, PrefixOrInfix::Infix, "as_sub"),
+    ("*=", OperatorTokens::AsMul, PrefixOrInfix::Infix, "as_mul"),
+    ("/=", OperatorTokens::AsDiv, PrefixOrInfix::Infix, "as_div"),
+    ("%=", OperatorTokens::AsMod, PrefixOrInfix::Infix, "as_mod"),
     ("&", OperatorTokens::Reference, PrefixOrInfix::Prefix, "ref"),
     ("+", OperatorTokens::Add, PrefixOrInfix::Both, "add"),
     ("-", OperatorTokens::Subtract, PrefixOrInfix::Both, "sub"),
+    ("*", OperatorTokens::Multiply, PrefixOrInfix::Both, "mul"),
+    ("/", OperatorTokens::Divide, PrefixOrInfix::Both, "div"),
+    ("%", OperatorTokens::Modulo, PrefixOrInfix::Both, "mod"),
     ("==", OperatorTokens::Equals, PrefixOrInfix::Infix, "eq"),
+    ("=", OperatorTokens::Assign, PrefixOrInfix::Infix, "assign"),
     ("!", OperatorTokens::Not, PrefixOrInfix::Prefix, "not"),
 ];
 
@@ -49,10 +57,18 @@ impl OperatorToken {
 pub enum OperatorTokens {
     Add,
     Subtract,
+    Multiply,
+    Divide,
+    Modulo,
     Not,
     Equals,
     AsAdd,
-    Reference
+    AsSub,
+    AsMul,
+    AsDiv,
+    AsMod,
+    Reference,
+    Assign
 }
 
 impl OperatorTokens {

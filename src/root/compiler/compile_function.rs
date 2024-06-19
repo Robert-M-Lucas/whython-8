@@ -80,9 +80,6 @@ fn recursively_compile_lines(fid: FunctionID, lines: &[LineTokens], return_varia
                 let address = global_table.add_local_variable_named(name.name().clone(), type_name, local_variables)?;
                 contents.other(&compile_evaluable_into(fid, value, address, local_variables, global_table, global_tracker)?);
             },
-            LineTokens::Assignment(at) => {
-
-            },
             LineTokens::If(if_token) => {
                 let condition_addr = global_table.add_local_variable_unnamed_base(BoolType::id().immediate(), local_variables);
                 contents.other(&compile_evaluable_into(fid, if_token.if_condition(), condition_addr.clone(), local_variables, global_table, global_tracker)?);

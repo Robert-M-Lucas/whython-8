@@ -1,6 +1,6 @@
 use itertools::Itertools;
 use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
-use crate::root::parser::parse_function::parse_assignment::{AssignmentToken, test_parse_assignment};
+use crate::root::parser::parse_function::parse_assignment::{AssignmentToken};
 use crate::root::parser::parse_function::parse_break::{test_parse_break, BreakToken};
 use crate::root::parser::parse_function::parse_evaluable::{parse_evaluable, EvaluableToken};
 use crate::root::parser::parse_function::parse_if::{test_parse_if, IfToken};
@@ -17,7 +17,6 @@ use crate::root::parser::parse_util::discard_ignored;
 #[derive(Debug)]
 pub enum LineTokens {
     Initialisation(InitialisationToken),
-    Assignment(AssignmentToken),
     If(IfToken),
     While(WhileToken),
     Return(ReturnToken),

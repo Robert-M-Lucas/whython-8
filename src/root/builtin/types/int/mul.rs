@@ -1,5 +1,5 @@
 use unique_type_id::UniqueTypeId;
-use crate::root::builtin::{BuiltinInlineFunction, f_id, InlineFunctionGenerator};
+use crate::root::builtin::{BuiltinInlineFunction, InlineFunctionGenerator, f_id};
 use crate::root::builtin::types::int::IntType;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::NameResult::Function;
@@ -9,21 +9,21 @@ use crate::root::shared::common::{FunctionID, Indirection, LocalAddress, TypeID,
 
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
-pub struct IntPSub;
+pub struct IntMul;
 
-impl BuiltinInlineFunction for IntPSub {
+impl BuiltinInlineFunction for IntMul {
     fn id(&self) -> FunctionID {
-        f_id(IntPSub::unique_type_id().0)
+        f_id(IntMul::unique_type_id().0)
     }
 
     fn name(&self) -> &'static str {
-        "p_sub"
+        "mul"
     }
 
     fn signature(&self) -> FunctionSignature {
         FunctionSignature::new_inline_builtin(
             true,
-            &[("lhs", IntType::id().immediate())],
+            &[("lhs", IntType::id().immediate()), ("rhs", IntType::id().immediate())],
             Some(IntType::id().immediate())
         )
     }
@@ -31,10 +31,12 @@ impl BuiltinInlineFunction for IntPSub {
     fn inline(&self) -> InlineFunctionGenerator {
         |args: &[LocalAddress], return_into: Option<LocalAddress>, _, _| -> String {
             let lhs = args[0];
+            let rhs = args[1];
             let return_into = return_into.unwrap();
             format!(
 "    mov rax, qword {lhs}
-    neg rax
+    mov rdx, qword {rhs}
+    imul rdx
     mov qword {return_into}, rax\n")
         }
     }
@@ -46,15 +48,15 @@ impl BuiltinInlineFunction for IntPSub {
 
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
-pub struct IntAsSub;
+pub struct IntAsMul;
 
-impl BuiltinInlineFunction for IntAsSub {
+impl BuiltinInlineFunction for IntAsMul {
     fn id(&self) -> FunctionID {
-        f_id(IntAsSub::unique_type_id().0)
+        f_id(IntAsMul::unique_type_id().0)
     }
 
     fn name(&self) -> &'static str {
-        "as_sub"
+        "as_mul"
     }
 
     fn signature(&self) -> FunctionSignature {
@@ -70,9 +72,11 @@ impl BuiltinInlineFunction for IntAsSub {
             let lhs = args[0];
             let rhs = args[1];
             format!(
-                "    mov rax, qword {lhs}
+"    mov rcx, qword {lhs}
+    mov rax, qword [rcx]
     mov rdx, qword {rhs}
-    sub qword [rax], rdx\n")
+    imul rdx
+    mov qword [rcx], rax\n")
         }
     }
 
