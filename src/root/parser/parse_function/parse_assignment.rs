@@ -1,15 +1,11 @@
-use derive_getters::Getters;
-use crate::root::parser::parse::Location;
-use crate::root::parser::parse_function::parse_assigner::AssignmentOperatorToken;
-use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, FullNameWithIndirectionToken};
 
-#[derive(Debug, Getters)]
-pub struct AssignmentToken {
-    location: Location,
-    name: FullNameWithIndirectionToken,
-    assignment_operator: AssignmentOperatorToken,
-    value: EvaluableToken,
-}
+// #[derive(Debug, Getters)]
+// pub struct AssignmentToken {
+//     location: Location,
+//     name: FullNameWithIndirectionToken,
+//     assignment_operator: AssignmentOperatorToken,
+//     value: EvaluableToken,
+// }
 
 // TODO: Find good way to implement?
 // pub fn test_parse_assignment<'a, 'b>(s: Span<'a>) -> ParseResult<'a, Span<'a>, LineTestFn<'a, 'b>> {

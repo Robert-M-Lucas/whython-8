@@ -1,10 +1,9 @@
-use std::{fs, thread};
+use std::fs;
 use std::process::Command;
-use std::time::Duration;
 
 use color_print::cprintln;
-
 use crate::ret_time;
+
 use crate::root::utils::try_run_program;
 
 #[cfg(target_os = "linux")]
@@ -31,7 +30,6 @@ pub fn run(output: &str) {
     );
 
     // ? Here to circumvent some timing issues
-    thread::sleep(Duration::from_millis(100));
     println!("\nExited with return code {}", code);
     cprintln!("<g,bold>Completed [{:?}]</>", time);
 }

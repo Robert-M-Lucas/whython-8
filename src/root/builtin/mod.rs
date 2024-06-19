@@ -30,8 +30,5 @@ pub trait BuiltinInlineFunction {
     fn name(&self) -> &'static str;
     fn signature(&self) -> FunctionSignature;
     fn inline(&self) -> InlineFunctionGenerator;
-    fn requirements(&self) -> Option<Vec<String>> {
-        None
-    }
     fn parent_type(&self) -> Option<TypeID>;
 }

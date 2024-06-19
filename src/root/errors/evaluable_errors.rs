@@ -1,5 +1,6 @@
 use thiserror::Error;
 
+#[allow(dead_code)]
 #[derive(Error, Debug)]
 pub enum EvalErrs {
     #[error("Expected an indirection of {0} but found {1}")]

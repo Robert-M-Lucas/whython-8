@@ -20,6 +20,7 @@ pub struct EvaluableToken {
     token: EvaluableTokens,
 }
 
+#[allow(private_interfaces)]
 pub fn temp_from_token(s: Span, token: EvaluableTokens) -> TempEvaluableTokensOne {
     TempEvaluableTokensOne::EvaluableToken(EvaluableToken {
         location: Location::from_span(&s),
@@ -77,9 +78,9 @@ impl FullNameToken {
         }
     }
 
-    pub fn to_evaluable(self) -> EvaluableToken {
+    pub fn into_evaluable(self) -> EvaluableToken {
         let (location, token) = (self.location, self.token);
-        let token = token.to_evaluable_token();
+        let token = token.into_evaluable_token();
         EvaluableToken {
             location,
             token,
@@ -95,15 +96,16 @@ pub enum FullNameTokens {
 }
 
 impl FullNameTokens {
-    pub fn to_evaluable_token(self) -> EvaluableTokens {
+    pub fn into_evaluable_token(self) -> EvaluableTokens {
         match self {
             FullNameTokens::Name(n, c) => EvaluableTokens::Name(n, c),
-            FullNameTokens::StaticAccess(e, n) => EvaluableTokens::StaticAccess(b!(e.to_evaluable()), n),
-            FullNameTokens::DynamicAccess(e, n) => EvaluableTokens::DynamicAccess(b!(e.to_evaluable()), n),
+            FullNameTokens::StaticAccess(e, n) => EvaluableTokens::StaticAccess(b!(e.into_evaluable()), n),
+            FullNameTokens::DynamicAccess(e, n) => EvaluableTokens::DynamicAccess(b!(e.into_evaluable()), n),
         }
     }
 }
 
+#[allow(private_interfaces)]
 #[derive(Debug)]
 enum TempEvaluableTokensOne {
     EvaluableToken(EvaluableToken),
@@ -121,7 +123,7 @@ enum TempEvaluableTokensTwo {
     Operator(OperatorToken),
 }
 
-pub fn parse_full_name<'a, 'b>(s: Span<'a>, containing_class: Option<&SimpleNameToken>) -> ParseResult<'a, Span<'a>, FullNameWithIndirectionToken> {
+pub fn parse_full_name<'a>(s: Span<'a>, containing_class: Option<&SimpleNameToken>) -> ParseResult<'a, Span<'a>, FullNameWithIndirectionToken> {
     let mut indirection: usize = 0;
     let mut s = s;
     loop {
@@ -142,32 +144,31 @@ pub fn parse_full_name<'a, 'b>(s: Span<'a>, containing_class: Option<&SimpleName
 
     let mut current = FullNameToken {
         location: section.location().clone(),
-        token: FullNameTokens::Name(section, containing_class.and_then(|x| Some(x.clone())))
+        token: FullNameTokens::Name(section, containing_class.cloned())
     };
 
     let mut s = s;
 
-    loop {
-        let (ns, _) = discard_ignored(s)?;
+    let (ns, _) = discard_ignored(s)?;
 
-        if let Ok((ns, _)) = tag::<&str, Span, ErrorTree>("::")(ns) {
-            let (ns, section) = parse_simple_name(ns)?;
-            current = FullNameToken {
-                location: section.location().clone(),
-                token: FullNameTokens::StaticAccess(b!(current), section),
-            };
-            s = ns;
-        }
-        if let Ok((ns, _)) = char::<Span, ErrorTree>('.')(ns) {
-            let (ns, section) = parse_simple_name(ns)?;
-            current = FullNameToken {
-                location: section.location().clone(),
-                token: FullNameTokens::DynamicAccess(b!(current), section),
-            };
-            s = ns;
-        }
-        return Ok((s, FullNameWithIndirectionToken { indirection: Indirection(indirection), inner: current }))
+    if let Ok((ns, _)) = tag::<&str, Span, ErrorTree>("::")(ns) {
+        let (ns, section) = parse_simple_name(ns)?;
+        current = FullNameToken {
+            location: section.location().clone(),
+            token: FullNameTokens::StaticAccess(b!(current), section),
+        };
+        s = ns;
     }
+    if let Ok((ns, _)) = char::<Span, ErrorTree>('.')(ns) {
+        let (ns, section) = parse_simple_name(ns)?;
+        current = FullNameToken {
+            location: section.location().clone(),
+            token: FullNameTokens::DynamicAccess(b!(current), section),
+        };
+        s = ns;
+    }
+
+    Ok((s, FullNameWithIndirectionToken { indirection: Indirection(indirection), inner: current }))
 }
 
 // pub fn error_on_assignment(either: Either<EvaluableToken, AssignmentToken>) -> Result<EvaluableToken, ErrorTree<'static>> {
@@ -179,7 +180,7 @@ pub fn parse_full_name<'a, 'b>(s: Span<'a>, containing_class: Option<&SimpleName
 //     }
 // }
 
-pub fn parse_evaluable<'a, 'b>(s: Span<'a>, containing_class: Option<&SimpleNameToken>, semicolon_terminated: bool) -> ParseResult<'a, Span<'a>, EvaluableToken> {
+pub fn parse_evaluable<'a>(s: Span<'a>, containing_class: Option<&SimpleNameToken>, semicolon_terminated: bool) -> ParseResult<'a, Span<'a>, EvaluableToken> {
     assert!(!s.is_empty());
     let mut s = s;
 
@@ -211,7 +212,7 @@ pub fn parse_evaluable<'a, 'b>(s: Span<'a>, containing_class: Option<&SimpleName
 
         // Recursively parse bracketed sections
         let ns = if let Ok((ns, inner)) = default_section(s, '(') {
-            let (_, evaluable) = parse_evaluable(inner, containing_class.clone(), false)?;
+            let (_, evaluable) = parse_evaluable(inner, containing_class, false)?;
             evaluables.push(TempEvaluableTokensOne::EvaluableToken(evaluable));
             ns
         }
@@ -243,7 +244,7 @@ pub fn parse_evaluable<'a, 'b>(s: Span<'a>, containing_class: Option<&SimpleName
                         (x, match kind {
                             Kind::Static => TempEvaluableTokensOne::StaticFunctionCall(section, arguments),
                             Kind::Dynamic => TempEvaluableTokensOne::DynamicFunctionCall(section, arguments),
-                            Kind::None => TempEvaluableTokensOne::FunctionCall(section, containing_class.and_then(|x| Some(x.clone())), arguments)
+                            Kind::None => TempEvaluableTokensOne::FunctionCall(section, containing_class.cloned(), arguments)
                         })
                     }
                     else {
@@ -252,7 +253,7 @@ pub fn parse_evaluable<'a, 'b>(s: Span<'a>, containing_class: Option<&SimpleName
                             Kind::Dynamic => (x, TempEvaluableTokensOne::DynamicAccess(section)),
                             Kind::None => (x, TempEvaluableTokensOne::EvaluableToken(EvaluableToken {
                                 location: section.location().clone(),
-                                token: EvaluableTokens::Name(section, containing_class.and_then(|x| Some(x.clone()))),
+                                token: EvaluableTokens::Name(section, containing_class.cloned()),
                             })),
                         }
                     })
@@ -371,7 +372,7 @@ pub fn parse_evaluable<'a, 'b>(s: Span<'a>, containing_class: Option<&SimpleName
 
     let mut operator_priority = Vec::new();
 
-    while enumerated_slice.len() > 0 {
+    while !enumerated_slice.is_empty() {
         let operator = if base.is_some() {
             match &enumerated_slice[0] {
                 (_, TempEvaluableTokensTwo::Operator(op)) => {

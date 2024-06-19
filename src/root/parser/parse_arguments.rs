@@ -4,7 +4,7 @@ use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
 use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, parse_evaluable};
 use crate::root::parser::parse_name::SimpleNameToken;
 
-pub fn parse_arguments<'a, 'b>(s: Span<'a>, containing_class: Option<&SimpleNameToken>) -> ParseResult<'a, (), Vec<EvaluableToken>> {
+pub fn parse_arguments<'a>(s: Span<'a>, containing_class: Option<&SimpleNameToken>) -> ParseResult<'a, (), Vec<EvaluableToken>> {
     let mut s = s;
     let mut args = Vec::new();
     let mut last = false;

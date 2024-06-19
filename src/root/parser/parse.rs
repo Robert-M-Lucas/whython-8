@@ -57,7 +57,7 @@ impl Location {
     }
 
     pub fn path(&self) -> Option<&Rc<PathBuf>> {
-        self.inner_location.as_ref().and_then(|l| Some(&l.path))
+        self.inner_location.as_ref().map(|l| &l.path)
     }
 
     pub fn builtin() -> Location {

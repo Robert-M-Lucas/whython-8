@@ -3,6 +3,12 @@ pub struct AssemblyBuilder {
     inner: String
 }
 
+impl Default for AssemblyBuilder {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl AssemblyBuilder {
     pub fn new() -> AssemblyBuilder {
         AssemblyBuilder { inner: String::new() }

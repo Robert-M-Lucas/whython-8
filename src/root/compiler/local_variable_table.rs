@@ -7,6 +7,12 @@ pub struct LocalVariableTable {
     stack_size: Vec<ByteSize>
 }
 
+impl Default for LocalVariableTable {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl LocalVariableTable {
     pub fn new() -> LocalVariableTable {
         LocalVariableTable {
@@ -39,12 +45,7 @@ impl LocalVariableTable {
     }
 
     pub fn get_ref(&self, name: &str) -> Option<AddressedTypeRef> {
-        if let Some(r) = self.table.last().unwrap().get(name) {
-            Some(r.clone())
-        }
-        else {
-            None
-        }
+        self.table.last().unwrap().get(name).cloned()
     }
 
     pub fn get_name(&self, name: &str) -> Option<AddressedTypeRef> {

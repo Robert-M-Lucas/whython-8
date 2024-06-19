@@ -50,6 +50,7 @@ macro_rules! ret_time {
     };
 }
 
+#[allow(dead_code)]
 pub fn align<T: Copy + Sub<Output = T> + Rem<Output = T> + Add<Output = T>>(
     num: T,
     alignment: T,

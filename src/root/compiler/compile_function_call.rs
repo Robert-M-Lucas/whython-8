@@ -26,7 +26,7 @@ pub fn call_function(
     warn("Unchecked Function Arguments");
 
     if let Some(inline) = global_table.get_function(fid).1 {
-        let inline_o = inline.clone();
+        let inline_o = *inline;
         let mut code = AssemblyBuilder::new();
 
         let return_into = if let Some(expected_return) = global_table.get_function(fid).0.get().return_type().clone() {

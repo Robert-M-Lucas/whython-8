@@ -1,21 +1,20 @@
 use crate::root::assembler::assembly_builder::AssemblyBuilder;
-use crate::root::shared::common::{ByteSize, FunctionID, LocalAddress};
+use crate::root::shared::common::{ByteSize, LocalAddress};
 
 
-
-pub fn get_jump_tag(id: FunctionID, jump_id: usize) -> String {
-    if id.is_main() {
-        return format!("main.{jump_id}");
-    }
-
-    let id = id.0;
-    if id > 0 {
-        format!(".{id}.{jump_id}")
-    }
-    else {
-        format!("._{}.{jump_id}", -id)
-    }
-}
+// pub fn get_jump_tag(id: FunctionID, jump_id: usize) -> String {
+//     if id.is_main() {
+//         return format!("main.{jump_id}");
+//     }
+//
+//     let id = id.0;
+//     if id > 0 {
+//         format!(".{id}.{jump_id}")
+//     }
+//     else {
+//         format!("._{}.{jump_id}", -id)
+//     }
+// }
 
 pub fn align_16_bytes(bytes: ByteSize) -> ByteSize {
     let bytes = bytes.0;

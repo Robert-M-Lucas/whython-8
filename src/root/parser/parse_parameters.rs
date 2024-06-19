@@ -6,7 +6,7 @@ use crate::root::parser::parse_util::discard_ignored;
 
 pub type Parameters = Vec<(SimpleNameToken, FullNameWithIndirectionToken)>;
 
-pub fn parse_parameters<'a, 'b>(s: Span<'a>, mut allow_self: Option<&'b SimpleNameToken>) -> ParseResult<'a, (), (Parameters, bool)> {
+pub fn parse_parameters<'a>(s: Span<'a>, mut allow_self: Option<&SimpleNameToken>) -> ParseResult<'a, (), (Parameters, bool)> {
     let (mut s, _) = discard_ignored(s)?;
 
     let mut parameters = Vec::new();

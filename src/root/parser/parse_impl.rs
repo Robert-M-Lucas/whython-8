@@ -18,7 +18,7 @@ pub struct ImplToken {
 }
 
 
-pub fn test_parse_impl<'a>(s: Span<'a>) -> ParseResult<Span, ToplevelTestFn<'a>> {
+pub fn test_parse_impl(s: Span<'_>) -> ParseResult<Span, ToplevelTestFn<'_>> {
     match (tag("impl"), require_ignored).parse(s) {
         Ok(_) => Ok((s, |x| {
             parse_impl(x).map(|(s, x)| (s, TopLevelTokens::Impl(x)))

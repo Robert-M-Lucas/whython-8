@@ -24,7 +24,7 @@ impl StructToken {
     }
 }
 
-pub fn test_parse_struct<'a>(s: Span<'a>) -> ParseResult<Span, ToplevelTestFn<'a>> {
+pub fn test_parse_struct(s: Span<'_>) -> ParseResult<Span, ToplevelTestFn<'_>> {
     match (tag("struct"), require_ignored).parse(s) {
         Ok(_) => Ok((s, |x| {
             parse_struct(x).map(|(s, x)| (s, TopLevelTokens::Struct(x)))

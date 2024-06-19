@@ -73,7 +73,11 @@ pub enum NameResult {
     Variable(AddressedTypeRef)
 }
 
-const REFERENCE_FUNCTION: FunctionID = FunctionID(1);
+impl Default for GlobalDefinitionTable {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 
 impl GlobalDefinitionTable {
     pub fn new() -> GlobalDefinitionTable {
@@ -101,9 +105,7 @@ impl GlobalDefinitionTable {
     // }
 
     fn get_impl_mut(&mut self, t: TypeID) -> &mut HashMap<String, FunctionID> {
-        if !self.impl_definitions.contains_key(&t) {
-            self.impl_definitions.insert(t, Default::default());
-        }
+        self.impl_definitions.entry(t).or_default();
 
         self.impl_definitions.get_mut(&t).unwrap()
     }
@@ -122,7 +124,7 @@ impl GlobalDefinitionTable {
 
     pub fn add_from_struct_token(&mut self, st: &StructToken) -> TypeID {
         // TODO
-        let file_level_tree = self.name_table.get_tree_mut(st.location().path().clone().unwrap().clone());
+        let file_level_tree = self.name_table.get_tree_mut(st.location().path().unwrap().clone());
         self.id_counter += 1;
         let id = TypeID(self.id_counter - 1);
 
@@ -141,9 +143,7 @@ impl GlobalDefinitionTable {
 
 
         if let Some(containing_class) = containing_class {
-            if !self.impl_definitions.contains_key(&containing_class) {
-                self.impl_definitions.insert(containing_class, Default::default());
-            }
+            self.impl_definitions.entry(containing_class).or_default();
 
             self.impl_definitions.get_mut(&containing_class).unwrap().insert(ft.name().name().clone(), id);
         }
@@ -185,17 +185,12 @@ impl GlobalDefinitionTable {
         } else { name };
 
         let process_tree = |tree: &NameTree| -> Option<_> {
-            if let Some(val) = tree.get_entry(name.name()) {
-                Some(match val {
+            tree.get_entry(name.name()).map(|val| match val {
                     NameTreeEntry::Type(t) => Ok(TypeRef::new(*t, *indirection)),
                     NameTreeEntry::Function(_) => {
                         Err(WErr::n(NRErrors::FoundFunctionNotType(name.name().clone()), full_name.location().clone()))
                     }
                 })
-            }
-            else {
-                None
-            }
         };
 
         // TODO
@@ -257,12 +252,12 @@ impl GlobalDefinitionTable {
         self.function_signatures.contains_key(&FunctionID(0))
     }
 
-    pub fn get_type(&self, type_id: TypeID) -> &Box<dyn Type> {
-        self.type_definitions.get(&type_id).as_ref().unwrap()
+    pub fn get_type(&self, type_id: TypeID) -> &dyn Type {
+        (*self.type_definitions.get(&type_id).as_ref().unwrap()).as_ref()
     }
 
-    pub fn try_get_type(&self, type_id: TypeID) -> Option<&Box<dyn Type>> {
-        self.type_definitions.get(&type_id).as_ref().map(|x| *x)
+    pub fn try_get_type(&self, type_id: TypeID) -> Option<&dyn Type> {
+        self.type_definitions.get(&type_id).as_ref().map(|x| (*x).as_ref())
     }
 
     pub fn get_type_name(&self, type_ref: &TypeRef) -> String {
@@ -275,15 +270,10 @@ impl GlobalDefinitionTable {
         }
 
         let process_tree = |tree: &NameTree| -> Option<_> {
-            if let Some(val) = tree.get_entry(name.name()) {
-                Some(match val {
+            tree.get_entry(name.name()).map(|val| match val {
                     NameTreeEntry::Type(t) => Ok(NameResult::Type(*t)),
                     NameTreeEntry::Function(f) => Ok(NameResult::Function(*f)),
                 })
-            }
-            else {
-                None
-            }
         };
 
         // TODO

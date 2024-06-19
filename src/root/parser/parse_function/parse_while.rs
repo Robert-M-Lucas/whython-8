@@ -17,7 +17,7 @@ pub struct WhileToken {
     contents: Vec<LineTokens>,
 }
 
-pub fn test_parse_while<'a, 'b>(s: Span<'a>) -> ParseResult<Span, LineTestFn<'a, 'b>> {
+pub fn test_parse_while<'b>(s: Span<'_>) -> ParseResult<Span, LineTestFn<'_, 'b>> {
     match (tag("while"), require_ignored).parse(s) {
         Ok(_) => Ok((s, |x, c| {
             parse_while(x, c).map(|(s, x)| (s, LineTokens::While(x)))
@@ -26,7 +26,7 @@ pub fn test_parse_while<'a, 'b>(s: Span<'a>) -> ParseResult<Span, LineTestFn<'a,
     }
 }
 
-pub fn parse_while<'a, 'b>(s: Span<'a>, containing_class: Option<&'b SimpleNameToken>) -> ParseResult<'a, Span<'a>, WhileToken> {
+pub fn parse_while<'a>(s: Span<'a>, containing_class: Option<&SimpleNameToken>) -> ParseResult<'a, Span<'a>, WhileToken> {
     let (s, l) = tag("while")(s)?;
     let (s, _) = discard_ignored(s)?;
     let (s, content) = default_section(s, '(')?;

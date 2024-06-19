@@ -17,7 +17,7 @@ impl FunctionSignature {
     pub fn new_inline_builtin(dynamic: bool, args: &[(&str, TypeRef)], return_type: Option<TypeRef>) -> FunctionSignature {
         FunctionSignature {
             dynamic,
-            args: args.into_iter().map(|(name, t)| (SimpleNameToken::new_builtin(name.to_string()), t.clone())).collect_vec(),
+            args: args.iter().map(|(name, t)| (SimpleNameToken::new_builtin(name.to_string()), t.clone())).collect_vec(),
             return_type
         }
     }

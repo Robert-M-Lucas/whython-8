@@ -35,12 +35,10 @@ pub fn compile_function(fid: FunctionID, function: FunctionToken, global_table: 
         param_address += LocalAddress(global_table.get_size(&t).0 as isize);
     }
 
-    let return_variable = return_type.and_then(
-        |t| Some(AddressedTypeRef::new(
+    let return_variable = return_type.map(|t| AddressedTypeRef::new(
             param_address,//  - LocalAddress(global_table.type_definitions().get(t.type_id()).unwrap().size().0 as isize),
             t
-        ))
-    );
+        ));
 
     let full_contents = recursively_compile_lines(fid, &lines, &return_variable, &None, &mut local_variables, global_table, global_tracker)?;
 
@@ -143,19 +141,15 @@ fn recursively_compile_lines(fid: FunctionID, lines: &[LineTokens], return_varia
                     contents.other(&compile_evaluable_into(fid, rt.return_value().as_ref().unwrap(), address.clone(), local_variables, global_table, global_tracker)?);
                     contents.line(&format!("mov rax, qword {}", address.local_address()));
                 }
-                else {
-                    if let Some(return_value) = rt.return_value() {
-                        if return_variable.is_none() {
-                            todo!()
-                        }
+                else if let Some(return_value) = rt.return_value() {
+                    if return_variable.is_none() {
+                        todo!()
+                    }
 
-                        contents.other(&compile_evaluable_into(fid, return_value, return_variable.clone().unwrap(), local_variables, global_table, global_tracker)?);
-                    }
-                    else {
-                        if return_variable.is_some() {
-                            todo!()
-                        }
-                    }
+                    contents.other(&compile_evaluable_into(fid, return_value, return_variable.clone().unwrap(), local_variables, global_table, global_tracker)?);
+                }
+                else if return_variable.is_some() {
+                    todo!()
                 }
 
                 contents.line("leave");

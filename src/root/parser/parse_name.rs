@@ -30,7 +30,7 @@ impl SimpleNameToken {
     }
 }
 
-pub fn parse_simple_name<'a>(s: Span<'a>) -> ParseResult<'a, Span, SimpleNameToken> {
+pub fn parse_simple_name(s: Span<'_>) -> ParseResult<'_, Span, SimpleNameToken> {
     let (s, n) = take_till(|c: char| c.is_whitespace() || (!c.is_alphabetic() && c != '_'))(s)?;
 
     if let Some(first) = s.chars().next() {

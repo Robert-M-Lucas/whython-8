@@ -67,7 +67,7 @@ pub fn resolve_names(ast: Vec<TopLevelTokens>, global_table: &mut GlobalDefiniti
     for symbol in &mut ast {
         match symbol {
             TopLevelTokens::Struct(st) => {
-                let id = global_table.add_from_struct_token(&st);
+                let id = global_table.add_from_struct_token(st);
                 st.set_id(id);
             },
             TopLevelTokens::Impl(_) => {},

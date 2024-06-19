@@ -43,22 +43,18 @@ pub fn resolve_type_sizes(
         if attribute_type.indirection().has_indirection() {
             size += POINTER_SIZE;
         }
-        else if let Some(sized_type) = final_types.get(&attribute_type.type_id()) {
+        else if let Some(sized_type) = final_types.get(attribute_type.type_id()) {
             size += *sized_type.size();
         }
+        else if let Some(sized_type) = global_table.try_get_type(*attribute_type.type_id()) {
+            size += sized_type.size();
+        }
+        else if let Some(unsized_type) = unsized_types.remove(attribute_type.type_id()) {
+            size += resolve_type_sizes(unsized_type, final_types, unsized_types, global_table)?;
+        }
         else {
-            if let Some(sized_type) = global_table.try_get_type(*attribute_type.type_id()) {
-                size += sized_type.size();
-            }
-            else {
-                if let Some(unsized_type) = unsized_types.remove(&attribute_type.type_id()) {
-                    size += resolve_type_sizes(unsized_type, final_types, unsized_types, global_table)?;
-                }
-                else {
-                    // Type not in unsized_types or type table due to circular definition
-                    return Err(WErr::n(NRErrors::CircularType(name), attribute_name.location().clone()));
-                }
-            }
+            // Type not in unsized_types or type table due to circular definition
+            return Err(WErr::n(NRErrors::CircularType(name), attribute_name.location().clone()));
         }
 
         processed_attributes.push((offset.0, attribute_name, attribute_type));

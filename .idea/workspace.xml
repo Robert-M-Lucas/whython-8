@@ -7,25 +7,40 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="More operators">
-      <change afterPath="$PROJECT_DIR$/src/root/builtin/types/int/div.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/root/builtin/types/int/modulo.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/root/builtin/types/int/mul.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/root/builtin/types/int/p_add.rs" afterDir="false" />
+    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Cargo fix">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/out.asm" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.asm" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/out.o" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/out.out" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.out" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.why" beforeDir="false" afterPath="$PROJECT_DIR$/main.why" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/int/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/int/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/int/p_sub.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/int/p_sub.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/assembler/assembly_builder.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/assembler/assembly_builder.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/builtin/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/assembly/utils.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/assembly/utils.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/compile_evaluable.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile_evaluable.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/root/compiler/compile_function.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile_function.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/compile_function_call.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile_function_call.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/local_variable_table.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/local_variable_table.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/errors/evaluable_errors.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/errors/evaluable_errors.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/errors/name_resolver_errors.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/errors/name_resolver_errors.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/resolve_function_signatures.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/resolve_function_signatures.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/resolve_names.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/resolve_names.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/resolve_type_sizes.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/resolve_type_sizes.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/ob.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/ob.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_assigner.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_assigner.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_assignment.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_assignment.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_break.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_break.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_evaluable.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_evaluable.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_if.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_if.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_initialisation.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_initialisation.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_line.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_line.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_operator.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_operator.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/todo.txt" beforeDir="false" afterPath="$PROJECT_DIR$/todo.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/types.toml" beforeDir="false" afterPath="$PROJECT_DIR$/types.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_return.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_return.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_while.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_while.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_impl.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_impl.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_name.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_name.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_parameters.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_parameters.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_struct.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_struct.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/runner.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/runner.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/utils.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/utils.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -214,7 +229,7 @@
       <workItem from="1718712543316" duration="2954000" />
       <workItem from="1718795303825" duration="753000" />
       <workItem from="1718796063772" duration="209000" />
-      <workItem from="1718796277728" duration="1729000" />
+      <workItem from="1718796277728" duration="2810000" />
     </task>
     <task id="LOCAL-00001" summary="Changes">
       <option name="closed" value="true" />
@@ -456,7 +471,15 @@
       <option name="project" value="LOCAL" />
       <updated>1718798005819</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="Cargo fix">
+      <option name="closed" value="true" />
+      <created>1718798188305</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1718798188305</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -494,7 +517,8 @@
     <MESSAGE value="Testing" />
     <MESSAGE value="Added exit functions" />
     <MESSAGE value="More operators" />
-    <option name="LAST_COMMIT_MESSAGE" value="More operators" />
+    <MESSAGE value="Cargo fix" />
+    <option name="LAST_COMMIT_MESSAGE" value="Cargo fix" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

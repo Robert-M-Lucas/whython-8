@@ -25,7 +25,7 @@ pub struct OperatorToken {
     operator: OperatorTokens,
 }
 
-const OPERATOR_MAPS: [(&str, OperatorTokens, PrefixOrInfix, &'static str); 14] = [
+const OPERATOR_MAPS: [(&str, OperatorTokens, PrefixOrInfix, &str); 14] = [
     ("+=", OperatorTokens::AsAdd, PrefixOrInfix::Infix, "as_add"),
     ("-=", OperatorTokens::AsSub, PrefixOrInfix::Infix, "as_sub"),
     ("*=", OperatorTokens::AsMul, PrefixOrInfix::Infix, "as_mul"),
@@ -138,7 +138,7 @@ impl OperatorTokens {
     pub fn to_str(&self) -> &'static str {
         for (s, op, _, _) in &OPERATOR_MAPS {
             if self == op {
-                return *s;
+                return s;
             }
         }
         panic!()

@@ -53,7 +53,7 @@ pub fn compile_evaluable(
         },
         EvaluableTokens::Literal(literal) => {
             let tid = literal.literal().default_type();
-            let address = global_table.add_local_variable_unnamed_base(TypeRef::new(tid.clone(), Indirection(0)), local_variables);
+            let address = global_table.add_local_variable_unnamed_base(TypeRef::new(tid, Indirection(0)), local_variables);
             let t = global_table.get_type(tid);
 
             (t.instantiate_from_literal(address.local_address(), literal)?, Some(address))
@@ -77,14 +77,8 @@ pub fn compile_evaluable(
                 );
             }
 
-            let return_into = match signature.get().return_type() {
-                None => {
-                    None
-                }
-                Some(rt) => {
-                    Some(global_table.add_local_variable_unnamed_base(rt.clone(), local_variables))
-                }
-            };
+            let return_type = signature.get().return_type().clone();
+            let return_into = return_type.map(|rt| global_table.add_local_variable_unnamed_base(rt.clone(), local_variables));
 
             let (c, _) = call_function(fid, op_fn, &[Left(lhs), Left(rhs)], return_into.clone(), global_table, local_variables, global_tracker)?;
 
@@ -97,7 +91,7 @@ pub fn compile_evaluable(
             let (slf, ifid) = compile_evaluable_function_only(fid, inner, local_variables, global_table, global_tracker)?;
 
             let signature = global_table.get_function_signature(ifid);
-            let return_into = signature.get().return_type().clone().and_then(|r| Some(global_table.add_local_variable_unnamed_base(r, local_variables)));
+            let return_into = signature.get().return_type().clone().map(|r| global_table.add_local_variable_unnamed_base(r, local_variables));
 
             let mut n_args = if let Some(slf) = slf.as_ref() {
                 let mut v = Vec::with_capacity(args.len() + 1);
@@ -187,19 +181,16 @@ pub fn compile_evaluable_into(
         EvaluableTokens::PrefixOperator(op, lhs) => {
             let lhs_type = compile_evaluable_type_only(fid, lhs, local_variables, global_table, global_tracker)?;
 
-            match op.operator() {
-                OperatorTokens::Reference => {
-                    let (mut c, val) = compile_evaluable_reference(fid, lhs, local_variables, global_table, global_tracker)?;
-                    let Some(val) = val else { todo!() };
-                    if *val.type_ref() != lhs_type {
-                        todo!()
-                    }
-
-                    c += &set_reference(val, target)?;
-
-                    return Ok(c);
+            if op.operator() == &OperatorTokens::Reference {
+                let (mut c, val) = compile_evaluable_reference(fid, lhs, local_variables, global_table, global_tracker)?;
+                let Some(val) = val else { todo!() };
+                if *val.type_ref() != lhs_type {
+                    todo!()
                 }
-                _ => {}
+
+                c += &set_reference(val, target)?;
+
+                return Ok(c);
             }
 
             let op_fn = global_table.get_operator_function(*lhs_type.type_id(), op, PrefixOrInfixEx::Prefix)?;
@@ -329,7 +320,7 @@ pub fn compile_evaluable_type_only(
         },
         EvaluableTokens::Literal(literal) => {
             let tid = literal.literal().default_type();
-            TypeRef::new(tid.clone(), Indirection(0))
+            TypeRef::new(tid, Indirection(0))
         }
         EvaluableTokens::InfixOperator(lhs, op, _) => {
             // if op.is_prefix_opt_t() {
@@ -347,10 +338,7 @@ pub fn compile_evaluable_type_only(
         EvaluableTokens::PrefixOperator(op, lhs) => {
             let lhs_type = compile_evaluable_type_only(fid, lhs, local_variables, global_table, global_tracker)?;
 
-            match op.operator() {
-                OperatorTokens::Reference => return Ok(lhs_type.plus_one_indirect()),
-                _ => {}
-            }
+            if op.operator() == &OperatorTokens::Reference { return Ok(lhs_type.plus_one_indirect()) }
 
             // code += "\n";
             let op_fn = global_table.get_operator_function(*lhs_type.type_id(), op, PrefixOrInfixEx::Prefix)?;

@@ -33,7 +33,7 @@ pub struct FunctionToken {
     lines: Vec<LineTokens>,
 }
 
-pub fn test_parse_function<'a>(s: Span<'a>) -> ParseResult<Span, ToplevelTestFn<'a>> {
+pub fn test_parse_function(s: Span<'_>) -> ParseResult<Span, ToplevelTestFn<'_>> {
     match (tag("fn"), require_ignored).parse(s) {
         Ok(_) => Ok((s, |x| {
             parse_function(x, None).map(|(s, x)| (s, TopLevelTokens::Function(x)))
@@ -42,7 +42,7 @@ pub fn test_parse_function<'a>(s: Span<'a>) -> ParseResult<Span, ToplevelTestFn<
     }
 }
 
-pub fn parse_function<'a, 'b>(s: Span<'a>, allow_self: Option<&'b SimpleNameToken>) -> ParseResult<'a, Span<'a>, FunctionToken> {
+pub fn parse_function<'a>(s: Span<'a>, allow_self: Option<&SimpleNameToken>) -> ParseResult<'a, Span<'a>, FunctionToken> {
     let location = Location::from_span(&s);
     let (s, _) = tag("fn").parse(s)?;
     let (s, _) = require_ignored(s)?;

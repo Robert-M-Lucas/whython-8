@@ -15,7 +15,7 @@ impl<'a, T> OB<'a, T> {
     pub fn get(&self) -> &T {
         match &self {
             OB::Owned(o) => o,
-            OB::Borrowed(b) => *b
+            OB::Borrowed(b) => b
         }
     }
 }
