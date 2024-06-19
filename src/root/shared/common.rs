@@ -1,4 +1,4 @@
-use std::fmt::{Display, Formatter, write};
+use std::fmt::{Display, Formatter};
 use derive_more::{Add, AddAssign, Display, Sub, SubAssign};
 use derive_getters::{Dissolve, Getters};
 

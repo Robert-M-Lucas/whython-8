@@ -1,6 +1,4 @@
-use itertools::Itertools;
-use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
-use crate::root::parser::parse_function::parse_assignment::{AssignmentToken};
+use crate::root::parser::parse::{ParseResult, Span};
 use crate::root::parser::parse_function::parse_break::{test_parse_break, BreakToken};
 use crate::root::parser::parse_function::parse_evaluable::{parse_evaluable, EvaluableToken};
 use crate::root::parser::parse_function::parse_if::{test_parse_if, IfToken};

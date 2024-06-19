@@ -1,4 +1,4 @@
-use nom::bytes::complete::{take_until, take_until1};
+use nom::bytes::complete::take_until;
 use nom::InputTake;
 use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
 use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, parse_evaluable};

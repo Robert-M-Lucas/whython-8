@@ -1,6 +1,5 @@
 use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
 use derive_getters::Getters;
-use nom::error::{ErrorKind, ParseError};
 use nom::Err::Error;
 use nom::Parser;
 use nom_supreme::error::GenericErrorTree;

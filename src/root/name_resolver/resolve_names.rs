@@ -2,7 +2,6 @@ use std::any::Any;
 use std::collections::HashMap;
 
 use derive_getters::Getters;
-use itertools::Itertools;
 use crate::root::errors::name_resolver_errors::NRErrors;
 use crate::root::errors::WErr;
 

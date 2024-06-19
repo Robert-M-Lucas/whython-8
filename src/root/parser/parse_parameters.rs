@@ -1,6 +1,5 @@
 use crate::root::parser::parse::{Location, ParseResult, Span};
 use nom::character::complete::char;
-use crate::root::name_resolver::name_resolvers::NameResult;
 use crate::root::parser::parse_function::parse_evaluable::{FullNameWithIndirectionToken, parse_full_name};
 use crate::root::parser::parse_name::{parse_simple_name, SimpleNameToken};
 use crate::root::parser::parse_util::discard_ignored;

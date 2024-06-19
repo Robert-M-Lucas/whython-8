@@ -1,6 +1,5 @@
 mod exit;
 
-use b_box::b;
 use crate::root::builtin::functions::exit::ExitFunction;
 use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
 

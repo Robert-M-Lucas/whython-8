@@ -1,10 +1,7 @@
-use std::collections::HashSet;
-use std::fmt::format;
 use crate::root::assembler::assembly_builder::AssemblyBuilder;
 use crate::root::builtin::types::bool::BoolType;
 use crate::root::builtin::types::int::IntType;
-use crate::root::compiler::assembly::utils::{align_16_bytes, align_16_bytes_plus_8};
-use crate::root::compiler::compile_evaluable::{compile_evaluable, compile_evaluable_into, compile_evaluable_reference};
+use crate::root::compiler::compile_evaluable::{compile_evaluable_into, compile_evaluable_reference};
 use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::WErr;
@@ -50,7 +47,7 @@ pub fn compile_function(fid: FunctionID, function: FunctionToken, global_table: 
     // let stack_size = local_variables.stack_size();
 
 
-    let mut final_contents = format!(
+    let final_contents = format!(
 "{}:
     push rbp
     mov rbp, rsp

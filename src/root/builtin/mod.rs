@@ -5,11 +5,9 @@ use crate::root::builtin::functions::register_functions;
 use crate::root::builtin::types::bool::register_bool;
 use crate::root::builtin::types::int::register_int;
 use crate::root::compiler::global_tracker::GlobalTracker;
-use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable};
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::shared::common::{ByteSize, FunctionID, LocalAddress, TypeID};
-use crate::root::shared::types::Type;
 
 pub fn register_builtin(global_table: &mut GlobalDefinitionTable) {
     register_functions(global_table);

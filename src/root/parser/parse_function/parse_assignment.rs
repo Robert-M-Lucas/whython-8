@@ -1,13 +1,7 @@
 use derive_getters::Getters;
-use nom::sequence::Tuple;
-use nom_supreme::tag::complete::tag;
-use crate::root::parser::parse::{Location, ParseResult, Span};
-use crate::root::parser::parse_function::parse_assigner::{AssignmentOperatorToken, parse_assigner};
-use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, FullNameWithIndirectionToken, parse_evaluable, parse_full_name};
-use crate::root::parser::parse_function::parse_initialisation::parse_initialisation;
-use crate::root::parser::parse_function::parse_line::{LineTestFn, LineTokens};
-use crate::root::parser::parse_name::SimpleNameToken;
-use crate::root::parser::parse_util::discard_ignored;
+use crate::root::parser::parse::Location;
+use crate::root::parser::parse_function::parse_assigner::AssignmentOperatorToken;
+use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, FullNameWithIndirectionToken};
 
 #[derive(Debug, Getters)]
 pub struct AssignmentToken {

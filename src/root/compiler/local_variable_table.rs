@@ -1,6 +1,5 @@
 use std::collections::HashMap;
-use crate::root::shared::common::{AddressedTypeRef, ByteSize, LocalAddress, TypeID, TypeRef};
-use crate::root::shared::types::Type;
+use crate::root::shared::common::{AddressedTypeRef, ByteSize, LocalAddress};
 
 /// Function-local table of defined variables. Only used within function processing
 pub struct LocalVariableTable {

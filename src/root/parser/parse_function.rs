@@ -1,8 +1,7 @@
 use derive_getters::{Dissolve, Getters};
 use nom::sequence::Tuple;
-use nom::{Offset, Parser};
+use nom::Parser;
 use nom_supreme::tag::complete::tag;
-use substring::Substring;
 use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
 use crate::root::parser::parse_blocks::default_section;
 use crate::root::parser::parse_function::parse_evaluable::{FullNameWithIndirectionToken, parse_full_name};

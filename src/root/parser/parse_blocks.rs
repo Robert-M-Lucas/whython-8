@@ -1,13 +1,9 @@
-use std::collections::HashMap;
 use itertools::Itertools;
 use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
-use nom::bytes::complete::take_until;
 use nom::character::complete::{anychar, char as nchar};
 use nom::Err::Error;
-use nom::error::{ErrorKind, ParseError};
-use nom::{InputIter, InputTake, Offset};
-use nom::sequence::Tuple;
-use nom_supreme::tag::complete::tag;
+use nom::error::ParseError;
+use nom::{InputTake, Offset};
 use crate::root::parser::parse_util::discard_ignored;
 
 // ! BROKEN

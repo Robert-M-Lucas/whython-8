@@ -1,8 +1,6 @@
 use std::any::Any;
-use std::collections::HashSet;
 use either::{Left, Right};
 use itertools::Itertools;
-use crate::root::assembler::assembly_builder::AssemblyBuilder;
 use crate::root::compiler::assembly::utils::copy;
 use crate::root::compiler::compile_function_call::call_function;
 use crate::root::compiler::global_tracker::GlobalTracker;
@@ -14,7 +12,7 @@ use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable, NameResult};
 use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, EvaluableTokens};
 use crate::root::parser::parse_function::parse_operator::{OperatorTokens, PrefixOrInfixEx};
-use crate::root::shared::common::{FunctionID, Indirection, LocalAddress, TypeRef};
+use crate::root::shared::common::{FunctionID, Indirection, TypeRef};
 use crate::root::shared::common::AddressedTypeRef;
 
 fn expect_addr(r: (String, Option<AddressedTypeRef>)) -> Result<(String, AddressedTypeRef), WErr> {

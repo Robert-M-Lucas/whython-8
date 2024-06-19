@@ -1,4 +1,3 @@
-use std::fmt::format;
 use crate::root::assembler::assembly_builder::AssemblyBuilder;
 use crate::root::shared::common::{ByteSize, FunctionID, LocalAddress};
 

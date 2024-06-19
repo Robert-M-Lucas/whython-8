@@ -7,8 +7,9 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Added exit functions">
+    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="More operators">
       <change afterPath="$PROJECT_DIR$/src/root/builtin/types/int/div.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/root/builtin/types/int/modulo.rs" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src/root/builtin/types/int/mul.rs" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/src/root/builtin/types/int/p_add.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
@@ -213,7 +214,7 @@
       <workItem from="1718712543316" duration="2954000" />
       <workItem from="1718795303825" duration="753000" />
       <workItem from="1718796063772" duration="209000" />
-      <workItem from="1718796277728" duration="1393000" />
+      <workItem from="1718796277728" duration="1729000" />
     </task>
     <task id="LOCAL-00001" summary="Changes">
       <option name="closed" value="true" />
@@ -447,7 +448,15 @@
       <option name="project" value="LOCAL" />
       <updated>1718636633009</updated>
     </task>
-    <option name="localTasksCounter" value="30" />
+    <task id="LOCAL-00030" summary="More operators">
+      <option name="closed" value="true" />
+      <created>1718798005819</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1718798005819</updated>
+    </task>
+    <option name="localTasksCounter" value="31" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -484,7 +493,8 @@
     <MESSAGE value="Printing and function calls" />
     <MESSAGE value="Testing" />
     <MESSAGE value="Added exit functions" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added exit functions" />
+    <MESSAGE value="More operators" />
+    <option name="LAST_COMMIT_MESSAGE" value="More operators" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

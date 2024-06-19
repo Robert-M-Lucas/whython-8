@@ -1,10 +1,9 @@
 use derive_getters::Getters;
-use nom::character::complete::{satisfy};
 use nom::sequence::Tuple;
 use nom::Parser;
 use nom_supreme::tag::complete::tag;
 
-use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
+use crate::root::parser::parse::{Location, ParseResult, Span};
 use crate::root::parser::parse_blocks::default_section;
 use crate::root::parser::parse_function::parse_evaluable::{parse_evaluable, EvaluableToken,};
 use crate::root::parser::parse_function::parse_line::{parse_lines, LineTestFn, LineTokens};

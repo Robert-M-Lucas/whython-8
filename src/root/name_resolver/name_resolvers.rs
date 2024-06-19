@@ -1,29 +1,21 @@
-use std::borrow::Cow;
-use std::collections::hash_map::{Iter, IterMut};
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::rc::Rc;
-use derive_getters::Getters;
-use either::{Either, Left, Right};
 use crate::root::builtin::{BuiltinInlineFunction, InlineFunctionGenerator};
-use crate::root::compiler::compile_function_call::call_function;
-use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::name_resolver_errors::NRErrors;
-use crate::root::errors::name_resolver_errors::NRErrors::IdentifierNotFound;
 use crate::root::errors::WErr;
-use crate::root::name_resolver::name_resolvers::NameResult::Function;
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::ob::OB;
 use crate::root::parser::parse::Location;
 use crate::root::shared::types::Type;
 use crate::root::parser::parse_function::FunctionToken;
 use crate::root::parser::parse_function::parse_evaluable::{FullNameToken, FullNameTokens, FullNameWithIndirectionToken};
-use crate::root::parser::parse_function::parse_operator::{OperatorToken, OperatorTokens, PrefixOrInfixEx};
+use crate::root::parser::parse_function::parse_operator::{OperatorToken, PrefixOrInfixEx};
 use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::parser::parse_struct::StructToken;
 use crate::root::POINTER_SIZE;
-use crate::root::shared::common::{AddressedTypeRef, ByteSize, FunctionID, Indirection, LocalAddress, TypeID, TypeRef};
+use crate::root::shared::common::{AddressedTypeRef, ByteSize, FunctionID, TypeID, TypeRef};
 
 #[derive(Debug)]
 enum NameTreeEntry {

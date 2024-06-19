@@ -2,12 +2,9 @@ use unique_type_id::UniqueTypeId;
 use crate::root::builtin::{BuiltinInlineFunction, InlineFunctionGenerator, f_id};
 use crate::root::builtin::types::bool::BoolType;
 use crate::root::builtin::types::int::IntType;
-use crate::root::builtin::types::int::printi::PrintI;
-use crate::root::errors::WErr;
-use crate::root::name_resolver::name_resolvers::NameResult::Function;
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 
-use crate::root::shared::common::{FunctionID, Indirection, LocalAddress, TypeID, TypeRef};
+use crate::root::shared::common::{FunctionID, LocalAddress, TypeID};
 
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
