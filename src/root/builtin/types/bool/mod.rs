@@ -1,19 +1,32 @@
 mod printb;
 mod and;
+mod or;
+mod not;
 
 use b_box::b;
 use unique_type_id::UniqueTypeId;
-use crate::root::builtin::t_id;
+use crate::root::builtin::{BuiltinInlineFunction, f_id, InlineFunctionGenerator, t_id};
+use crate::root::builtin::types::bool::and::{BoolAnd, BoolAsAnd};
+use crate::root::builtin::types::bool::not::BoolNot;
+use crate::root::builtin::types::bool::or::{BoolAsOr, BoolOr};
 use crate::root::builtin::types::bool::printb::PrintB;
+use crate::root::builtin::types::int::IntType;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
+use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse_function::parse_literal::{LiteralToken, LiteralTokens};
-use crate::root::shared::common::{ByteSize, LocalAddress, TypeID};
+use crate::root::shared::common::{ByteSize, FunctionID, LocalAddress, TypeID};
 use crate::root::shared::types::Type;
 
 pub fn register_bool(global_table: &mut GlobalDefinitionTable) {
     global_table.register_builtin_type(b!(BoolType));
     global_table.register_inline_function(&PrintB);
+    global_table.register_inline_function(&BoolAssign);
+    global_table.register_inline_function(&BoolAnd);
+    global_table.register_inline_function(&BoolAsAnd);
+    global_table.register_inline_function(&BoolOr);
+    global_table.register_inline_function(&BoolAsOr);
+    global_table.register_inline_function(&BoolNot);
 }
 
 #[derive(UniqueTypeId)]
@@ -56,5 +69,42 @@ impl Type for BoolType {
                 }
             }
         })
+    }
+}
+
+#[derive(UniqueTypeId)]
+#[UniqueTypeIdType = "u16"]
+pub struct BoolAssign;
+
+impl BuiltinInlineFunction for BoolAssign {
+    fn id(&self) -> FunctionID {
+        f_id(BoolAssign::unique_type_id().0)
+    }
+
+    fn name(&self) -> &'static str {
+        "assign"
+    }
+
+    fn signature(&self) -> FunctionSignature {
+        FunctionSignature::new_inline_builtin(
+            true,
+            &[("lhs", BoolType::id().with_indirection(1)), ("rhs", BoolType::id().immediate())],
+            None
+        )
+    }
+
+    fn inline(&self) -> InlineFunctionGenerator {
+        |args: &[LocalAddress], return_into: Option<LocalAddress>, _, _| -> String {
+            let lhs = args[0];
+            let rhs = args[1];
+            format!(
+                "    mov rdx, qword {lhs}
+    mov al, byte {rhs}
+    mov byte [rdx], al\n")
+        }
+    }
+
+    fn parent_type(&self) -> Option<TypeID> {
+        Some(BoolType::id())
     }
 }

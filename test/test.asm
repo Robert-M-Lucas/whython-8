@@ -5,56 +5,39 @@ section .text
 main:
     push rbp
     mov rbp, rsp
+    mov byte [rbp-1], 0
 
-    mov qword [rbp-8], 3
-    mov qword [rbp-16], 4
+    mov rax, rbp
+    add rax, -1
+    mov qword [rbp-9], rax ; rbp - 1
+    mov byte [rbp-10], 1
 
-    mov rax, qword [rbp-16]
-    leave
-    ret
+    mov rax, qword [rbp-9] ; rbp - 1
+    mov al, byte [rax] ; 0
+    or al, byte [rbp-10] ; al = 1
+    mov rax, qword [rbp-9] ; rbp - 1
+    mov byte [rax], al ;
 
-    mov qword [rbp-17], 0
-    mov al, byte [rbp-17]
-    mov byte [rbp-18], al
-    cmp byte [rbp-18], 0
-
-
-
-    jz main_0
-
-    mov rax, qword [rbp-8]
-    mov qword [rbp-26], rax
-
-    mov rdi, __4_fstr
-    mov rsi, [rbp-26]
+    mov al, byte [rbp-1]
+    cmp al, 0
+    jz __7_0
+    mov rdi, __7_t_fstr
+    jmp __7_1
+    __7_0:
+    mov rdi, __7_f_fstr
+    __7_1:
+    mov rsi, 0
     mov al, 0
-    sub rsp, 26
+    sub rsp, 11
     extern printf
     call printf
-    add rsp, 26
-
-    mov qword [rbp-34], 13
-	mov rax, qword [rbp-34]
+    add rsp, 11
+    mov qword [rbp-19], 2
+    mov rax, qword [rbp-19]
     leave
     ret
-    jmp main_1
-    main_0:
-    mov rax, qword [rbp-16]
-    mov qword [rbp-26], rax
 
-    mov rdi, __4_fstr
-    mov rsi, [rbp-26]
-    mov al, 0
-    sub rsp, 26
-    extern printf
-    call printf
-    add rsp, 26
 
-    mov qword [rbp-34], 12
-	mov rax, qword [rbp-34]
-    leave
-    ret
-    main_1:
-
-section .data
-    __4_fstr db `Integer: %d\n`,0
+section .data_readonly
+    __7_f_fstr db `Boolean: False`,0
+    __7_t_fstr db `Boolean: True`,0

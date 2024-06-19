@@ -7,12 +7,22 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Cargo clippy">
-      <change afterPath="$PROJECT_DIR$/src/root/builtin/types/bool/and.rs" afterDir="false" />
+    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Boolean improvements">
+      <change afterPath="$PROJECT_DIR$/src/root/builtin/types/bool/or.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/out.asm" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.asm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/out.o" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/out.out" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.out" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.why" beforeDir="false" afterPath="$PROJECT_DIR$/main.why" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/bool/and.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/bool/and.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/root/builtin/types/bool/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/bool/mod.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/root/builtin/types/bool/printb.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/bool/printb.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_literal.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_literal.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_operator.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_operator.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/test.asm" beforeDir="false" afterPath="$PROJECT_DIR$/test/test.asm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/test.o" beforeDir="false" afterPath="$PROJECT_DIR$/test/test.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/test.out" beforeDir="false" afterPath="$PROJECT_DIR$/test/test.out" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/types.toml" beforeDir="false" afterPath="$PROJECT_DIR$/types.toml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -203,7 +213,7 @@
       <workItem from="1718795303825" duration="753000" />
       <workItem from="1718796063772" duration="209000" />
       <workItem from="1718796277728" duration="3728000" />
-      <workItem from="1718803029458" duration="420000" />
+      <workItem from="1718803029458" duration="1908000" />
     </task>
     <task id="LOCAL-00001" summary="Changes">
       <option name="closed" value="true" />
@@ -461,7 +471,15 @@
       <option name="project" value="LOCAL" />
       <updated>1718799244388</updated>
     </task>
-    <option name="localTasksCounter" value="33" />
+    <task id="LOCAL-00033" summary="Boolean improvements">
+      <option name="closed" value="true" />
+      <created>1718803787262</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1718803787262</updated>
+    </task>
+    <option name="localTasksCounter" value="34" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -501,7 +519,8 @@
     <MESSAGE value="More operators" />
     <MESSAGE value="Cargo fix" />
     <MESSAGE value="Cargo clippy" />
-    <option name="LAST_COMMIT_MESSAGE" value="Cargo clippy" />
+    <MESSAGE value="Boolean improvements" />
+    <option name="LAST_COMMIT_MESSAGE" value="Boolean improvements" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

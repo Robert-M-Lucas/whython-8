@@ -9,15 +9,15 @@ use crate::root::shared::common::{FunctionID, LocalAddress, TypeID};
 
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
-pub struct BoolAnd;
+pub struct BoolOr;
 
-impl BuiltinInlineFunction for BoolAnd {
+impl BuiltinInlineFunction for BoolOr {
     fn id(&self) -> FunctionID {
-        f_id(BoolAnd::unique_type_id().0)
+        f_id(BoolOr::unique_type_id().0)
     }
 
     fn name(&self) -> &'static str {
-        "and"
+        "or"
     }
 
     fn signature(&self) -> FunctionSignature {
@@ -30,23 +30,13 @@ impl BuiltinInlineFunction for BoolAnd {
 
     fn inline(&self) -> InlineFunctionGenerator {
         |args: &[LocalAddress], return_into, gt, sz| -> String {
-
-            let jmp_false = gt.get_unique_tag(PrintB::id());
-            let jmp_end = gt.get_unique_tag(PrintB::id());
-
             let lhs = args[0];
             let rhs = args[1];
             let return_into = return_into.unwrap();
             format!(
 "    mov al, byte {lhs}
-    cmp al, 0
-    jz {jmp_false}
-    mov al, byte {rhs}
+    or al, byte {rhs}
     mov byte {return_into}, al
-    jmp {jmp_end}
-    {jmp_false}:
-    mov byte {return_into}, 0
-    {jmp_end}:
 ")
         }
     }
@@ -58,15 +48,15 @@ impl BuiltinInlineFunction for BoolAnd {
 
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
-pub struct BoolAsAnd;
+pub struct BoolAsOr;
 
-impl BuiltinInlineFunction for BoolAsAnd {
+impl BuiltinInlineFunction for BoolAsOr {
     fn id(&self) -> FunctionID {
-        f_id(BoolAsAnd::unique_type_id().0)
+        f_id(BoolAsOr::unique_type_id().0)
     }
 
     fn name(&self) -> &'static str {
-        "as_and"
+        "as_or"
     }
 
     fn signature(&self) -> FunctionSignature {
@@ -79,18 +69,13 @@ impl BuiltinInlineFunction for BoolAsAnd {
 
     fn inline(&self) -> InlineFunctionGenerator {
         |args: &[LocalAddress], _, gt, sz| -> String {
-
-            let jmp_true = gt.get_unique_tag(PrintB::id());
-
             let lhs = args[0];
             let rhs = args[1];
             format!(
-"    mov al, byte {rhs}
-    cmp al, 0
-    jnz {jmp_true}
-    mov rax, qword {lhs}
-    mov byte [rax], 0
-    {jmp_true}:
+"    mov rdx, qword {lhs}
+    mov al, byte [rdx]
+    or al, byte {rhs}
+    mov byte [rdx], al
 ")
         }
     }
