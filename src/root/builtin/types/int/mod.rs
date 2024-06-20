@@ -3,8 +3,8 @@ use unique_type_id::UniqueTypeId;
 
 use crate::root::builtin::{BuiltinInlineFunction, f_id, InlineFunctionGenerator, t_id};
 use crate::root::builtin::types::int::add::{IntAdd, IntAsAdd};
+use crate::root::builtin::types::int::comparators::{IntEq, IntGE, IntGT, IntLE, IntLT};
 use crate::root::builtin::types::int::div::{IntAsDiv, IntDiv};
-use crate::root::builtin::types::int::eq::IntEq;
 use crate::root::builtin::types::int::modulo::{IntAsMod, IntMod};
 use crate::root::builtin::types::int::mul::{IntAsMul, IntMul};
 use crate::root::builtin::types::int::p_add::IntPAdd;
@@ -22,11 +22,11 @@ mod add;
 mod sub;
 mod p_sub;
 mod printi;
-mod eq;
 mod p_add;
 mod mul;
 mod div;
 mod modulo;
+mod comparators;
 
 pub fn register_int(global_table: &mut GlobalDefinitionTable) {
     global_table.register_builtin_type(b!(IntType));
@@ -43,6 +43,10 @@ pub fn register_int(global_table: &mut GlobalDefinitionTable) {
     global_table.register_inline_function(&IntMod);
     global_table.register_inline_function(&IntAsMod);
     global_table.register_inline_function(&IntEq);
+    global_table.register_inline_function(&IntGT);
+    global_table.register_inline_function(&IntLT);
+    global_table.register_inline_function(&IntGE);
+    global_table.register_inline_function(&IntLE);
     global_table.register_inline_function(&PrintI);
     global_table.register_inline_function(&IntAssign);
 }

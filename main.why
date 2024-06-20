@@ -1,8 +1,5 @@
 fn main() -> int {
-    let a: bool = true;
-    &a = !a;
-
-    printb(a);
+    printb(2 < 3);
 
     return 2;
 }

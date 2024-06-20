@@ -19,7 +19,7 @@ pub enum PrefixOrInfixEx {
     Infix
 }
 
-const OPERATOR_MAPS: [(&str, OperatorTokens, PrefixOrInfix, &str); 18] = [
+const OPERATOR_MAPS: [(&str, OperatorTokens, PrefixOrInfix, &str); 22] = [
     ("+=", OperatorTokens::AsAdd, PrefixOrInfix::Infix, "as_add"),
     ("-=", OperatorTokens::AsSub, PrefixOrInfix::Infix, "as_sub"),
     ("*=", OperatorTokens::AsMul, PrefixOrInfix::Infix, "as_mul"),
@@ -30,6 +30,10 @@ const OPERATOR_MAPS: [(&str, OperatorTokens, PrefixOrInfix, &str); 18] = [
     ("&", OperatorTokens::Reference, PrefixOrInfix::Prefix, "ref"),
     ("||", OperatorTokens::Or, PrefixOrInfix::Infix, "or"),
     ("|=", OperatorTokens::AsOr, PrefixOrInfix::Infix, "as_or"),
+    (">=", OperatorTokens::GreaterEqual, PrefixOrInfix::Infix, "ge"),
+    ("<=", OperatorTokens::LessEqual, PrefixOrInfix::Infix, "le"),
+    (">", OperatorTokens::GreaterThan, PrefixOrInfix::Infix, "gt"),
+    ("<", OperatorTokens::LessThan, PrefixOrInfix::Infix, "lt"),
     ("+", OperatorTokens::Add, PrefixOrInfix::Both, "add"),
     ("-", OperatorTokens::Subtract, PrefixOrInfix::Both, "sub"),
     ("*", OperatorTokens::Multiply, PrefixOrInfix::Both, "mul"),
@@ -67,6 +71,10 @@ pub enum OperatorTokens {
     Equals,
     And,
     Or,
+    GreaterEqual,
+    LessEqual,
+    GreaterThan,
+    LessThan,
     AsAdd,
     AsSub,
     AsMul,
