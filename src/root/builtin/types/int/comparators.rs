@@ -60,6 +60,58 @@ impl BuiltinInlineFunction for IntEq {
 
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
+pub struct IntNE;
+
+impl IntNE {
+    pub const fn id() -> FunctionID {
+        f_id(IntNE::unique_type_id().0)
+    }
+}
+
+impl BuiltinInlineFunction for IntNE {
+    fn id(&self) -> FunctionID {
+        IntNE::id()
+    }
+
+    fn name(&self) -> &'static str {
+        "ne"
+    }
+
+    fn signature(&self) -> FunctionSignature {
+        FunctionSignature::new_inline_builtin(
+            true,
+            &[("lhs", IntType::id().immediate()), ("rhs", IntType::id().immediate())],
+            Some(BoolType::id().immediate())
+        )
+    }
+
+    fn inline(&self) -> InlineFunctionGenerator {
+        |args: &[LocalAddress], return_into: Option<LocalAddress>, gt, _| -> String {
+            let lhs = args[0];
+            let rhs = args[1];
+            let return_into = return_into.unwrap();
+            let jmp_true = gt.get_unique_tag(IntNE::id());
+            let jmp_end = gt.get_unique_tag(IntNE::id());
+
+            format!(
+                "    mov rax, qword {lhs}
+    cmp rax, qword {rhs}
+    jnz {jmp_true}
+    mov byte {return_into}, 0
+    jmp {jmp_end}
+    {jmp_true}:
+    mov byte {return_into}, 1
+    {jmp_end}:\n")
+        }
+    }
+
+    fn parent_type(&self) -> Option<TypeID> {
+        Some(IntType::id())
+    }
+}
+
+#[derive(UniqueTypeId)]
+#[UniqueTypeIdType = "u16"]
 pub struct IntGT;
 
 impl IntGT {
@@ -90,8 +142,8 @@ impl BuiltinInlineFunction for IntGT {
             let lhs = args[0];
             let rhs = args[1];
             let return_into = return_into.unwrap();
-            let jmp_true = gt.get_unique_tag(IntEq::id());
-            let jmp_end = gt.get_unique_tag(IntEq::id());
+            let jmp_true = gt.get_unique_tag(IntGT::id());
+            let jmp_end = gt.get_unique_tag(IntGT::id());
 
             format!(
 "    mov rax, qword {lhs}
@@ -142,8 +194,8 @@ impl BuiltinInlineFunction for IntLT {
             let lhs = args[0];
             let rhs = args[1];
             let return_into = return_into.unwrap();
-            let jmp_true = gt.get_unique_tag(IntEq::id());
-            let jmp_end = gt.get_unique_tag(IntEq::id());
+            let jmp_true = gt.get_unique_tag(IntLT::id());
+            let jmp_end = gt.get_unique_tag(IntLT::id());
 
             format!(
                 "    mov rax, qword {rhs}
@@ -194,8 +246,8 @@ impl BuiltinInlineFunction for IntGE {
             let lhs = args[0];
             let rhs = args[1];
             let return_into = return_into.unwrap();
-            let jmp_true = gt.get_unique_tag(IntEq::id());
-            let jmp_end = gt.get_unique_tag(IntEq::id());
+            let jmp_true = gt.get_unique_tag(IntGE::id());
+            let jmp_end = gt.get_unique_tag(IntGE::id());
 
             format!(
                 "    mov rax, qword {lhs}
@@ -246,8 +298,8 @@ impl BuiltinInlineFunction for IntLE {
             let lhs = args[0];
             let rhs = args[1];
             let return_into = return_into.unwrap();
-            let jmp_true = gt.get_unique_tag(IntEq::id());
-            let jmp_end = gt.get_unique_tag(IntEq::id());
+            let jmp_true = gt.get_unique_tag(IntLE::id());
+            let jmp_end = gt.get_unique_tag(IntLE::id());
 
             format!(
                 "    mov rax, qword {rhs}

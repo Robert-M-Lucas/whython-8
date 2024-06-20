@@ -2,11 +2,13 @@ mod printb;
 mod and;
 mod or;
 mod not;
+mod comparators;
 
 use b_box::b;
 use unique_type_id::UniqueTypeId;
 use crate::root::builtin::{BuiltinInlineFunction, f_id, InlineFunctionGenerator, t_id};
 use crate::root::builtin::types::bool::and::{BoolAnd, BoolAsAnd};
+use crate::root::builtin::types::bool::comparators::{BoolEq, BoolNE};
 use crate::root::builtin::types::bool::not::BoolNot;
 use crate::root::builtin::types::bool::or::{BoolAsOr, BoolOr};
 use crate::root::builtin::types::bool::printb::PrintB;
@@ -22,6 +24,8 @@ pub fn register_bool(global_table: &mut GlobalDefinitionTable) {
     global_table.register_builtin_type(b!(BoolType));
     global_table.register_inline_function(&PrintB);
     global_table.register_inline_function(&BoolAssign);
+    global_table.register_inline_function(&BoolEq);
+    global_table.register_inline_function(&BoolNE);
     global_table.register_inline_function(&BoolAnd);
     global_table.register_inline_function(&BoolAsAnd);
     global_table.register_inline_function(&BoolOr);

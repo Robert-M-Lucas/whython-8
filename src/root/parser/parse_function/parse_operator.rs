@@ -19,7 +19,7 @@ pub enum PrefixOrInfixEx {
     Infix
 }
 
-const OPERATOR_MAPS: [(&str, OperatorTokens, PrefixOrInfix, &str); 22] = [
+const OPERATOR_MAPS: [(&str, OperatorTokens, PrefixOrInfix, &str); 23] = [
     ("+=", OperatorTokens::AsAdd, PrefixOrInfix::Infix, "as_add"),
     ("-=", OperatorTokens::AsSub, PrefixOrInfix::Infix, "as_sub"),
     ("*=", OperatorTokens::AsMul, PrefixOrInfix::Infix, "as_mul"),
@@ -40,6 +40,7 @@ const OPERATOR_MAPS: [(&str, OperatorTokens, PrefixOrInfix, &str); 22] = [
     ("/", OperatorTokens::Divide, PrefixOrInfix::Both, "div"),
     ("%", OperatorTokens::Modulo, PrefixOrInfix::Both, "mod"),
     ("==", OperatorTokens::Equals, PrefixOrInfix::Infix, "eq"),
+    ("!=", OperatorTokens::NotEqual, PrefixOrInfix::Infix, "ne"),
     ("=", OperatorTokens::Assign, PrefixOrInfix::Infix, "assign"),
     ("!", OperatorTokens::Not, PrefixOrInfix::Prefix, "not"),
 ];
@@ -69,6 +70,7 @@ pub enum OperatorTokens {
     Modulo,
     Not,
     Equals,
+    NotEqual,
     And,
     Or,
     GreaterEqual,
