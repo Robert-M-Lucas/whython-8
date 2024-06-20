@@ -7,13 +7,16 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Boolean comparators">
+    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Simplified code">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/bool/and.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/bool/and.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/bool/comparators.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/bool/comparators.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/bool/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/bool/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/bool/or.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/bool/or.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/int/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/int/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/out.asm" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.asm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/out.o" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/out.out" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.out" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.why" beforeDir="false" afterPath="$PROJECT_DIR$/main.why" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/compile_function.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile_function.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/utils.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/utils.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/todo.md" beforeDir="false" afterPath="$PROJECT_DIR$/todo.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -207,6 +210,8 @@
       <workItem from="1718803029458" duration="2272000" />
       <workItem from="1718841921107" duration="532000" />
       <workItem from="1718888025480" duration="2180000" />
+      <workItem from="1718895344843" duration="25000" />
+      <workItem from="1718896726550" duration="3145000" />
     </task>
     <task id="LOCAL-00001" summary="Changes">
       <option name="closed" value="true" />
@@ -496,7 +501,15 @@
       <option name="project" value="LOCAL" />
       <updated>1718889832262</updated>
     </task>
-    <option name="localTasksCounter" value="37" />
+    <task id="LOCAL-00037" summary="Simplified code">
+      <option name="closed" value="true" />
+      <created>1718895358320</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1718895358320</updated>
+    </task>
+    <option name="localTasksCounter" value="38" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -514,7 +527,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Improved name system" />
     <MESSAGE value="Began adding error system" />
     <MESSAGE value="Improved error handling" />
     <MESSAGE value="Improved name evaluation" />
@@ -539,7 +551,8 @@
     <MESSAGE value="More boolean operations" />
     <MESSAGE value="Int comparators" />
     <MESSAGE value="Boolean comparators" />
-    <option name="LAST_COMMIT_MESSAGE" value="Boolean comparators" />
+    <MESSAGE value="Simplified code" />
+    <option name="LAST_COMMIT_MESSAGE" value="Simplified code" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

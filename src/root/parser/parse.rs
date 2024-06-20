@@ -1,11 +1,12 @@
 use std::cmp::min;
 use std::ffi::OsStr;
-use std::fmt::{Display, Formatter};
+use std::fmt::{Display, Formatter, Write};
 use crate::root::parser::parse_toplevel;
 use nom::IResult;
 use nom_locate::LocatedSpan;
 use nom_supreme::error::GenericErrorTree;
 use std::fs;
+use std::marker::PhantomData;
 use std::path::PathBuf;
 use std::rc::Rc;
 use color_print::cformat;
@@ -37,14 +38,32 @@ struct InnerLocation {
     line: u32,
 }
 
+#[derive(Debug, Clone)]
+pub struct ErrorL;
+#[derive(Debug, Clone)]
+pub struct WarningL;
+
+pub type Location = LocationTyped<ErrorL>;
+
 #[derive(Debug, Clone, Hash)]
-pub struct Location {
+pub struct LocationTyped<ErrorType=ErrorL> {
+    error_type: PhantomData<ErrorType>,
     inner_location: Option<InnerLocation>
 }
 
-impl Location {
-    pub fn from_span(span: &Span) -> Location {
-        Location {
+impl LocationTyped<ErrorL> {
+    pub fn to_warning(self) -> LocationTyped<WarningL> {
+        LocationTyped {
+            error_type: Default::default(),
+            inner_location: self.inner_location
+        }
+    }
+}
+
+impl<ErrorType> LocationTyped<ErrorType> {
+    pub fn from_span(span: &Span) -> LocationTyped<ErrorType> {
+        LocationTyped {
+            error_type: Default::default(),
             inner_location: Some(
                 InnerLocation {
                     path: span.extra.clone(),
@@ -60,8 +79,9 @@ impl Location {
         self.inner_location.as_ref().map(|l| &l.path)
     }
 
-    pub fn builtin() -> Location {
-        Location {
+    pub fn builtin() -> LocationTyped<ErrorType> {
+        LocationTyped {
+            error_type: Default::default(),
             inner_location: None
         }
     }
@@ -69,13 +89,8 @@ impl Location {
     pub fn is_builtin(&self) -> bool {
         self.inner_location.is_none()
     }
-}
 
-const CHAR_LIMIT: usize = 61;
-
-
-impl Display for Location {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt_choice(&self, f: &mut Formatter<'_>, is_warning: bool) -> std::fmt::Result {
         // TODO: Inefficient!
         // (Maybe fine because it is a 'bad' path?)
 
@@ -143,8 +158,16 @@ impl Display for Location {
         end += 1;
 
         writeln!(f, "{:0width$} |  {}", location.line, line.chars().skip(start).take(end - start).collect::<String>(), width=largest_num_len)?;
-        let err_line = format!("{:0width$} |  {}^Here", "E", (0..(offset - start)).map(|_| ' ').collect::<String>(), width=largest_num_len);
-        writeln!(f, "{}", cformat!("<r,bold>{}</>", err_line))?;
+
+        if is_warning {
+            let warn_line = format!("{:0width$} |  {}^Here", "W", (0..(offset - start)).map(|_| ' ').collect::<String>(), width=largest_num_len);
+            writeln!(f, "{}", cformat!("<y,bold>{}</>", warn_line))?;
+        }
+        else {
+            let err_line = format!("{:0width$} |  {}^Here", "E", (0..(offset - start)).map(|_| ' ').collect::<String>(), width=largest_num_len);
+            writeln!(f, "{}", cformat!("<r,bold>{}</>", err_line))?;
+        }
+
 
         if let Some(line) = line_iter.next() {
             let line = if line.chars().count() > CHAR_LIMIT { format!("{} ...", line.chars().take(CHAR_LIMIT - 4).collect::<String>()) } else { line.to_string() };
@@ -155,6 +178,21 @@ impl Display for Location {
         }
 
         Ok(())
+    }
+}
+
+const CHAR_LIMIT: usize = 61;
+
+
+impl Display for LocationTyped<ErrorL> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        self.fmt_choice(f, false)
+    }
+}
+
+impl Display for LocationTyped<WarningL> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        self.fmt_choice(f, true)
     }
 }
 

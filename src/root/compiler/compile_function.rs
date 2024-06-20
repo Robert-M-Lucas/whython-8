@@ -10,6 +10,7 @@ use crate::root::parser::parse_function::FunctionToken;
 use crate::root::parser::parse_function::parse_line::LineTokens;
 use crate::root::shared::common::{FunctionID, Indirection, LocalAddress, TypeRef};
 use crate::root::shared::common::AddressedTypeRef;
+use crate::root::utils::warn;
 
 pub fn compile_function(fid: FunctionID, function: FunctionToken, global_table: &mut GlobalDefinitionTable, global_tracker: &mut GlobalTracker) -> Result<String, WErr> {
     let mut local_variables = LocalVariableTable::new();
@@ -40,10 +41,13 @@ pub fn compile_function(fid: FunctionID, function: FunctionToken, global_table: 
             t
         ));
 
-    let full_contents = recursively_compile_lines(fid, &lines, &return_variable, &None, &mut local_variables, global_table, global_tracker)?;
+    let (full_contents, last_return) = recursively_compile_lines(fid, &lines, &return_variable, &None, &mut local_variables, global_table, global_tracker)?;
 
     // let stack_size = local_variables.stack_size();
 
+    if (return_variable.is_some() || fid.is_main()) && !last_return {
+        todo!() // No return
+    }
 
     let final_contents = format!(
 "{}:
@@ -61,13 +65,13 @@ pub fn compile_function(fid: FunctionID, function: FunctionToken, global_table: 
     Ok(final_contents)
 }
 
-fn recursively_compile_lines(fid: FunctionID, lines: &[LineTokens], return_variable: &Option<AddressedTypeRef>, break_tag: &Option<&str>, local_variables: &mut LocalVariableTable, global_table: &mut GlobalDefinitionTable, global_tracker: &mut GlobalTracker) -> Result<String, WErr> {
+fn recursively_compile_lines(fid: FunctionID, lines: &[LineTokens], return_variable: &Option<AddressedTypeRef>, break_tag: &Option<&str>, local_variables: &mut LocalVariableTable, global_table: &mut GlobalDefinitionTable, global_tracker: &mut GlobalTracker) -> Result<(String, bool), WErr> {
     local_variables.enter_block();
     let mut contents = AssemblyBuilder::new();
 
     let mut last_is_return = false;
 
-    for line in lines {
+    for (line_i, line) in lines.iter().enumerate() {
         last_is_return = false;
         match line {
             LineTokens::Initialisation(it) => {
@@ -90,7 +94,9 @@ fn recursively_compile_lines(fid: FunctionID, lines: &[LineTokens], return_varia
                     contents.line(&format!("jz {end_tag}"));
                 }
 
-                contents.other(&recursively_compile_lines(fid, if_token.if_contents(), return_variable, break_tag, local_variables, global_table, global_tracker)?);
+                let (code, ret) = recursively_compile_lines(fid, if_token.if_contents(), return_variable, break_tag, local_variables, global_table, global_tracker)?;
+                last_is_return = ret;
+                contents.other(&code);
 
                 for (elif_condition, elif_content) in if_token.elif_condition_contents() {
                     contents.line(&format!("jmp {end_tag}"));
@@ -101,14 +107,18 @@ fn recursively_compile_lines(fid: FunctionID, lines: &[LineTokens], return_varia
                     contents.other(&compile_evaluable_into(fid, elif_condition, condition_addr.clone(), local_variables, global_table, global_tracker)?);
                     contents.line(&format!("cmp byte {}, 0", condition_addr.local_address()));
                     contents.line(&format!("jz {next_tag}"));
-                    contents.other(&recursively_compile_lines(fid, elif_content, return_variable, break_tag, local_variables, global_table, global_tracker)?);
+                    let (code, ret) = recursively_compile_lines(fid, elif_content, return_variable, break_tag, local_variables, global_table, global_tracker)?;
+                    last_is_return &= ret;
+                    contents.other(&code);
                 }
 
                 if let Some(else_contents) = if_token.else_contents() {
                     contents.line(&format!("jmp {end_tag}"));
                     contents.line(&format!("{next_tag}:"));
                     next_tag = global_tracker.get_unique_tag(fid);
-                    contents.other(&recursively_compile_lines(fid, else_contents, return_variable, break_tag, local_variables, global_table, global_tracker)?);
+                    let (code, ret) = recursively_compile_lines(fid, else_contents, return_variable, break_tag, local_variables, global_table, global_tracker)?;
+                    last_is_return &= ret;
+                    contents.other(&code);
                 }
 
                 contents.line(&format!("{next_tag}:"));
@@ -125,7 +135,9 @@ fn recursively_compile_lines(fid: FunctionID, lines: &[LineTokens], return_varia
                 contents.line(&format!("cmp byte {}, 0", condition_addr.local_address()));
                 contents.line(&format!("jz {end_tag}"));
 
-                contents.other(&recursively_compile_lines(fid, while_token.contents(), return_variable, &Some(&end_tag), local_variables, global_table, global_tracker)?);
+                let (code, ret) = recursively_compile_lines(fid, while_token.contents(), return_variable, &Some(&end_tag), local_variables, global_table, global_tracker)?;
+                last_is_return = ret;
+                contents.other(&code);
 
                 contents.line(&format!("jmp {start_tag}"));
                 contents.line(&format!("{end_tag}:"))
@@ -154,6 +166,11 @@ fn recursively_compile_lines(fid: FunctionID, lines: &[LineTokens], return_varia
 
                 contents.line("leave");
                 contents.line("ret");
+
+                if line_i != lines.len() - 1 {
+                    warn(&format!("Return isn't the last instruction in the block. Following lines in block will not be compiled/run.\n{}", rt.location().clone().to_warning()))
+                }
+                break;
             }
             LineTokens::Break(_) => {
                 if let Some(break_tag) = break_tag {
@@ -171,5 +188,5 @@ fn recursively_compile_lines(fid: FunctionID, lines: &[LineTokens], return_varia
 
     local_variables.leave_block();
 
-    Ok(contents.finish())
+    Ok((contents.finish(), last_is_return))
 }

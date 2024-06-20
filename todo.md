@@ -1,13 +1,12 @@
 
-# A
-
-1. Add support for non-toplevel function calling
-2. Finish off evaluable compilation
-3. Finish of handling of remaining lines
-4. Add support for non-inline builtin functions
-5. Add rich parser errors
-6. Add all errors in
-7. All other todos, of course
+- Ensure non-void functions return a value
+- Add array support
+- Add struct initialiser support
+- Add support for non-toplevel function calling
+- Add support for non-inline builtin functions
+- Add rich parser errors
+- Add all errors in
+- All other todos, of course
 
 | Type | Operator | Implemented |
 |------|----------|------------:|

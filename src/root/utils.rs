@@ -59,5 +59,5 @@ pub fn align<T: Copy + Sub<Output = T> + Rem<Output = T> + Add<Output = T>>(
 }
 
 pub fn warn(msg: &str) {
-    cprintln!("<y,bold>WARNING:</> <y>{}</>", msg);
+    cprintln!("\n<y,bold>Warning:</> <y>{}</>", msg);
 }
