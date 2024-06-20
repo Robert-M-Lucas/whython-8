@@ -2,6 +2,7 @@ use b_box::b;
 use unique_type_id::UniqueTypeId;
 
 use crate::root::builtin::{BuiltinInlineFunction, f_id, InlineFunctionGenerator, t_id};
+use crate::root::builtin::types::bool::BoolType;
 use crate::root::builtin::types::int::add::{IntAdd, IntAsAdd};
 use crate::root::builtin::types::int::comparators::{IntEq, IntGE, IntGT, IntLE, IntLT, IntNE};
 use crate::root::builtin::types::int::div::{IntAsDiv, IntDiv};
@@ -27,6 +28,14 @@ mod mul;
 mod div;
 mod modulo;
 mod comparators;
+
+fn int_op_sig() -> FunctionSignature {
+    FunctionSignature::new_inline_builtin(
+        true,
+        &[("lhs", BoolType::id().immediate()), ("rhs", BoolType::id().immediate())],
+        Some(BoolType::id().immediate())
+    )
+}
 
 pub fn register_int(global_table: &mut GlobalDefinitionTable) {
     global_table.register_builtin_type(b!(IntType));

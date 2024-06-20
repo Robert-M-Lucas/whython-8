@@ -20,6 +20,14 @@ use crate::root::parser::parse_function::parse_literal::{LiteralToken, LiteralTo
 use crate::root::shared::common::{ByteSize, FunctionID, LocalAddress, TypeID};
 use crate::root::shared::types::Type;
 
+fn bool_op_sig() -> FunctionSignature {
+    FunctionSignature::new_inline_builtin(
+        true,
+        &[("lhs", BoolType::id().immediate()), ("rhs", BoolType::id().immediate())],
+        Some(BoolType::id().immediate())
+    )
+}
+
 pub fn register_bool(global_table: &mut GlobalDefinitionTable) {
     global_table.register_builtin_type(b!(BoolType));
     global_table.register_inline_function(&PrintB);

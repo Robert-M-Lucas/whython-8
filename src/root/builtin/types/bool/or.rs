@@ -1,6 +1,6 @@
 use unique_type_id::UniqueTypeId;
 use crate::root::builtin::{BuiltinInlineFunction, InlineFunctionGenerator, f_id};
-use crate::root::builtin::types::bool::BoolType;
+use crate::root::builtin::types::bool::{bool_op_sig, BoolType};
 use crate::root::builtin::types::bool::printb::PrintB;
 use crate::root::builtin::types::int::IntType;
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
@@ -21,11 +21,7 @@ impl BuiltinInlineFunction for BoolOr {
     }
 
     fn signature(&self) -> FunctionSignature {
-        FunctionSignature::new_inline_builtin(
-            true,
-            &[("lhs", BoolType::id().immediate()), ("rhs", BoolType::id().immediate())],
-            Some(BoolType::id().immediate())
-        )
+        bool_op_sig()
     }
 
     fn inline(&self) -> InlineFunctionGenerator {
