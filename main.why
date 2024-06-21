@@ -1,11 +1,9 @@
-fn rec(a: int) {
-    printi(a);
-    &a += 1;
-    rec(a);
-}
-
 fn main() -> int {
-    rec(1);
+    let a: int = 0;
+    while (a < 1000000000) {
+        &a += 1;
+    }
+    printi(a);
     return 1;
 }
 
