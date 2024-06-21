@@ -37,6 +37,7 @@ pub enum EvaluableTokens {
     Literal(LiteralToken),
     InfixOperator(Box<EvaluableToken>, OperatorToken, Box<EvaluableToken>),
     PrefixOperator(OperatorToken, Box<EvaluableToken>),
+    None
 }
 
 #[derive(Debug, Getters)]
@@ -181,7 +182,6 @@ pub fn parse_full_name<'a>(s: Span<'a>, containing_class: Option<&SimpleNameToke
 // }
 
 pub fn parse_evaluable<'a>(s: Span<'a>, containing_class: Option<&SimpleNameToken>, semicolon_terminated: bool) -> ParseResult<'a, Span<'a>, EvaluableToken> {
-    assert!(!s.is_empty());
     let mut s = s;
 
     let mut evaluables = Vec::new();
@@ -204,6 +204,13 @@ pub fn parse_evaluable<'a>(s: Span<'a>, containing_class: Option<&SimpleNameToke
                 // ! Intentional failure
                 char(';')(ns)?;
                 unreachable!();
+            }
+
+            if evaluables.is_empty() {
+                return Ok((ns, EvaluableToken {
+                    location: Location::from_span(&ns),
+                    token: EvaluableTokens::None,
+                }))
             }
 
             s = ns;

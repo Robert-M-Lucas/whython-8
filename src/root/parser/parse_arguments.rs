@@ -1,7 +1,7 @@
 use nom::bytes::complete::take_until;
 use nom::InputTake;
 use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
-use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, parse_evaluable};
+use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, EvaluableTokens, parse_evaluable};
 use crate::root::parser::parse_name::SimpleNameToken;
 
 pub fn parse_arguments<'a>(s: Span<'a>, containing_class: Option<&SimpleNameToken>) -> ParseResult<'a, (), Vec<EvaluableToken>> {
@@ -18,7 +18,18 @@ pub fn parse_arguments<'a>(s: Span<'a>, containing_class: Option<&SimpleNameToke
             s.take_split(s.len())
         };
 
-        args.push(parse_evaluable(section, containing_class, false)?.1);
+        let res = parse_evaluable(section, containing_class, false)?.1;
+
+        if matches!(res.token(), EvaluableTokens::None) {
+            if !last {
+                todo!() // Expected evaluable
+            }
+        }
+        else {
+            args.push(res);
+        }
+
+
 
         s = ns;
         if last {

@@ -42,13 +42,16 @@ pub fn compile_function(fid: FunctionID, function: FunctionToken, global_table: 
             t
         ));
 
-    let (full_contents, last_return) = recursively_compile_lines(fid, &lines, &return_variable, &None, &mut local_variables, global_table, global_tracker)?;
+    let (mut full_contents, last_return) = recursively_compile_lines(fid, &lines, &return_variable, &None, &mut local_variables, global_table, global_tracker)?;
 
     // let stack_size = local_variables.stack_size();
 
     if (return_variable.is_some() || fid.is_main()) && !last_return {
         let type_ref = return_variable.map(|x| x.type_ref().clone()).unwrap_or_else(|| IntType::id().immediate());
         return WErr::ne(ExpectedReturn(global_table.get_type_name(&type_ref)), end_location)
+    }
+    if !last_return {
+        full_contents += "\nleave\nret";
     }
 
     let final_contents = format!(

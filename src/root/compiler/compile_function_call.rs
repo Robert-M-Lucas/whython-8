@@ -27,8 +27,6 @@ pub fn call_function(
     global_tracker: &mut GlobalTracker) -> Result<(String, Option<AddressedTypeRef>), WErr> {
     global_tracker.f_call(fid);
 
-    warn("Unchecked Function Arguments");
-
     if let Some(inline) = global_table.get_function(fid).1 {
         let inline_o = *inline;
         let mut code = AssemblyBuilder::new();

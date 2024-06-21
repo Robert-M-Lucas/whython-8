@@ -1,3 +1,13 @@
+fn rec(a: int) {
+    printi(a);
+    &a += 1;
+    rec(a);
+}
+
 fn main() -> int {
+    rec(1);
     return 1;
 }
+
+// 149563
+// 116356

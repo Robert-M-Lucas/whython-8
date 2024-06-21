@@ -107,6 +107,9 @@ pub fn compile_evaluable(
             let (code, _) = call_function(fid, ifid, et.location(), &name, &n_args, return_into.clone(), global_table, local_variables, global_tracker)?;
             (code, return_into)
         }
+        EvaluableTokens::None => {
+            (String::new(), None)
+        }
     })
 }
 
@@ -245,6 +248,9 @@ pub fn compile_evaluable_into(
             let (code, _) = call_function(fid, ifid, et.location(), &name, &n_args, Some(target), global_table, local_variables, global_tracker)?;
             code
         }
+        EvaluableTokens::None => {
+            return WErr::ne(EvalErrs::ExpectedType(global_table.get_type_name(target.type_ref())), et.location().clone());
+        }
     })
 }
 
@@ -275,6 +281,9 @@ pub fn compile_evaluable_reference(
         EvaluableTokens::DynamicAccess(_, _) => todo!(), // Accessed methods must be called
         EvaluableTokens::StaticAccess(_, n) => return WErr::ne(NRErrors::CannotFindConstantAttribute(n.name().clone()), n.location().clone()), // Accessed methods must be called
         EvaluableTokens::FunctionCall(_, _) => compile_evaluable(fid, et, local_variables, global_table, global_tracker)?,
+        EvaluableTokens::None => {
+            (String::new(), None)
+        }
     })
 }
 
@@ -308,9 +317,9 @@ pub fn compile_evaluable_type_only(
     global_tracker: &mut GlobalTracker
 ) -> Result<TypeRef, WErr> {
 
-    let et = et.token();
+    let ets = et.token();
 
-    Ok(match et {
+    Ok(match ets {
         EvaluableTokens::Name(name, containing_class) => {
             match global_table.resolve_name(name, containing_class.as_ref(), local_variables)? {
                 NameResult::Function(_) => return WErr::ne(EvalErrs::FunctionMustBeCalled(name.name().clone()), name.location().clone()),
@@ -355,6 +364,9 @@ pub fn compile_evaluable_type_only(
             let signature = global_table.get_function_signature(ifid);
             let return_type = signature.get().return_type().clone().unwrap(); // TODO: Check type
             return_type
+        }
+        EvaluableTokens::None => {
+            return WErr::ne(EvalErrs::ExpectedNotNone, et.location().clone());
         }
     })
 }
