@@ -71,7 +71,7 @@ impl Display for LocalAddress {
     }
 }
 
-#[derive(Getters, Clone, PartialEq)]
+#[derive(Getters, Clone, PartialEq, Debug)]
 pub struct TypeRef {
     type_id: TypeID,
     indirection: Indirection

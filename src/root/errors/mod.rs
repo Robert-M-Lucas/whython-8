@@ -19,11 +19,18 @@ impl WErr {
         }
     }
 
-    pub fn locationless(error: impl Display) -> WErr {
-        WErr {
+    pub fn ne<T>(error: impl Display, location: Location) -> Result<T, WErr> {
+        Err(WErr {
+            error: format!("{error}"),
+            location: Some(location)
+        })
+    }
+
+    pub fn locationless<T>(error: impl Display) -> Result<T, WErr> {
+        Err(WErr {
             error: format!("{error}"),
             location: None
-        }
+        })
     }
 }
 

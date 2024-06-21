@@ -2,6 +2,7 @@ use crate::root::assembler::assembly_builder::AssemblyBuilder;
 use crate::root::builtin::types::bool::BoolType;
 use crate::root::builtin::types::int::IntType;
 use crate::root::compiler::compile_evaluable::{compile_evaluable_into, compile_evaluable_reference};
+use crate::root::compiler::compiler_errors::CError::{CannotBreak, ExpectedNoReturn, ExpectedReturn, ExpectedReturnType, ExpectedSomeReturn};
 use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::WErr;
@@ -15,7 +16,7 @@ use crate::root::utils::warn;
 pub fn compile_function(fid: FunctionID, function: FunctionToken, global_table: &mut GlobalDefinitionTable, global_tracker: &mut GlobalTracker) -> Result<String, WErr> {
     let mut local_variables = LocalVariableTable::new();
 
-    let (_location, _name, return_type, _, parameters, lines) = function.dissolve();
+    let (_location, end_location, _name, return_type, _, parameters, lines) = function.dissolve();
 
     let return_type = if fid.is_main() { None } else { return_type };
 
@@ -46,7 +47,8 @@ pub fn compile_function(fid: FunctionID, function: FunctionToken, global_table: 
     // let stack_size = local_variables.stack_size();
 
     if (return_variable.is_some() || fid.is_main()) && !last_return {
-        todo!() // No return
+        let type_ref = return_variable.map(|x| x.type_ref().clone()).unwrap_or_else(|| IntType::id().immediate());
+        return WErr::ne(ExpectedReturn(global_table.get_type_name(&type_ref)), end_location)
     }
 
     let final_contents = format!(
@@ -146,7 +148,7 @@ fn recursively_compile_lines(fid: FunctionID, lines: &[LineTokens], return_varia
                 last_is_return = true;
                 if fid.is_main() {
                     if rt.return_value().is_none() {
-                        todo!()
+                        return WErr::ne(ExpectedSomeReturn(global_table.get_type_name(&IntType::id().immediate())), rt.location().clone());
                     }
 
                     let address = global_table.add_local_variable_unnamed_base(TypeRef::new(IntType::id(), Indirection(0)), local_variables);
@@ -155,13 +157,13 @@ fn recursively_compile_lines(fid: FunctionID, lines: &[LineTokens], return_varia
                 }
                 else if let Some(return_value) = rt.return_value() {
                     if return_variable.is_none() {
-                        todo!()
+                        return WErr::ne(ExpectedNoReturn, return_value.location().clone());
                     }
 
                     contents.other(&compile_evaluable_into(fid, return_value, return_variable.clone().unwrap(), local_variables, global_table, global_tracker)?);
                 }
                 else if return_variable.is_some() {
-                    todo!()
+                    return WErr::ne(ExpectedSomeReturn(global_table.get_type_name(return_variable.as_ref().unwrap().type_ref())), rt.location().clone());
                 }
 
                 contents.line("leave");
@@ -172,12 +174,12 @@ fn recursively_compile_lines(fid: FunctionID, lines: &[LineTokens], return_varia
                 }
                 break;
             }
-            LineTokens::Break(_) => {
+            LineTokens::Break(bt) => {
                 if let Some(break_tag) = break_tag {
                     contents.line(&format!("jmp {break_tag}"));
                 }
                 else {
-                    todo!()
+                    return WErr::ne(CannotBreak, bt.location().clone())
                 }
             },
             LineTokens::NoOp(et) => {

@@ -90,7 +90,7 @@ pub fn resolve_names(ast: Vec<TopLevelTokens>, global_table: &mut GlobalDefiniti
 
                     for (e_name, _) in &p_attributes {
                         if e_name.name() == name.name() {
-                            return Err(WErr::n(NRErrors::SameAttributeName(name.name().clone()), name.location().clone()));
+                            return WErr::ne(NRErrors::SameAttributeName(name.name().clone()), name.location().clone());
                         }
                     }
                     p_attributes.push((name, type_ref))

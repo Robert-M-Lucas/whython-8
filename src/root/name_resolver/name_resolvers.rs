@@ -177,7 +177,7 @@ impl GlobalDefinitionTable {
 
         let (name, containing) = match full_name.token() {
             FullNameTokens::Name(n, c) => (n, c),
-            _ => Err(WErr::n(NRErrors::ExpectedTypeNotMethodOrAttribute, find_error_point(full_name, full_name.location())))?
+            _ => WErr::ne(NRErrors::ExpectedTypeNotMethodOrAttribute, find_error_point(full_name, full_name.location()))?
         };
 
         let name = if name.name() == "Self" && containing.is_some() {
@@ -188,7 +188,7 @@ impl GlobalDefinitionTable {
             tree.get_entry(name.name()).map(|val| match val {
                     NameTreeEntry::Type(t) => Ok(TypeRef::new(*t, *indirection)),
                     NameTreeEntry::Function(_) => {
-                        Err(WErr::n(NRErrors::FoundFunctionNotType(name.name().clone()), full_name.location().clone()))
+                        WErr::ne(NRErrors::FoundFunctionNotType(name.name().clone()), full_name.location().clone())
                     }
                 })
         };
@@ -209,10 +209,10 @@ impl GlobalDefinitionTable {
         }
 
         if let Some(r) = self.builtin_function_name_table.get(name.name()) {
-            return Err(WErr::n(NRErrors::FoundFunctionNotType(name.name().clone()), full_name.location().clone()))
+            return WErr::ne(NRErrors::FoundFunctionNotType(name.name().clone()), full_name.location().clone())
         }
 
-        Err(WErr::n(NRErrors::TypeNotFound(name.name().clone()), full_name.location().clone()))
+        WErr::ne(NRErrors::TypeNotFound(name.name().clone()), full_name.location().clone())
     }
 
     pub fn get_size(&mut self, t: &TypeRef) -> ByteSize {
@@ -261,7 +261,14 @@ impl GlobalDefinitionTable {
     }
 
     pub fn get_type_name(&self, type_ref: &TypeRef) -> String {
-        format!("{:&^1$}", self.get_type(*type_ref.type_id()).name(), type_ref.indirection().0)
+        format!("{}{}",
+                 unsafe {
+                     String::from_utf8_unchecked(
+                         vec!['&' as u8; type_ref.indirection().0]
+                     )
+                 },
+                 self.get_type(*type_ref.type_id()).name()
+        )
     }
 
     pub fn resolve_name(&mut self, name: &SimpleNameToken, containing_class: Option<&SimpleNameToken>, local_variable_table: &LocalVariableTable) -> Result<NameResult, WErr> {
@@ -296,7 +303,7 @@ impl GlobalDefinitionTable {
             return Ok(NameResult::Function(*r));
         }
 
-        Err(WErr::n(NRErrors::CannotFindName(name.name().clone()), name.location().clone()))
+        WErr::ne(NRErrors::CannotFindName(name.name().clone()), name.location().clone())
     }
 
     pub fn get_operator_function(&self, lhs: TypeID, operator: &OperatorToken, kind: PrefixOrInfixEx) -> Result<FunctionID, WErr> {
@@ -311,10 +318,10 @@ impl GlobalDefinitionTable {
             ).copied()
         }
         else {
-            Err(WErr::n(match kind {
+            WErr::ne(match kind {
                 PrefixOrInfixEx::Prefix => NRErrors::OpCantBePrefix(operator.operator().to_str().to_string()),
                 PrefixOrInfixEx::Infix => NRErrors::OpCantBeInfix(operator.operator().to_str().to_string()),
-            }, operator.location().clone()))
+            }, operator.location().clone())
         }
     }
 

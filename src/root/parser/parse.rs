@@ -2,7 +2,7 @@ use std::cmp::min;
 use std::ffi::OsStr;
 use std::fmt::{Display, Formatter, Write};
 use crate::root::parser::parse_toplevel;
-use nom::IResult;
+use nom::{InputTake, IResult};
 use nom_locate::LocatedSpan;
 use nom_supreme::error::GenericErrorTree;
 use std::fs;
@@ -72,7 +72,21 @@ impl<ErrorType> LocationTyped<ErrorType> {
                 }
             )
         }
+    }
 
+    pub fn from_span_end(span: &Span) -> LocationTyped<ErrorType> {
+        let (span, _) = &span.take_split(span.len());
+
+        LocationTyped {
+            error_type: Default::default(),
+            inner_location: Some(
+                InnerLocation {
+                    path: span.extra.clone(),
+                    offset: span.location_offset(),
+                    line: span.location_line(),
+                }
+            )
+        }
     }
 
     pub fn path(&self) -> Option<&Rc<PathBuf>> {
@@ -105,7 +119,7 @@ impl<ErrorType> LocationTyped<ErrorType> {
         writeln!(f, "{}", cformat!("<c,bold>At:</>"))?;
 
         fn fail(f: &mut Formatter<'_>) -> std::fmt::Result {
-            write!(f, "Failed to fetch file reference (has the file changed?")
+            write!(f, "Failed to fetch file reference (has the file changed?)")
         }
 
         let Ok(file) = fs::read_to_string(location.path.as_path()) else { return fail(f); };
@@ -206,7 +220,7 @@ pub fn parse(path: PathBuf) -> Result<Vec<TopLevelTokens>, WErr> {
         Err(e) => {
             // TODO:
             println!("{:?}", e);
-            return Err(WErr::n(ParseError::ParserErrorsNotImplemented, Location::builtin()));
+            return WErr::ne(ParseError::ParserErrorsNotImplemented, Location::builtin());
         }
     };
     debug_assert!(remaining.is_empty());

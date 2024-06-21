@@ -18,5 +18,15 @@ pub enum EvalErrs {
     #[error("Expected operation to return type ({0}) but found ({1})")]
     OpWrongReturnType(String, String),
     #[error("Expected operation to return type ({0}) but found no return")]
-    OpNoReturn(String)
+    OpNoReturn(String),
+    #[error("Expected type ({0}) but found ({1})")]
+    ExpectedDifferentType(String, String),
+    #[error("Expected type ({0}) but found none")]
+    ExpectedType(String),
+    #[error("Expected a type but found none")]
+    ExpectedNotNone,
+    #[error("Expected a function name")]
+    ExpectedFunctionName
 }
+
+// return Err(WErr::n(OpWrongReturnType(global_table.get_type_name(into.type_ref()), global_table.get_type_name(&new_type)), location.clone()));

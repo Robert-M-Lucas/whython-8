@@ -3,10 +3,12 @@ use itertools::Itertools;
 use crate::root::assembler::assembly_builder::AssemblyBuilder;
 use crate::root::compiler::assembly::utils::{align_16_bytes, align_16_bytes_plus_8, copy};
 use crate::root::compiler::compile_evaluable::compile_evaluable_into;
+use crate::root::compiler::compiler_errors::CError::{BadFunctionArgCount, BadFunctionReturn, ExpectedFunctionReturn, ExpectedSomeReturn};
 use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
+use crate::root::parser::parse::Location;
 use crate::root::parser::parse_function::parse_evaluable::EvaluableToken;
 use crate::root::shared::common::{AddressedTypeRef, ByteSize, FunctionID};
 use crate::root::utils::warn;
@@ -16,6 +18,8 @@ use crate::root::utils::warn;
 pub fn call_function(
     parent_fid: FunctionID,
     fid: FunctionID,
+    location: &Location,
+    name: &str,
     arguments: &[Either<&EvaluableToken, &AddressedTypeRef>],
     return_address: Option<AddressedTypeRef>,
     global_table: &mut GlobalDefinitionTable,
@@ -32,7 +36,7 @@ pub fn call_function(
         let return_into = if let Some(expected_return) = global_table.get_function(fid).0.get().return_type().clone() {
             if let Some(return_address) = return_address {
                 if return_address.type_ref() != &expected_return {
-                    todo!()
+                    return WErr::ne(BadFunctionReturn(global_table.get_type_name(return_address.type_ref()), global_table.get_type_name(&expected_return)), location.clone())
                 }
                 Some(return_address)
             }
@@ -41,16 +45,18 @@ pub fn call_function(
             }
         }
         else {
-            if return_address.is_some() {
-                todo!()
+            if let Some(return_address) = return_address {
+                return WErr::ne(ExpectedSomeReturn(global_table.get_type_name(return_address.type_ref())), location.clone())
             }
             None
         };
 
-        // TODO: Check arg lengths
-
         let mut args = Vec::new();
         let signature_args = global_table.get_function(fid).0.get().args().iter().map(|(_, t)| t.clone()).collect_vec();
+
+        if signature_args.len() != arguments.len() {
+            return WErr::ne(BadFunctionArgCount(name.to_string(), signature_args.len(), arguments.len()), location.clone());
+        }
 
         for (i, a) in arguments.iter().enumerate() {
             match a {
@@ -61,7 +67,8 @@ pub fn call_function(
                     args.push(*into.local_address());
                 }
                 Either::Right(addr) => {
-                    // TODO: Check argument
+                    // ! Should only be possible through self usage
+                    debug_assert!(addr.type_ref() == &signature_args[i]);
                     args.push(*addr.local_address());
                 }
             }
@@ -73,10 +80,13 @@ pub fn call_function(
     else {
         let mut code = AssemblyBuilder::new();
 
-        // TODO: Check args length
         let mut args = Vec::new();
         let mut size = ByteSize(0);
         let signature_args = global_table.get_function(fid).0.get().args().iter().map(|(_, t)| t.clone()).collect_vec();
+
+        if signature_args.len() != arguments.len() {
+            return WErr::ne(BadFunctionArgCount(name.to_string(), signature_args.len(), arguments.len()), location.clone());
+        }
 
         for (i, a) in arguments.iter().enumerate() {
             match a {
@@ -88,7 +98,8 @@ pub fn call_function(
                     args.push(into);
                 }
                 Either::Right(addr) => {
-                    // TODO: Check argument
+                    // ! Should only be possible through self usage
+                    debug_assert!(addr.type_ref() == &signature_args[i]);
                     args.push((*addr).clone());
                 }
             }
@@ -132,7 +143,7 @@ pub fn call_function(
 
         let return_addr = if let Some(return_address) = return_address {
             if return_addr.is_none() {
-                todo!()
+                return WErr::ne(ExpectedFunctionReturn(global_table.get_type_name(return_address.type_ref())), location.clone());
             }
 
             code.other(&copy(*return_addr.as_ref().unwrap().local_address(), *return_address.local_address(), global_table.get_size(return_addr.as_ref().unwrap().type_ref())));

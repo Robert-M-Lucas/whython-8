@@ -14,7 +14,7 @@ pub fn resolve(ast: Vec<TopLevelTokens>) -> Result<(GlobalDefinitionTable, HashM
     let unprocessed_functions = resolve_names(ast, &mut global_table)?;
 
     if !global_table.has_main() {
-        return Err(WErr::locationless(NRErrors::NoMain))
+        return WErr::locationless(NRErrors::NoMain)
     }
 
     Ok((global_table, unprocessed_functions))

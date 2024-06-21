@@ -6,7 +6,6 @@ use crate::ret_time;
 
 use crate::root::utils::try_run_program;
 
-#[cfg(target_os = "linux")]
 pub fn run(output: &str) {
     let time;
     ret_time!(time,
@@ -50,7 +49,6 @@ pub fn assemble(output: &str) -> Result<(), ()> {
 }
 
 
-#[cfg(target_os = "linux")]
 pub fn link_gcc(output: &str) -> Result<(), ()> {
     if !try_run_program(
         "gcc",

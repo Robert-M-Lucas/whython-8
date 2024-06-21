@@ -54,7 +54,7 @@ pub fn resolve_type_sizes(
         }
         else {
             // Type not in unsized_types or type table due to circular definition
-            return Err(WErr::n(NRErrors::CircularType(name), attribute_name.location().clone()));
+            return WErr::ne(NRErrors::CircularType(name), attribute_name.location().clone());
         }
 
         processed_attributes.push((offset.0, attribute_name, attribute_type));

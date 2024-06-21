@@ -12,6 +12,8 @@ use crate::root::builtin::types::int::p_add::IntPAdd;
 use crate::root::builtin::types::int::p_sub::{IntAsSub, IntPSub};
 use crate::root::builtin::types::int::printi::PrintI;
 use crate::root::builtin::types::int::sub::IntSub;
+use crate::root::compiler::compiler_errors::CError;
+use crate::root::errors::evaluable_errors::EvalErrs;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
@@ -93,7 +95,16 @@ impl Type for IntType {
                 }
             }
             LiteralTokens::Int(value) => {
-                if *value < 2147483648 {
+                if *value > i64::MAX as i128 {
+                    return WErr::ne(CError::IntLiteralExceedsMax(*value, i64::MAX as i128), literal.location().clone());
+                }
+                if *value < i64::MIN as i128 {
+                    return WErr::ne(CError::IntLiteralBelowMin(*value, i64::MAX as i128), literal.location().clone());
+                }
+
+                let value = *value as i64;
+
+                if value < 2147483648 {
                     format!("    mov qword {location}, {value}\n")
                 }
                 else {

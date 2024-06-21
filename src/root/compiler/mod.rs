@@ -5,3 +5,4 @@ pub mod assembly;
 mod compile_evaluable;
 pub mod compile_function_call;
 pub mod global_tracker;
+pub mod compiler_errors;

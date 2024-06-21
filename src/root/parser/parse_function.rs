@@ -26,6 +26,7 @@ pub mod parse_while;
 #[derive(Debug, Getters, Dissolve)]
 pub struct FunctionToken {
     location: Location,
+    end_location: Location,
     name: SimpleNameToken,
     return_type: Option<FullNameWithIndirectionToken>,
     dynamic: bool,
@@ -69,13 +70,18 @@ pub fn parse_function<'a>(s: Span<'a>, allow_self: Option<&SimpleNameToken>) -> 
 
     let (s, contents) = default_section(s, '{')?;
 
+    let end_location = Location::from_span_end(&contents);
+
     let (_, lines) = parse_lines(contents, allow_self)?;
+
+
 
     Ok((
         s,
         FunctionToken {
             dynamic: has_self,
             location,
+            end_location,
             name,
             return_type,
             parameters,
