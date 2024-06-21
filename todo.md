@@ -1,8 +1,10 @@
 
+- Add dereferencing
 - Add array support
 - Add struct initialiser support
 - Add support for non-toplevel function calling
-- Add support for non-inline builtin functions
 - Add rich parser errors
-- Add all errors in
+- Add support for multiple files
+- Add support for heap stuff
 - All other todos, of course
+
