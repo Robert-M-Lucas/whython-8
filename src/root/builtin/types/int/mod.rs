@@ -60,7 +60,6 @@ pub fn register_int(global_table: &mut GlobalDefinitionTable) {
     global_table.register_inline_function(&IntGE);
     global_table.register_inline_function(&IntLE);
     global_table.register_inline_function(&PrintI);
-    global_table.register_inline_function(&IntAssign);
 }
 
 #[derive(UniqueTypeId)]
@@ -114,42 +113,5 @@ impl Type for IntType {
                 }
             }
         })
-    }
-}
-
-#[derive(UniqueTypeId)]
-#[UniqueTypeIdType = "u16"]
-pub struct IntAssign;
-
-impl BuiltinInlineFunction for IntAssign {
-    fn id(&self) -> FunctionID {
-        f_id(IntAssign::unique_type_id().0)
-    }
-
-    fn name(&self) -> &'static str {
-        "assign"
-    }
-
-    fn signature(&self) -> FunctionSignature {
-        FunctionSignature::new_inline_builtin(
-            true,
-            &[("lhs", IntType::id().with_indirection(1)), ("rhs", IntType::id().immediate())],
-            None
-        )
-    }
-
-    fn inline(&self) -> InlineFunctionGenerator {
-        |args: &[LocalAddress], return_into: Option<LocalAddress>, _, _| -> String {
-            let lhs = args[0];
-            let rhs = args[1];
-            format!(
-                "    mov rax, qword {lhs}
-    mov rdx, qword {rhs}
-    mov qword [rax], rdx\n")
-        }
-    }
-
-    fn parent_type(&self) -> Option<TypeID> {
-        Some(IntType::id())
     }
 }

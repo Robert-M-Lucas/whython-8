@@ -31,7 +31,6 @@ fn bool_op_sig() -> FunctionSignature {
 pub fn register_bool(global_table: &mut GlobalDefinitionTable) {
     global_table.register_builtin_type(b!(BoolType));
     global_table.register_inline_function(&PrintB);
-    global_table.register_inline_function(&BoolAssign);
     global_table.register_inline_function(&BoolEq);
     global_table.register_inline_function(&BoolNE);
     global_table.register_inline_function(&BoolAnd);
@@ -81,42 +80,5 @@ impl Type for BoolType {
                 }
             }
         })
-    }
-}
-
-#[derive(UniqueTypeId)]
-#[UniqueTypeIdType = "u16"]
-pub struct BoolAssign;
-
-impl BuiltinInlineFunction for BoolAssign {
-    fn id(&self) -> FunctionID {
-        f_id(BoolAssign::unique_type_id().0)
-    }
-
-    fn name(&self) -> &'static str {
-        "assign"
-    }
-
-    fn signature(&self) -> FunctionSignature {
-        FunctionSignature::new_inline_builtin(
-            true,
-            &[("lhs", BoolType::id().with_indirection(1)), ("rhs", BoolType::id().immediate())],
-            None
-        )
-    }
-
-    fn inline(&self) -> InlineFunctionGenerator {
-        |args: &[LocalAddress], return_into: Option<LocalAddress>, _, _| -> String {
-            let lhs = args[0];
-            let rhs = args[1];
-            format!(
-                "    mov rdx, qword {lhs}
-    mov al, byte {rhs}
-    mov byte [rdx], al\n")
-        }
-    }
-
-    fn parent_type(&self) -> Option<TypeID> {
-        Some(BoolType::id())
     }
 }
