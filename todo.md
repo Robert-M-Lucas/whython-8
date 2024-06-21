@@ -1,5 +1,4 @@
 
-- Add dereferencing
 - Add array support
 - Add struct initialiser support
 - Add support for non-toplevel function calling
