@@ -1,11 +1,7 @@
 fn main() -> int {
-    let a: int = 0;
-    while (a < 1000000000) {
-        &a += 1;
-    }
+    let a: int = 13;
+    &a = 12;
     printi(a);
+
     return 1;
 }
-
-// 149563
-// 116356

@@ -12,6 +12,8 @@ use crate::root::name_resolver::resolve::resolve;
 use shared::common::ByteSize;
 use crate::root::errors::WErr;
 use crate::root::runner::{assemble, link_gcc, run};
+#[cfg(debug_assertions)]
+pub const DEBUG_ON_ERROR: bool = true;
 
 // #[cfg(target_os = "windows")]
 // use crate::root::runner::run;

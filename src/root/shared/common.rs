@@ -88,9 +88,16 @@ impl TypeRef {
             indirection: Indirection(self.indirection.0 + 1)
         }
     }
+
+    pub fn minus_one_indirect(&self) -> TypeRef {
+        TypeRef {
+            type_id: self.type_id,
+            indirection: Indirection(self.indirection.0 - 1)
+        }
+    }
 }
 
-#[derive(Getters, Clone, Dissolve)]
+#[derive(Getters, Clone, Dissolve, Debug)]
 pub struct AddressedTypeRef {
     local_address: LocalAddress,
     type_ref: TypeRef

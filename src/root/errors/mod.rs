@@ -1,6 +1,9 @@
+use std::backtrace::Backtrace;
 use std::fmt::{Display, Formatter};
 use color_print::cformat;
 use crate::root::parser::parse::Location;
+#[cfg(debug_assertions)]
+use crate::root::DEBUG_ON_ERROR;
 
 pub mod parser_errors;
 pub mod name_resolver_errors;
@@ -13,17 +16,29 @@ pub struct WErr {
 
 impl WErr {
     pub fn n(error: impl Display, location: Location) -> WErr {
-        WErr {
+        let w = WErr {
             error: format!("{error}"),
             location: Some(location)
+        };
+        #[cfg(debug_assertions)]
+        if DEBUG_ON_ERROR {
+            println!("{}", Backtrace::capture());
+            println!("\n{w}");
         }
+        w
     }
 
     pub fn ne<T>(error: impl Display, location: Location) -> Result<T, WErr> {
-        Err(WErr {
+        let w = WErr {
             error: format!("{error}"),
             location: Some(location)
-        })
+        };
+        #[cfg(debug_assertions)]
+        if DEBUG_ON_ERROR {
+            println!("{}", Backtrace::capture());
+            println!("\n{w}");
+        }
+        Err(w)
     }
 
     pub fn locationless<T>(error: impl Display) -> Result<T, WErr> {
