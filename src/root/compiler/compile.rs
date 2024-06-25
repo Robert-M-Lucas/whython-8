@@ -1,4 +1,5 @@
 use std::collections::{HashMap, HashSet};
+use itertools::Itertools;
 use crate::root::compiler::compile_function::compile_function;
 use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::errors::WErr;
@@ -48,7 +49,14 @@ section .text
 
 ";
 
+    #[cfg(not(debug_assertions))]
     for (_id, f) in compiled_functions {
+        s += &f;
+        s += "\n\n";
+    }
+
+    #[cfg(debug_assertions)]
+    for (_id, f) in compiled_functions.iter().sorted_by(|(x, _), (y, _)| x.0.cmp(&y.0)) {
         s += &f;
         s += "\n\n";
     }

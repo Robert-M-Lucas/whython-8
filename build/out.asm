@@ -2,22 +2,6 @@
 
 section .text
 
-_3:
-    push rbp
-    mov rbp, rsp
-    mov rax, qword [rbp+16]
-    mov qword [rbp-8], rax
-    mov rdi, __8_fstr
-    mov rsi, [rbp-8]
-    mov al, 0
-    sub rsp, 8
-    extern printf
-    call printf
-    add rsp, 8
-
-leave
-ret
-
 main:
     push rbp
     mov rbp, rsp
@@ -65,6 +49,22 @@ _2:
     leave
     ret
 
+
+_3:
+    push rbp
+    mov rbp, rsp
+    mov rax, qword [rbp+16]
+    mov qword [rbp-8], rax
+    mov rdi, __8_fstr
+    mov rsi, [rbp-8]
+    mov al, 0
+    sub rsp, 8
+    extern printf
+    call printf
+    add rsp, 8
+
+leave
+ret
 
 section .data_readonly
     __8_fstr db `Integer: %ld\n`,0
