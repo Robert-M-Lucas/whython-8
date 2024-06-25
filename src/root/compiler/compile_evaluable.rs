@@ -462,7 +462,7 @@ pub fn compile_evaluable_type_only(
     })
 }
 
-/// Will ignore everything other than type with a target type
+// Will ignore everything other than type with a target type
 // pub fn compile_evaluable_type_only_into(
 //     fid: FunctionID,
 //     et: &EvaluableToken,

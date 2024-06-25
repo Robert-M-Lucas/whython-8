@@ -1,7 +1,6 @@
 pub mod types;
 pub mod functions;
 pub mod core;
-mod core;
 
 use crate::root::builtin::functions::register_functions;
 use crate::root::builtin::types::bool::register_bool;

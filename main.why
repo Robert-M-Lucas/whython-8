@@ -2,7 +2,13 @@ fn cool() -> &int {
     return &1;
 }
 
+fn other_two(a: int) {
+    printi(a);
+}
+
 fn main() -> int {
+    other_two(12);
+
     let x: &int = cool();
 
     // Break alignment too :)

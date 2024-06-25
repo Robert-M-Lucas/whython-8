@@ -25,7 +25,6 @@ impl WErr {
             location: Some(location)
         };
         #[cfg(debug_assertions)]
-        panic!();
         if DEBUG_ON_ERROR {
 
             println!("{}", Backtrace::capture());
@@ -43,7 +42,6 @@ impl WErr {
             location: Some(location)
         };
         #[cfg(debug_assertions)]
-        panic!();
         if DEBUG_ON_ERROR {
             println!("{}", Backtrace::capture());
             println!("\n{w}");
