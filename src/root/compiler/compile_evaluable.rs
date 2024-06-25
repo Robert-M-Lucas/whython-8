@@ -1,13 +1,14 @@
 use std::any::Any;
 use either::{Left, Right};
 use itertools::Itertools;
+use crate::root::builtin::core::referencing::{set_deref, set_reference};
 use crate::root::compiler::assembly::utils::{copy, copy_from_indirect, copy_to_indirect};
 use crate::root::compiler::compile_function_call::call_function;
 use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::evaluable_errors::EvalErrs;
 use crate::root::errors::evaluable_errors::EvalErrs::{ExpectedDifferentType, ExpectedFunctionName, ExpectedNotNone, ExpectedReference, ExpectedType, OpNoReturn, OpWrongReturnType};
-use crate::root::errors::name_resolver_errors::NRErrors;
+use crate::root::errors::name_resolver_errors::NRErrs;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable, NameResult};
 use crate::root::parser::parse::Location;
@@ -16,30 +17,12 @@ use crate::root::parser::parse_function::parse_operator::{OperatorTokens, Prefix
 use crate::root::shared::common::{FunctionID, Indirection, TypeRef};
 use crate::root::shared::common::AddressedTypeRef;
 
+/// Error on an empty address
 fn expect_addr(r: (String, Option<AddressedTypeRef>)) -> Result<(String, AddressedTypeRef), WErr> {
     Ok((r.0, r.1.unwrap())) // TODO
 }
 
-pub fn set_reference(location: &Location, to_ref: AddressedTypeRef, into: AddressedTypeRef, global_table: &GlobalDefinitionTable) -> Result<String, WErr> {
-    let new_type = to_ref.type_ref().type_id().with_indirection(to_ref.type_ref().indirection().0 + 1);
-    if new_type != *into.type_ref() {
-        return WErr::ne(OpWrongReturnType(global_table.get_type_name(into.type_ref()), global_table.get_type_name(&new_type)), location.clone());
-    }
-
-    Ok(format!("    mov rax, rbp
-    add rax, {}
-    mov qword {}, rax\n", to_ref.local_address().0, into.local_address()))
-}
-
-pub fn set_deref(location: &Location, to_deref: AddressedTypeRef, into: AddressedTypeRef, global_table: &mut GlobalDefinitionTable) -> Result<String, WErr> {
-    let expected = into.type_ref().plus_one_indirect();
-    if to_deref.type_ref() != &expected {
-        return WErr::ne(ExpectedDifferentType(global_table.get_type_name(&expected), global_table.get_type_name(to_deref.type_ref())), location.clone());
-    }
-    Ok(copy_from_indirect(*to_deref.local_address(), *into.local_address(), global_table.get_size(into.type_ref())))
-}
-
-/// Will always evaluate into new address
+/// Evaluates `et` into a new address
 pub fn compile_evaluable(
     fid: FunctionID,
     et: &EvaluableToken,
@@ -165,7 +148,7 @@ pub fn compile_evaluable(
             (c, return_into)
         },
         EvaluableTokens::DynamicAccess(_, _) => todo!(), // Accessed methods must be called
-        EvaluableTokens::StaticAccess(_, n) => return WErr::ne(NRErrors::CannotFindConstantAttribute(n.name().clone()), n.location().clone()), // Accessed methods must be called
+        EvaluableTokens::StaticAccess(_, n) => return WErr::ne(NRErrs::CannotFindConstantAttribute(n.name().clone()), n.location().clone()), // Accessed methods must be called
         EvaluableTokens::FunctionCall(inner, args) => {
             let (slf, ifid, name) = compile_evaluable_function_only(fid, inner, local_variables, global_table, global_tracker)?;
 
@@ -193,7 +176,7 @@ pub fn compile_evaluable(
 }
 
 
-/// Will always put result into target
+/// Evaluates `et` putting the result into `target`
 pub fn compile_evaluable_into(
     fid: FunctionID,
     et: &EvaluableToken,
@@ -327,7 +310,7 @@ pub fn compile_evaluable_into(
             c
         },
         EvaluableTokens::DynamicAccess(_, _) => todo!(), // Accessed methods must be called
-        EvaluableTokens::StaticAccess(_, n) => return WErr::ne(NRErrors::CannotFindConstantAttribute(n.name().clone()), n.location().clone()), // Accessed methods must be called
+        EvaluableTokens::StaticAccess(_, n) => return WErr::ne(NRErrs::CannotFindConstantAttribute(n.name().clone()), n.location().clone()), // Accessed methods must be called
         EvaluableTokens::FunctionCall(inner, args) => {
             let (slf, ifid, name) = compile_evaluable_function_only(fid, inner, local_variables, global_table, global_tracker)?;
 
@@ -351,7 +334,7 @@ pub fn compile_evaluable_into(
     })
 }
 
-/// Will try to return a reference i.e. not allocate stack
+/// Evaluates `et` attempting to return a reference to an existing variable as opposed to allocating
 pub fn compile_evaluable_reference(
     fid: FunctionID,
     et: &EvaluableToken,
@@ -376,7 +359,7 @@ pub fn compile_evaluable_reference(
         EvaluableTokens::InfixOperator(_, _, _) => compile_evaluable(fid, et, local_variables, global_table, global_tracker)?,
         EvaluableTokens::PrefixOperator(_, _) => compile_evaluable(fid, et, local_variables, global_table, global_tracker)?,
         EvaluableTokens::DynamicAccess(_, _) => todo!(), // Accessed methods must be called
-        EvaluableTokens::StaticAccess(_, n) => return WErr::ne(NRErrors::CannotFindConstantAttribute(n.name().clone()), n.location().clone()), // Accessed methods must be called
+        EvaluableTokens::StaticAccess(_, n) => return WErr::ne(NRErrs::CannotFindConstantAttribute(n.name().clone()), n.location().clone()), // Accessed methods must be called
         EvaluableTokens::FunctionCall(_, _) => compile_evaluable(fid, et, local_variables, global_table, global_tracker)?,
         EvaluableTokens::None => {
             (String::new(), None)
@@ -384,7 +367,7 @@ pub fn compile_evaluable_reference(
     })
 }
 
-/// Will always return a function pointer (and self)
+/// Evaluates `name` into a `FunctionID`
 pub fn compile_evaluable_function_only(
     fid: FunctionID,
     name: &EvaluableToken,
@@ -405,7 +388,7 @@ pub fn compile_evaluable_function_only(
     })
 }
 
-/// Will ignore everything other than type
+/// Evaluates the type `et` evaluates to. Does not generate any assembly.
 pub fn compile_evaluable_type_only(
     fid: FunctionID,
     et: &EvaluableToken,
@@ -465,7 +448,7 @@ pub fn compile_evaluable_type_only(
             signature.get().return_type().as_ref().unwrap().clone()
         },
         EvaluableTokens::DynamicAccess(_, _) => todo!(), // Accessed methods must be called
-        EvaluableTokens::StaticAccess(_, n) => return WErr::ne(NRErrors::CannotFindConstantAttribute(n.name().clone()), n.location().clone()), // Accessed methods must be called
+        EvaluableTokens::StaticAccess(_, n) => return WErr::ne(NRErrs::CannotFindConstantAttribute(n.name().clone()), n.location().clone()), // Accessed methods must be called
         EvaluableTokens::FunctionCall(inner, args) => {
             let (slf, ifid, _) = compile_evaluable_function_only(fid, inner, local_variables, global_table, global_tracker)?;
 
@@ -480,16 +463,16 @@ pub fn compile_evaluable_type_only(
 }
 
 /// Will ignore everything other than type with a target type
-pub fn compile_evaluable_type_only_into(
-    fid: FunctionID,
-    et: &EvaluableToken,
-    target: TypeRef,
-    local_variables: &mut LocalVariableTable,
-    global_table: &mut GlobalDefinitionTable,
-    global_tracker: &mut GlobalTracker
-) -> Result<bool, WErr> {
-
-    let et = et.token();
-
-    todo!()
-}
+// pub fn compile_evaluable_type_only_into(
+//     fid: FunctionID,
+//     et: &EvaluableToken,
+//     target: TypeRef,
+//     local_variables: &mut LocalVariableTable,
+//     global_table: &mut GlobalDefinitionTable,
+//     global_tracker: &mut GlobalTracker
+// ) -> Result<bool, WErr> {
+//
+//     let et = et.token();
+//
+//     todo!()
+// }

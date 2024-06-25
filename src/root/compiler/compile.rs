@@ -6,6 +6,7 @@ use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
 use crate::root::parser::parse_function::FunctionToken;
 use crate::root::shared::common::FunctionID;
 
+/// Compiles the entire program. Returns assembly.
 pub fn compile(mut global_table: GlobalDefinitionTable, unprocessed_functions: HashMap<FunctionID, FunctionToken>) -> Result<String, WErr> {
     let mut unprocessed_functions = unprocessed_functions;
     let mut compiled_functions = HashMap::new();

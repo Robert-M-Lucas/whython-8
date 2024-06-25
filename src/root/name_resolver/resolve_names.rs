@@ -2,7 +2,7 @@ use std::any::Any;
 use std::collections::HashMap;
 
 use derive_getters::Getters;
-use crate::root::errors::name_resolver_errors::NRErrors;
+use crate::root::errors::name_resolver_errors::NRErrs;
 use crate::root::errors::WErr;
 
 use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable};
@@ -90,7 +90,7 @@ pub fn resolve_names(ast: Vec<TopLevelTokens>, global_table: &mut GlobalDefiniti
 
                     for (e_name, _) in &p_attributes {
                         if e_name.name() == name.name() {
-                            return WErr::ne(NRErrors::SameAttributeName(name.name().clone()), name.location().clone());
+                            return WErr::ne(NRErrs::SameAttributeName(name.name().clone()), name.location().clone());
                         }
                     }
                     p_attributes.push((name, type_ref))

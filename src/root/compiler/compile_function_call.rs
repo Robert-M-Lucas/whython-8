@@ -3,7 +3,7 @@ use itertools::Itertools;
 use crate::root::assembler::assembly_builder::AssemblyBuilder;
 use crate::root::compiler::assembly::utils::{align_16_bytes, align_16_bytes_plus_8, copy};
 use crate::root::compiler::compile_evaluable::compile_evaluable_into;
-use crate::root::compiler::compiler_errors::CError::{BadFunctionArgCount, BadFunctionReturn, ExpectedFunctionReturn, ExpectedSomeReturn};
+use crate::root::compiler::compiler_errors::CErrs::{BadFunctionArgCount, BadFunctionReturn, ExpectedFunctionReturn, ExpectedSomeReturn};
 use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::WErr;
@@ -15,6 +15,7 @@ use crate::root::utils::warn;
 
 
 // TODO: Cleanup code
+/// Calls a given function with arguments
 pub fn call_function(
     parent_fid: FunctionID,
     fid: FunctionID,
@@ -124,7 +125,7 @@ pub fn call_function(
         };
 
         // ? Enter block
-        local_variables.enter_block();
+        local_variables.enter_scope();
 
         // ? Arguments
         for arg in args.iter().rev() {
@@ -137,7 +138,7 @@ pub fn call_function(
         code.line(&format!("add rsp, {}", local_variables.stack_size().0));
 
         // ? Leave block (invalidate parameters)
-        local_variables.leave_block();
+        local_variables.leave_scope();
 
         let return_addr = if let Some(return_address) = return_address {
             if return_addr.is_none() {

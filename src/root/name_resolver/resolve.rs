@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use crate::root::builtin::register_builtin;
-use crate::root::errors::name_resolver_errors::NRErrors;
+use crate::root::errors::name_resolver_errors::NRErrs;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
 use crate::root::name_resolver::resolve_names::resolve_names;
@@ -14,7 +14,7 @@ pub fn resolve(ast: Vec<TopLevelTokens>) -> Result<(GlobalDefinitionTable, HashM
     let unprocessed_functions = resolve_names(ast, &mut global_table)?;
 
     if !global_table.has_main() {
-        return WErr::locationless(NRErrors::NoMain)
+        return WErr::locationless(NRErrs::NoMain)
     }
 
     Ok((global_table, unprocessed_functions))

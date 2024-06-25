@@ -2,7 +2,7 @@ use crate::root::assembler::assembly_builder::AssemblyBuilder;
 use crate::root::builtin::types::bool::BoolType;
 use crate::root::builtin::types::int::IntType;
 use crate::root::compiler::compile_evaluable::{compile_evaluable_into, compile_evaluable_reference};
-use crate::root::compiler::compiler_errors::CError::{CannotBreak, ExpectedNoReturn, ExpectedReturn, ExpectedReturnType, ExpectedSomeReturn};
+use crate::root::compiler::compiler_errors::CErrs::{CannotBreak, ExpectedNoReturn, ExpectedReturn, ExpectedReturnType, ExpectedSomeReturn};
 use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::WErr;
@@ -13,6 +13,7 @@ use crate::root::shared::common::{FunctionID, Indirection, LocalAddress, TypeRef
 use crate::root::shared::common::AddressedTypeRef;
 use crate::root::utils::warn;
 
+/// Compiles a given function into assembly
 pub fn compile_function(fid: FunctionID, function: FunctionToken, global_table: &mut GlobalDefinitionTable, global_tracker: &mut GlobalTracker) -> Result<String, WErr> {
     let mut local_variables = LocalVariableTable::new();
 
@@ -70,8 +71,9 @@ pub fn compile_function(fid: FunctionID, function: FunctionToken, global_table: 
     Ok(final_contents)
 }
 
+/// Recursively compiles lines provided to it e.g. function body, while body, etc. Returns assembly
 fn recursively_compile_lines(fid: FunctionID, lines: &[LineTokens], return_variable: &Option<AddressedTypeRef>, break_tag: &Option<&str>, local_variables: &mut LocalVariableTable, global_table: &mut GlobalDefinitionTable, global_tracker: &mut GlobalTracker) -> Result<(String, bool), WErr> {
-    local_variables.enter_block();
+    local_variables.enter_scope();
     let mut contents = AssemblyBuilder::new();
 
     let mut last_is_return = false;
@@ -191,7 +193,7 @@ fn recursively_compile_lines(fid: FunctionID, lines: &[LineTokens], return_varia
         }
     }
 
-    local_variables.leave_block();
+    local_variables.leave_scope();
 
     Ok((contents.finish(), last_is_return))
 }

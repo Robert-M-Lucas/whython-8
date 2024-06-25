@@ -2,6 +2,7 @@ use thiserror::Error;
 
 #[allow(dead_code)]
 #[derive(Error, Debug)]
+/// Errors occurring during evaluation
 pub enum EvalErrs {
     #[error("Expected an indirection of {0} but found {1}")]
     BadIndirection(usize, usize),

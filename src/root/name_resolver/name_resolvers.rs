@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use std::rc::Rc;
 use crate::root::builtin::{BuiltinInlineFunction, InlineFunctionGenerator};
 use crate::root::compiler::local_variable_table::LocalVariableTable;
-use crate::root::errors::name_resolver_errors::NRErrors;
+use crate::root::errors::name_resolver_errors::NRErrs;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::ob::OB;
@@ -177,7 +177,7 @@ impl GlobalDefinitionTable {
 
         let (name, containing) = match full_name.token() {
             FullNameTokens::Name(n, c) => (n, c),
-            _ => WErr::ne(NRErrors::ExpectedTypeNotMethodOrAttribute, find_error_point(full_name, full_name.location()))?
+            _ => WErr::ne(NRErrs::ExpectedTypeNotMethodOrAttribute, find_error_point(full_name, full_name.location()))?
         };
 
         let name = if name.name() == "Self" && containing.is_some() {
@@ -188,7 +188,7 @@ impl GlobalDefinitionTable {
             tree.get_entry(name.name()).map(|val| match val {
                     NameTreeEntry::Type(t) => Ok(TypeRef::new(*t, *indirection)),
                     NameTreeEntry::Function(_) => {
-                        WErr::ne(NRErrors::FoundFunctionNotType(name.name().clone()), full_name.location().clone())
+                        WErr::ne(NRErrs::FoundFunctionNotType(name.name().clone()), full_name.location().clone())
                     }
                 })
         };
@@ -209,10 +209,10 @@ impl GlobalDefinitionTable {
         }
 
         if let Some(r) = self.builtin_function_name_table.get(name.name()) {
-            return WErr::ne(NRErrors::FoundFunctionNotType(name.name().clone()), full_name.location().clone())
+            return WErr::ne(NRErrs::FoundFunctionNotType(name.name().clone()), full_name.location().clone())
         }
 
-        WErr::ne(NRErrors::TypeNotFound(name.name().clone()), full_name.location().clone())
+        WErr::ne(NRErrs::TypeNotFound(name.name().clone()), full_name.location().clone())
     }
 
     pub fn get_size(&mut self, t: &TypeRef) -> ByteSize {
@@ -272,7 +272,7 @@ impl GlobalDefinitionTable {
     }
 
     pub fn resolve_name(&mut self, name: &SimpleNameToken, containing_class: Option<&SimpleNameToken>, local_variable_table: &LocalVariableTable) -> Result<NameResult, WErr> {
-        if let Some(variable) = local_variable_table.get_name(name.name()) {
+        if let Some(variable) = local_variable_table.get(name.name()) {
             return Ok(NameResult::Variable(variable))
         }
 
@@ -303,7 +303,7 @@ impl GlobalDefinitionTable {
             return Ok(NameResult::Function(*r));
         }
 
-        WErr::ne(NRErrors::CannotFindName(name.name().clone()), name.location().clone())
+        WErr::ne(NRErrs::CannotFindName(name.name().clone()), name.location().clone())
     }
 
     pub fn get_operator_function(&self, lhs: TypeID, operator: &OperatorToken, kind: PrefixOrInfixEx) -> Result<FunctionID, WErr> {
@@ -312,15 +312,15 @@ impl GlobalDefinitionTable {
         if let Some(op_name) = op_name {
             self.impl_definitions.get(&lhs).and_then(|f| f.get(&op_name)).ok_or(
                 WErr::n(
-                    NRErrors::OpMethodNotImplemented(op_name.to_string(), self.get_type(lhs).name().to_string(), operator.operator().to_str().to_string()),
+                    NRErrs::OpMethodNotImplemented(op_name.to_string(), self.get_type(lhs).name().to_string(), operator.operator().to_str().to_string()),
                     operator.location().clone()
                 )
             ).copied()
         }
         else {
             WErr::ne(match kind {
-                PrefixOrInfixEx::Prefix => NRErrors::OpCantBePrefix(operator.operator().to_str().to_string()),
-                PrefixOrInfixEx::Infix => NRErrors::OpCantBeInfix(operator.operator().to_str().to_string()),
+                PrefixOrInfixEx::Prefix => NRErrs::OpCantBePrefix(operator.operator().to_str().to_string()),
+                PrefixOrInfixEx::Infix => NRErrs::OpCantBeInfix(operator.operator().to_str().to_string()),
             }, operator.location().clone())
         }
     }

@@ -1,7 +1,8 @@
 use thiserror::Error;
 
+/// An error in the compiler step, excluding errors covered in `EvalErrs`
 #[derive(Error, Debug)]
-pub enum CError {
+pub enum CErrs {
     #[error("Int literal ({0}) exceeds maximum value ({1}) for type")]
     IntLiteralExceedsMax(i128, i128),
     #[error("Int literal ({0}) below minimum value ({1}) for type")]

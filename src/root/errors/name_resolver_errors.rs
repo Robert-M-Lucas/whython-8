@@ -2,7 +2,8 @@ use thiserror::Error;
 
 #[allow(dead_code)]
 #[derive(Error, Debug)]
-pub enum NRErrors {
+/// Errors occurring during name resolution
+pub enum NRErrs {
     #[error("No top-level main function found")]
     NoMain,
     #[error("Cannot create 'impl' for an indirect type")]

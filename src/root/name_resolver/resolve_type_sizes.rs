@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use derive_getters::Dissolve;
-use crate::root::errors::name_resolver_errors::NRErrors;
+use crate::root::errors::name_resolver_errors::NRErrs;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
 use crate::root::shared::common::TypeRef;
@@ -54,7 +54,7 @@ pub fn resolve_type_sizes(
         }
         else {
             // Type not in unsized_types or type table due to circular definition
-            return WErr::ne(NRErrors::CircularType(name), attribute_name.location().clone());
+            return WErr::ne(NRErrs::CircularType(name), attribute_name.location().clone());
         }
 
         processed_attributes.push((offset.0, attribute_name, attribute_type));

@@ -9,31 +9,41 @@ pub mod parser_errors;
 pub mod name_resolver_errors;
 pub mod evaluable_errors;
 
+/// Universal error for Whython-8
 pub struct WErr {
     error: String,
     location: Option<Location> // ! Important, don't do file reads unless necessary (i.e. Display)
 }
 
 impl WErr {
+    /// Create a new error
+    ///
+    /// EXPENSIVE - Use only for irrecoverable errors!
     pub fn n(error: impl Display, location: Location) -> WErr {
         let w = WErr {
             error: format!("{error}"),
             location: Some(location)
         };
         #[cfg(debug_assertions)]
+        panic!();
         if DEBUG_ON_ERROR {
+
             println!("{}", Backtrace::capture());
             println!("\n{w}");
         }
         w
     }
 
+    /// Create a new error wrapped in `Err`
+    ///
+    /// EXPENSIVE - Use only for irrecoverable errors!
     pub fn ne<T>(error: impl Display, location: Location) -> Result<T, WErr> {
         let w = WErr {
             error: format!("{error}"),
             location: Some(location)
         };
         #[cfg(debug_assertions)]
+        panic!();
         if DEBUG_ON_ERROR {
             println!("{}", Backtrace::capture());
             println!("\n{w}");
@@ -41,6 +51,7 @@ impl WErr {
         Err(w)
     }
 
+    /// Create an error with no location information. Use only if truly applicable e.g. no main
     pub fn locationless<T>(error: impl Display) -> Result<T, WErr> {
         Err(WErr {
             error: format!("{error}"),

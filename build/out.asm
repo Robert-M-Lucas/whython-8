@@ -2,17 +2,6 @@
 
 section .text
 
-_2:
-    push rbp
-    mov rbp, rsp
-    mov qword [rbp-8], 1
-    mov rax, rbp
-    add rax, -8
-    mov qword [rbp+16], rax
-    leave
-    ret
-
-
 main:
     push rbp
     mov rbp, rsp
@@ -40,6 +29,17 @@ main:
     add rsp, 73
     mov qword [rbp-81], 1
     mov rax, qword [rbp-81]
+    leave
+    ret
+
+
+_2:
+    push rbp
+    mov rbp, rsp
+    mov qword [rbp-8], 1
+    mov rax, rbp
+    add rax, -8
+    mov qword [rbp+16], rax
     leave
     ret
 

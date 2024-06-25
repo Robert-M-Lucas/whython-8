@@ -16,6 +16,7 @@ use crate::root::shared::common::{ByteSize, LocalAddress};
 //     }
 // }
 
+/// Align a number of bytes to the next multiple of 16
 pub fn align_16_bytes(bytes: ByteSize) -> ByteSize {
     let bytes = bytes.0;
     if bytes % 16 == 0 {
@@ -25,6 +26,7 @@ pub fn align_16_bytes(bytes: ByteSize) -> ByteSize {
     }
 }
 
+/// Align a number of bytes to the next multiple of 16 + 8
 pub fn align_16_bytes_plus_8(bytes: ByteSize) -> ByteSize {
     let bytes = bytes.0;
     if bytes % 16 == 8 {
@@ -74,6 +76,8 @@ pub fn align_16_bytes_plus_8(bytes: ByteSize) -> ByteSize {
 //     }
 // }
 
+/// Copies data. Expects `from` to be the address of a pointer pointing to the data to move
+/// and `to` to be the target
 pub fn copy_from_indirect(from: LocalAddress, to: LocalAddress, amount: ByteSize) -> String {
     if amount == ByteSize(0) { return String::new(); }
 
@@ -113,6 +117,8 @@ pub fn copy_from_indirect(from: LocalAddress, to: LocalAddress, amount: ByteSize
     output.finish()
 }
 
+/// Copies data. Expects `from` to be the address of the data to move
+/// and `to` to be a pointer to the target
 pub fn copy_to_indirect(from: LocalAddress, to: LocalAddress, amount: ByteSize) -> String {
     if amount == ByteSize(0) { return String::new(); }
 
@@ -152,6 +158,8 @@ pub fn copy_to_indirect(from: LocalAddress, to: LocalAddress, amount: ByteSize) 
     output.finish()
 }
 
+/// Copies data. Expects `from` to be the address of the data to move
+/// and `to` to be the target
 pub fn copy(from: LocalAddress, to: LocalAddress, amount: ByteSize) -> String {
     if amount == ByteSize(0) { return String::new(); }
 

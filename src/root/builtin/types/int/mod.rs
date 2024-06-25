@@ -12,7 +12,7 @@ use crate::root::builtin::types::int::p_add::IntPAdd;
 use crate::root::builtin::types::int::p_sub::{IntAsSub, IntPSub};
 use crate::root::builtin::types::int::printi::PrintI;
 use crate::root::builtin::types::int::sub::IntSub;
-use crate::root::compiler::compiler_errors::CError;
+use crate::root::compiler::compiler_errors::CErrs;
 use crate::root::errors::evaluable_errors::EvalErrs;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
@@ -95,10 +95,10 @@ impl Type for IntType {
             }
             LiteralTokens::Int(value) => {
                 if *value > i64::MAX as i128 {
-                    return WErr::ne(CError::IntLiteralExceedsMax(*value, i64::MAX as i128), literal.location().clone());
+                    return WErr::ne(CErrs::IntLiteralExceedsMax(*value, i64::MAX as i128), literal.location().clone());
                 }
                 if *value < i64::MIN as i128 {
-                    return WErr::ne(CError::IntLiteralBelowMin(*value, i64::MAX as i128), literal.location().clone());
+                    return WErr::ne(CErrs::IntLiteralBelowMin(*value, i64::MAX as i128), literal.location().clone());
                 }
 
                 let value = *value as i64;
