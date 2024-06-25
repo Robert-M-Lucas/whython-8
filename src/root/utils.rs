@@ -4,6 +4,7 @@ use std::ops::{Add, Rem, Sub};
 use std::process::ExitStatus;
 use color_print::cprintln;
 
+/// Tries to run an executable showing a suitable message upon failure
 pub fn try_run_program(name: &str, exit_status: io::Result<ExitStatus>) -> Result<ExitStatus, ()> {
     match exit_status {
         Ok(e) => Ok(e),
@@ -18,6 +19,7 @@ pub fn try_run_program(name: &str, exit_status: io::Result<ExitStatus>) -> Resul
     }
 }
 
+/// Times how long code takes to execute and prints it
 #[macro_export]
 macro_rules! time {
     ($($tts:tt)*) => {
@@ -41,6 +43,7 @@ macro_rules! time {
 //     };
 // }
 
+/// Times how long code takes to execute and puts it in `out`
 #[macro_export]
 macro_rules! ret_time {
     ($out: expr, $($tts:tt)*) => {
@@ -50,6 +53,7 @@ macro_rules! ret_time {
     };
 }
 
+/// Aligns a number to the next multiple of `alignment`
 #[allow(dead_code)]
 pub fn align<T: Copy + Sub<Output = T> + Rem<Output = T> + Add<Output = T>>(
     num: T,
@@ -58,6 +62,7 @@ pub fn align<T: Copy + Sub<Output = T> + Rem<Output = T> + Add<Output = T>>(
     num + (alignment - (num % alignment)) % alignment
 }
 
+/// Prints a warning
 pub fn warn(msg: &str) {
     cprintln!("\n<y,bold>Warning:</> <y>{}</>", msg);
 }

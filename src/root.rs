@@ -99,7 +99,7 @@ pub fn main_args(args: Args) -> Result<(), WErr> {
 
     #[cfg(target_os = "linux")]
     {
-        println!("Linking (gcc)... ");
+        print!("Linking (gcc)... ");
         time!(
             link_gcc(&args.output).unwrap();
         );

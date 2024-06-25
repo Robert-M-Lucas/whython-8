@@ -19,7 +19,7 @@ use crate::root::shared::common::{ByteSize, FunctionID, TypeID};
 use crate::root::shared::types::Type;
 
 
-/// A whython-code-defined type
+/// A Whython-code defined type
 #[derive(Getters)]
 pub struct UserType {
     id: TypeID,
@@ -54,6 +54,8 @@ impl Type for UserType {
 }
 
 // ! Unoptimised
+/// Converts parsed tokens into a collection of functions to be compiled and a `GlobalDefinitionTable`
+/// with function signatures and type definitions
 pub fn resolve_names(ast: Vec<TopLevelTokens>, global_table: &mut GlobalDefinitionTable) -> Result<HashMap<FunctionID, FunctionToken>, WErr> {
     let mut ast = ast;
 

@@ -24,6 +24,7 @@ enum NameTreeEntry {
 }
 
 #[derive(Default, Debug)]
+/// Table of names and what they correspond to
 struct NameTree {
     table: HashMap<String, NameTreeEntry>
 }
@@ -38,7 +39,7 @@ impl NameTree {
     }
 }
 
-/// Top level of recursive tree containing all named objects/functions/types
+/// Top level of tree containing all named objects/functions/types
 #[derive(Default)]
 struct TopLevelNameTree {
     table: HashMap<Rc<PathBuf>, NameTree>
@@ -55,6 +56,7 @@ impl TopLevelNameTree {
 }
 
 
+/// Tables containing all global, unchanging definitions from name resolution step
 pub struct GlobalDefinitionTable {
     id_counter: isize,
     type_definitions: HashMap<TypeID, Box<dyn Type>>,
@@ -65,7 +67,6 @@ pub struct GlobalDefinitionTable {
     builtin_type_name_table: HashMap<String, TypeID>,
     builtin_function_name_table: HashMap<String, FunctionID>
 }
-
 
 pub enum NameResult {
     Function(FunctionID),
@@ -81,7 +82,6 @@ impl Default for GlobalDefinitionTable {
 
 impl GlobalDefinitionTable {
     pub fn new() -> GlobalDefinitionTable {
-
         GlobalDefinitionTable {
             id_counter: 2,
             type_definitions: Default::default(),
@@ -93,6 +93,8 @@ impl GlobalDefinitionTable {
             builtin_function_name_table: Default::default(),
         }
     }
+
+    /// Registers a builtin type
     pub fn register_builtin_type(&mut self, t: Box<dyn Type>) {
         let id = t.id();
         self.builtin_type_name_table.insert(t.name().to_string(), id);
@@ -104,12 +106,14 @@ impl GlobalDefinitionTable {
     //     self.builtin_function_name_table.insert(name, id);
     // }
 
+    /// Gets a mutable reference to an impl table for a type
     fn get_impl_mut(&mut self, t: TypeID) -> &mut HashMap<String, FunctionID> {
         self.impl_definitions.entry(t).or_default();
 
         self.impl_definitions.get_mut(&t).unwrap()
     }
 
+    /// Registers an inline assembly function
     pub fn register_inline_function(&mut self, inline: &dyn BuiltinInlineFunction) {
         self.function_signatures.insert(inline.id(), inline.signature());
         self.inline_functions.insert(inline.id(), inline.inline());
@@ -122,6 +126,9 @@ impl GlobalDefinitionTable {
         }
     }
 
+    /// Adds a type from a `StructToken`
+    ///
+    /// `TypeID` returned MUST BE USED to set a type definition
     pub fn add_from_struct_token(&mut self, st: &StructToken) -> TypeID {
         // TODO
         let file_level_tree = self.name_table.get_tree_mut(st.location().path().unwrap().clone());
@@ -133,6 +140,9 @@ impl GlobalDefinitionTable {
         id
     }
 
+    /// Adds a function from a `FunctionToken`
+    ///
+    /// `FunctionID` returned MUST BE USED to set a function signature
     pub fn add_from_function_token(&mut self, ft: &FunctionToken, containing_class: Option<TypeID>) -> FunctionID {
         let id = if ft.name().name() == "main" {
             FunctionID(0)
@@ -156,14 +166,17 @@ impl GlobalDefinitionTable {
         id
     }
 
+    /// Adds a function signature for a previously given `FunctionID`
     pub fn add_function_signature(&mut self, given_id: FunctionID, function_signature: FunctionSignature) {
         self.function_signatures.insert(given_id, function_signature);
     }
 
+    /// Adds a type definition for a previously given `TypeID`
     pub fn add_type(&mut self, given_id: TypeID, definition: Box<dyn Type>) {
         self.type_definitions.insert(given_id, definition);
     }
 
+    /// Takes a name and resolves it to a type (or error)
     pub fn resolve_to_type_ref(&mut self, name: &FullNameWithIndirectionToken) -> Result<TypeRef, WErr> {
         let (indirection, full_name) = (name.indirection(), name.inner());
 
@@ -215,6 +228,7 @@ impl GlobalDefinitionTable {
         WErr::ne(NRErrs::TypeNotFound(name.name().clone()), full_name.location().clone())
     }
 
+    /// Gets the size of a given type
     pub fn get_size(&mut self, t: &TypeRef) -> ByteSize {
         if t.indirection().has_indirection() {
             POINTER_SIZE
@@ -224,17 +238,20 @@ impl GlobalDefinitionTable {
         }
     }
 
+    /// Adds a local, unnamed variable to the `LocalVariableTable` and returns the address
     pub fn add_local_variable_unnamed_base(&mut self, t: TypeRef, local_variable_table: &mut LocalVariableTable) -> AddressedTypeRef {
         let size = self.get_size(&t);
         let address = local_variable_table.add_new_unnamed(size);
         AddressedTypeRef::new(address, t)
     }
 
+    /// Adds a local, unnamed variable to the `LocalVariableTable` and returns the address
     pub fn add_local_variable_unnamed(&mut self, t: &FullNameWithIndirectionToken, local_variable_table: &mut LocalVariableTable) -> Result<AddressedTypeRef, WErr> {
         let t = self.resolve_to_type_ref(t)?;
         Ok(self.add_local_variable_unnamed_base(t, local_variable_table))
     }
 
+    /// Adds a local, named variable to the `LocalVariableTable` and returns the address
     pub fn add_local_variable_named(&mut self, name: String, t: &FullNameWithIndirectionToken, local_variable_table: &mut LocalVariableTable) -> Result<AddressedTypeRef, WErr> {
         let t = self.resolve_to_type_ref(t)?;
         let size = self.get_size(&t);
@@ -244,22 +261,27 @@ impl GlobalDefinitionTable {
         Ok(address)
     }
 
+    /// Returns the `FunctionSignature` of a function
     pub fn get_function_signature(&self, function_id: FunctionID) -> OB<FunctionSignature> {
         OB::b(self.function_signatures.get(&function_id).as_ref().unwrap())
     }
 
+    /// Returns whether a main function has been defined
     pub fn has_main(&self) -> bool {
         self.function_signatures.contains_key(&FunctionID(0))
     }
 
+    /// Returns a `Type` specified by the `TypeID`. Panics if it does not exist
     pub fn get_type(&self, type_id: TypeID) -> &dyn Type {
         (*self.type_definitions.get(&type_id).as_ref().unwrap()).as_ref()
     }
 
+    /// Returns a `Type` specified by the `TypeID`, if it exists
     pub fn try_get_type(&self, type_id: TypeID) -> Option<&dyn Type> {
         self.type_definitions.get(&type_id).as_ref().map(|x| (*x).as_ref())
     }
 
+    /// Converts a `TypeRef` to a user-readable format
     pub fn get_type_name(&self, type_ref: &TypeRef) -> String {
         format!("{}{}",
                  unsafe {
@@ -271,6 +293,7 @@ impl GlobalDefinitionTable {
         )
     }
 
+    /// Returns what a name resolves to
     pub fn resolve_name(&mut self, name: &SimpleNameToken, containing_class: Option<&SimpleNameToken>, local_variable_table: &LocalVariableTable) -> Result<NameResult, WErr> {
         if let Some(variable) = local_variable_table.get(name.name()) {
             return Ok(NameResult::Variable(variable))
@@ -306,6 +329,7 @@ impl GlobalDefinitionTable {
         WErr::ne(NRErrs::CannotFindName(name.name().clone()), name.location().clone())
     }
 
+    /// Gets the corresponding function for an operator
     pub fn get_operator_function(&self, lhs: TypeID, operator: &OperatorToken, kind: PrefixOrInfixEx) -> Result<FunctionID, WErr> {
         let op_name = operator.operator().get_method_name(kind);
 
@@ -325,6 +349,7 @@ impl GlobalDefinitionTable {
         }
     }
 
+    /// Returns a function specified by the `FunctionID`
     pub fn get_function(&self, function: FunctionID) -> (OB<FunctionSignature>, Option<&InlineFunctionGenerator>) {
         let signature = self.get_function_signature(function);
         let inline = self.inline_functions.get(&function);

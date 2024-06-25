@@ -4,6 +4,7 @@ use derive_getters::{Dissolve, Getters};
 
 #[derive(Debug, PartialEq, Eq, Hash, Display, Copy, Clone)]
 #[display(fmt = "TypeID: {}", .0)]
+/// A unique type ID. Negative is builtin, positive is user-defined
 pub struct TypeID(pub isize);
 
 impl TypeID {
@@ -18,6 +19,7 @@ impl TypeID {
 
 #[derive(Debug, PartialEq, Eq, Hash, Display, Copy, Clone)]
 #[display(fmt = "FunctionID: {}", .0)]
+/// A unique function ID. Negative is builtin, 0 is main, and positive is user-defined
 pub struct FunctionID(pub isize);
 
 impl FunctionID {
@@ -25,6 +27,7 @@ impl FunctionID {
         self.0 == 0
     }
 
+    /// Gets an identifier for the function that can be used in assembly
     pub fn string_id(&self) -> String {
         if self.is_main() {
             return "main".to_string();
@@ -43,6 +46,7 @@ impl FunctionID {
 #[derive(Debug, PartialEq, Eq, Hash, Display, Copy, Clone)]
 #[derive(Add, AddAssign, Sub, SubAssign)]
 #[display(fmt = "Indirection: {}", .0)]
+/// The indirection to an address i.e. how many pointers you have to go through
 pub struct Indirection(pub usize);
 
 impl Indirection {
@@ -54,10 +58,13 @@ impl Indirection {
 #[derive(Debug, PartialEq, Eq, Hash, Display, Copy, Clone, Default)]
 #[derive(Add, AddAssign, Sub, SubAssign)]
 #[display(fmt = "ByteSize: {}", .0)]
+/// The size of something, in bytes
 pub struct ByteSize(pub usize);
 
 #[derive(Debug, PartialEq, Eq, Hash, Copy, Clone)]
 #[derive(Add, AddAssign, Sub, SubAssign)]
+/// A stack-frame-relative local address. Like in assembly, negative addresses are in the current
+/// frame whereas positive addresses are in a previous one
 pub struct LocalAddress(pub isize);
 
 impl Display for LocalAddress {
@@ -72,6 +79,7 @@ impl Display for LocalAddress {
 }
 
 #[derive(Getters, Clone, PartialEq, Debug)]
+/// A `TypeID` with `Indirection`
 pub struct TypeRef {
     type_id: TypeID,
     indirection: Indirection
@@ -98,6 +106,7 @@ impl TypeRef {
 }
 
 #[derive(Getters, Clone, Dissolve, Debug)]
+/// A `TypeRef` with a `LocalAddress`
 pub struct AddressedTypeRef {
     local_address: LocalAddress,
     type_ref: TypeRef

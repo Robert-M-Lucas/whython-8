@@ -1,3 +1,4 @@
+/// Represents data that may be owned or borrowed
 pub enum OB<'a, T> {
     Owned(T),
     Borrowed(&'a T)

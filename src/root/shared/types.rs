@@ -2,6 +2,7 @@ use crate::root::errors::WErr;
 use crate::root::parser::parse_function::parse_literal::LiteralToken;
 use crate::root::shared::common::{ByteSize, LocalAddress, TypeID};
 
+/// A type
 pub trait Type {
     fn id(&self) -> TypeID;
 

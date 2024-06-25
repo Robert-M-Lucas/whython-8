@@ -6,6 +6,45 @@ use crate::ret_time;
 
 use crate::root::utils::try_run_program;
 
+/// Assembles written assembly code
+pub fn assemble(output: &str) -> Result<(), ()> {
+    if !try_run_program(
+        "nasm",
+        Command::new("nasm")
+            .args(["-f", "elf64", format!("{output}.asm").as_str()])
+            .status(),
+    )?
+    .success()
+    {
+        cprintln!("<r,bold>NASM assembler step failed</>");
+        return Err(());
+    }
+    Ok(())
+}
+
+/// Links assembled code
+pub fn link_gcc(output: &str) -> Result<(), ()> {
+    if !try_run_program(
+        "gcc",
+        Command::new("gcc")
+            .args([
+                format!("{output}.o").as_str(),
+                "-o",
+                format!("{output}.out").as_str(),
+            ])
+            .status(),
+    )?
+        .success()
+    {
+        cprintln!("<r,bold>gcc linking step failed</>");
+        return Err(());
+    }
+
+    Ok(())
+}
+
+
+/// Runs the built program
 pub fn run(output: &str) {
     let time;
     ret_time!(time,
@@ -31,40 +70,4 @@ pub fn run(output: &str) {
     // ? Here to circumvent some timing issues
     println!("\nExited with return code {}", code);
     cprintln!("<g,bold>Completed [{:?}]</>", time);
-}
-
-pub fn assemble(output: &str) -> Result<(), ()> {
-    if !try_run_program(
-        "nasm",
-        Command::new("nasm")
-            .args(["-f", "elf64", format!("{output}.asm").as_str()])
-            .status(),
-    )?
-    .success()
-    {
-        cprintln!("<r,bold>NASM assembler step failed</>");
-        return Err(());
-    }
-    Ok(())
-}
-
-
-pub fn link_gcc(output: &str) -> Result<(), ()> {
-    if !try_run_program(
-        "gcc",
-        Command::new("gcc")
-            .args([
-                format!("{output}.o").as_str(),
-                "-o",
-                format!("{output}.out").as_str(),
-            ])
-            .status(),
-    )?
-    .success()
-    {
-        cprintln!("<r,bold>gcc linking step failed</>");
-        return Err(());
-    }
-
-    Ok(())
 }

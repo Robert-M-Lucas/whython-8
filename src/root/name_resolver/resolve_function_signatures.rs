@@ -7,6 +7,7 @@ use crate::root::parser::parse_function::FunctionToken;
 use crate::root::parser::parse_name::SimpleNameToken;
 
 #[derive(Getters)]
+/// A signature for a function
 pub struct FunctionSignature {
     dynamic: bool,
     args: Vec<(SimpleNameToken, TypeRef)>,
@@ -14,6 +15,15 @@ pub struct FunctionSignature {
 }
 
 impl FunctionSignature {
+    pub fn new(dynamic: bool, args: Vec<(SimpleNameToken, TypeRef)>, return_type: Option<TypeRef>) -> FunctionSignature {
+        FunctionSignature {
+            dynamic,
+            args,
+            return_type
+        }
+    }
+
+    /// Creates a signature for a builtin (lacking location information) function
     pub fn new_inline_builtin(dynamic: bool, args: &[(&str, TypeRef)], return_type: Option<TypeRef>) -> FunctionSignature {
         FunctionSignature {
             dynamic,
@@ -21,16 +31,9 @@ impl FunctionSignature {
             return_type
         }
     }
-
-    pub fn new_custom(dynamic: bool, args: Vec<(SimpleNameToken, TypeRef)>, return_type: Option<TypeRef>) -> FunctionSignature {
-        FunctionSignature {
-            dynamic,
-            args,
-            return_type
-        }
-    }
 }
 
+/// Converts a `FunctionToken` into a `FunctionSignature`
 pub fn resolve_function_signature(function_token: &FunctionToken, global_table: &mut GlobalDefinitionTable) -> Result<FunctionSignature, WErr> {
     let mut args = Vec::new();
 

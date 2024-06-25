@@ -11,6 +11,7 @@ use crate::root::POINTER_SIZE;
 use crate::root::shared::common::{ByteSize, TypeID};
 
 #[derive(Dissolve)]
+/// A user type with TBD size
 pub struct UnsizedUserType {
     id: TypeID,
     name: String,
@@ -24,6 +25,7 @@ impl UnsizedUserType {
     }
 }
 
+/// Resolves the size of all user type
 pub fn resolve_type_sizes(
     unsized_type: UnsizedUserType,
     final_types: &mut HashMap<TypeID, UserType>,
