@@ -7,21 +7,12 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Full comments">
+    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Made assembly deterministic in debug mode">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/out.asm" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.asm" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/out.o" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/out.out" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.out" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/resolve.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/resolve.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/resolve_function_signatures.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/resolve_function_signatures.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/resolve_names.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/resolve_names.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/resolve_type_sizes.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/resolve_type_sizes.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/ob.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/ob.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/runner.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/runner.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/shared/common.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/shared/common.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/shared/types.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/shared/types.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/utils.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/utils.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/compile.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -224,7 +215,7 @@
       <workItem from="1718895344843" duration="25000" />
       <workItem from="1718896726550" duration="3145000" />
       <workItem from="1718964347320" duration="4834000" />
-      <workItem from="1719321580670" duration="2999000" />
+      <workItem from="1719321580670" duration="3365000" />
     </task>
     <task id="LOCAL-00001" summary="Changes">
       <option name="closed" value="true" />
@@ -586,7 +577,15 @@
       <option name="project" value="LOCAL" />
       <updated>1719324580280</updated>
     </task>
-    <option name="localTasksCounter" value="46" />
+    <task id="LOCAL-00046" summary="Made assembly deterministic in debug mode">
+      <option name="closed" value="true" />
+      <created>1719324945974</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1719324945974</updated>
+    </task>
+    <option name="localTasksCounter" value="47" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -604,7 +603,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Started adding support for inline functions" />
     <MESSAGE value="Added first inline function" />
     <MESSAGE value="Added ability for first inline function to run" />
     <MESSAGE value="Improved function call code" />
@@ -629,7 +627,8 @@
     <MESSAGE value="Comments up to (inlcuding) errors folder" />
     <MESSAGE value="Fixes" />
     <MESSAGE value="Full comments" />
-    <option name="LAST_COMMIT_MESSAGE" value="Full comments" />
+    <MESSAGE value="Made assembly deterministic in debug mode" />
+    <option name="LAST_COMMIT_MESSAGE" value="Made assembly deterministic in debug mode" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

@@ -1,26 +1,3 @@
-fn cool() -> &int {
-    return &1;
-}
-
-fn other_two(a: int) {
-    printi(a);
-}
-
 fn main() -> int {
-    other_two(12);
-
-    let x: &int = cool();
-
-    // Break alignment too :)
-    let d: bool = false;
-    let du: int = 123;
-    let dum: int = 123;
-    let dumm: int = 123;
-    let dummy: int = 123;
-
-    let a: int = *x;
-
-    printi(a);
-
     return 1;
 }
