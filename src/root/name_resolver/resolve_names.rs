@@ -2,6 +2,7 @@ use std::any::Any;
 use std::collections::HashMap;
 
 use derive_getters::Getters;
+use itertools::Itertools;
 use crate::root::errors::name_resolver_errors::NRErrs;
 use crate::root::errors::WErr;
 
@@ -131,7 +132,12 @@ pub fn resolve_names(ast: Vec<TopLevelTokens>, global_table: &mut GlobalDefiniti
     while !unsized_final_types.is_empty() {
         let next_type_id = *unsized_final_types.keys().next().unwrap();
         let unsized_type = unsized_final_types.remove(&next_type_id).unwrap();
-        resolve_type_sizes(unsized_type, &mut final_types, &mut unsized_final_types, global_table)?;
+        if let Err(mut e) = resolve_type_sizes(unsized_type, &mut final_types, &mut unsized_final_types, global_table)? {
+            let n = e.iter().rev().find(|(_, id, _)| *id == e.first().unwrap().1).unwrap();
+            e.first_mut().unwrap().0 = n.0.clone();
+
+            return WErr::ne(NRErrs::CircularType(e.last().unwrap().0.clone(), e.iter().rev().map(|(s, _, _)| s).join(" -> ").to_string()), e.last().unwrap().2.clone());
+        };
     }
 
     for (id, user_type) in final_types {

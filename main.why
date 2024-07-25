@@ -1,20 +1,16 @@
-struct TestStruct {
-    a: int,
-    b: int
+struct StructA {
+    a: StructB
 }
 
-impl TestStruct {
-
+struct StructB {
+    a: StructC
 }
 
-fn test(a: int) -> int {
-    return a + 1;
+struct StructC {
+    a: StructB
 }
 
 fn main() -> int {
     let y: int = 3;
-
-    let x: TestStruct = TestStruct { a: 12, b: 13 };
-
     return y;
 }

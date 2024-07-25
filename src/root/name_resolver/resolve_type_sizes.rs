@@ -31,7 +31,7 @@ pub fn resolve_type_sizes(
     final_types: &mut HashMap<TypeID, UserType>,
     unsized_types: &mut HashMap<TypeID, UnsizedUserType>,
     global_table: &GlobalDefinitionTable,
-) -> Result<ByteSize, WErr> {
+) -> Result<Result<ByteSize, Vec<(String, TypeID, Location)>>, WErr> {
     let (id, name, attributes, location) = unsized_type.dissolve();
 
     let mut size: ByteSize = ByteSize(0);
@@ -50,11 +50,17 @@ pub fn resolve_type_sizes(
             size += sized_type.size();
         }
         else if let Some(unsized_type) = unsized_types.remove(attribute_type.type_id()) {
-            size += resolve_type_sizes(unsized_type, final_types, unsized_types, global_table)?;
+            size += match resolve_type_sizes(unsized_type, final_types, unsized_types, global_table)? {
+                Ok(s) => s,
+                Err(mut e) => {
+                    e.push((name, id, location));
+                    return Ok(Err(e));
+                }
+            };
         }
         else {
             // Type not in unsized_types or type table due to circular definition
-            return WErr::ne(NRErrs::CircularType(name), attribute_name.location().clone());
+            return Ok(Err(vec![(String::new(), *attribute_type.type_id(), Location::builtin()), (name, id, location)]))
         }
 
         processed_attributes.push((offset, attribute_name, attribute_type));
@@ -62,5 +68,5 @@ pub fn resolve_type_sizes(
 
     final_types.insert(id, UserType::new(id, name, size, processed_attributes, location));
 
-    Ok(size)
+    Ok(Ok(size))
 }
