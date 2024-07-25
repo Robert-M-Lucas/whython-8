@@ -18,14 +18,14 @@ pub struct IfToken {
     else_contents: Option<Vec<LineTokens>>,
 }
 
-pub fn test_parse_if<'b>(s: Span<'_>) -> ParseResult<Span, LineTestFn<'_, 'b>> {
+pub fn test_parse_if<'a, 'b>(s: Span<'a>) -> ParseResult<Span, LineTestFn<'a, 'b>> {
     match tag("if")(s) {
         Ok(_) => Ok((s, |x, c| parse_if(x, c).map(|(s, x)| (s, LineTokens::If(x))))),
         Err(e) => Err(e),
     }
 }
 
-pub fn parse_if<'a>(s: Span<'a>, containing_class: Option<&SimpleNameToken>) -> ParseResult<'a, Span<'a>, IfToken> {
+pub fn parse_if<'a, 'b>(s: Span<'a>, containing_class: Option<&'b SimpleNameToken>) -> ParseResult<'a, Span<'a>, IfToken> {
     let (s, l) = tag("if")(s)?;
     let (s, _) = discard_ignored(s)?;
     let (s, content) = default_section(s, '(')?;

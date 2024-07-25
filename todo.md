@@ -1,6 +1,7 @@
 
-- Add array support
 - Add struct initialiser support
+- Account for brackets when reading until ',' in arguments / struct inits / arrays (eventually)
+- Add array support
 - Add support for non-toplevel function calling
 - Add rich parser errors
 - Add support for multiple files

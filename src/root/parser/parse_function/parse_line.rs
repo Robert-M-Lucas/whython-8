@@ -25,7 +25,7 @@ pub enum LineTokens {
 /// fn(line span, Option<class name>)
 pub type LineTestFn<'a, 'b> = fn(Span<'a>, Option<&'b SimpleNameToken>) -> ParseResult<'a, Span<'a>, LineTokens>;
 
-pub fn parse_lines<'a>(contents: Span<'a>, containing_class: Option<&SimpleNameToken>) -> ParseResult<'a, (), Vec<LineTokens>> {
+pub fn parse_lines<'a, 'b>(contents: Span<'a>, containing_class: Option<&'b SimpleNameToken>) -> ParseResult<'a, (), Vec<LineTokens>> {
     let mut lines = Vec::new();
 
     let mut c = contents;
@@ -44,7 +44,7 @@ pub fn parse_lines<'a>(contents: Span<'a>, containing_class: Option<&SimpleNameT
     Ok(((), lines))
 }
 
-pub fn parse_line<'a>(s: Span<'a>, containing_class: Option<&SimpleNameToken>) -> ParseResult<'a, Span<'a>, LineTokens> {
+pub fn parse_line<'a, 'b>(s: Span<'a>, containing_class: Option<&'b SimpleNameToken>) -> ParseResult<'a, Span<'a>, LineTokens> {
     if let Ok((_, parser)) = alt((
         test_parse_break,
         test_parse_return,

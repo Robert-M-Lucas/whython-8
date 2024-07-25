@@ -1,7 +1,5 @@
 use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
-use crate::root::parser::parse_function::parse_literal::{
-    LiteralToken, parse_literal,
-};
+use crate::root::parser::parse_function::parse_literal::{LiteralToken, parse_literal};
 use crate::root::parser::parse_function::parse_operator::{OperatorToken, parse_operator};
 use b_box::b;
 use derive_getters::Getters;
@@ -11,6 +9,8 @@ use nom::character::complete::char;
 use crate::root::parser::parse_arguments::parse_arguments;
 use crate::root::parser::parse_name::{SimpleNameToken, parse_simple_name};
 use crate::root::parser::parse_blocks::default_section;
+use crate::root::parser::parse_function::parse_struct_init::{parse_struct_init, StructInitToken};
+use crate::root::parser::parse_struct::StructToken;
 use crate::root::parser::parse_util::discard_ignored;
 use crate::root::shared::common::Indirection;
 
@@ -35,6 +35,7 @@ pub enum EvaluableTokens {
     DynamicAccess(Box<EvaluableToken>, SimpleNameToken),
     FunctionCall(Box<EvaluableToken>, Vec<EvaluableToken>),
     Literal(LiteralToken),
+    StructInitialiser(StructInitToken),
     InfixOperator(Box<EvaluableToken>, OperatorToken, Box<EvaluableToken>),
     PrefixOperator(OperatorToken, Box<EvaluableToken>),
     None
@@ -55,6 +56,10 @@ impl FullNameWithIndirectionToken {
                 token: FullNameTokens::Name(simple, containing_class)
             }
         }
+    }
+
+    pub fn into_inner(self) -> FullNameToken {
+        self.inner
     }
 }
 
@@ -181,7 +186,7 @@ pub fn parse_full_name<'a>(s: Span<'a>, containing_class: Option<&SimpleNameToke
 //     }
 // }
 
-pub fn parse_evaluable<'a>(s: Span<'a>, containing_class: Option<&SimpleNameToken>, semicolon_terminated: bool) -> ParseResult<'a, Span<'a>, EvaluableToken> {
+pub fn parse_evaluable<'a, 'b>(s: Span<'a>, containing_class: Option<&'b SimpleNameToken>, semicolon_terminated: bool) -> ParseResult<'a, Span<'a>, EvaluableToken> {
     let mut s = s;
 
     let mut evaluables = Vec::new();
@@ -231,6 +236,7 @@ pub fn parse_evaluable<'a>(s: Span<'a>, containing_class: Option<&SimpleNameToke
                         .map(|(s, t)| (s, temp_from_token(s, EvaluableTokens::Literal(t))))
                 },
                 |x| parse_operator(x).map(|(s, t)| (s, TempEvaluableTokensOne::Operator(t))),
+                |x| parse_struct_init(x, containing_class.clone()).map(|(s, t)| (s, temp_from_token(s, EvaluableTokens::StructInitialiser(t)))),
                 |x| {
                     enum Kind {
                         Static,

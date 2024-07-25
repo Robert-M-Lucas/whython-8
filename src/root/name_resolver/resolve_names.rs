@@ -25,12 +25,12 @@ pub struct UserType {
     id: TypeID,
     name: String,
     size: ByteSize,
-    attributes: Vec<(usize, SimpleNameToken, TypeRef)>,
+    attributes: Vec<(ByteSize, SimpleNameToken, TypeRef)>,
     location: Location
 }
 
 impl UserType {
-    pub fn new(id: TypeID, name: String, size: ByteSize, attributes: Vec<(usize, SimpleNameToken, TypeRef)>, location: Location) -> UserType {
+    pub fn new(id: TypeID, name: String, size: ByteSize, attributes: Vec<(ByteSize, SimpleNameToken, TypeRef)>, location: Location) -> UserType {
         UserType { id, name, size, attributes, location }
     }
 }
@@ -46,6 +46,10 @@ impl Type for UserType {
 
     fn name(&self) -> &str {
         &self.name
+    }
+
+    fn get_attributes(&self) -> Result<&[(ByteSize, SimpleNameToken, TypeRef)], WErr> {
+        Ok(&self.attributes)
     }
 
     fn instantiate_from_literal(&self, location: &LocalAddress, literal: &LiteralToken) -> Result<String, WErr> {

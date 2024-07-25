@@ -22,6 +22,7 @@ pub mod parse_literal;
 pub mod parse_operator;
 pub mod parse_return;
 pub mod parse_while;
+mod parse_struct_init;
 
 #[derive(Debug, Getters, Dissolve)]
 pub struct FunctionToken {
@@ -43,7 +44,7 @@ pub fn test_parse_function(s: Span<'_>) -> ParseResult<Span, ToplevelTestFn<'_>>
     }
 }
 
-pub fn parse_function<'a>(s: Span<'a>, allow_self: Option<&SimpleNameToken>) -> ParseResult<'a, Span<'a>, FunctionToken> {
+pub fn parse_function<'a, 'b>(s: Span<'a>, allow_self: Option<&'b SimpleNameToken>) -> ParseResult<'a, Span<'a>, FunctionToken> {
     let location = Location::from_span(&s);
     let (s, _) = tag("fn").parse(s)?;
     let (s, _) = require_ignored(s)?;

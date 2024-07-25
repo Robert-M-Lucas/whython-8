@@ -1,3 +1,20 @@
+struct TestStruct {
+    a: int,
+    b: int
+}
+
+impl TestStruct {
+
+}
+
+fn test(a: int) -> int {
+    return a + 1;
+}
+
 fn main() -> int {
-    return 1;
+    let y: int = 3;
+
+    let x: TestStruct = TestStruct { a: 12, b: 13 };
+
+    return y;
 }

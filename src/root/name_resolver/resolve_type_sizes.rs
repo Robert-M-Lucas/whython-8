@@ -34,10 +34,8 @@ pub fn resolve_type_sizes(
 ) -> Result<ByteSize, WErr> {
     let (id, name, attributes, location) = unsized_type.dissolve();
 
-    println!("{}: {}", id, &name);
-
     let mut size: ByteSize = ByteSize(0);
-    let mut processed_attributes: Vec<(usize, SimpleNameToken, TypeRef)> = Vec::new();
+    let mut processed_attributes: Vec<(ByteSize, SimpleNameToken, TypeRef)> = Vec::new();
 
     for (attribute_name, attribute_type) in attributes {
         let offset = size;
@@ -59,7 +57,7 @@ pub fn resolve_type_sizes(
             return WErr::ne(NRErrs::CircularType(name), attribute_name.location().clone());
         }
 
-        processed_attributes.push((offset.0, attribute_name, attribute_type));
+        processed_attributes.push((offset, attribute_name, attribute_type));
     }
 
     final_types.insert(id, UserType::new(id, name, size, processed_attributes, location));

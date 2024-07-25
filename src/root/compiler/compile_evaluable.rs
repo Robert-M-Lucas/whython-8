@@ -1,6 +1,7 @@
 use std::any::Any;
 use either::{Left, Right};
 use itertools::Itertools;
+use crate::root::assembler::assembly_builder::AssemblyBuilder;
 use crate::root::builtin::core::referencing::{set_deref, set_reference};
 use crate::root::compiler::assembly::utils::{copy, copy_from_indirect, copy_to_indirect};
 use crate::root::compiler::compile_function_call::call_function;
@@ -14,7 +15,7 @@ use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable, NameResu
 use crate::root::parser::parse::Location;
 use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, EvaluableTokens};
 use crate::root::parser::parse_function::parse_operator::{OperatorTokens, PrefixOrInfixEx};
-use crate::root::shared::common::{FunctionID, Indirection, TypeRef};
+use crate::root::shared::common::{FunctionID, Indirection, LocalAddress, TypeRef};
 use crate::root::shared::common::AddressedTypeRef;
 
 /// Error on an empty address
@@ -169,6 +170,33 @@ pub fn compile_evaluable(
             let (code, _) = call_function(fid, ifid, et.location(), &name, &n_args, return_into.clone(), global_table, local_variables, global_tracker)?;
             (code, return_into)
         }
+        EvaluableTokens::StructInitialiser(struct_init) => {
+            let t = global_table.resolve_to_type_ref(struct_init.name())?;
+            debug_assert!(!t.indirection().has_indirection());
+            let target = global_table.add_local_variable_unnamed_base(t.clone(), local_variables);
+
+            let tt = global_table.get_type(t.type_id().clone());
+            let attributes = tt.get_attributes()?.iter().map(|x| x.clone()).collect_vec();
+            let give_attrs = struct_init.contents();
+
+            if attributes.len() != give_attrs.len() {
+                todo!()
+            }
+
+            let mut code = AssemblyBuilder::new();
+
+            // TODO: Doable without clone?
+            for ((offset, t_name, t_type), (name, val)) in attributes.iter().zip(give_attrs.iter()) {
+                if t_name.name() != name.name() {
+                    todo!()
+                }
+
+                let new_addr = AddressedTypeRef::new(LocalAddress(target.local_address().0 + offset.0 as isize), t_type.clone());
+                code.other(&compile_evaluable_into(fid, val, new_addr, local_variables, global_table, global_tracker)?);
+            }
+
+            (code.finish(), Some(target))
+        },
         EvaluableTokens::None => {
             (String::new(), None)
         }
@@ -328,6 +356,34 @@ pub fn compile_evaluable_into(
             let (code, _) = call_function(fid, ifid, et.location(), &name, &n_args, Some(target), global_table, local_variables, global_tracker)?;
             code
         }
+        EvaluableTokens::StructInitialiser(struct_init) => {
+            let t = global_table.resolve_to_type_ref(struct_init.name())?;
+            debug_assert!(!t.indirection().has_indirection());
+            if &t != target.type_ref() {
+                todo!();
+            }
+            let tt = global_table.get_type(t.type_id().clone());
+            let attributes = tt.get_attributes()?.iter().map(|x| x.clone()).collect_vec();
+            let give_attrs = struct_init.contents();
+
+            if attributes.len() != give_attrs.len() {
+                todo!()
+            }
+
+            let mut code = AssemblyBuilder::new();
+
+            // TODO: Doable without clone?
+            for ((offset, t_name, t_type), (name, val)) in attributes.iter().zip(give_attrs.iter()) {
+                if t_name.name() != name.name() {
+                    todo!()
+                }
+
+                let new_addr = AddressedTypeRef::new(LocalAddress(target.local_address().0 + offset.0 as isize), t_type.clone());
+                code.other(&compile_evaluable_into(fid, val, new_addr, local_variables, global_table, global_tracker)?);
+            }
+
+            code.finish()
+        }
         EvaluableTokens::None => {
             return WErr::ne(EvalErrs::ExpectedType(global_table.get_type_name(target.type_ref())), et.location().clone());
         }
@@ -361,6 +417,7 @@ pub fn compile_evaluable_reference(
         EvaluableTokens::DynamicAccess(_, _) => todo!(), // Accessed methods must be called
         EvaluableTokens::StaticAccess(_, n) => return WErr::ne(NRErrs::CannotFindConstantAttribute(n.name().clone()), n.location().clone()), // Accessed methods must be called
         EvaluableTokens::FunctionCall(_, _) => compile_evaluable(fid, et, local_variables, global_table, global_tracker)?,
+        EvaluableTokens::StructInitialiser(struct_init) => compile_evaluable(fid, et, local_variables, global_table, global_tracker)?,
         EvaluableTokens::None => {
             (String::new(), None)
         }
@@ -455,6 +512,11 @@ pub fn compile_evaluable_type_only(
             let signature = global_table.get_function_signature(ifid);
             let return_type = signature.get().return_type().clone().unwrap(); // TODO: Check type
             return_type
+        }
+        EvaluableTokens::StructInitialiser(struct_init) => {
+            let t = global_table.resolve_to_type_ref(struct_init.name())?;
+            debug_assert!(!t.indirection().has_indirection());
+            t
         }
         EvaluableTokens::None => {
             return WErr::ne(EvalErrs::ExpectedNotNone, et.location().clone());
