@@ -4,7 +4,7 @@ use nom::bytes::complete::{tag, take_till};
 use nom::bytes::streaming::take_until;
 use nom::character::streaming::char;
 use crate::root::parser::parse::{Location, ParseResult, Span};
-use crate::root::parser::parse_blocks::{BRACE_TERMINATOR, parse_terminator_default_set};
+use crate::root::parser::parse_blocks::{BRACE_TERMINATOR, parse_terminator_default_set, take_until_or_end_discard_smart};
 use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, EvaluableTokens, FullNameToken, FullNameWithIndirectionToken, parse_evaluable, parse_full_name};
 use crate::root::parser::parse_function::parse_literal::{LiteralToken, LiteralTokens};
 use crate::root::parser::parse_name::{parse_simple_name, SimpleNameToken};
@@ -40,8 +40,8 @@ pub fn parse_struct_init<'a, 'b>(s: Span<'a>, containing_class: Option<&'b Simpl
         let (ns, _) = char(':')(ns)?;
         let (ns, _) = discard_ignored(ns)?;
 
-        let (ns, to_eval) = take_till(|c| c == ',')(ns)?;
-        let ns = if ns.is_empty() { ns } else { char(',')(ns)?.0 };
+        let (ns, to_eval) = take_until_or_end_discard_smart(ns, ",")?;
+        println!("{:?} - {:?}", ns.fragment(), to_eval.fragment());
         let (_, eval) = parse_evaluable(to_eval, containing_class, false)?;
         contents.push((name, eval));
         s = ns;

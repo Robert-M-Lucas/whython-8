@@ -23,6 +23,7 @@ pub mod parse_operator;
 pub mod parse_return;
 pub mod parse_while;
 mod parse_struct_init;
+mod parse_marker;
 
 #[derive(Debug, Getters, Dissolve)]
 pub struct FunctionToken {

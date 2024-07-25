@@ -1,6 +1,7 @@
 use nom::bytes::complete::take_until;
 use nom::InputTake;
 use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
+use crate::root::parser::parse_blocks::take_until_discard_smart;
 use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, EvaluableTokens, parse_evaluable};
 use crate::root::parser::parse_name::SimpleNameToken;
 
@@ -11,8 +12,8 @@ pub fn parse_arguments<'a, 'b>(s: Span<'a>, containing_class: Option<&'b SimpleN
 
     loop {
         // TODO: Account for brackets
-        let (ns, section) = if let Ok((ns, section)) = take_until::<_, _, ErrorTree>(",")(s) {
-            (ns.take_split(1).0, section)
+        let (ns, section) = if let Ok((ns, section)) = take_until_discard_smart(s, ",") {
+            (ns, section)
         }
         else {
             last = true;

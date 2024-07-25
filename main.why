@@ -1,16 +1,27 @@
 struct StructA {
-    a: StructB
+    a: int,
+    b: StructB
 }
 
 struct StructB {
-    a: StructC
-}
-
-struct StructC {
-    a: StructB
+    a: int,
+    b: int
 }
 
 fn main() -> int {
-    let y: int = 3;
+    let y: int = 13;
+
+    @ Test Start
+
+    let x: StructA = StructA {
+        a: 3,
+        b: StructB {
+            a: 5,
+            b: 4
+        }
+    };
+
+    @ Test End
+
     return y;
 }

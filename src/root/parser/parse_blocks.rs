@@ -105,11 +105,13 @@ pub fn parse_terminator<'a, 'b, 'c>(s: Span<'a>, terminator: &'b Terminator, all
     Err(nom::Err::Error(ErrorTree::from_char(s, terminator.closing)))
 }
 
-pub fn take_until_or_end_smart<'a>(s: Span<'a>, until: &str) -> ParseResult<'a> {
+pub fn take_until_or_end_discard_smart<'a>(s: Span<'a>, until: &str) -> ParseResult<'a> {
     let original = s.clone();
     let mut s = s;
+    let mut found = false;
     while !s.is_empty() {
         if let Ok((ns, _)) = tag::<&str, LocatedSpan<&str, &Rc<PathBuf>>, ErrorTree>(until)(s) {
+            found = true;
             s = ns;
             break;
         }
@@ -127,11 +129,15 @@ pub fn take_until_or_end_smart<'a>(s: Span<'a>, until: &str) -> ParseResult<'a> 
     }
 
     let offset = original.offset(&s);
+    let (end, mut inner) = original.take_split(offset);
+    if found {
+        inner = inner.take(inner.len() - until.len());
+    }
 
-    Ok(original.take_split(offset))
+    Ok((end, inner))
 }
 
-pub fn take_until_smart<'a>(s: Span<'a>, until: &str) -> ParseResult<'a> {
+pub fn take_until_discard_smart<'a>(s: Span<'a>, until: &str) -> ParseResult<'a> {
     let original = s.clone();
     let mut s = s;
     loop {
@@ -157,6 +163,8 @@ pub fn take_until_smart<'a>(s: Span<'a>, until: &str) -> ParseResult<'a> {
     }
 
     let offset = original.offset(&s);
+    let (end, inner) = original.take_split(offset);
+    let inner = inner.take(inner.len() - until.len());
 
-    Ok(original.take_split(offset))
+    Ok((end, inner))
 }

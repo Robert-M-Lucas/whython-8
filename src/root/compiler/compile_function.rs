@@ -191,6 +191,9 @@ fn recursively_compile_lines(fid: FunctionID, lines: &[LineTokens], return_varia
             LineTokens::NoOp(et) => {
                 contents.other(&compile_evaluable_reference(fid, et, local_variables, global_table, global_tracker)?.0);
             }
+            LineTokens::Marker(value) => {
+                contents.line(&format!(";{}", value.value()));
+            }
         }
     }
 

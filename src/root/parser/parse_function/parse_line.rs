@@ -9,6 +9,8 @@ use crate::root::parser::parse_function::parse_return::{test_parse_return, Retur
 use crate::root::parser::parse_function::parse_while::{test_parse_while, WhileToken};
 use nom::branch::alt;
 use nom::Parser;
+#[cfg(debug_assertions)]
+use crate::root::parser::parse_function::parse_marker::{MarkerToken, test_parse_marker};
 use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::parser::parse_util::discard_ignored;
 
@@ -20,6 +22,8 @@ pub enum LineTokens {
     Return(ReturnToken),
     Break(BreakToken),
     NoOp(EvaluableToken),
+    #[cfg(debug_assertions)]
+    Marker(MarkerToken)
 }
 
 /// fn(line span, Option<class name>)
@@ -51,6 +55,8 @@ pub fn parse_line<'a, 'b>(s: Span<'a>, containing_class: Option<&'b SimpleNameTo
         test_parse_initialisation,
         test_parse_while,
         test_parse_if,
+        #[cfg(debug_assertions)]
+        test_parse_marker
         // test_parse_assignment,
     ))
     .parse(s)
