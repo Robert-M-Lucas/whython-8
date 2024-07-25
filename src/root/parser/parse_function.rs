@@ -3,7 +3,7 @@ use nom::sequence::Tuple;
 use nom::Parser;
 use nom_supreme::tag::complete::tag;
 use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
-use crate::root::parser::parse_blocks::default_section;
+use crate::root::parser::parse_blocks::{BRACE_TERMINATOR, BRACKET_TERMINATOR, parse_terminator_default_set};
 use crate::root::parser::parse_function::parse_evaluable::{FullNameWithIndirectionToken, parse_full_name};
 use crate::root::parser::parse_function::parse_line::{LineTokens, parse_lines};
 use crate::root::parser::parse_name::{parse_simple_name, SimpleNameToken};
@@ -55,7 +55,7 @@ pub fn parse_function<'a, 'b>(s: Span<'a>, allow_self: Option<&'b SimpleNameToke
     //     Some(s.as_str())
     // } else { None };
 
-    let (s, contents) = default_section(s, '(')?;
+    let (s, contents) = parse_terminator_default_set(s, &BRACKET_TERMINATOR)?;
     let (_, (parameters, has_self)) = parse_parameters(contents, allow_self)?;
 
     let (s, _) = discard_ignored(s)?;
@@ -69,7 +69,7 @@ pub fn parse_function<'a, 'b>(s: Span<'a>, allow_self: Option<&'b SimpleNameToke
         (s, None)
     };
 
-    let (s, contents) = default_section(s, '{')?;
+    let (s, contents) = parse_terminator_default_set(s, &BRACE_TERMINATOR)?;
 
     let end_location = Location::from_span_end(&contents);
 

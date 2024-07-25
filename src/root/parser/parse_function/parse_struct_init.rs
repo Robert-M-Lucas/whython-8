@@ -4,7 +4,7 @@ use nom::bytes::complete::{tag, take_till};
 use nom::bytes::streaming::take_until;
 use nom::character::streaming::char;
 use crate::root::parser::parse::{Location, ParseResult, Span};
-use crate::root::parser::parse_blocks::default_section;
+use crate::root::parser::parse_blocks::{BRACE_TERMINATOR, parse_terminator_default_set};
 use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, EvaluableTokens, FullNameToken, FullNameWithIndirectionToken, parse_evaluable, parse_full_name};
 use crate::root::parser::parse_function::parse_literal::{LiteralToken, LiteralTokens};
 use crate::root::parser::parse_name::{parse_simple_name, SimpleNameToken};
@@ -27,7 +27,7 @@ pub fn parse_struct_init<'a, 'b>(s: Span<'a>, containing_class: Option<&'b Simpl
 
     let (s, _) = discard_ignored(s)?;
 
-    let (remaining, in_braces) = default_section( s,'{')?;
+    let (remaining, in_braces) = parse_terminator_default_set(s, &BRACE_TERMINATOR)?;
 
     let mut contents = Vec::new();
 

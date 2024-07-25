@@ -1,33 +1,62 @@
+use std::path::PathBuf;
+use std::rc::Rc;
 use itertools::Itertools;
 use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
 use nom::character::complete::{anychar, char as nchar};
-use nom::Err::Error;
-use nom::error::ParseError;
+use nom::error::{ErrorKind, ParseError};
 use nom::{InputTake, Offset};
+use nom::bytes::complete::{tag, take_until};
+use nom_locate::LocatedSpan;
 use crate::root::parser::parse_util::discard_ignored;
 
 // ! BROKEN
 
-const DEFAULT_TERMINATORS: [(char, char, bool); 3] = [
-    ('{', '}', true),
-    ('(', ')', true),
-    ('"', '"', false)
-];
-
-pub fn default_section(s: Span, section_char: char) -> ParseResult {
-    let x = section(
-        s,
-        DEFAULT_TERMINATORS.iter().find_position(|(c, _, _)| *c == section_char).unwrap().0,
-        &DEFAULT_TERMINATORS
-    );
-    // println!("----------\n{:?}\n**{}\n\n**{}\n\n**{}", section_char, s.fragment(), x.as_ref().unwrap().0.fragment(), x.as_ref().unwrap().1.fragment());
-    x
+pub struct Terminator {
+    pub opening: char,
+    pub closing: char,
+    pub allow_recursive: bool,
+    pub escape_char: Option<char>
 }
 
-pub fn section<'a>(s: Span<'a>, terminator: usize, all_terminators: &[(char, char, bool)]) -> ParseResult<'a> {
-    let (initial_span, _) = nchar(all_terminators[terminator].0)(s)?;
+pub const BRACE_TERMINATOR: Terminator = Terminator {
+    opening: '{',
+    closing: '}',
+    allow_recursive: true,
+    escape_char: None,
+};
 
-    let allow_subsections = all_terminators[terminator].2;
+pub const BRACKET_TERMINATOR: Terminator = Terminator {
+    opening: '(',
+    closing: ')',
+    allow_recursive: true,
+    escape_char: None,
+};
+
+pub const STRING_TERMINATOR: Terminator = Terminator {
+    opening: '"',
+    closing: '"',
+    allow_recursive: false,
+    escape_char: Some('\\'),
+};
+
+pub const DEFAULT_TERMINATORS: [Terminator; 3] = [
+    BRACE_TERMINATOR,
+    BRACKET_TERMINATOR,
+    STRING_TERMINATOR
+];
+
+pub fn parse_terminator_default_set<'a, 'b>(s: Span<'a>, terminator: &'b Terminator) -> ParseResult<'a> {
+    parse_terminator(
+        s,
+        terminator,
+        &DEFAULT_TERMINATORS
+    )
+}
+
+pub fn parse_terminator<'a, 'b, 'c>(s: Span<'a>, terminator: &'b Terminator, all_terminators: &'c [Terminator]) -> ParseResult<'a> {
+    let (initial_span, _) = nchar(terminator.opening)(s)?;
+
+    let allow_subsections = terminator.allow_recursive;
 
     let mut depth = 0;
 
@@ -40,7 +69,7 @@ pub fn section<'a>(s: Span<'a>, terminator: usize, all_terminators: &[(char, cha
             break;
         }
 
-        if let Ok((ns, _)) = nchar::<_, ErrorTree>(all_terminators[terminator].1)(s) {
+        if let Ok((ns, _)) = nchar::<_, ErrorTree>(terminator.closing)(s) {
             if depth == 0 {
                 return Ok((ns, initial_span.take_split(initial_span.offset(&s)).1));
             } else {
@@ -50,22 +79,20 @@ pub fn section<'a>(s: Span<'a>, terminator: usize, all_terminators: &[(char, cha
             }
         }
 
-        if let Ok((ns, _)) = nchar::<_, ErrorTree>(all_terminators[terminator].0)(s) {
+        if let Ok((ns, _)) = nchar::<_, ErrorTree>(terminator.opening)(s) {
             s = ns;
             depth += 1;
             continue;
         }
 
         if allow_subsections {
-            for (pos, t) in all_terminators.iter().enumerate() {
-                if pos == terminator { continue; }
-
-                if let Ok(_) = nchar::<_, ErrorTree>(t.0)(s) {
-                    s = section(s, pos, all_terminators)?.0;
+            for t in all_terminators {
+                if let Ok(_) = nchar::<_, ErrorTree>(t.opening)(s) {
+                    s = parse_terminator(s, t, all_terminators)?.0;
                     continue 'main;
                 }
 
-                if let Ok(_) = nchar::<_, ErrorTree>(t.1)(s) {
+                if let Ok(_) = nchar::<_, ErrorTree>(t.closing)(s) {
                     // Unopened section closed
                     todo!()
                 }
@@ -75,7 +102,61 @@ pub fn section<'a>(s: Span<'a>, terminator: usize, all_terminators: &[(char, cha
         }
     }
 
-    Err(Error(ErrorTree::from_char(s, all_terminators[terminator].1)))
+    Err(nom::Err::Error(ErrorTree::from_char(s, terminator.closing)))
 }
 
+pub fn take_until_or_end_smart<'a>(s: Span<'a>, until: &str) -> ParseResult<'a> {
+    let original = s.clone();
+    let mut s = s;
+    while !s.is_empty() {
+        if let Ok((ns, _)) = tag::<&str, LocatedSpan<&str, &Rc<PathBuf>>, ErrorTree>(until)(s) {
+            s = ns;
+            break;
+        }
 
+        let c = s.chars().next().unwrap();
+
+        for t in &DEFAULT_TERMINATORS {
+            if t.opening == c {
+                s = parse_terminator_default_set(s, t)?.0;
+                continue;
+            }
+        }
+
+        s = s.take_split(1).0;
+    }
+
+    let offset = original.offset(&s);
+
+    Ok(original.take_split(offset))
+}
+
+pub fn take_until_smart<'a>(s: Span<'a>, until: &str) -> ParseResult<'a> {
+    let original = s.clone();
+    let mut s = s;
+    loop {
+        if s.is_empty() {
+            return Err(nom::Err::Error(ErrorTree::from_error_kind(original, ErrorKind::TakeUntil)));
+        }
+
+        if let Ok((ns, _)) = tag::<&str, LocatedSpan<&str, &Rc<PathBuf>>, ErrorTree>(until)(s) {
+            s = ns;
+            break;
+        }
+
+        let c = s.chars().next().unwrap();
+
+        for t in &DEFAULT_TERMINATORS {
+            if t.opening == c {
+                s = parse_terminator_default_set(s, t)?.0;
+                continue;
+            }
+        }
+
+        s = s.take_split(1).0;
+    }
+
+    let offset = original.offset(&s);
+
+    Ok(original.take_split(offset))
+}

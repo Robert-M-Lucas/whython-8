@@ -8,7 +8,7 @@ use nom::bytes::complete::tag;
 use nom::character::complete::char;
 use crate::root::parser::parse_arguments::parse_arguments;
 use crate::root::parser::parse_name::{SimpleNameToken, parse_simple_name};
-use crate::root::parser::parse_blocks::default_section;
+use crate::root::parser::parse_blocks::{BRACE_TERMINATOR, BRACKET_TERMINATOR, parse_terminator_default_set};
 use crate::root::parser::parse_function::parse_struct_init::{parse_struct_init, StructInitToken};
 use crate::root::parser::parse_struct::StructToken;
 use crate::root::parser::parse_util::discard_ignored;
@@ -223,7 +223,7 @@ pub fn parse_evaluable<'a, 'b>(s: Span<'a>, containing_class: Option<&'b SimpleN
         }
 
         // Recursively parse bracketed sections
-        let ns = if let Ok((ns, inner)) = default_section(s, '(') {
+        let ns = if let Ok((ns, inner)) = parse_terminator_default_set(s, &BRACKET_TERMINATOR) {
             let (_, evaluable) = parse_evaluable(inner, containing_class, false)?;
             evaluables.push(TempEvaluableTokensOne::EvaluableToken(evaluable));
             ns
@@ -252,7 +252,7 @@ pub fn parse_evaluable<'a, 'b>(s: Span<'a>, containing_class: Option<&'b SimpleN
                     let (x, section) = parse_simple_name(x)?;
 
                     Ok(if char::<Span, ErrorTree>('(')(x).is_ok() {
-                        let (x, arguments) = default_section(x, '(')?;
+                        let (x, arguments) = parse_terminator_default_set(x, &BRACKET_TERMINATOR)?;
                         let (_, arguments) = parse_arguments(arguments, containing_class)?;
                         (x, match kind {
                             Kind::Static => TempEvaluableTokensOne::StaticFunctionCall(section, arguments),

@@ -5,7 +5,7 @@ use derive_getters::{Dissolve, Getters};
 use nom::sequence::Tuple;
 use nom::Parser;
 use nom_supreme::tag::complete::tag;
-use crate::root::parser::parse_blocks::default_section;
+use crate::root::parser::parse_blocks::{BRACE_TERMINATOR, parse_terminator_default_set};
 use crate::root::parser::parse_name::{parse_simple_name, SimpleNameToken};
 use crate::root::parser::parse_util::{discard_ignored, require_ignored};
 use crate::root::shared::common::TypeID;
@@ -39,7 +39,7 @@ pub fn parse_struct(s: Span) -> ParseResult<Span, StructToken> {
     let (s, _) = require_ignored(s)?;
     let (s, name) = parse_simple_name(s)?;
     let (s, _) = discard_ignored(s)?;
-    let (s, contents) = default_section(s, '{')?;
+    let (s, contents) = parse_terminator_default_set(s, &BRACE_TERMINATOR)?;
     let (_, (parameters, _)) = parse_parameters(contents, None)?;
 
     Ok((

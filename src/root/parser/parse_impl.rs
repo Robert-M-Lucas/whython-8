@@ -2,9 +2,8 @@ use derive_getters::{Dissolve, Getters};
 use nom::sequence::Tuple;
 use nom::Parser;
 use nom_supreme::tag::complete::tag;
-
 use crate::root::parser::parse::{Location, ParseResult, Span};
-use crate::root::parser::parse_blocks::default_section;
+use crate::root::parser::parse_blocks::{BRACE_TERMINATOR, parse_terminator_default_set};
 use crate::root::parser::parse_function::{FunctionToken, parse_function};
 use crate::root::parser::parse_name::{parse_simple_name, SimpleNameToken};
 use crate::root::parser::parse_toplevel::{ToplevelTestFn, TopLevelTokens};
@@ -33,7 +32,7 @@ pub fn parse_impl(s: Span) -> ParseResult<Span, ImplToken> {
     let (s, _) = require_ignored(s)?;
     let (s, name) = parse_simple_name(s)?;
     let (s, _) = discard_ignored(s)?;
-    let (s, contents) = default_section(s, '{')?;
+    let (s, contents) = parse_terminator_default_set(s, &BRACE_TERMINATOR)?;
 
     let mut functions = Vec::new();
 

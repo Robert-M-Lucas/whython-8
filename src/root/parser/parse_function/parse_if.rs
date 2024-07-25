@@ -3,7 +3,7 @@ use nom::sequence::Tuple;
 use nom_supreme::tag::complete::tag;
 
 use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
-use crate::root::parser::parse_blocks::default_section;
+use crate::root::parser::parse_blocks::{BRACE_TERMINATOR, BRACKET_TERMINATOR, parse_terminator_default_set};
 use crate::root::parser::parse_function::parse_evaluable::{parse_evaluable, EvaluableToken};
 use crate::root::parser::parse_function::parse_line::{parse_lines, LineTestFn, LineTokens};
 use crate::root::parser::parse_name::SimpleNameToken;
@@ -28,10 +28,10 @@ pub fn test_parse_if<'a, 'b>(s: Span<'a>) -> ParseResult<Span, LineTestFn<'a, 'b
 pub fn parse_if<'a, 'b>(s: Span<'a>, containing_class: Option<&'b SimpleNameToken>) -> ParseResult<'a, Span<'a>, IfToken> {
     let (s, l) = tag("if")(s)?;
     let (s, _) = discard_ignored(s)?;
-    let (s, content) = default_section(s, '(')?;
+    let (s, content) = parse_terminator_default_set(s, &BRACKET_TERMINATOR)?;
     let (_, if_condition) = parse_evaluable(content, containing_class,false)?;
     let (s, _) = discard_ignored(s)?;
-    let (s, contents) = default_section(s, '{')?;
+    let (s, contents) = parse_terminator_default_set(s, &BRACE_TERMINATOR)?;
     let (_, if_contents) = parse_lines(contents, containing_class)?;
 
     let mut elifs = Vec::new();
@@ -54,7 +54,7 @@ pub fn parse_if<'a, 'b>(s: Span<'a>, containing_class: Option<&'b SimpleNameToke
         let (ns, condition) =
         if let Ok((ns, _)) = (require_ignored, tag("if")).parse(ns) {
             let (ns, _) = discard_ignored(ns)?;
-            let (ns, content) = default_section(ns, '(')?;
+            let (ns, content) = parse_terminator_default_set(ns, &BRACKET_TERMINATOR)?;
             let (_, condition) = parse_evaluable(content, containing_class, false)?;
             (ns, Some(condition))
         } else {
@@ -63,7 +63,7 @@ pub fn parse_if<'a, 'b>(s: Span<'a>, containing_class: Option<&'b SimpleNameToke
 
         let (ns, _) = discard_ignored(ns)?;
 
-        let (ns, contents) = default_section(ns, '{')?;
+        let (ns, contents) = parse_terminator_default_set(ns, &BRACE_TERMINATOR)?;
         let (_, contents) = parse_lines(contents, containing_class)?;
 
         // ? Handle else if
