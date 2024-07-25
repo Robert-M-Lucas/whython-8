@@ -1,12 +1,13 @@
 use crate::root::assembler::assembly_builder::AssemblyBuilder;
 use crate::root::builtin::types::bool::BoolType;
 use crate::root::builtin::types::int::IntType;
-use crate::root::compiler::compile_evaluable::{compile_evaluable_into, compile_evaluable_reference};
-use crate::root::compiler::compiler_errors::CErrs::{CannotBreak, ExpectedNoReturn, ExpectedReturn, ExpectedReturnType, ExpectedSomeReturn};
+use crate::root::compiler::compiler_errors::CErrs::{CannotBreak, ExpectedNoReturn, ExpectedReturn, ExpectedSomeReturn};
+use crate::root::compiler::evaluation::into::compile_evaluable_into;
+use crate::root::compiler::evaluation::reference::compile_evaluable_reference;
 use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::WErr;
-use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable};
+use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
 use crate::root::parser::parse_function::FunctionToken;
 use crate::root::parser::parse_function::parse_line::LineTokens;
 use crate::root::shared::common::{FunctionID, Indirection, LocalAddress, TypeRef};

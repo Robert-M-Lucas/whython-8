@@ -2,8 +2,8 @@ use either::Either;
 use itertools::Itertools;
 use crate::root::assembler::assembly_builder::AssemblyBuilder;
 use crate::root::compiler::assembly::utils::{align_16_bytes, align_16_bytes_plus_8, copy};
-use crate::root::compiler::compile_evaluable::compile_evaluable_into;
 use crate::root::compiler::compiler_errors::CErrs::{BadFunctionArgCount, BadFunctionReturn, ExpectedFunctionReturn, ExpectedSomeReturn};
+use crate::root::compiler::evaluation::into::compile_evaluable_into;
 use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::WErr;
@@ -11,9 +11,6 @@ use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
 use crate::root::parser::parse::Location;
 use crate::root::parser::parse_function::parse_evaluable::EvaluableToken;
 use crate::root::shared::common::{AddressedTypeRef, ByteSize, FunctionID};
-use crate::root::utils::warn;
-
-
 // TODO: Cleanup code
 /// Calls a given function with arguments
 pub fn call_function(
