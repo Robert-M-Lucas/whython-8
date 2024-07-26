@@ -8,6 +8,11 @@ struct StructB {
     b: int
 }
 
+impl StructA {
+    fn test(self) {
+
+    }
+}
 
 fn main() -> int {
     let y: int = 13;
@@ -19,6 +24,8 @@ fn main() -> int {
             b: 8
         }
     };
+
+    x.test();
 
     &y = x.b.a;
 

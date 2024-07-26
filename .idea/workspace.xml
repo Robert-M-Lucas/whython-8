@@ -7,9 +7,9 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Added accessing">
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/reference.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/reference.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/type_only.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/type_only.rs" afterDir="false" />
+    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Completed adding accessing">
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/new.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/new.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/todo.md" beforeDir="false" afterPath="$PROJECT_DIR$/todo.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -221,15 +221,7 @@
       <workItem from="1721903661101" duration="7000" />
       <workItem from="1721931974685" duration="644000" />
       <workItem from="1721947402861" duration="6700000" />
-      <workItem from="1721986597147" duration="7609000" />
-    </task>
-    <task id="LOCAL-00004" summary="Improved name system">
-      <option name="closed" value="true" />
-      <created>1717432257327</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1717432257327</updated>
+      <workItem from="1721986597147" duration="7967000" />
     </task>
     <task id="LOCAL-00005" summary="Improved name system">
       <option name="closed" value="true" />
@@ -615,7 +607,15 @@
       <option name="project" value="LOCAL" />
       <updated>1721996703318</updated>
     </task>
-    <option name="localTasksCounter" value="53" />
+    <task id="LOCAL-00053" summary="Completed adding accessing">
+      <option name="closed" value="true" />
+      <created>1721997307152</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1721997307152</updated>
+    </task>
+    <option name="localTasksCounter" value="54" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -633,7 +633,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Printing and function calls" />
     <MESSAGE value="Testing" />
     <MESSAGE value="Added exit functions" />
     <MESSAGE value="More operators" />
@@ -658,7 +657,8 @@
     <MESSAGE value="Unrandom" />
     <MESSAGE value="Small refactor" />
     <MESSAGE value="Added accessing" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added accessing" />
+    <MESSAGE value="Completed adding accessing" />
+    <option name="LAST_COMMIT_MESSAGE" value="Completed adding accessing" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

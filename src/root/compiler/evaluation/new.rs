@@ -26,7 +26,6 @@ pub fn compile_evaluable_new(
     global_table: &mut GlobalDefinitionTable,
     global_tracker: &mut GlobalTracker
 ) -> Result<(String, Option<AddressedTypeRef>), WErr> {
-
     let ets = et.token();
 
     Ok(match ets {
