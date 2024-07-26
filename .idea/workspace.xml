@@ -7,19 +7,9 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Markers">
-      <change afterPath="$PROJECT_DIR$/src/root/unrandom.rs" afterDir="false" />
+    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Unrandom">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/out.asm" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.asm" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/out.o" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/out.out" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.out" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.why" beforeDir="false" afterPath="$PROJECT_DIR$/main.why" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/compile.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/compile_function.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile_function.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/resolve_names.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/resolve_names.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_struct_init.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_struct_init.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/unrandom.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/unrandom.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -85,7 +75,7 @@
     &quot;org.rust.cargo.project.model.PROJECT_DISCOVERY&quot;: &quot;true&quot;,
     &quot;org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon&quot;: &quot;&quot;,
     &quot;org.rust.first.attach.projects&quot;: &quot;true&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
   &quot;keyToStringList&quot;: {
@@ -229,15 +219,8 @@
       <workItem from="1721815931964" duration="45000" />
       <workItem from="1721903661101" duration="7000" />
       <workItem from="1721931974685" duration="644000" />
-      <workItem from="1721947402861" duration="6214000" />
-    </task>
-    <task id="LOCAL-00001" summary="Changes">
-      <option name="closed" value="true" />
-      <created>1714089790504</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1714089790504</updated>
+      <workItem from="1721947402861" duration="6700000" />
+      <workItem from="1721986597147" duration="1526000" />
     </task>
     <task id="LOCAL-00002" summary="Improved name system">
       <option name="closed" value="true" />
@@ -623,7 +606,15 @@
       <option name="project" value="LOCAL" />
       <updated>1721951605297</updated>
     </task>
-    <option name="localTasksCounter" value="50" />
+    <task id="LOCAL-00050" summary="Unrandom">
+      <option name="closed" value="true" />
+      <created>1721954057479</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1721954057480</updated>
+    </task>
+    <option name="localTasksCounter" value="51" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -641,7 +632,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Got functions working (maybe)" />
     <MESSAGE value="Todo" />
     <MESSAGE value="Improved operator support" />
     <MESSAGE value="Printing and function calls" />
@@ -666,7 +656,8 @@
     <MESSAGE value="Changes" />
     <MESSAGE value="Improved block parsing" />
     <MESSAGE value="Markers" />
-    <option name="LAST_COMMIT_MESSAGE" value="Markers" />
+    <MESSAGE value="Unrandom" />
+    <option name="LAST_COMMIT_MESSAGE" value="Unrandom" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
