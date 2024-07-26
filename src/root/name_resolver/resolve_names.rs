@@ -126,7 +126,6 @@ pub fn resolve_names(ast: Vec<TopLevelTokens>, global_table: &mut GlobalDefiniti
             }
         };
     }
-
     let mut final_types: HashMap<TypeID, UserType> = new_hashmap();
 
     while !unsized_final_types.is_empty() {

@@ -1,3 +1,4 @@
+use std::any::Any;
 use either::{Left, Right};
 use itertools::Itertools;
 use crate::root::assembler::assembly_builder::AssemblyBuilder;
@@ -5,6 +6,7 @@ use crate::root::builtin::core::referencing::{set_deref, set_reference};
 use crate::root::compiler::assembly::utils::copy;
 use crate::root::compiler::compile_function_call::call_function;
 use crate::root::compiler::evaluation::{function_only, reference, type_only};
+use crate::root::compiler::evaluation::reference::compile_evaluable_reference;
 use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::evaluable_errors::EvalErrs;
@@ -150,7 +152,33 @@ pub fn compile_evaluable_into(
             let (c, _) = call_function(fid, op_fn, et.location(), &op.operator().get_method_name(PrefixOrInfixEx::Prefix).unwrap(), &[Left(lhs)], Some(target), global_table, local_variables, global_tracker)?;
             c
         },
-        EvaluableTokens::DynamicAccess(_, _) => todo!(), // Accessed methods must be called
+        EvaluableTokens::DynamicAccess(inner, access) => {
+            let mut ab = AssemblyBuilder::new();
+            let (c, inner) = compile_evaluable_reference(fid, inner, local_variables, global_table, global_tracker)?;
+            ab.other(&c);
+
+            let Some(inner) = inner else { todo!() };
+
+            let t = global_table.get_type(*inner.type_ref().type_id());
+            let attribs = t.get_attributes()?;
+
+            let mut found_offset = None;
+
+            for (offset, name, t) in attribs {
+                if name.name() == access.name() {
+                    if t != target.type_ref() {
+                        todo!()
+                    }
+                    found_offset = Some(*offset);
+                }
+            }
+
+            let Some(found_offset) = found_offset else { todo!() };
+
+            ab.other(&copy(LocalAddress(inner.local_address().0 + found_offset.0 as isize), *target.local_address(), global_table.get_size(target.type_ref())));
+
+            ab.finish()
+        },
         EvaluableTokens::StaticAccess(_, n) => return WErr::ne(NRErrs::CannotFindConstantAttribute(n.name().clone()), n.location().clone()), // Accessed methods must be called
         EvaluableTokens::FunctionCall(inner, args) => {
             let (slf, ifid, name) = function_only::compile_evaluable_function_only(fid, inner, local_variables, global_table, global_tracker)?;

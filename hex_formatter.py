@@ -9,3 +9,4 @@ hex_groups = batched(hex, 4)
 print("In groups of reversed 8s:")
 for group in hex_groups:
     print("0x" + "".join(reversed(group)))
+attribute

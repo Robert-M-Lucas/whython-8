@@ -237,7 +237,7 @@ pub fn parse_evaluable<'a, 'b>(s: Span<'a>, containing_class: Option<&'b SimpleN
                 },
                 |x| parse_operator(x).map(|(s, t)| (s, TempEvaluableTokensOne::Operator(t))),
                 |x| parse_struct_init(x, containing_class.clone()).map(|(s, t)| (s, temp_from_token(s, EvaluableTokens::StructInitialiser(t)))),
-                |x| {
+                |x: Span<'a>| {
                     enum Kind {
                         Static,
                         Dynamic,
@@ -245,8 +245,8 @@ pub fn parse_evaluable<'a, 'b>(s: Span<'a>, containing_class: Option<&'b SimpleN
                     }
 
                     let (x, kind) = tag::<&str, Span, ErrorTree>("::")(x).map(|(a, _)| (a, Kind::Static))
-                        .map_err(|_|
-                                     char::<Span, ErrorTree>('.')(x).map(|a| (a, Kind::Dynamic)))
+                        .or_else(|_|
+                                     char::<Span, ErrorTree>('.')(x).map(|(a, _)| (a, Kind::Dynamic)))
                         .unwrap_or((x, Kind::None));
 
                     let (x, section) = parse_simple_name(x)?;

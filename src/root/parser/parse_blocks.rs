@@ -14,28 +14,28 @@ use crate::root::parser::parse_util::discard_ignored;
 pub struct Terminator {
     pub opening: char,
     pub closing: char,
-    pub allow_recursive: bool,
+    pub code_inner: bool,
     pub escape_char: Option<char>
 }
 
 pub const BRACE_TERMINATOR: Terminator = Terminator {
     opening: '{',
     closing: '}',
-    allow_recursive: true,
+    code_inner: true,
     escape_char: None,
 };
 
 pub const BRACKET_TERMINATOR: Terminator = Terminator {
     opening: '(',
     closing: ')',
-    allow_recursive: true,
+    code_inner: true,
     escape_char: None,
 };
 
 pub const STRING_TERMINATOR: Terminator = Terminator {
     opening: '"',
     closing: '"',
-    allow_recursive: false,
+    code_inner: false,
     escape_char: Some('\\'),
 };
 
@@ -56,14 +56,14 @@ pub fn parse_terminator_default_set<'a, 'b>(s: Span<'a>, terminator: &'b Termina
 pub fn parse_terminator<'a, 'b, 'c>(s: Span<'a>, terminator: &'b Terminator, all_terminators: &'c [Terminator]) -> ParseResult<'a> {
     let (initial_span, _) = nchar(terminator.opening)(s)?;
 
-    let allow_subsections = terminator.allow_recursive;
-
     let mut depth = 0;
 
     let mut s = initial_span;
 
     'main: loop {
-        s = discard_ignored(s)?.0;
+        if terminator.code_inner {
+            s = discard_ignored(s)?.0;
+        }
 
         if s.is_empty() {
             break;
@@ -85,7 +85,16 @@ pub fn parse_terminator<'a, 'b, 'c>(s: Span<'a>, terminator: &'b Terminator, all
             continue;
         }
 
-        if allow_subsections {
+        if let Some(escape) = terminator.escape_char {
+            let (ns, c) = anychar(s)?;
+            if c == escape {
+                let (ns, _) = anychar(ns)?;
+                s = ns;
+                continue;
+            }
+        }
+
+        if terminator.code_inner {
             for t in all_terminators {
                 if let Ok(_) = nchar::<_, ErrorTree>(t.opening)(s) {
                     s = parse_terminator(s, t, all_terminators)?.0;
@@ -99,6 +108,9 @@ pub fn parse_terminator<'a, 'b, 'c>(s: Span<'a>, terminator: &'b Terminator, all
             }
 
             s = anychar(s)?.0;
+        }
+        else {
+            s = anychar(s)?.0
         }
     }
 

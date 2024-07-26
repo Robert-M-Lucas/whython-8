@@ -8,14 +8,19 @@ struct StructB {
     b: int
 }
 
-fn test() {
-    printi(12);
-}
 
 fn main() -> int {
     let y: int = 13;
 
-    test();
+    let x: StructA = StructA {
+        a: 190,
+        b: StructB {
+            a: 6,
+            b: 8
+        }
+    };
+
+    &y = x.b.a;
 
     return y;
 }
