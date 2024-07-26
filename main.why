@@ -8,20 +8,14 @@ struct StructB {
     b: int
 }
 
+fn test() {
+    printi(12);
+}
+
 fn main() -> int {
     let y: int = 13;
 
-    @ Test Start
-
-    let x: StructA = StructA {
-        a: 3,
-        b: StructB {
-            a: 5,
-            b: 4
-        }
-    };
-
-    @ Test End
+    test();
 
     return y;
 }

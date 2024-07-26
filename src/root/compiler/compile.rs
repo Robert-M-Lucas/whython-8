@@ -6,14 +6,15 @@ use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
 use crate::root::parser::parse_function::FunctionToken;
 use crate::root::shared::common::FunctionID;
+use crate::root::unrandom::{new_hashmap, new_hashset};
 
 /// Compiles the entire program. Returns assembly.
 pub fn compile(mut global_table: GlobalDefinitionTable, unprocessed_functions: HashMap<FunctionID, FunctionToken>) -> Result<String, WErr> {
     let mut unprocessed_functions = unprocessed_functions;
-    let mut compiled_functions = HashMap::new();
+    let mut compiled_functions = new_hashmap();
     let mut compiled_len = 0usize;
 
-    let mut open_set = HashSet::new();
+    let mut open_set = new_hashset();
     open_set.insert(FunctionID(0)); // Start with main
     let mut global_tracker = GlobalTracker::default();
 

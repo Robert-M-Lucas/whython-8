@@ -6,15 +6,30 @@ main:
     push rbp
     mov rbp, rsp
     mov qword [rbp-8], 13
-    ; Test Start
-    mov qword [rbp-32], 3
-    mov qword [rbp-24], 5
-    mov qword [rbp-16], 4
-    ; Test End
+    sub rsp, 24
+    call _4
+    add rsp, 24
     mov rax, qword [rbp-8]
-    mov qword [rbp-40], rax
-    mov rax, qword [rbp-40]
+    mov qword [rbp-32], rax
+    mov rax, qword [rbp-32]
     leave
     ret
 
 
+_4:
+    push rbp
+    mov rbp, rsp
+    mov qword [rbp-8], 12
+    mov rdi, __8_fstr
+    mov rsi, [rbp-8]
+    mov al, 0
+    sub rsp, 8
+    extern printf
+    call printf
+    add rsp, 8
+
+leave
+ret
+
+section .data_readonly
+    __8_fstr db `Integer: %ld\n`,0

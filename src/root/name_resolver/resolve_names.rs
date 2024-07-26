@@ -18,7 +18,7 @@ use crate::root::parser::parse_toplevel::TopLevelTokens;
 use crate::root::shared::common::{LocalAddress, TypeRef};
 use crate::root::shared::common::{ByteSize, FunctionID, TypeID};
 use crate::root::shared::types::Type;
-
+use crate::root::unrandom::new_hashmap;
 
 /// A Whython-code defined type
 #[derive(Getters)]
@@ -82,8 +82,8 @@ pub fn resolve_names(ast: Vec<TopLevelTokens>, global_table: &mut GlobalDefiniti
         };
     }
 
-    let mut unsized_final_types: HashMap<TypeID, UnsizedUserType> = HashMap::new();
-    let mut unprocessed_functions: HashMap<FunctionID, FunctionToken> = HashMap::new();
+    let mut unsized_final_types: HashMap<TypeID, UnsizedUserType> = new_hashmap();
+    let mut unprocessed_functions: HashMap<FunctionID, FunctionToken> = new_hashmap();
 
     for symbol in ast {
         match symbol {
@@ -127,7 +127,7 @@ pub fn resolve_names(ast: Vec<TopLevelTokens>, global_table: &mut GlobalDefiniti
         };
     }
 
-    let mut final_types: HashMap<TypeID, UserType> = HashMap::new();
+    let mut final_types: HashMap<TypeID, UserType> = new_hashmap();
 
     while !unsized_final_types.is_empty() {
         let next_type_id = *unsized_final_types.keys().next().unwrap();

@@ -41,7 +41,6 @@ pub fn parse_struct_init<'a, 'b>(s: Span<'a>, containing_class: Option<&'b Simpl
         let (ns, _) = discard_ignored(ns)?;
 
         let (ns, to_eval) = take_until_or_end_discard_smart(ns, ",")?;
-        println!("{:?} - {:?}", ns.fragment(), to_eval.fragment());
         let (_, eval) = parse_evaluable(to_eval, containing_class, false)?;
         contents.push((name, eval));
         s = ns;
