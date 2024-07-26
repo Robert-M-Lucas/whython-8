@@ -1,5 +1,6 @@
 use crate::root::assembler::assembly_builder::AssemblyBuilder;
 use crate::root::compiler::evaluation::new;
+use crate::root::compiler::evaluation::new::compile_evaluable_new;
 use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::evaluable_errors::EvalErrs;
@@ -31,7 +32,7 @@ pub fn compile_evaluable_reference(
             }
         },
         EvaluableTokens::Literal(_) => new::compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?,
-        EvaluableTokens::InfixOperator(_, _, _) => new::compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?,
+        EvaluableTokens::InfixOperator(_, _, _) => compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?,
         EvaluableTokens::PrefixOperator(_, _) => new::compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?,
         EvaluableTokens::DynamicAccess(inner, access) => {
             let mut ab = AssemblyBuilder::new();
@@ -58,7 +59,7 @@ pub fn compile_evaluable_reference(
             else {
                 todo!()
             }
-        }, // Accessed methods must be called
+        },
         EvaluableTokens::StaticAccess(_, n) => return WErr::ne(NRErrs::CannotFindConstantAttribute(n.name().clone()), n.location().clone()), // Accessed methods must be called
         EvaluableTokens::FunctionCall(_, _) => new::compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?,
         EvaluableTokens::StructInitialiser(struct_init) => new::compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?,

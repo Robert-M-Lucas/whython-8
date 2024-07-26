@@ -1,4 +1,6 @@
+use crate::root::assembler::assembly_builder::AssemblyBuilder;
 use crate::root::compiler::evaluation::function_only;
+use crate::root::compiler::evaluation::reference::compile_evaluable_reference;
 use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::evaluable_errors::EvalErrs;
@@ -8,7 +10,7 @@ use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable, NameResult};
 use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, EvaluableTokens};
 use crate::root::parser::parse_function::parse_operator::{OperatorTokens, PrefixOrInfixEx};
-use crate::root::shared::common::{FunctionID, Indirection, TypeRef};
+use crate::root::shared::common::{AddressedTypeRef, FunctionID, Indirection, LocalAddress, TypeRef};
 
 /// Evaluates the type `et` evaluates to. Does not generate any assembly.
 pub fn compile_evaluable_type_only(
@@ -67,7 +69,28 @@ pub fn compile_evaluable_type_only(
             let signature = global_table.get_function_signature(op_fn);
             signature.get().return_type().as_ref().unwrap().clone()
         },
-        EvaluableTokens::DynamicAccess(_, _) => todo!(), // Accessed methods must be called
+        EvaluableTokens::DynamicAccess(inner, access) => {
+            let t = compile_evaluable_type_only(fid, inner, local_variables, global_table, global_tracker)?;
+
+            let t = global_table.get_type(*t.type_id());
+            let attribs = t.get_attributes()?;
+
+            let mut out = None;
+
+            for (_, name, t) in attribs {
+                if name.name() == access.name() {
+                    out = Some(t.clone());
+                    break;
+                }
+            }
+
+            if let Some(out) = out {
+                out
+            }
+            else {
+                todo!()
+            }
+        },
         EvaluableTokens::StaticAccess(_, n) => return WErr::ne(NRErrs::CannotFindConstantAttribute(n.name().clone()), n.location().clone()), // Accessed methods must be called
         EvaluableTokens::FunctionCall(inner, args) => {
             let (slf, ifid, _) = function_only::compile_evaluable_function_only(fid, inner, local_variables, global_table, global_tracker)?;
