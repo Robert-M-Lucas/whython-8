@@ -1,12 +1,15 @@
+use either::{Left, Right};
+use itertools::Itertools;
+
 use crate::root::assembler::assembly_builder::AssemblyBuilder;
 use crate::root::builtin::core::referencing::{set_deref, set_reference};
+use crate::root::compiler::assembly::heap::heap_alloc;
 use crate::root::compiler::assembly::utils::{
-    copy, copy_from_indirect_fixed_offset, copy_to_indirect,
+    copy, copy_to_indirect,
 };
 use crate::root::compiler::compile_function_call::call_function;
-use crate::root::compiler::evaluation::coerce_self::coerce_self;
-use crate::root::compiler::evaluation::reference::compile_evaluable_reference;
 use crate::root::compiler::evaluation::{function_only, into, reference, type_only};
+use crate::root::compiler::evaluation::reference::compile_evaluable_reference;
 use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::evaluable_errors::EvalErrs;
@@ -14,16 +17,13 @@ use crate::root::errors::evaluable_errors::EvalErrs::{ExpectedNotNone, ExpectedR
 use crate::root::errors::name_resolver_errors::NRErrs;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable, NameResult};
+use crate::root::parser::parse::Location;
 use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, EvaluableTokens};
 use crate::root::parser::parse_function::parse_operator::{OperatorTokens, PrefixOrInfixEx};
-use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{
     AddressedTypeRef, FunctionID, Indirection, LocalAddress, TypeRef,
 };
 use crate::root::shared::types::Type;
-use either::{Left, Right};
-use itertools::Itertools;
-use crate::root::parser::parse::Location;
 
 /// Evaluates `et` into a new address
 pub fn compile_evaluable_new(
@@ -409,8 +409,17 @@ pub fn compile_evaluable_new(
         }
         EvaluableTokens::StructInitialiser(struct_init) => {
             let t = global_table.resolve_to_type_ref(struct_init.name())?;
-            debug_assert!(!t.indirection().has_indirection());
-            let target = global_table.add_local_variable_unnamed_base(t.clone(), local_variables);
+            let size = global_table.get_size(&t);
+
+            let mut code = AssemblyBuilder::new();
+
+            let target = // if struct_init.heap_alloc() {
+            //     let (c, ref_target) = heap_alloc(t.clone(), global_table, local_variables);
+            //     code.other(&c);
+            //     ref_target
+            // } else {
+                global_table.add_local_variable_unnamed_base(t.clone(), local_variables)
+            /* } */;
 
             let tt = global_table.get_type(t.type_id().clone());
             let attributes = tt.get_attributes()?.iter().map(|x| x.clone()).collect_vec();
@@ -420,9 +429,6 @@ pub fn compile_evaluable_new(
                 todo!()
             }
 
-            let mut code = AssemblyBuilder::new();
-
-            // TODO: Doable without clone?
             for ((offset, t_name, t_type), (name, val)) in attributes.iter().zip(give_attrs.iter())
             {
                 if t_name.name() != name.name() {
@@ -443,7 +449,15 @@ pub fn compile_evaluable_new(
                 )?);
             }
 
-            (code.finish(), Some(target))
+            if *struct_init.heap_alloc() {
+                let (c, ref_target) = heap_alloc(t, global_table, local_variables);
+                code.other(&c);
+                code.other(&copy_to_indirect(*target.local_address(), *ref_target.local_address(), size));
+                (code.finish(), Some(ref_target))
+            }
+            else {
+                (code.finish(), Some(target))
+            }
         }
         EvaluableTokens::None => (String::new(), None),
     })

@@ -223,6 +223,7 @@ pub fn parse_evaluable<'a, 'b>(
     semicolon_terminated: bool,
 ) -> ParseResult<'a, Span<'a>, EvaluableToken> {
     let mut s = s;
+    println!("{s}");
 
     let mut evaluables = Vec::new();
 

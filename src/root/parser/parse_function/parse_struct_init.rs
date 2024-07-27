@@ -1,4 +1,4 @@
-use crate::root::parser::parse::{Location, ParseResult, Span};
+use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
 use crate::root::parser::parse_blocks::{
     parse_terminator_default_set, take_until_or_end_discard_smart, BRACE_TERMINATOR,
 };
@@ -21,6 +21,7 @@ use nom::character::streaming::char;
 pub struct StructInitToken {
     location: Location,
     name: FullNameWithIndirectionToken,
+    heap_alloc: bool,
     contents: Vec<(SimpleNameToken, EvaluableToken)>,
 }
 
@@ -29,6 +30,8 @@ pub fn parse_struct_init<'a, 'b>(
     containing_class: Option<&'b SimpleNameToken>,
 ) -> ParseResult<'a, Span<'a>, StructInitToken> {
     let (s, _) = discard_ignored(s)?;
+
+    let (s, heap_alloc) = tag::<&str, Span, ErrorTree>("new")(s).map(|(ns, _)| (ns, true)).unwrap_or((s, false));
 
     let (s, struct_name) = parse_full_name(s, containing_class.clone())?;
     debug_assert!(*struct_name.indirection() == Indirection(0)); // TODO
@@ -59,6 +62,7 @@ pub fn parse_struct_init<'a, 'b>(
         StructInitToken {
             location: struct_name.inner().location().clone(),
             name: struct_name,
+            heap_alloc,
             contents,
         },
     ))

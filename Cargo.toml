@@ -23,6 +23,7 @@ nom-supreme = "0.8.0"
 substring = "1.4.5"
 derive-getters = "0.4.0"
 derive_more = "0.99.18"
+termsize = "0.1.9"
 
 [profile.release]
 opt-level = 3

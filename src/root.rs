@@ -107,7 +107,18 @@ pub fn main_args(args: Args) -> Result<(), WErr> {
         if args.build {
             println!("Skipping execution")
         } else {
-            println!("Executing...");
+            let termsize::Size {rows, cols} = termsize::get().unwrap();
+            const EXECUTING: &str = "Executing";
+            if cols < EXECUTING.len() as u16 || cols > 300 {
+                cprintln!("<s><b>Executing...</>");
+            }
+            else {
+                let padl = (cols - EXECUTING.len() as u16) / 2;
+                let padr = if ((cols - EXECUTING.len() as u16) % 2) == 1 {
+                    padl + 1
+                } else { padl };
+                cprintln!("<s><b>{}{}{}</>", "-".repeat(padl as usize), EXECUTING, "-".repeat(padr as usize));
+            }
             run(&args.output);
         }
     }

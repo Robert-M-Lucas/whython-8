@@ -22,6 +22,7 @@ use crate::root::shared::types::Type;
 use either::{Left, Right};
 use itertools::Itertools;
 use std::any::Any;
+use crate::root::compiler::evaluation::new::compile_evaluable_new;
 use crate::root::parser::parse::Location;
 
 /// Evaluates `et` putting the result into `target`
@@ -383,10 +384,27 @@ pub fn compile_evaluable_into(
         }
         EvaluableTokens::StructInitialiser(struct_init) => {
             let t = global_table.resolve_to_type_ref(struct_init.name())?;
+
+            if *struct_init.heap_alloc() {
+                if target.type_ref() != &t.plus_one_indirect() {
+                    todo!()
+                }
+                let mut ab = AssemblyBuilder::new();
+                let (c, sr) = compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?;
+                ab.other(&c);
+                let sr = sr.unwrap();
+                ab.other(&copy(*sr.local_address(), *target.local_address(), global_table.get_size(target.type_ref())));
+                return Ok(ab.finish());
+            }
             debug_assert!(!t.indirection().has_indirection());
-            if &t != target.type_ref() {
+
+            if *struct_init.heap_alloc() && &t.plus_one_indirect() != target.type_ref()  {
+                todo!()
+            }
+            if !struct_init.heap_alloc() && &t != target.type_ref() {
                 todo!();
             }
+
             let tt = global_table.get_type(t.type_id().clone());
             let attributes = tt.get_attributes()?.iter().map(|x| x.clone()).collect_vec();
             let give_attrs = struct_init.contents();

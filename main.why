@@ -1,31 +1,15 @@
-struct MyStruct {
-    a: int,
-    b: int
+struct LL {
+    has_node: bool,
+    first: &Node
 }
 
-impl MyStruct {
-    fn print(&self) {
-        printi(*self.a);
-        printi(*self.b);
-    }
 
-    fn increment(&self) {
-        self.a += 1;
-        self.b += 1;
-    }
+struct Node {
+    val: int,
+    has_next: bool,
+    next: &Node
 }
 
 fn main() -> int {
-    let x: MyStruct = MyStruct {
-        a: 3,
-        b: 4
-    };
-    let y: &int = x.a;
-
-    x.print();
-    x.increment();
-    y += 2;
-    x.print();
-
-    return 7;
+    let r: LL = LL { has_node: false, first: Node::null() };
 }

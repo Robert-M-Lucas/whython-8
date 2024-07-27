@@ -148,8 +148,10 @@ pub fn compile_evaluable_type_only(
             return_type
         }
         EvaluableTokens::StructInitialiser(struct_init) => {
-            let t = global_table.resolve_to_type_ref(struct_init.name())?;
-            debug_assert!(!t.indirection().has_indirection());
+            let mut t = global_table.resolve_to_type_ref(struct_init.name())?;
+            if *struct_init.heap_alloc() {
+                t = t.plus_one_indirect();
+            }
             t
         }
         EvaluableTokens::None => {

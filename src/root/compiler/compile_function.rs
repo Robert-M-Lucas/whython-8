@@ -1,3 +1,4 @@
+use color_print::cprintln;
 use crate::root::assembler::assembly_builder::AssemblyBuilder;
 use crate::root::builtin::types::bool::BoolType;
 use crate::root::builtin::types::int::IntType;
@@ -329,7 +330,7 @@ fn recursively_compile_lines(
             }
             #[cfg(debug_assertions)]
             LineTokens::Marker(value) => {
-                println!("\nCompiling marker [{}]", value.value());
+                cprintln!("\n<s><m!>At Compilation Marker:</> '{}'", value.value());
                 contents.line(&format!(";{}", value.value()));
             }
         }

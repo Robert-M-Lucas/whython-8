@@ -41,13 +41,13 @@ pub fn compile_evaluable_reference(
             }
         }
         EvaluableTokens::Literal(_) => {
-            new::compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?
+            compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?
         }
         EvaluableTokens::InfixOperator(_, _, _) => {
             compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?
         }
         EvaluableTokens::PrefixOperator(_, _) => {
-            new::compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?
+            compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?
         }
         EvaluableTokens::DynamicAccess(_, _) => {
             compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?
@@ -59,10 +59,10 @@ pub fn compile_evaluable_reference(
             )
         } // Accessed methods must be called
         EvaluableTokens::FunctionCall(_, _) => {
-            new::compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?
+            compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?
         }
         EvaluableTokens::StructInitialiser(struct_init) => {
-            new::compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?
+            compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?
         }
         EvaluableTokens::None => (String::new(), None),
     })
