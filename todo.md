@@ -1,7 +1,7 @@
 
-
-- Add support for heap stuff
-- Add support for x.a where x is a ref
+- Add Struct::null() to get &Struct
+- Fix everything required to get linked list working
+- Add free
 - Add array support
 - Add rich parser errors
 - Add support for multiple files
