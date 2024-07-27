@@ -123,7 +123,7 @@ pub fn compile_evaluable_type_only(
             }
 
             if let Some(out) = out {
-                out
+                out.plus_one_indirect()
             } else {
                 todo!()
             }

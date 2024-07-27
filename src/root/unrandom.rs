@@ -1,5 +1,6 @@
 use std::collections::{HashMap, HashSet};
 use std::hash::RandomState;
+use std::mem::size_of;
 
 #[inline]
 pub fn new_hashmap<A, B>() -> HashMap<A, B> {

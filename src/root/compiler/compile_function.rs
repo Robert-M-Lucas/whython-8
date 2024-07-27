@@ -329,6 +329,7 @@ fn recursively_compile_lines(
             }
             #[cfg(debug_assertions)]
             LineTokens::Marker(value) => {
+                println!("\nCompiling marker [{}]", value.value());
                 contents.line(&format!(";{}", value.value()));
             }
         }

@@ -23,6 +23,7 @@ use crate::root::shared::common::{
 use crate::root::shared::types::Type;
 use either::{Left, Right};
 use itertools::Itertools;
+use crate::root::parser::parse::Location;
 
 /// Evaluates `et` into a new address
 pub fn compile_evaluable_new(
@@ -129,12 +130,14 @@ pub fn compile_evaluable_new(
                 global_table,
                 global_tracker,
             )?;
+
             let op_fn = global_table.get_operator_function(
                 *lhs_type.type_id(),
                 op,
                 PrefixOrInfixEx::Infix,
             )?;
             let signature = global_table.get_function_signature(op_fn);
+
             let uses_self = signature.self_type().uses_self();
 
             if signature.args().len() != 2 {
@@ -294,6 +297,10 @@ pub fn compile_evaluable_new(
 
             let Some(inner) = inner else { todo!() };
 
+            if inner.type_ref().indirection().0 > 1 {
+                todo!()
+            }
+
             let t = global_table.get_type(*inner.type_ref().type_id());
             let attribs = t.get_attributes()?;
 
@@ -309,21 +316,35 @@ pub fn compile_evaluable_new(
                 todo!()
             };
 
-            let target = global_table.add_local_variable_unnamed_base(t, local_variables);
+            let t = t.plus_one_indirect();
+
+            let target = global_table.add_local_variable_unnamed_base(t.clone(), local_variables);
 
             if inner.type_ref().indirection().has_indirection() {
-                ab.other(&copy_from_indirect_fixed_offset(
-                    LocalAddress(inner.local_address().0),
-                    found_offset,
-                    *target.local_address(),
-                    global_table.get_size(target.type_ref()),
-                ));
+                // TODO: Not 64 bit!
+                ab.line(&format!("mov rax, {}", inner.local_address()));
+                ab.line(&format!("add rax, {}", found_offset.0));
+                ab.line(&format!("mov qword {}, rax", target.local_address()));
+
+                // ab.other(&copy_from_indirect_fixed_offset(
+                //     LocalAddress(inner.local_address().0),
+                //     found_offset,
+                //     *target.local_address(),
+                //     global_table.get_size(target.type_ref()),
+                // ));
             } else {
-                ab.other(&copy(
-                    LocalAddress(inner.local_address().0 + found_offset.0 as isize),
-                    *target.local_address(),
-                    global_table.get_size(target.type_ref()),
-                ));
+                ab.other(&set_reference(
+                    &Location::builtin(),
+                    AddressedTypeRef::new(LocalAddress(inner.local_address().0 + (found_offset.0 as isize)), t),
+                    target.clone(),
+                    global_table
+                )?);
+
+                // ab.other(&copy(
+                //     LocalAddress(inner.local_address().0 + found_offset.0 as isize),
+                //     *target.local_address(),
+                //     global_table.get_size(target.type_ref()),
+                // ));
             }
 
             (ab.finish(), Some(target))

@@ -22,6 +22,7 @@ use crate::root::shared::types::Type;
 use either::{Left, Right};
 use itertools::Itertools;
 use std::any::Any;
+use crate::root::parser::parse::Location;
 
 /// Evaluates `et` putting the result into `target`
 pub fn compile_evaluable_into(
@@ -288,7 +289,7 @@ pub fn compile_evaluable_into(
 
             for (offset, name, t) in attribs {
                 if name.name() == access.name() {
-                    if t != target.type_ref() {
+                    if &t.plus_one_indirect() != target.type_ref() {
                         todo!()
                     }
                     found_offset = Some(*offset);
@@ -299,19 +300,32 @@ pub fn compile_evaluable_into(
                 todo!()
             };
 
+
             if inner.type_ref().indirection().has_indirection() {
-                ab.other(&copy_from_indirect_fixed_offset(
-                    LocalAddress(inner.local_address().0),
-                    found_offset,
-                    *target.local_address(),
-                    global_table.get_size(target.type_ref()),
-                ));
+                // TODO: Not 64 bit!
+                ab.line(&format!("mov rax, {}", inner.local_address()));
+                ab.line(&format!("add rax, {}", found_offset.0));
+                ab.line(&format!("mov qword {}, rax", target.local_address()));
+
+                // ab.other(&copy_from_indirect_fixed_offset(
+                //     LocalAddress(inner.local_address().0),
+                //     found_offset,
+                //     *target.local_address(),
+                //     global_table.get_size(target.type_ref()),
+                // ));
             } else {
-                ab.other(&copy(
-                    LocalAddress(inner.local_address().0 + found_offset.0 as isize),
-                    *target.local_address(),
-                    global_table.get_size(target.type_ref()),
-                ));
+                ab.other(&set_reference(
+                    &Location::builtin(),
+                    AddressedTypeRef::new(LocalAddress(inner.local_address().0 + (found_offset.0 as isize)), target.type_ref().minus_one_indirect()),
+                    target.clone(),
+                    global_table
+                )?);
+
+                // ab.other(&copy(
+                //     LocalAddress(inner.local_address().0 + found_offset.0 as isize),
+                //     *target.local_address(),
+                //     global_table.get_size(target.type_ref()),
+                // ));
             }
 
             ab.finish()

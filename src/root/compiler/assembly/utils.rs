@@ -304,3 +304,18 @@ pub fn copy(from: LocalAddress, to: LocalAddress, amount: ByteSize) -> String {
     }
     output.finish()
 }
+
+pub fn write_64bit_int(value: i64, location: &LocalAddress) -> String {
+    if value.abs() < 2147483647 {
+        format!("    mov qword {location}, {value}\n")
+    } else {
+        let full_hex = format!("{:016x}", value);
+        format!(
+            "    mov dword {location}, 0x{}
+    mov dword {}, 0x{}\n",
+            &full_hex[8..],
+            *location + LocalAddress(4),
+            &full_hex[..8]
+        )
+    }
+}

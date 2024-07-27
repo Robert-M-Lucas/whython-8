@@ -12,6 +12,7 @@ use crate::root::builtin::types::int::p_sub::{IntAsSub, IntPSub};
 use crate::root::builtin::types::int::printi::PrintI;
 use crate::root::builtin::types::int::sub::IntSub;
 use crate::root::builtin::{f_id, t_id, BuiltinInlineFunction, InlineFunctionGenerator};
+use crate::root::compiler::assembly::utils::write_64bit_int;
 use crate::root::compiler::compiler_errors::CErrs;
 use crate::root::errors::evaluable_errors::EvalErrs;
 use crate::root::errors::WErr;
@@ -114,18 +115,7 @@ impl Type for IntType {
 
                 let value = *value as i64;
 
-                if value < 2147483648 {
-                    format!("    mov qword {location}, {value}\n")
-                } else {
-                    let full_hex = format!("{:016x}", value);
-                    format!(
-                        "    mov dword {location}, 0x{}
-    mov dword {}, 0x{}\n",
-                        &full_hex[8..],
-                        *location + LocalAddress(4),
-                        &full_hex[..8]
-                    )
-                }
+                write_64bit_int(value, location)
             }
         })
     }

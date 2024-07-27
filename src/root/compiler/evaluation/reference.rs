@@ -1,4 +1,5 @@
 use crate::root::assembler::assembly_builder::AssemblyBuilder;
+use crate::root::builtin::core::referencing::set_reference;
 use crate::root::compiler::evaluation::new;
 use crate::root::compiler::evaluation::new::compile_evaluable_new;
 use crate::root::compiler::global_tracker::GlobalTracker;
@@ -7,6 +8,7 @@ use crate::root::errors::evaluable_errors::EvalErrs;
 use crate::root::errors::name_resolver_errors::NRErrs;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable, NameResult};
+use crate::root::parser::parse::Location;
 use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, EvaluableTokens};
 use crate::root::shared::common::{AddressedTypeRef, FunctionID, LocalAddress};
 
@@ -47,39 +49,8 @@ pub fn compile_evaluable_reference(
         EvaluableTokens::PrefixOperator(_, _) => {
             new::compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?
         }
-        EvaluableTokens::DynamicAccess(inner, access) => {
-            let mut ab = AssemblyBuilder::new();
-            let (c, inner) = compile_evaluable_reference(
-                fid,
-                inner,
-                local_variables,
-                global_table,
-                global_tracker,
-            )?;
-            ab.other(&c);
-
-            let Some(inner) = inner else { todo!() };
-
-            let t = global_table.get_type(*inner.type_ref().type_id());
-            let attribs = t.get_attributes()?;
-
-            let mut out = None;
-
-            for (offset, name, t) in attribs {
-                if name.name() == access.name() {
-                    out = Some(AddressedTypeRef::new(
-                        LocalAddress(inner.local_address().0 + offset.0 as isize),
-                        t.clone(),
-                    ));
-                    break;
-                }
-            }
-
-            if let Some(out) = out {
-                (ab.finish(), Some(out))
-            } else {
-                todo!()
-            }
+        EvaluableTokens::DynamicAccess(_, _) => {
+            compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?
         }
         EvaluableTokens::StaticAccess(_, n) => {
             return WErr::ne(
