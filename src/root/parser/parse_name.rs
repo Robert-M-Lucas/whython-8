@@ -1,27 +1,27 @@
+use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
+use derive_getters::Getters;
 use nom::bytes::complete::take_till;
 use nom::Err::Error;
 use nom_supreme::error::{BaseErrorKind, Expectation};
-use derive_getters::Getters;
-use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
 
 #[derive(Debug, Getters, Clone)]
 pub struct SimpleNameToken {
     location: Location,
-    name: String
+    name: String,
 }
 
 impl SimpleNameToken {
     pub fn new(s: Span) -> SimpleNameToken {
         SimpleNameToken {
             location: Location::from_span(&s),
-            name: s.to_string()
+            name: s.to_string(),
         }
     }
 
     pub fn new_builtin(s: String) -> SimpleNameToken {
         SimpleNameToken {
             location: Location::builtin(),
-            name: s.to_string()
+            name: s.to_string(),
         }
     }
 
@@ -51,5 +51,3 @@ pub fn parse_simple_name(s: Span<'_>) -> ParseResult<'_, Span, SimpleNameToken> 
         Ok((s, SimpleNameToken::new(n)))
     }
 }
-
-

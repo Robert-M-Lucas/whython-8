@@ -1,4 +1,3 @@
-
 // #[derive(Debug, Getters)]
 // pub struct AssignmentToken {
 //     location: Location,

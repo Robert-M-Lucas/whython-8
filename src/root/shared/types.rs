@@ -15,5 +15,9 @@ pub trait Type {
         Err(todo!())
     }
 
-    fn instantiate_from_literal(&self, location: &LocalAddress, literal: &LiteralToken) -> Result<String, WErr>;
+    fn instantiate_from_literal(
+        &self,
+        location: &LocalAddress,
+        literal: &LiteralToken,
+    ) -> Result<String, WErr>;
 }

@@ -1,15 +1,17 @@
 use crate::root::errors::WErr;
 use crate::root::shared::common::AddressedTypeRef;
 
-pub mod new;
-pub mod into;
-pub mod reference;
-pub mod function_only;
-pub mod type_only;
 pub mod coerce_self;
+pub mod function_only;
+pub mod into;
+pub mod new;
+pub mod reference;
+pub mod type_only;
 
 /// Error on an empty address
-pub fn expect_addr(r: (String, Option<AddressedTypeRef>)) -> Result<(String, AddressedTypeRef), WErr> {
+pub fn expect_addr(
+    r: (String, Option<AddressedTypeRef>),
+) -> Result<(String, AddressedTypeRef), WErr> {
     Ok((r.0, r.1.unwrap())) // TODO
 }
 

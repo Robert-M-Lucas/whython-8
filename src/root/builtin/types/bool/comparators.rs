@@ -1,7 +1,7 @@
 use unique_type_id::UniqueTypeId;
 
-use crate::root::builtin::{BuiltinInlineFunction, f_id, InlineFunctionGenerator};
 use crate::root::builtin::types::bool::{bool_op_sig, BoolType};
+use crate::root::builtin::{f_id, BuiltinInlineFunction, InlineFunctionGenerator};
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::shared::common::{FunctionID, LocalAddress, TypeID};
 
@@ -38,7 +38,7 @@ impl BuiltinInlineFunction for BoolEq {
             let jmp_end = gt.get_unique_tag(BoolEq::id());
 
             format!(
-"    cmp byte {lhs}, 0
+                "    cmp byte {lhs}, 0
     jz {jmp_false}
     mov al, byte {rhs}
     mov byte {return_into}, al
@@ -50,7 +50,8 @@ impl BuiltinInlineFunction for BoolEq {
     jmp {jmp_end}
     {jmp_true}:
     mov byte {return_into}, 0
-    {jmp_end}:\n")
+    {jmp_end}:\n"
+            )
         }
     }
 
@@ -104,7 +105,8 @@ impl BuiltinInlineFunction for BoolNE {
     jmp {jmp_end}
     {jmp_false}:
     mov byte {return_into}, 0
-    {jmp_end}:\n")
+    {jmp_end}:\n"
+            )
         }
     }
 

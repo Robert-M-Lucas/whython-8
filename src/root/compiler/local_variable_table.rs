@@ -1,10 +1,10 @@
-use std::collections::HashMap;
 use crate::root::shared::common::{AddressedTypeRef, ByteSize, LocalAddress};
+use std::collections::HashMap;
 
 /// Function-local table of defined variables. Only used within function processing
 pub struct LocalVariableTable {
     table: Vec<HashMap<String, AddressedTypeRef>>,
-    stack_size: Vec<ByteSize>
+    stack_size: Vec<ByteSize>,
 }
 
 impl Default for LocalVariableTable {
@@ -17,7 +17,7 @@ impl LocalVariableTable {
     pub fn new() -> LocalVariableTable {
         LocalVariableTable {
             table: vec![Default::default()],
-            stack_size: vec![ByteSize(0)]
+            stack_size: vec![ByteSize(0)],
         }
     }
 
@@ -26,7 +26,7 @@ impl LocalVariableTable {
     }
 
     /// Creates a new variable scope
-    pub fn enter_scope(&mut self){
+    pub fn enter_scope(&mut self) {
         self.stack_size.push(*self.stack_size.last().unwrap());
         self.table.push(Default::default());
     }
@@ -39,7 +39,10 @@ impl LocalVariableTable {
 
     /// Adds an allocated, named variable to the variable table and stack size
     pub fn add_existing(&mut self, name: String, addressed_type_ref: AddressedTypeRef) {
-        self.table.last_mut().unwrap().insert(name, addressed_type_ref);
+        self.table
+            .last_mut()
+            .unwrap()
+            .insert(name, addressed_type_ref);
     }
 
     /// Adds a variable that can't be referenced to the stack size

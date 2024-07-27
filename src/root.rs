@@ -1,17 +1,17 @@
 use crate::root::parser::parse::parse;
 // use crate::root::assembler::assemble::generate_assembly;
 // use crate::root::name_resolver::processor::process;
+use crate::root::compiler::compile::compile;
+use crate::root::errors::WErr;
+use crate::root::name_resolver::resolve::resolve;
+use crate::root::runner::{assemble, link_gcc, run};
 use crate::time;
 use clap::Parser;
 use color_print::cprintln;
+use shared::common::ByteSize;
 use std::fs;
 use std::io::ErrorKind;
 use std::path::PathBuf;
-use crate::root::compiler::compile::compile;
-use crate::root::name_resolver::resolve::resolve;
-use shared::common::ByteSize;
-use crate::root::errors::WErr;
-use crate::root::runner::{assemble, link_gcc, run};
 #[cfg(debug_assertions)]
 pub const DEBUG_ON_ERROR: bool = true;
 
@@ -26,17 +26,17 @@ pub const DEBUG_ON_ERROR: bool = true;
 // use runner::link_gcc_experimental;
 // use crate::root::parser::parse::parse;
 
+pub mod assembler;
+pub mod builtin;
+pub mod compiler;
+pub mod errors;
+pub mod name_resolver;
+mod ob;
 pub mod parser;
 pub mod runner;
-pub mod utils;
-pub mod name_resolver;
-pub mod builtin;
 pub mod shared;
-pub mod compiler;
-pub mod assembler;
-pub mod errors;
-mod ob;
 mod unrandom;
+pub mod utils;
 
 pub const POINTER_SIZE: ByteSize = ByteSize(8);
 
@@ -91,7 +91,6 @@ pub fn main_args(args: Args) -> Result<(), WErr> {
     time!(
         fs::write(PathBuf::from(format!("{}.asm", &args.output)), assembly.as_bytes()).unwrap();
     );
-
 
     print!("Assembling (NASM)... ");
     time!(

@@ -1,13 +1,13 @@
+use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
+use crate::root::parser::parse_function::parse_evaluable::{parse_evaluable, EvaluableToken};
+use crate::root::parser::parse_function::parse_line::{LineTestFn, LineTokens};
+use crate::root::parser::parse_name::SimpleNameToken;
+use crate::root::parser::parse_util::{discard_ignored, require_ignored};
 use derive_getters::Getters;
 use nom::bytes::complete::take_till;
 use nom::character::complete::char;
 use nom::sequence::Tuple;
 use nom_supreme::tag::complete::tag;
-use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
-use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, parse_evaluable};
-use crate::root::parser::parse_function::parse_line::{LineTestFn, LineTokens};
-use crate::root::parser::parse_name::SimpleNameToken;
-use crate::root::parser::parse_util::{discard_ignored, require_ignored};
 
 #[derive(Debug, Getters)]
 pub struct MarkerToken {
@@ -34,7 +34,7 @@ pub fn parse_marker(s: Span) -> ParseResult<Span, MarkerToken> {
     Ok((
         s,
         MarkerToken {
-            value: value.fragment().to_string()
-        }
+            value: value.fragment().to_string(),
+        },
     ))
 }

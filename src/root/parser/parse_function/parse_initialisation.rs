@@ -1,12 +1,14 @@
-use derive_getters::Getters;
 use crate::root::parser::parse::{Location, ParseResult, Span};
-use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, FullNameWithIndirectionToken, parse_evaluable, parse_full_name};
+use crate::root::parser::parse_function::parse_evaluable::{
+    parse_evaluable, parse_full_name, EvaluableToken, FullNameWithIndirectionToken,
+};
 use crate::root::parser::parse_function::parse_line::{LineTestFn, LineTokens};
+use crate::root::parser::parse_name::{parse_simple_name, SimpleNameToken};
+use crate::root::parser::parse_util::{discard_ignored, require_ignored};
+use derive_getters::Getters;
 use nom::character::complete::char;
 use nom::sequence::Tuple;
 use nom_supreme::tag::complete::tag;
-use crate::root::parser::parse_name::{SimpleNameToken, parse_simple_name};
-use crate::root::parser::parse_util::{discard_ignored, require_ignored};
 
 #[derive(Debug, Getters)]
 pub struct InitialisationToken {
@@ -25,7 +27,10 @@ pub fn test_parse_initialisation<'a, 'b>(s: Span<'a>) -> ParseResult<Span, LineT
     }
 }
 
-pub fn parse_initialisation<'a, 'b>(s: Span<'a>, containing_class: Option<&'b SimpleNameToken>) -> ParseResult<'a, Span<'a>, InitialisationToken> {
+pub fn parse_initialisation<'a, 'b>(
+    s: Span<'a>,
+    containing_class: Option<&'b SimpleNameToken>,
+) -> ParseResult<'a, Span<'a>, InitialisationToken> {
     let (s, l) = tag("let")(s)?;
     let (s, _) = require_ignored(s)?;
     let (s, name) = parse_simple_name(s)?;

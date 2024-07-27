@@ -1,8 +1,7 @@
-
 /// A helper for correctly formatting strings for assembly.
 /// Will have no preceding newline and a trailing newline.
 pub struct AssemblyBuilder {
-    inner: String
+    inner: String,
 }
 
 impl Default for AssemblyBuilder {
@@ -13,7 +12,9 @@ impl Default for AssemblyBuilder {
 
 impl AssemblyBuilder {
     pub fn new() -> AssemblyBuilder {
-        AssemblyBuilder { inner: String::new() }
+        AssemblyBuilder {
+            inner: String::new(),
+        }
     }
 
     /// Adds a single, indented line with a trailing newline

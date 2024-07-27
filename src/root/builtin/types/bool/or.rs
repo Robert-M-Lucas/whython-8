@@ -1,11 +1,11 @@
-use unique_type_id::UniqueTypeId;
-use crate::root::builtin::{BuiltinInlineFunction, InlineFunctionGenerator, f_id};
-use crate::root::builtin::types::bool::{bool_op_sig, BoolType};
 use crate::root::builtin::types::bool::printb::PrintB;
+use crate::root::builtin::types::bool::{bool_op_sig, BoolType};
 use crate::root::builtin::types::int::IntType;
+use crate::root::builtin::{f_id, BuiltinInlineFunction, InlineFunctionGenerator};
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{FunctionID, LocalAddress, TypeID};
+use unique_type_id::UniqueTypeId;
 
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
@@ -30,10 +30,11 @@ impl BuiltinInlineFunction for BoolOr {
             let rhs = args[1];
             let return_into = return_into.unwrap();
             format!(
-"    mov al, byte {lhs}
+                "    mov al, byte {lhs}
     or al, byte {rhs}
     mov byte {return_into}, al
-")
+"
+            )
         }
     }
 
@@ -58,8 +59,11 @@ impl BuiltinInlineFunction for BoolAsOr {
     fn signature(&self) -> FunctionSignature {
         FunctionSignature::new_inline_builtin(
             SelfType::RefSelf,
-            &[("lhs", BoolType::id().with_indirection(1)), ("rhs", BoolType::id().immediate())],
-            None
+            &[
+                ("lhs", BoolType::id().with_indirection(1)),
+                ("rhs", BoolType::id().immediate()),
+            ],
+            None,
         )
     }
 
@@ -68,11 +72,12 @@ impl BuiltinInlineFunction for BoolAsOr {
             let lhs = args[0];
             let rhs = args[1];
             format!(
-"    mov rdx, qword {lhs}
+                "    mov rdx, qword {lhs}
     mov al, byte [rdx]
     or al, byte {rhs}
     mov byte [rdx], al
-")
+"
+            )
         }
     }
 

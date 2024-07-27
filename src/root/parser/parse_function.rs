@@ -1,15 +1,19 @@
+use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
+use crate::root::parser::parse_blocks::{
+    parse_terminator_default_set, BRACE_TERMINATOR, BRACKET_TERMINATOR,
+};
+use crate::root::parser::parse_function::parse_evaluable::{
+    parse_full_name, FullNameWithIndirectionToken,
+};
+use crate::root::parser::parse_function::parse_line::{parse_lines, LineTokens};
+use crate::root::parser::parse_name::{parse_simple_name, SimpleNameToken};
+use crate::root::parser::parse_parameters::{parse_parameters, Parameters, SelfType};
+use crate::root::parser::parse_toplevel::{TopLevelTokens, ToplevelTestFn};
+use crate::root::parser::parse_util::{discard_ignored, require_ignored};
 use derive_getters::{Dissolve, Getters};
 use nom::sequence::Tuple;
 use nom::Parser;
 use nom_supreme::tag::complete::tag;
-use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
-use crate::root::parser::parse_blocks::{BRACE_TERMINATOR, BRACKET_TERMINATOR, parse_terminator_default_set};
-use crate::root::parser::parse_function::parse_evaluable::{FullNameWithIndirectionToken, parse_full_name};
-use crate::root::parser::parse_function::parse_line::{LineTokens, parse_lines};
-use crate::root::parser::parse_name::{parse_simple_name, SimpleNameToken};
-use crate::root::parser::parse_parameters::{Parameters, parse_parameters, SelfType};
-use crate::root::parser::parse_toplevel::{ToplevelTestFn, TopLevelTokens};
-use crate::root::parser::parse_util::{discard_ignored, require_ignored};
 
 pub mod parse_assigner;
 pub mod parse_assignment;
@@ -19,11 +23,11 @@ pub mod parse_if;
 pub mod parse_initialisation;
 pub mod parse_line;
 pub mod parse_literal;
+mod parse_marker;
 pub mod parse_operator;
 pub mod parse_return;
-pub mod parse_while;
 mod parse_struct_init;
-mod parse_marker;
+pub mod parse_while;
 
 #[derive(Debug, Getters, Dissolve)]
 pub struct FunctionToken {
@@ -45,7 +49,10 @@ pub fn test_parse_function(s: Span<'_>) -> ParseResult<Span, ToplevelTestFn<'_>>
     }
 }
 
-pub fn parse_function<'a, 'b>(s: Span<'a>, allow_self: Option<&'b SimpleNameToken>) -> ParseResult<'a, Span<'a>, FunctionToken> {
+pub fn parse_function<'a, 'b>(
+    s: Span<'a>,
+    allow_self: Option<&'b SimpleNameToken>,
+) -> ParseResult<'a, Span<'a>, FunctionToken> {
     let location = Location::from_span(&s);
     let (s, _) = tag("fn").parse(s)?;
     let (s, _) = require_ignored(s)?;
@@ -75,8 +82,6 @@ pub fn parse_function<'a, 'b>(s: Span<'a>, allow_self: Option<&'b SimpleNameToke
     let end_location = Location::from_span_end(&contents);
 
     let (_, lines) = parse_lines(contents, allow_self)?;
-
-
 
     Ok((
         s,

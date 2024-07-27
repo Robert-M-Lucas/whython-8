@@ -1,5 +1,3 @@
-use std::collections::{HashMap, HashSet};
-use itertools::Itertools;
 use crate::root::compiler::compile_function::compile_function;
 use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::errors::WErr;
@@ -7,9 +5,14 @@ use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
 use crate::root::parser::parse_function::FunctionToken;
 use crate::root::shared::common::FunctionID;
 use crate::root::unrandom::{new_hashmap, new_hashset};
+use itertools::Itertools;
+use std::collections::{HashMap, HashSet};
 
 /// Compiles the entire program. Returns assembly.
-pub fn compile(mut global_table: GlobalDefinitionTable, unprocessed_functions: HashMap<FunctionID, FunctionToken>) -> Result<String, WErr> {
+pub fn compile(
+    mut global_table: GlobalDefinitionTable,
+    unprocessed_functions: HashMap<FunctionID, FunctionToken>,
+) -> Result<String, WErr> {
     let mut unprocessed_functions = unprocessed_functions;
     let mut compiled_functions = new_hashmap();
     let mut compiled_len = 0usize;
@@ -24,12 +27,16 @@ pub fn compile(mut global_table: GlobalDefinitionTable, unprocessed_functions: H
         let current_function = *open_set.iter().next().unwrap();
         open_set.remove(&current_function);
 
-        let Some(current_function_token) = unprocessed_functions.remove(&current_function)
-            else {
-                continue; // Inline function
-            };
+        let Some(current_function_token) = unprocessed_functions.remove(&current_function) else {
+            continue; // Inline function
+        };
 
-        let compiled = compile_function(current_function, current_function_token, &mut global_table, &mut global_tracker)?;
+        let compiled = compile_function(
+            current_function,
+            current_function_token,
+            &mut global_table,
+            &mut global_tracker,
+        )?;
 
         compiled_len += compiled.len() + 10;
         compiled_functions.insert(current_function, compiled);
@@ -43,8 +50,7 @@ pub fn compile(mut global_table: GlobalDefinitionTable, unprocessed_functions: H
 
     let mut s = String::with_capacity(compiled_len);
 
-    s +=
-"    global main
+    s += "    global main
 
 section .text
 
@@ -57,7 +63,10 @@ section .text
     }
 
     #[cfg(debug_assertions)]
-    for (_id, f) in compiled_functions.iter().sorted_by(|(x, _), (y, _)| x.0.cmp(&y.0)) {
+    for (_id, f) in compiled_functions
+        .iter()
+        .sorted_by(|(x, _), (y, _)| x.0.cmp(&y.0))
+    {
         s += &f;
         s += "\n\n";
     }

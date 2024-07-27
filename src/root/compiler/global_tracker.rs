@@ -1,6 +1,6 @@
-use std::collections::HashSet;
-use derive_getters::{Dissolve, Getters};
 use crate::root::shared::common::FunctionID;
+use derive_getters::{Dissolve, Getters};
+use std::collections::HashSet;
 
 /// Tracks data between function compilations
 #[derive(Default, Dissolve, Getters)]
@@ -8,7 +8,7 @@ pub struct GlobalTracker {
     function_calls: HashSet<FunctionID>,
     readonly_contents: HashSet<String>,
     readonly_data_section: String,
-    unique_tag_counter: usize
+    unique_tag_counter: usize,
 }
 
 impl GlobalTracker {

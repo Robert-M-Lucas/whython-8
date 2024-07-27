@@ -2,9 +2,9 @@ use crate::root::parser::parse::{ParseResult, Span};
 use crate::root::parser::parse_function::{test_parse_function, FunctionToken};
 use crate::root::parser::parse_impl::{test_parse_impl, ImplToken};
 use crate::root::parser::parse_struct::{test_parse_struct, StructToken};
+use crate::root::parser::parse_util::discard_ignored;
 use nom::branch::alt;
 use nom::Parser;
-use crate::root::parser::parse_util::discard_ignored;
 
 #[derive(Debug)]
 pub enum TopLevelTokens {

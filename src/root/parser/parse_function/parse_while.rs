@@ -4,8 +4,10 @@ use nom::Parser;
 use nom_supreme::tag::complete::tag;
 
 use crate::root::parser::parse::{Location, ParseResult, Span};
-use crate::root::parser::parse_blocks::{BRACE_TERMINATOR, BRACKET_TERMINATOR, parse_terminator_default_set};
-use crate::root::parser::parse_function::parse_evaluable::{parse_evaluable, EvaluableToken,};
+use crate::root::parser::parse_blocks::{
+    parse_terminator_default_set, BRACE_TERMINATOR, BRACKET_TERMINATOR,
+};
+use crate::root::parser::parse_function::parse_evaluable::{parse_evaluable, EvaluableToken};
 use crate::root::parser::parse_function::parse_line::{parse_lines, LineTestFn, LineTokens};
 use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::parser::parse_util::{discard_ignored, require_ignored};
@@ -26,7 +28,10 @@ pub fn test_parse_while<'a, 'b>(s: Span<'a>) -> ParseResult<Span, LineTestFn<'a,
     }
 }
 
-pub fn parse_while<'a, 'b>(s: Span<'a>, containing_class: Option<&'b SimpleNameToken>) -> ParseResult<'a, Span<'a>, WhileToken> {
+pub fn parse_while<'a, 'b>(
+    s: Span<'a>,
+    containing_class: Option<&'b SimpleNameToken>,
+) -> ParseResult<'a, Span<'a>, WhileToken> {
     let (s, l) = tag("while")(s)?;
     let (s, _) = discard_ignored(s)?;
     let (s, content) = parse_terminator_default_set(s, &BRACKET_TERMINATOR)?;

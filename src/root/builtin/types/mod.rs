@@ -1,2 +1,2 @@
-pub mod int;
 pub mod bool;
+pub mod int;

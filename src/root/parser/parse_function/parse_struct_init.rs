@@ -1,16 +1,21 @@
-use derive_getters::{Dissolve, Getters};
-use nom::branch::alt;
-use nom::bytes::complete::{tag, take_till};
-use nom::bytes::streaming::take_until;
-use nom::character::streaming::char;
 use crate::root::parser::parse::{Location, ParseResult, Span};
-use crate::root::parser::parse_blocks::{BRACE_TERMINATOR, parse_terminator_default_set, take_until_or_end_discard_smart};
-use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, EvaluableTokens, FullNameToken, FullNameWithIndirectionToken, parse_evaluable, parse_full_name};
+use crate::root::parser::parse_blocks::{
+    parse_terminator_default_set, take_until_or_end_discard_smart, BRACE_TERMINATOR,
+};
+use crate::root::parser::parse_function::parse_evaluable::{
+    parse_evaluable, parse_full_name, EvaluableToken, EvaluableTokens, FullNameToken,
+    FullNameWithIndirectionToken,
+};
 use crate::root::parser::parse_function::parse_literal::{LiteralToken, LiteralTokens};
 use crate::root::parser::parse_name::{parse_simple_name, SimpleNameToken};
 use crate::root::parser::parse_parameters::parse_parameters;
 use crate::root::parser::parse_util::discard_ignored;
 use crate::root::shared::common::Indirection;
+use derive_getters::{Dissolve, Getters};
+use nom::branch::alt;
+use nom::bytes::complete::{tag, take_till};
+use nom::bytes::streaming::take_until;
+use nom::character::streaming::char;
 
 #[derive(Debug, Dissolve, Getters)]
 pub struct StructInitToken {
@@ -19,7 +24,10 @@ pub struct StructInitToken {
     contents: Vec<(SimpleNameToken, EvaluableToken)>,
 }
 
-pub fn parse_struct_init<'a, 'b>(s: Span<'a>, containing_class: Option<&'b SimpleNameToken>) -> ParseResult<'a, Span<'a>, StructInitToken> {
+pub fn parse_struct_init<'a, 'b>(
+    s: Span<'a>,
+    containing_class: Option<&'b SimpleNameToken>,
+) -> ParseResult<'a, Span<'a>, StructInitToken> {
     let (s, _) = discard_ignored(s)?;
 
     let (s, struct_name) = parse_full_name(s, containing_class.clone())?;
@@ -46,9 +54,12 @@ pub fn parse_struct_init<'a, 'b>(s: Span<'a>, containing_class: Option<&'b Simpl
         s = ns;
     }
 
-    Ok((remaining, StructInitToken {
-        location: struct_name.inner().location().clone(),
-        name: struct_name,
-        contents
-    }))
+    Ok((
+        remaining,
+        StructInitToken {
+            location: struct_name.inner().location().clone(),
+            name: struct_name,
+            contents,
+        },
+    ))
 }

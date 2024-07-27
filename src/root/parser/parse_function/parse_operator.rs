@@ -10,13 +10,13 @@ use nom_supreme::tag::TagError;
 pub enum PrefixOrInfix {
     Prefix,
     Infix,
-    Both
+    Both,
 }
 
 #[derive(Copy, Clone, Debug)]
 pub enum PrefixOrInfixEx {
     Prefix,
-    Infix
+    Infix,
 }
 
 const OPERATOR_MAPS: [(&str, OperatorTokens, PrefixOrInfix, &str); 23] = [
@@ -30,7 +30,12 @@ const OPERATOR_MAPS: [(&str, OperatorTokens, PrefixOrInfix, &str); 23] = [
     ("&", OperatorTokens::Reference, PrefixOrInfix::Prefix, "ref"),
     ("||", OperatorTokens::Or, PrefixOrInfix::Infix, "or"),
     ("|=", OperatorTokens::AsOr, PrefixOrInfix::Infix, "as_or"),
-    (">=", OperatorTokens::GreaterEqual, PrefixOrInfix::Infix, "ge"),
+    (
+        ">=",
+        OperatorTokens::GreaterEqual,
+        PrefixOrInfix::Infix,
+        "ge",
+    ),
     ("<=", OperatorTokens::LessEqual, PrefixOrInfix::Infix, "le"),
     (">", OperatorTokens::GreaterThan, PrefixOrInfix::Infix, "gt"),
     ("<", OperatorTokens::LessThan, PrefixOrInfix::Infix, "lt"),
@@ -85,7 +90,7 @@ pub enum OperatorTokens {
     AsAnd,
     AsOr,
     Reference,
-    Assign
+    Assign,
 }
 
 impl OperatorTokens {
@@ -96,8 +101,8 @@ impl OperatorTokens {
                 return match prefix {
                     PrefixOrInfix::Prefix => true,
                     PrefixOrInfix::Infix => false,
-                    PrefixOrInfix::Both => true
-                }
+                    PrefixOrInfix::Both => true,
+                };
             }
         }
         panic!()
@@ -109,8 +114,8 @@ impl OperatorTokens {
                 return match prefix {
                     PrefixOrInfix::Prefix => false,
                     PrefixOrInfix::Infix => true,
-                    PrefixOrInfix::Both => true
-                }
+                    PrefixOrInfix::Both => true,
+                };
             }
         }
         panic!()
@@ -120,24 +125,18 @@ impl OperatorTokens {
         for (_, op, p_kind, name) in &OPERATOR_MAPS {
             if self == op {
                 return match p_kind {
-                    PrefixOrInfix::Prefix => {
-                        match kind {
-                            PrefixOrInfixEx::Prefix => Some(format!("p_{name}")),
-                            PrefixOrInfixEx::Infix => None
-                        }
-                    }
-                    PrefixOrInfix::Infix => {
-                        match kind {
-                            PrefixOrInfixEx::Prefix => None,
-                            PrefixOrInfixEx::Infix => Some(name.to_string())
-                        }
-                    }
-                    PrefixOrInfix::Both => {
-                        match kind {
-                            PrefixOrInfixEx::Prefix => Some(format!("p_{name}")),
-                            PrefixOrInfixEx::Infix => Some(name.to_string())
-                        }
-                    }
+                    PrefixOrInfix::Prefix => match kind {
+                        PrefixOrInfixEx::Prefix => Some(format!("p_{name}")),
+                        PrefixOrInfixEx::Infix => None,
+                    },
+                    PrefixOrInfix::Infix => match kind {
+                        PrefixOrInfixEx::Prefix => None,
+                        PrefixOrInfixEx::Infix => Some(name.to_string()),
+                    },
+                    PrefixOrInfix::Both => match kind {
+                        PrefixOrInfixEx::Prefix => Some(format!("p_{name}")),
+                        PrefixOrInfixEx::Infix => Some(name.to_string()),
+                    },
                 };
             }
         }

@@ -3,7 +3,9 @@ use nom::sequence::Tuple;
 use nom_supreme::tag::complete::tag;
 
 use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
-use crate::root::parser::parse_blocks::{BRACE_TERMINATOR, BRACKET_TERMINATOR, parse_terminator_default_set};
+use crate::root::parser::parse_blocks::{
+    parse_terminator_default_set, BRACE_TERMINATOR, BRACKET_TERMINATOR,
+};
 use crate::root::parser::parse_function::parse_evaluable::{parse_evaluable, EvaluableToken};
 use crate::root::parser::parse_function::parse_line::{parse_lines, LineTestFn, LineTokens};
 use crate::root::parser::parse_name::SimpleNameToken;
@@ -20,16 +22,21 @@ pub struct IfToken {
 
 pub fn test_parse_if<'a, 'b>(s: Span<'a>) -> ParseResult<Span, LineTestFn<'a, 'b>> {
     match tag("if")(s) {
-        Ok(_) => Ok((s, |x, c| parse_if(x, c).map(|(s, x)| (s, LineTokens::If(x))))),
+        Ok(_) => Ok((s, |x, c| {
+            parse_if(x, c).map(|(s, x)| (s, LineTokens::If(x)))
+        })),
         Err(e) => Err(e),
     }
 }
 
-pub fn parse_if<'a, 'b>(s: Span<'a>, containing_class: Option<&'b SimpleNameToken>) -> ParseResult<'a, Span<'a>, IfToken> {
+pub fn parse_if<'a, 'b>(
+    s: Span<'a>,
+    containing_class: Option<&'b SimpleNameToken>,
+) -> ParseResult<'a, Span<'a>, IfToken> {
     let (s, l) = tag("if")(s)?;
     let (s, _) = discard_ignored(s)?;
     let (s, content) = parse_terminator_default_set(s, &BRACKET_TERMINATOR)?;
-    let (_, if_condition) = parse_evaluable(content, containing_class,false)?;
+    let (_, if_condition) = parse_evaluable(content, containing_class, false)?;
     let (s, _) = discard_ignored(s)?;
     let (s, contents) = parse_terminator_default_set(s, &BRACE_TERMINATOR)?;
     let (_, if_contents) = parse_lines(contents, containing_class)?;
@@ -51,8 +58,7 @@ pub fn parse_if<'a, 'b>(s: Span<'a>, containing_class: Option<&'b SimpleNameToke
             break;
         };
 
-        let (ns, condition) =
-        if let Ok((ns, _)) = (require_ignored, tag("if")).parse(ns) {
+        let (ns, condition) = if let Ok((ns, _)) = (require_ignored, tag("if")).parse(ns) {
             let (ns, _) = discard_ignored(ns)?;
             let (ns, content) = parse_terminator_default_set(ns, &BRACKET_TERMINATOR)?;
             let (_, condition) = parse_evaluable(content, containing_class, false)?;

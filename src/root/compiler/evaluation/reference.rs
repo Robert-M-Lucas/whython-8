@@ -16,27 +16,46 @@ pub fn compile_evaluable_reference(
     et: &EvaluableToken,
     local_variables: &mut LocalVariableTable,
     global_table: &mut GlobalDefinitionTable,
-    global_tracker: &mut GlobalTracker
+    global_tracker: &mut GlobalTracker,
 ) -> Result<(String, Option<AddressedTypeRef>), WErr> {
-
     let ets = et.token();
 
     Ok(match ets {
         EvaluableTokens::Name(name, containing_class) => {
             match global_table.resolve_name(name, containing_class.as_ref(), local_variables)? {
-                NameResult::Function(_) => return WErr::ne(EvalErrs::FunctionMustBeCalled(name.name().clone()), name.location().clone()),
-                NameResult::Type(_) => return WErr::ne(EvalErrs::CannotEvalStandaloneType(name.name().clone()), name.location().clone()),
-                NameResult::Variable(address) => {
-                    (String::new(), Some(address))
+                NameResult::Function(_) => {
+                    return WErr::ne(
+                        EvalErrs::FunctionMustBeCalled(name.name().clone()),
+                        name.location().clone(),
+                    )
                 }
+                NameResult::Type(_) => {
+                    return WErr::ne(
+                        EvalErrs::CannotEvalStandaloneType(name.name().clone()),
+                        name.location().clone(),
+                    )
+                }
+                NameResult::Variable(address) => (String::new(), Some(address)),
             }
-        },
-        EvaluableTokens::Literal(_) => new::compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?,
-        EvaluableTokens::InfixOperator(_, _, _) => compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?,
-        EvaluableTokens::PrefixOperator(_, _) => new::compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?,
+        }
+        EvaluableTokens::Literal(_) => {
+            new::compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?
+        }
+        EvaluableTokens::InfixOperator(_, _, _) => {
+            compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?
+        }
+        EvaluableTokens::PrefixOperator(_, _) => {
+            new::compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?
+        }
         EvaluableTokens::DynamicAccess(inner, access) => {
             let mut ab = AssemblyBuilder::new();
-            let (c, inner) = compile_evaluable_reference(fid, inner, local_variables, global_table, global_tracker)?;
+            let (c, inner) = compile_evaluable_reference(
+                fid,
+                inner,
+                local_variables,
+                global_table,
+                global_tracker,
+            )?;
             ab.other(&c);
 
             let Some(inner) = inner else { todo!() };
@@ -48,23 +67,32 @@ pub fn compile_evaluable_reference(
 
             for (offset, name, t) in attribs {
                 if name.name() == access.name() {
-                    out = Some(AddressedTypeRef::new(LocalAddress(inner.local_address().0 + offset.0 as isize), t.clone()));
+                    out = Some(AddressedTypeRef::new(
+                        LocalAddress(inner.local_address().0 + offset.0 as isize),
+                        t.clone(),
+                    ));
                     break;
                 }
             }
 
             if let Some(out) = out {
                 (ab.finish(), Some(out))
-            }
-            else {
+            } else {
                 todo!()
             }
-        },
-        EvaluableTokens::StaticAccess(_, n) => return WErr::ne(NRErrs::CannotFindConstantAttribute(n.name().clone()), n.location().clone()), // Accessed methods must be called
-        EvaluableTokens::FunctionCall(_, _) => new::compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?,
-        EvaluableTokens::StructInitialiser(struct_init) => new::compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?,
-        EvaluableTokens::None => {
-            (String::new(), None)
         }
+        EvaluableTokens::StaticAccess(_, n) => {
+            return WErr::ne(
+                NRErrs::CannotFindConstantAttribute(n.name().clone()),
+                n.location().clone(),
+            )
+        } // Accessed methods must be called
+        EvaluableTokens::FunctionCall(_, _) => {
+            new::compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?
+        }
+        EvaluableTokens::StructInitialiser(struct_init) => {
+            new::compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?
+        }
+        EvaluableTokens::None => (String::new(), None),
     })
 }

@@ -24,4 +24,3 @@ pub enum CErrs {
     #[error("Function ({0}) expects ({1}) arguments but found ({2})")]
     BadFunctionArgCount(String, usize, usize),
 }
-

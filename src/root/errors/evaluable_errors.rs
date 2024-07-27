@@ -29,7 +29,7 @@ pub enum EvalErrs {
     #[error("Expected a function name")]
     ExpectedFunctionName,
     #[error("Expected a reference type but found ({0})")]
-    ExpectedReference(String)
+    ExpectedReference(String),
 }
 
 // return Err(WErr::n(OpWrongReturnType(global_table.get_type_name(into.type_ref()), global_table.get_type_name(&new_type)), location.clone()));

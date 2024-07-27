@@ -1,7 +1,7 @@
+use derive_getters::{Dissolve, Getters};
+use derive_more::{Add, AddAssign, Display, Sub, SubAssign};
 use std::fmt::{Display, Formatter};
 use std::ops::Add;
-use derive_more::{Add, AddAssign, Display, Sub, SubAssign};
-use derive_getters::{Dissolve, Getters};
 
 #[derive(Debug, PartialEq, Eq, Hash, Display, Copy, Clone)]
 #[display(fmt = "TypeID: {}", .0)]
@@ -37,15 +37,13 @@ impl FunctionID {
         let id = self.0;
         if id > 0 {
             format!("_{id}")
-        }
-        else {
+        } else {
             format!("__{}", -id)
         }
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Display, Copy, Clone)]
-#[derive(Add, AddAssign, Sub, SubAssign)]
+#[derive(Debug, PartialEq, Eq, Hash, Display, Copy, Clone, Add, AddAssign, Sub, SubAssign)]
 #[display(fmt = "Indirection: {}", .0)]
 /// The indirection to an address i.e. how many pointers you have to go through
 pub struct Indirection(pub usize);
@@ -56,14 +54,14 @@ impl Indirection {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Display, Copy, Clone, Default)]
-#[derive(Add, AddAssign, Sub, SubAssign)]
+#[derive(
+    Debug, PartialEq, Eq, Hash, Display, Copy, Clone, Default, Add, AddAssign, Sub, SubAssign,
+)]
 #[display(fmt = "ByteSize: {}", .0)]
 /// The size of something, in bytes
 pub struct ByteSize(pub usize);
 
-#[derive(Debug, PartialEq, Eq, Hash, Copy, Clone)]
-#[derive(Add, AddAssign, Sub, SubAssign)]
+#[derive(Debug, PartialEq, Eq, Hash, Copy, Clone, Add, AddAssign, Sub, SubAssign)]
 /// A stack-frame-relative local address. Like in assembly, negative addresses are in the current
 /// frame whereas positive addresses are in a previous one
 pub struct LocalAddress(pub isize);
@@ -72,8 +70,7 @@ impl Display for LocalAddress {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         if self.0 >= 0 {
             write!(f, "[rbp+{}]", self.0)
-        }
-        else {
+        } else {
             write!(f, "[rbp{}]", self.0)
         }
     }
@@ -83,25 +80,28 @@ impl Display for LocalAddress {
 /// A `TypeID` with `Indirection`
 pub struct TypeRef {
     type_id: TypeID,
-    indirection: Indirection
+    indirection: Indirection,
 }
 
 impl TypeRef {
     pub fn new(type_id: TypeID, indirection: Indirection) -> TypeRef {
-        TypeRef { type_id, indirection }
+        TypeRef {
+            type_id,
+            indirection,
+        }
     }
 
     pub fn plus_one_indirect(&self) -> TypeRef {
         TypeRef {
             type_id: self.type_id,
-            indirection: Indirection(self.indirection.0 + 1)
+            indirection: Indirection(self.indirection.0 + 1),
         }
     }
 
     pub fn minus_one_indirect(&self) -> TypeRef {
         TypeRef {
             type_id: self.type_id,
-            indirection: Indirection(self.indirection.0 - 1)
+            indirection: Indirection(self.indirection.0 - 1),
         }
     }
 }
@@ -110,11 +110,14 @@ impl TypeRef {
 /// A `TypeRef` with a `LocalAddress`
 pub struct AddressedTypeRef {
     local_address: LocalAddress,
-    type_ref: TypeRef
+    type_ref: TypeRef,
 }
 
 impl AddressedTypeRef {
     pub fn new(local_address: LocalAddress, type_ref: TypeRef) -> AddressedTypeRef {
-        AddressedTypeRef { local_address, type_ref }
+        AddressedTypeRef {
+            local_address,
+            type_ref,
+        }
     }
 }

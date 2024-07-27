@@ -35,5 +35,5 @@ pub enum NRErrs {
     #[error("Operator ({0}) cannot be used as an infix operator")]
     OpCantBeInfix(String),
     #[error("Size of type ({0}) cannot be determined due to circular definition with no indirection ({1})")]
-    CircularType(String, String)
+    CircularType(String, String),
 }

@@ -1,13 +1,13 @@
+use crate::root::parser::parse::{Location, ParseResult, Span};
+use crate::root::parser::parse_blocks::{parse_terminator_default_set, BRACE_TERMINATOR};
+use crate::root::parser::parse_function::{parse_function, FunctionToken};
+use crate::root::parser::parse_name::{parse_simple_name, SimpleNameToken};
+use crate::root::parser::parse_toplevel::{TopLevelTokens, ToplevelTestFn};
+use crate::root::parser::parse_util::{discard_ignored, require_ignored};
 use derive_getters::{Dissolve, Getters};
 use nom::sequence::Tuple;
 use nom::Parser;
 use nom_supreme::tag::complete::tag;
-use crate::root::parser::parse::{Location, ParseResult, Span};
-use crate::root::parser::parse_blocks::{BRACE_TERMINATOR, parse_terminator_default_set};
-use crate::root::parser::parse_function::{FunctionToken, parse_function};
-use crate::root::parser::parse_name::{parse_simple_name, SimpleNameToken};
-use crate::root::parser::parse_toplevel::{ToplevelTestFn, TopLevelTokens};
-use crate::root::parser::parse_util::{discard_ignored, require_ignored};
 
 #[derive(Debug, Getters, Dissolve)]
 pub struct ImplToken {
@@ -15,7 +15,6 @@ pub struct ImplToken {
     name: SimpleNameToken,
     functions: Vec<FunctionToken>,
 }
-
 
 pub fn test_parse_impl(s: Span<'_>) -> ParseResult<Span, ToplevelTestFn<'_>> {
     match (tag("impl"), require_ignored).parse(s) {
@@ -46,7 +45,7 @@ pub fn parse_impl(s: Span) -> ParseResult<Span, ImplToken> {
         let (cs, function) = parse_function(
             cs,
             // ? Pass class name (type) to function in case needed for self
-            Some(&name)
+            Some(&name),
         )?;
 
         functions.push(function);

@@ -1,7 +1,6 @@
 use b_box::b;
 use unique_type_id::UniqueTypeId;
 
-use crate::root::builtin::{BuiltinInlineFunction, f_id, InlineFunctionGenerator, t_id};
 use crate::root::builtin::types::bool::BoolType;
 use crate::root::builtin::types::int::add::{IntAdd, IntAsAdd};
 use crate::root::builtin::types::int::comparators::{IntEq, IntGE, IntGT, IntLE, IntLT, IntNE};
@@ -12,6 +11,7 @@ use crate::root::builtin::types::int::p_add::IntPAdd;
 use crate::root::builtin::types::int::p_sub::{IntAsSub, IntPSub};
 use crate::root::builtin::types::int::printi::PrintI;
 use crate::root::builtin::types::int::sub::IntSub;
+use crate::root::builtin::{f_id, t_id, BuiltinInlineFunction, InlineFunctionGenerator};
 use crate::root::compiler::compiler_errors::CErrs;
 use crate::root::errors::evaluable_errors::EvalErrs;
 use crate::root::errors::WErr;
@@ -22,14 +22,14 @@ use crate::root::shared::common::{ByteSize, FunctionID, LocalAddress, TypeID};
 use crate::root::shared::types::Type;
 
 mod add;
-mod sub;
-mod p_sub;
-mod printi;
-mod p_add;
-mod mul;
+mod comparators;
 mod div;
 mod modulo;
-mod comparators;
+mod mul;
+mod p_add;
+mod p_sub;
+mod printi;
+mod sub;
 
 // fn int_op_sig() -> FunctionSignature {
 //     FunctionSignature::new_inline_builtin(
@@ -73,7 +73,9 @@ impl IntType {
 }
 
 impl Type for IntType {
-    fn id(&self) -> TypeID { Self::id() }
+    fn id(&self) -> TypeID {
+        Self::id()
+    }
 
     fn size(&self) -> ByteSize {
         ByteSize(8)
@@ -83,33 +85,46 @@ impl Type for IntType {
         "int"
     }
 
-    fn instantiate_from_literal(&self, location: &LocalAddress, literal: &LiteralToken) -> Result<String, WErr> {
+    fn instantiate_from_literal(
+        &self,
+        location: &LocalAddress,
+        literal: &LiteralToken,
+    ) -> Result<String, WErr> {
         Ok(match literal.literal() {
             LiteralTokens::Bool(value) => {
                 if *value {
                     format!("    mov qword {location}, 0\n")
-                }
-                else {
+                } else {
                     format!("    mov qword {location}, 1\n")
                 }
             }
             LiteralTokens::Int(value) => {
                 if *value > i64::MAX as i128 {
-                    return WErr::ne(CErrs::IntLiteralExceedsMax(*value, i64::MAX as i128), literal.location().clone());
+                    return WErr::ne(
+                        CErrs::IntLiteralExceedsMax(*value, i64::MAX as i128),
+                        literal.location().clone(),
+                    );
                 }
                 if *value < i64::MIN as i128 {
-                    return WErr::ne(CErrs::IntLiteralBelowMin(*value, i64::MAX as i128), literal.location().clone());
+                    return WErr::ne(
+                        CErrs::IntLiteralBelowMin(*value, i64::MAX as i128),
+                        literal.location().clone(),
+                    );
                 }
 
                 let value = *value as i64;
 
                 if value < 2147483648 {
                     format!("    mov qword {location}, {value}\n")
-                }
-                else {
+                } else {
                     let full_hex = format!("{:016x}", value);
-                    format!("    mov dword {location}, 0x{}
-    mov dword {}, 0x{}\n", &full_hex[8..], *location + LocalAddress(4), &full_hex[..8])
+                    format!(
+                        "    mov dword {location}, 0x{}
+    mov dword {}, 0x{}\n",
+                        &full_hex[8..],
+                        *location + LocalAddress(4),
+                        &full_hex[..8]
+                    )
                 }
             }
         })

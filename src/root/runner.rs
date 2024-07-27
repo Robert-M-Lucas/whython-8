@@ -1,8 +1,8 @@
 use std::fs;
 use std::process::Command;
 
-use color_print::cprintln;
 use crate::ret_time;
+use color_print::cprintln;
 
 use crate::root::utils::try_run_program;
 
@@ -34,7 +34,7 @@ pub fn link_gcc(output: &str) -> Result<(), ()> {
             ])
             .status(),
     )?
-        .success()
+    .success()
     {
         cprintln!("<r,bold>gcc linking step failed</>");
         return Err(());
@@ -42,7 +42,6 @@ pub fn link_gcc(output: &str) -> Result<(), ()> {
 
     Ok(())
 }
-
 
 /// Runs the built program
 pub fn run(output: &str) {

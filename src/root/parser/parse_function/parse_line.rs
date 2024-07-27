@@ -5,14 +5,14 @@ use crate::root::parser::parse_function::parse_if::{test_parse_if, IfToken};
 use crate::root::parser::parse_function::parse_initialisation::{
     test_parse_initialisation, InitialisationToken,
 };
+#[cfg(debug_assertions)]
+use crate::root::parser::parse_function::parse_marker::{test_parse_marker, MarkerToken};
 use crate::root::parser::parse_function::parse_return::{test_parse_return, ReturnToken};
 use crate::root::parser::parse_function::parse_while::{test_parse_while, WhileToken};
-use nom::branch::alt;
-use nom::Parser;
-#[cfg(debug_assertions)]
-use crate::root::parser::parse_function::parse_marker::{MarkerToken, test_parse_marker};
 use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::parser::parse_util::discard_ignored;
+use nom::branch::alt;
+use nom::Parser;
 
 #[derive(Debug)]
 pub enum LineTokens {
@@ -23,13 +23,17 @@ pub enum LineTokens {
     Break(BreakToken),
     NoOp(EvaluableToken),
     #[cfg(debug_assertions)]
-    Marker(MarkerToken)
+    Marker(MarkerToken),
 }
 
 /// fn(line span, Option<class name>)
-pub type LineTestFn<'a, 'b> = fn(Span<'a>, Option<&'b SimpleNameToken>) -> ParseResult<'a, Span<'a>, LineTokens>;
+pub type LineTestFn<'a, 'b> =
+    fn(Span<'a>, Option<&'b SimpleNameToken>) -> ParseResult<'a, Span<'a>, LineTokens>;
 
-pub fn parse_lines<'a, 'b>(contents: Span<'a>, containing_class: Option<&'b SimpleNameToken>) -> ParseResult<'a, (), Vec<LineTokens>> {
+pub fn parse_lines<'a, 'b>(
+    contents: Span<'a>,
+    containing_class: Option<&'b SimpleNameToken>,
+) -> ParseResult<'a, (), Vec<LineTokens>> {
     let mut lines = Vec::new();
 
     let mut c = contents;
@@ -48,7 +52,10 @@ pub fn parse_lines<'a, 'b>(contents: Span<'a>, containing_class: Option<&'b Simp
     Ok(((), lines))
 }
 
-pub fn parse_line<'a, 'b>(s: Span<'a>, containing_class: Option<&'b SimpleNameToken>) -> ParseResult<'a, Span<'a>, LineTokens> {
+pub fn parse_line<'a, 'b>(
+    s: Span<'a>,
+    containing_class: Option<&'b SimpleNameToken>,
+) -> ParseResult<'a, Span<'a>, LineTokens> {
     if let Ok((_, parser)) = alt((
         test_parse_break,
         test_parse_return,
@@ -56,8 +63,7 @@ pub fn parse_line<'a, 'b>(s: Span<'a>, containing_class: Option<&'b SimpleNameTo
         test_parse_while,
         test_parse_if,
         #[cfg(debug_assertions)]
-        test_parse_marker
-        // test_parse_assignment,
+        test_parse_marker, // test_parse_assignment,
     ))
     .parse(s)
     {

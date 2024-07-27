@@ -1,9 +1,9 @@
-use unique_type_id::UniqueTypeId;
-use crate::root::builtin::{BuiltinInlineFunction, InlineFunctionGenerator, f_id};
 use crate::root::builtin::types::int::IntType;
+use crate::root::builtin::{f_id, BuiltinInlineFunction, InlineFunctionGenerator};
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{FunctionID, LocalAddress, TypeID};
+use unique_type_id::UniqueTypeId;
 
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
@@ -21,8 +21,11 @@ impl BuiltinInlineFunction for IntMul {
     fn signature(&self) -> FunctionSignature {
         FunctionSignature::new_inline_builtin(
             SelfType::CopySelf,
-            &[("lhs", IntType::id().immediate()), ("rhs", IntType::id().immediate())],
-            Some(IntType::id().immediate())
+            &[
+                ("lhs", IntType::id().immediate()),
+                ("rhs", IntType::id().immediate()),
+            ],
+            Some(IntType::id().immediate()),
         )
     }
 
@@ -32,10 +35,11 @@ impl BuiltinInlineFunction for IntMul {
             let rhs = args[1];
             let return_into = return_into.unwrap();
             format!(
-"    mov rax, qword {lhs}
+                "    mov rax, qword {lhs}
     mov rdx, qword {rhs}
     imul rdx
-    mov qword {return_into}, rax\n")
+    mov qword {return_into}, rax\n"
+            )
         }
     }
 
@@ -60,8 +64,11 @@ impl BuiltinInlineFunction for IntAsMul {
     fn signature(&self) -> FunctionSignature {
         FunctionSignature::new_inline_builtin(
             SelfType::RefSelf,
-            &[("lhs", IntType::id().with_indirection(1)), ("rhs", IntType::id().immediate())],
-            None
+            &[
+                ("lhs", IntType::id().with_indirection(1)),
+                ("rhs", IntType::id().immediate()),
+            ],
+            None,
         )
     }
 
@@ -70,11 +77,12 @@ impl BuiltinInlineFunction for IntAsMul {
             let lhs = args[0];
             let rhs = args[1];
             format!(
-"    mov rcx, qword {lhs}
+                "    mov rcx, qword {lhs}
     mov rax, qword [rcx]
     mov rdx, qword {rhs}
     imul rdx
-    mov qword [rcx], rax\n")
+    mov qword [rcx], rax\n"
+            )
         }
     }
 

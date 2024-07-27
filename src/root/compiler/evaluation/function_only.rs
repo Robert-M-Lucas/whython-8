@@ -13,31 +13,43 @@ pub fn compile_evaluable_function_only<'a>(
     name: &'a EvaluableToken,
     local_variables: &mut LocalVariableTable,
     global_table: &mut GlobalDefinitionTable,
-    global_tracker: &mut GlobalTracker
+    global_tracker: &mut GlobalTracker,
 ) -> Result<(Option<&'a EvaluableToken>, FunctionID, String), WErr> {
     Ok(match name.token() {
         EvaluableTokens::Name(name, containing_class) => {
             match global_table.resolve_name(name, containing_class.as_ref(), local_variables)? {
-                NameResult::Function(fid) => {
-                    (None, fid, name.name().clone())
-                }
+                NameResult::Function(fid) => (None, fid, name.name().clone()),
                 _ => return WErr::ne(ExpectedFunctionName, name.location().clone()),
             }
         }
         EvaluableTokens::StaticAccess(inner, access) => {
-            let inner_type = compile_evaluable_type_only(fid, inner, local_variables, global_table, global_tracker)?;
-            let function = global_table.get_impl_function_by_name(*inner_type.type_id(), access.name());
+            let inner_type = compile_evaluable_type_only(
+                fid,
+                inner,
+                local_variables,
+                global_table,
+                global_tracker,
+            )?;
+            let function =
+                global_table.get_impl_function_by_name(*inner_type.type_id(), access.name());
             let Some(function) = function else { todo!() };
 
             (None, function, access.name().clone())
         }
         EvaluableTokens::DynamicAccess(inner, access) => {
-            let inner_type = compile_evaluable_type_only(fid, inner, local_variables, global_table, global_tracker)?;
-            let function = global_table.get_impl_function_by_name(*inner_type.type_id(), access.name());
+            let inner_type = compile_evaluable_type_only(
+                fid,
+                inner,
+                local_variables,
+                global_table,
+                global_tracker,
+            )?;
+            let function =
+                global_table.get_impl_function_by_name(*inner_type.type_id(), access.name());
             let Some(function) = function else { todo!() };
 
             (Some(inner), function, access.name().clone())
         }
-        _ => return WErr::ne(ExpectedFunctionName, name.location().clone())
+        _ => return WErr::ne(ExpectedFunctionName, name.location().clone()),
     })
 }

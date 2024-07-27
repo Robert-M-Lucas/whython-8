@@ -1,19 +1,19 @@
+use crate::root::errors::parser_errors::ParseError;
+use crate::root::errors::WErr;
+use crate::root::parser::parse_toplevel;
+use crate::root::parser::parse_toplevel::TopLevelTokens;
+use color_print::cformat;
+use lazy_static::lazy_static;
+use nom::{IResult, InputTake};
+use nom_locate::LocatedSpan;
+use nom_supreme::error::GenericErrorTree;
 use std::cmp::min;
 use std::ffi::OsStr;
 use std::fmt::{Display, Formatter, Write};
-use crate::root::parser::parse_toplevel;
-use nom::{InputTake, IResult};
-use nom_locate::LocatedSpan;
-use nom_supreme::error::GenericErrorTree;
 use std::fs;
 use std::marker::PhantomData;
 use std::path::PathBuf;
 use std::rc::Rc;
-use color_print::cformat;
-use lazy_static::lazy_static;
-use crate::root::errors::parser_errors::ParseError;
-use crate::root::errors::WErr;
-use crate::root::parser::parse_toplevel::TopLevelTokens;
 
 pub type Span<'a> = LocatedSpan<&'a str, &'a Rc<PathBuf>>;
 
@@ -46,16 +46,16 @@ pub struct WarningL;
 pub type Location = LocationTyped<ErrorL>;
 
 #[derive(Debug, Clone, Hash)]
-pub struct LocationTyped<ErrorType=ErrorL> {
+pub struct LocationTyped<ErrorType = ErrorL> {
     error_type: PhantomData<ErrorType>,
-    inner_location: Option<InnerLocation>
+    inner_location: Option<InnerLocation>,
 }
 
 impl LocationTyped<ErrorL> {
     pub fn to_warning(self) -> LocationTyped<WarningL> {
         LocationTyped {
             error_type: Default::default(),
-            inner_location: self.inner_location
+            inner_location: self.inner_location,
         }
     }
 }
@@ -64,13 +64,11 @@ impl<ErrorType> LocationTyped<ErrorType> {
     pub fn from_span(span: &Span) -> LocationTyped<ErrorType> {
         LocationTyped {
             error_type: Default::default(),
-            inner_location: Some(
-                InnerLocation {
-                    path: span.extra.clone(),
-                    offset: span.location_offset(),
-                    line: span.location_line(),
-                }
-            )
+            inner_location: Some(InnerLocation {
+                path: span.extra.clone(),
+                offset: span.location_offset(),
+                line: span.location_line(),
+            }),
         }
     }
 
@@ -79,13 +77,11 @@ impl<ErrorType> LocationTyped<ErrorType> {
 
         LocationTyped {
             error_type: Default::default(),
-            inner_location: Some(
-                InnerLocation {
-                    path: span.extra.clone(),
-                    offset: span.location_offset(),
-                    line: span.location_line(),
-                }
-            )
+            inner_location: Some(InnerLocation {
+                path: span.extra.clone(),
+                offset: span.location_offset(),
+                line: span.location_line(),
+            }),
         }
     }
 
@@ -96,7 +92,7 @@ impl<ErrorType> LocationTyped<ErrorType> {
     pub fn builtin() -> LocationTyped<ErrorType> {
         LocationTyped {
             error_type: Default::default(),
-            inner_location: None
+            inner_location: None,
         }
     }
 
@@ -110,7 +106,7 @@ impl<ErrorType> LocationTyped<ErrorType> {
 
         if self.inner_location.is_none() {
             writeln!(f, "{}", cformat!("<c,bold>Builtin Definition</>"))?;
-            return Ok(())
+            return Ok(());
         }
         let location = self.inner_location.as_ref().unwrap();
 
@@ -122,16 +118,19 @@ impl<ErrorType> LocationTyped<ErrorType> {
             write!(f, "Failed to fetch file reference (has the file changed?)")
         }
 
-        let Ok(file) = fs::read_to_string(location.path.as_path()) else { return fail(f); };
+        let Ok(file) = fs::read_to_string(location.path.as_path()) else {
+            return fail(f);
+        };
 
         let mut offset = 0usize;
         let mut chars = file.chars();
         for _ in 0..location.offset {
-            let Some(c) = chars.next() else { return fail(f); };
+            let Some(c) = chars.next() else {
+                return fail(f);
+            };
             if c == '\n' {
                 offset = 0;
-            }
-            else {
+            } else {
                 offset += 1;
             }
         }
@@ -142,15 +141,37 @@ impl<ErrorType> LocationTyped<ErrorType> {
 
         if location.line > 1 {
             if location.line > 2 {
-                writeln!(f, "{:0width$} |  ...", location.line - 2, width=largest_num_len)?;
+                writeln!(
+                    f,
+                    "{:0width$} |  ...",
+                    location.line - 2,
+                    width = largest_num_len
+                )?;
             }
 
-            let Some(line) = line_iter.nth(location.line as usize - 2) else { return fail(f); };
-            let line = if line.chars().count() > CHAR_LIMIT { format!("{} ...", line.chars().take(CHAR_LIMIT - 4).collect::<String>()) } else { line.to_string() };
-            writeln!(f, "{:0width$} |  {}", location.line - 1, line, width=largest_num_len)?;
+            let Some(line) = line_iter.nth(location.line as usize - 2) else {
+                return fail(f);
+            };
+            let line = if line.chars().count() > CHAR_LIMIT {
+                format!(
+                    "{} ...",
+                    line.chars().take(CHAR_LIMIT - 4).collect::<String>()
+                )
+            } else {
+                line.to_string()
+            };
+            writeln!(
+                f,
+                "{:0width$} |  {}",
+                location.line - 1,
+                line,
+                width = largest_num_len
+            )?;
         }
 
-        let Some(line) = line_iter.next() else { return fail(f); };
+        let Some(line) = line_iter.next() else {
+            return fail(f);
+        };
         let (mut start, mut end) = (0usize, line.chars().count() - 1);
 
         if end > CHAR_LIMIT {
@@ -161,8 +182,7 @@ impl<ErrorType> LocationTyped<ErrorType> {
                 let take_from_start = min(start_dist, CHAR_LIMIT / 2);
                 start += take_from_start;
                 end -= CHAR_LIMIT - 1 - take_from_start;
-            }
-            else {
+            } else {
                 let take_from_end = min(end_dist, CHAR_LIMIT / 2);
                 end -= take_from_end;
                 start = CHAR_LIMIT - 1 - take_from_end;
@@ -171,23 +191,58 @@ impl<ErrorType> LocationTyped<ErrorType> {
 
         end += 1;
 
-        writeln!(f, "{:0width$} |  {}", location.line, line.chars().skip(start).take(end - start).collect::<String>(), width=largest_num_len)?;
+        writeln!(
+            f,
+            "{:0width$} |  {}",
+            location.line,
+            line.chars()
+                .skip(start)
+                .take(end - start)
+                .collect::<String>(),
+            width = largest_num_len
+        )?;
 
         if is_warning {
-            let warn_line = format!("{:0width$} |  {}^Here", "W", (0..(offset - start)).map(|_| ' ').collect::<String>(), width=largest_num_len);
+            let warn_line = format!(
+                "{:0width$} |  {}^Here",
+                "W",
+                (0..(offset - start)).map(|_| ' ').collect::<String>(),
+                width = largest_num_len
+            );
             writeln!(f, "{}", cformat!("<y,bold>{}</>", warn_line))?;
-        }
-        else {
-            let err_line = format!("{:0width$} |  {}^Here", "E", (0..(offset - start)).map(|_| ' ').collect::<String>(), width=largest_num_len);
+        } else {
+            let err_line = format!(
+                "{:0width$} |  {}^Here",
+                "E",
+                (0..(offset - start)).map(|_| ' ').collect::<String>(),
+                width = largest_num_len
+            );
             writeln!(f, "{}", cformat!("<r,bold>{}</>", err_line))?;
         }
 
-
         if let Some(line) = line_iter.next() {
-            let line = if line.chars().count() > CHAR_LIMIT { format!("{} ...", line.chars().take(CHAR_LIMIT - 4).collect::<String>()) } else { line.to_string() };
-            writeln!(f, "{:0width$} |  {}", location.line + 1, line, width=largest_num_len)?;
+            let line = if line.chars().count() > CHAR_LIMIT {
+                format!(
+                    "{} ...",
+                    line.chars().take(CHAR_LIMIT - 4).collect::<String>()
+                )
+            } else {
+                line.to_string()
+            };
+            writeln!(
+                f,
+                "{:0width$} |  {}",
+                location.line + 1,
+                line,
+                width = largest_num_len
+            )?;
             if line_iter.next().is_some() {
-                writeln!(f, "{:0width$} |  ...", location.line + 2, width=largest_num_len)?;
+                writeln!(
+                    f,
+                    "{:0width$} |  ...",
+                    location.line + 2,
+                    width = largest_num_len
+                )?;
             }
         }
 
@@ -196,7 +251,6 @@ impl<ErrorType> LocationTyped<ErrorType> {
 }
 
 const CHAR_LIMIT: usize = 61;
-
 
 impl Display for LocationTyped<ErrorL> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {

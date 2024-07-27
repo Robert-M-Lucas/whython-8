@@ -1,11 +1,11 @@
-use unique_type_id::UniqueTypeId;
-use crate::root::builtin::{BuiltinInlineFunction, InlineFunctionGenerator, f_id};
-use crate::root::builtin::types::bool::BoolType;
 use crate::root::builtin::types::bool::printb::PrintB;
+use crate::root::builtin::types::bool::BoolType;
 use crate::root::builtin::types::int::IntType;
+use crate::root::builtin::{f_id, BuiltinInlineFunction, InlineFunctionGenerator};
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{FunctionID, LocalAddress, TypeID};
+use unique_type_id::UniqueTypeId;
 
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
@@ -24,20 +24,19 @@ impl BuiltinInlineFunction for BoolNot {
         FunctionSignature::new_inline_builtin(
             SelfType::CopySelf,
             &[("lhs", BoolType::id().immediate())],
-            Some(BoolType::id().immediate())
+            Some(BoolType::id().immediate()),
         )
     }
 
     fn inline(&self) -> InlineFunctionGenerator {
         |args: &[LocalAddress], return_into, gt, sz| -> String {
-
             let jmp_false = gt.get_unique_tag(PrintB::id());
             let jmp_end = gt.get_unique_tag(PrintB::id());
 
             let lhs = args[0];
             let return_into = return_into.unwrap();
             format!(
-"    mov al, byte {lhs}
+                "    mov al, byte {lhs}
     cmp al, 0
     jz {jmp_false}
     mov byte {return_into}, 0
@@ -45,7 +44,8 @@ impl BuiltinInlineFunction for BoolNot {
     {jmp_false}:
     mov byte {return_into}, 1
     {jmp_end}:
-")
+"
+            )
         }
     }
 

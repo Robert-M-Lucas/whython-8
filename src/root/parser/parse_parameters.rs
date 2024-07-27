@@ -1,9 +1,11 @@
 use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
-use nom::character::complete::char;
-use crate::root::parser::parse_function::parse_evaluable::{FullNameWithIndirectionToken, parse_full_name};
+use crate::root::parser::parse_function::parse_evaluable::{
+    parse_full_name, FullNameWithIndirectionToken,
+};
 use crate::root::parser::parse_name::{parse_simple_name, SimpleNameToken};
 use crate::root::parser::parse_util::discard_ignored;
 use crate::root::shared::common::Indirection;
+use nom::character::complete::char;
 
 pub type Parameters = Vec<(SimpleNameToken, FullNameWithIndirectionToken)>;
 
@@ -11,7 +13,7 @@ pub type Parameters = Vec<(SimpleNameToken, FullNameWithIndirectionToken)>;
 pub enum SelfType {
     None,
     CopySelf,
-    RefSelf
+    RefSelf,
 }
 
 impl SelfType {
@@ -20,7 +22,10 @@ impl SelfType {
     }
 }
 
-pub fn parse_parameters<'a>(s: Span<'a>, mut allow_self: Option<&SimpleNameToken>) -> ParseResult<'a, (), (Parameters, SelfType)> {
+pub fn parse_parameters<'a>(
+    s: Span<'a>,
+    mut allow_self: Option<&SimpleNameToken>,
+) -> ParseResult<'a, (), (Parameters, SelfType)> {
     let (mut s, _) = discard_ignored(s)?;
 
     let mut parameters = Vec::new();
@@ -36,26 +41,41 @@ pub fn parse_parameters<'a>(s: Span<'a>, mut allow_self: Option<&SimpleNameToken
             } else {
                 s
             }
-        } else { s };
+        } else {
+            s
+        };
 
         let (ns, name) = parse_simple_name(ns)?;
 
-        let (ns, p_type) = if allow_self.is_some() && parameters.is_empty() && *name.name() == "self" {
-            has_self = if has_ref { SelfType::RefSelf } else { SelfType::CopySelf };
-            let s = allow_self.take().unwrap();
-            let i = if has_ref { Indirection(1) } else { Indirection(0) };
-            let p_type = FullNameWithIndirectionToken::from_simple_with_indirection(s.clone(), Some(s.clone()), name.location().clone(), i);
-            (ns, p_type)
-        }
-        else {
-            let (ns, _) = discard_ignored(ns)?;
-            let (ns, _) = char(':')(ns)?;
-            let (ns, _) = discard_ignored(ns)?;
-            let t_location = Location::from_span(&ns);
-            let (ns, type_name_token) = parse_full_name(ns, allow_self)?;
-            let (ns, _) = discard_ignored(ns)?;
-            (ns, type_name_token)
-        };
+        let (ns, p_type) =
+            if allow_self.is_some() && parameters.is_empty() && *name.name() == "self" {
+                has_self = if has_ref {
+                    SelfType::RefSelf
+                } else {
+                    SelfType::CopySelf
+                };
+                let s = allow_self.take().unwrap();
+                let i = if has_ref {
+                    Indirection(1)
+                } else {
+                    Indirection(0)
+                };
+                let p_type = FullNameWithIndirectionToken::from_simple_with_indirection(
+                    s.clone(),
+                    Some(s.clone()),
+                    name.location().clone(),
+                    i,
+                );
+                (ns, p_type)
+            } else {
+                let (ns, _) = discard_ignored(ns)?;
+                let (ns, _) = char(':')(ns)?;
+                let (ns, _) = discard_ignored(ns)?;
+                let t_location = Location::from_span(&ns);
+                let (ns, type_name_token) = parse_full_name(ns, allow_self)?;
+                let (ns, _) = discard_ignored(ns)?;
+                (ns, type_name_token)
+            };
 
         parameters.push((name, p_type));
 

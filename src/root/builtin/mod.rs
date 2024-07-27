@@ -1,12 +1,12 @@
-pub mod types;
-pub mod functions;
 pub mod core;
+pub mod functions;
+pub mod types;
 
 use crate::root::builtin::functions::register_functions;
 use crate::root::builtin::types::bool::register_bool;
 use crate::root::builtin::types::int::register_int;
 use crate::root::compiler::global_tracker::GlobalTracker;
-use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable};
+use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::shared::common::{ByteSize, FunctionID, LocalAddress, TypeID};
 
@@ -18,7 +18,8 @@ pub fn register_builtin(global_table: &mut GlobalDefinitionTable) {
 }
 
 /// Function that takes context and generates inline assembly to be used within a functions
-pub type InlineFunctionGenerator = fn(&[LocalAddress], Option<LocalAddress>, &mut GlobalTracker, ByteSize) -> String;
+pub type InlineFunctionGenerator =
+    fn(&[LocalAddress], Option<LocalAddress>, &mut GlobalTracker, ByteSize) -> String;
 
 /// Converts a u16 unique ID to a non-zero, negative `FunctionID`
 const fn f_id(id: u16) -> FunctionID {

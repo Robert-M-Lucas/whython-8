@@ -1,11 +1,14 @@
 use nom::bytes::complete::{take_till, take_while};
-use nom::error::{ErrorKind, ParseError};
-use nom::Parser;
 use nom::character::complete::multispace1;
+use nom::error::{ErrorKind, ParseError};
 use nom::Err::Error;
+use nom::Parser;
 
 use super::parse::ErrorTree;
-use super::{parse::{ParseResult, Span}, parse_comments};
+use super::{
+    parse::{ParseResult, Span},
+    parse_comments,
+};
 
 pub fn take_whitespace(s: Span) -> ParseResult {
     take_while(|c: char| c.is_whitespace())(s)
@@ -53,9 +56,7 @@ pub fn require_ignored(s: Span) -> ParseResult<Span, ()> {
     }
 
     if !ever_found {
-        return Err(Error(
-            ErrorTree::from_error_kind(s, ErrorKind::Space)
-        ))
+        return Err(Error(ErrorTree::from_error_kind(s, ErrorKind::Space)));
     }
 
     Ok((s, ()))

@@ -1,9 +1,9 @@
-use unique_type_id::UniqueTypeId;
-use crate::root::builtin::{BuiltinInlineFunction, f_id, InlineFunctionGenerator};
 use crate::root::builtin::types::int::IntType;
+use crate::root::builtin::{f_id, BuiltinInlineFunction, InlineFunctionGenerator};
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{FunctionID, LocalAddress, TypeID};
+use unique_type_id::UniqueTypeId;
 
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
@@ -22,7 +22,7 @@ impl BuiltinInlineFunction for IntPSub {
         FunctionSignature::new_inline_builtin(
             SelfType::CopySelf,
             &[("lhs", IntType::id().immediate())],
-            Some(IntType::id().immediate())
+            Some(IntType::id().immediate()),
         )
     }
 
@@ -31,9 +31,10 @@ impl BuiltinInlineFunction for IntPSub {
             let lhs = args[0];
             let return_into = return_into.unwrap();
             format!(
-"    mov rax, qword {lhs}
+                "    mov rax, qword {lhs}
     neg rax
-    mov qword {return_into}, rax\n")
+    mov qword {return_into}, rax\n"
+            )
         }
     }
 
@@ -58,8 +59,11 @@ impl BuiltinInlineFunction for IntAsSub {
     fn signature(&self) -> FunctionSignature {
         FunctionSignature::new_inline_builtin(
             SelfType::RefSelf,
-            &[("lhs", IntType::id().with_indirection(1)), ("rhs", IntType::id().immediate())],
-            None
+            &[
+                ("lhs", IntType::id().with_indirection(1)),
+                ("rhs", IntType::id().immediate()),
+            ],
+            None,
         )
     }
 
@@ -70,7 +74,8 @@ impl BuiltinInlineFunction for IntAsSub {
             format!(
                 "    mov rax, qword {lhs}
     mov rdx, qword {rhs}
-    sub qword [rax], rdx\n")
+    sub qword [rax], rdx\n"
+            )
         }
     }
 

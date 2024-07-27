@@ -1,18 +1,20 @@
 use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
-use crate::root::parser::parse_function::parse_literal::{LiteralToken, parse_literal};
-use crate::root::parser::parse_function::parse_operator::{OperatorToken, parse_operator};
+use crate::root::parser::parse_arguments::parse_arguments;
+use crate::root::parser::parse_blocks::{
+    parse_terminator_default_set, BRACE_TERMINATOR, BRACKET_TERMINATOR,
+};
+use crate::root::parser::parse_function::parse_literal::{parse_literal, LiteralToken};
+use crate::root::parser::parse_function::parse_operator::{parse_operator, OperatorToken};
+use crate::root::parser::parse_function::parse_struct_init::{parse_struct_init, StructInitToken};
+use crate::root::parser::parse_name::{parse_simple_name, SimpleNameToken};
+use crate::root::parser::parse_struct::StructToken;
+use crate::root::parser::parse_util::discard_ignored;
+use crate::root::shared::common::Indirection;
 use b_box::b;
 use derive_getters::Getters;
 use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::character::complete::char;
-use crate::root::parser::parse_arguments::parse_arguments;
-use crate::root::parser::parse_name::{SimpleNameToken, parse_simple_name};
-use crate::root::parser::parse_blocks::{BRACE_TERMINATOR, BRACKET_TERMINATOR, parse_terminator_default_set};
-use crate::root::parser::parse_function::parse_struct_init::{parse_struct_init, StructInitToken};
-use crate::root::parser::parse_struct::StructToken;
-use crate::root::parser::parse_util::discard_ignored;
-use crate::root::shared::common::Indirection;
 
 #[derive(Debug, Getters)]
 pub struct EvaluableToken {
@@ -38,33 +40,42 @@ pub enum EvaluableTokens {
     StructInitialiser(StructInitToken),
     InfixOperator(Box<EvaluableToken>, OperatorToken, Box<EvaluableToken>),
     PrefixOperator(OperatorToken, Box<EvaluableToken>),
-    None
+    None,
 }
 
 #[derive(Debug, Getters)]
 pub struct FullNameWithIndirectionToken {
     indirection: Indirection,
-    inner: FullNameToken
+    inner: FullNameToken,
 }
 
 impl FullNameWithIndirectionToken {
-    pub fn from_simple(simple: SimpleNameToken, containing_class: Option<SimpleNameToken>, location: Location) -> FullNameWithIndirectionToken {
+    pub fn from_simple(
+        simple: SimpleNameToken,
+        containing_class: Option<SimpleNameToken>,
+        location: Location,
+    ) -> FullNameWithIndirectionToken {
         FullNameWithIndirectionToken {
             indirection: Indirection(0),
             inner: FullNameToken {
                 location,
-                token: FullNameTokens::Name(simple, containing_class)
-            }
+                token: FullNameTokens::Name(simple, containing_class),
+            },
         }
     }
 
-    pub fn from_simple_with_indirection(simple: SimpleNameToken, containing_class: Option<SimpleNameToken>, location: Location, indirection: Indirection) -> FullNameWithIndirectionToken {
+    pub fn from_simple_with_indirection(
+        simple: SimpleNameToken,
+        containing_class: Option<SimpleNameToken>,
+        location: Location,
+        indirection: Indirection,
+    ) -> FullNameWithIndirectionToken {
         FullNameWithIndirectionToken {
             indirection,
             inner: FullNameToken {
                 location,
-                token: FullNameTokens::Name(simple, containing_class)
-            }
+                token: FullNameTokens::Name(simple, containing_class),
+            },
         }
     }
 
@@ -76,31 +87,25 @@ impl FullNameWithIndirectionToken {
 #[derive(Debug, Getters)]
 pub struct FullNameToken {
     location: Location,
-    token: FullNameTokens
+    token: FullNameTokens,
 }
 
 impl FullNameToken {
     pub fn new(location: Location, token: FullNameTokens) -> FullNameToken {
-        FullNameToken {
-            location,
-            token,
-        }
+        FullNameToken { location, token }
     }
 
     pub fn with_no_indirection(self) -> FullNameWithIndirectionToken {
         FullNameWithIndirectionToken {
             indirection: Indirection(0),
-            inner: self
+            inner: self,
         }
     }
 
     pub fn into_evaluable(self) -> EvaluableToken {
         let (location, token) = (self.location, self.token);
         let token = token.into_evaluable_token();
-        EvaluableToken {
-            location,
-            token,
-        }
+        EvaluableToken { location, token }
     }
 }
 
@@ -108,15 +113,19 @@ impl FullNameToken {
 pub enum FullNameTokens {
     Name(SimpleNameToken, Option<SimpleNameToken>),
     StaticAccess(Box<FullNameToken>, SimpleNameToken),
-    DynamicAccess(Box<FullNameToken>, SimpleNameToken)
+    DynamicAccess(Box<FullNameToken>, SimpleNameToken),
 }
 
 impl FullNameTokens {
     pub fn into_evaluable_token(self) -> EvaluableTokens {
         match self {
             FullNameTokens::Name(n, c) => EvaluableTokens::Name(n, c),
-            FullNameTokens::StaticAccess(e, n) => EvaluableTokens::StaticAccess(b!(e.into_evaluable()), n),
-            FullNameTokens::DynamicAccess(e, n) => EvaluableTokens::DynamicAccess(b!(e.into_evaluable()), n),
+            FullNameTokens::StaticAccess(e, n) => {
+                EvaluableTokens::StaticAccess(b!(e.into_evaluable()), n)
+            }
+            FullNameTokens::DynamicAccess(e, n) => {
+                EvaluableTokens::DynamicAccess(b!(e.into_evaluable()), n)
+            }
         }
     }
 }
@@ -128,7 +137,11 @@ enum TempEvaluableTokensOne {
     Operator(OperatorToken),
     StaticAccess(SimpleNameToken),
     DynamicAccess(SimpleNameToken),
-    FunctionCall(SimpleNameToken, Option<SimpleNameToken>, Vec<EvaluableToken>),
+    FunctionCall(
+        SimpleNameToken,
+        Option<SimpleNameToken>,
+        Vec<EvaluableToken>,
+    ),
     StaticFunctionCall(SimpleNameToken, Vec<EvaluableToken>),
     DynamicFunctionCall(SimpleNameToken, Vec<EvaluableToken>),
 }
@@ -139,7 +152,10 @@ enum TempEvaluableTokensTwo {
     Operator(OperatorToken),
 }
 
-pub fn parse_full_name<'a>(s: Span<'a>, containing_class: Option<&SimpleNameToken>) -> ParseResult<'a, Span<'a>, FullNameWithIndirectionToken> {
+pub fn parse_full_name<'a>(
+    s: Span<'a>,
+    containing_class: Option<&SimpleNameToken>,
+) -> ParseResult<'a, Span<'a>, FullNameWithIndirectionToken> {
     let mut indirection: usize = 0;
     let mut s = s;
     loop {
@@ -148,8 +164,7 @@ pub fn parse_full_name<'a>(s: Span<'a>, containing_class: Option<&SimpleNameToke
         if let Ok((ns, _)) = char::<Span, ErrorTree>('&')(ns) {
             indirection += 1;
             s = ns;
-        }
-        else {
+        } else {
             s = ns;
             break;
         }
@@ -160,7 +175,7 @@ pub fn parse_full_name<'a>(s: Span<'a>, containing_class: Option<&SimpleNameToke
 
     let mut current = FullNameToken {
         location: section.location().clone(),
-        token: FullNameTokens::Name(section, containing_class.cloned())
+        token: FullNameTokens::Name(section, containing_class.cloned()),
     };
 
     let mut s = s;
@@ -184,7 +199,13 @@ pub fn parse_full_name<'a>(s: Span<'a>, containing_class: Option<&SimpleNameToke
         s = ns;
     }
 
-    Ok((s, FullNameWithIndirectionToken { indirection: Indirection(indirection), inner: current }))
+    Ok((
+        s,
+        FullNameWithIndirectionToken {
+            indirection: Indirection(indirection),
+            inner: current,
+        },
+    ))
 }
 
 // pub fn error_on_assignment(either: Either<EvaluableToken, AssignmentToken>) -> Result<EvaluableToken, ErrorTree<'static>> {
@@ -196,7 +217,11 @@ pub fn parse_full_name<'a>(s: Span<'a>, containing_class: Option<&SimpleNameToke
 //     }
 // }
 
-pub fn parse_evaluable<'a, 'b>(s: Span<'a>, containing_class: Option<&'b SimpleNameToken>, semicolon_terminated: bool) -> ParseResult<'a, Span<'a>, EvaluableToken> {
+pub fn parse_evaluable<'a, 'b>(
+    s: Span<'a>,
+    containing_class: Option<&'b SimpleNameToken>,
+    semicolon_terminated: bool,
+) -> ParseResult<'a, Span<'a>, EvaluableToken> {
     let mut s = s;
 
     let mut evaluables = Vec::new();
@@ -222,10 +247,13 @@ pub fn parse_evaluable<'a, 'b>(s: Span<'a>, containing_class: Option<&'b SimpleN
             }
 
             if evaluables.is_empty() {
-                return Ok((ns, EvaluableToken {
-                    location: Location::from_span(&ns),
-                    token: EvaluableTokens::None,
-                }))
+                return Ok((
+                    ns,
+                    EvaluableToken {
+                        location: Location::from_span(&ns),
+                        token: EvaluableTokens::None,
+                    },
+                ));
             }
 
             s = ns;
@@ -246,17 +274,23 @@ pub fn parse_evaluable<'a, 'b>(s: Span<'a>, containing_class: Option<&'b SimpleN
                         .map(|(s, t)| (s, temp_from_token(s, EvaluableTokens::Literal(t))))
                 },
                 |x| parse_operator(x).map(|(s, t)| (s, TempEvaluableTokensOne::Operator(t))),
-                |x| parse_struct_init(x, containing_class.clone()).map(|(s, t)| (s, temp_from_token(s, EvaluableTokens::StructInitialiser(t)))),
+                |x| {
+                    parse_struct_init(x, containing_class.clone()).map(|(s, t)| {
+                        (s, temp_from_token(s, EvaluableTokens::StructInitialiser(t)))
+                    })
+                },
                 |x: Span<'a>| {
                     enum Kind {
                         Static,
                         Dynamic,
-                        None
+                        None,
                     }
 
-                    let (x, kind) = tag::<&str, Span, ErrorTree>("::")(x).map(|(a, _)| (a, Kind::Static))
-                        .or_else(|_|
-                                     char::<Span, ErrorTree>('.')(x).map(|(a, _)| (a, Kind::Dynamic)))
+                    let (x, kind) = tag::<&str, Span, ErrorTree>("::")(x)
+                        .map(|(a, _)| (a, Kind::Static))
+                        .or_else(|_| {
+                            char::<Span, ErrorTree>('.')(x).map(|(a, _)| (a, Kind::Dynamic))
+                        })
                         .unwrap_or((x, Kind::None));
 
                     let (x, section) = parse_simple_name(x)?;
@@ -264,20 +298,36 @@ pub fn parse_evaluable<'a, 'b>(s: Span<'a>, containing_class: Option<&'b SimpleN
                     Ok(if char::<Span, ErrorTree>('(')(x).is_ok() {
                         let (x, arguments) = parse_terminator_default_set(x, &BRACKET_TERMINATOR)?;
                         let (_, arguments) = parse_arguments(arguments, containing_class)?;
-                        (x, match kind {
-                            Kind::Static => TempEvaluableTokensOne::StaticFunctionCall(section, arguments),
-                            Kind::Dynamic => TempEvaluableTokensOne::DynamicFunctionCall(section, arguments),
-                            Kind::None => TempEvaluableTokensOne::FunctionCall(section, containing_class.cloned(), arguments)
-                        })
-                    }
-                    else {
+                        (
+                            x,
+                            match kind {
+                                Kind::Static => {
+                                    TempEvaluableTokensOne::StaticFunctionCall(section, arguments)
+                                }
+                                Kind::Dynamic => {
+                                    TempEvaluableTokensOne::DynamicFunctionCall(section, arguments)
+                                }
+                                Kind::None => TempEvaluableTokensOne::FunctionCall(
+                                    section,
+                                    containing_class.cloned(),
+                                    arguments,
+                                ),
+                            },
+                        )
+                    } else {
                         match kind {
                             Kind::Static => (x, TempEvaluableTokensOne::StaticAccess(section)),
                             Kind::Dynamic => (x, TempEvaluableTokensOne::DynamicAccess(section)),
-                            Kind::None => (x, TempEvaluableTokensOne::EvaluableToken(EvaluableToken {
-                                location: section.location().clone(),
-                                token: EvaluableTokens::Name(section, containing_class.cloned()),
-                            })),
+                            Kind::None => (
+                                x,
+                                TempEvaluableTokensOne::EvaluableToken(EvaluableToken {
+                                    location: section.location().clone(),
+                                    token: EvaluableTokens::Name(
+                                        section,
+                                        containing_class.cloned(),
+                                    ),
+                                }),
+                            ),
                         }
                     })
                 },
@@ -296,59 +346,81 @@ pub fn parse_evaluable<'a, 'b>(s: Span<'a>, containing_class: Option<&'b SimpleN
             TempEvaluableTokensOne::StaticAccess(n) => {
                 match new_evaluables.pop() {
                     Some(TempEvaluableTokensTwo::Operator(_)) => todo!(), // Can't be operator
-                    Some(TempEvaluableTokensTwo::EvaluableToken(e)) => {
-                        new_evaluables.push(TempEvaluableTokensTwo::EvaluableToken(EvaluableToken {
+                    Some(TempEvaluableTokensTwo::EvaluableToken(e)) => new_evaluables.push(
+                        TempEvaluableTokensTwo::EvaluableToken(EvaluableToken {
                             location: e.location.clone(),
                             token: EvaluableTokens::StaticAccess(b!(e), n),
-                        }))
-                    },
+                        }),
+                    ),
                     None => todo!(), // Must have previous
                 }
             }
             TempEvaluableTokensOne::DynamicAccess(n) => {
                 match new_evaluables.pop() {
                     Some(TempEvaluableTokensTwo::Operator(_)) => todo!(), // Can't be operator
-                    Some(TempEvaluableTokensTwo::EvaluableToken(e)) => {
-                        new_evaluables.push(TempEvaluableTokensTwo::EvaluableToken(EvaluableToken {
+                    Some(TempEvaluableTokensTwo::EvaluableToken(e)) => new_evaluables.push(
+                        TempEvaluableTokensTwo::EvaluableToken(EvaluableToken {
                             location: e.location.clone(),
                             token: EvaluableTokens::DynamicAccess(b!(e), n),
-                        }))
-                    },
+                        }),
+                    ),
                     None => todo!(), // Must have previous
                 }
             }
             TempEvaluableTokensOne::FunctionCall(n, c, a) => {
                 new_evaluables.push(TempEvaluableTokensTwo::EvaluableToken(EvaluableToken {
                     location: n.location().clone(),
-                    token: EvaluableTokens::FunctionCall(b!(EvaluableToken { location: n.location().clone(), token: EvaluableTokens::Name(n, c) }), a),
+                    token: EvaluableTokens::FunctionCall(
+                        b!(EvaluableToken {
+                            location: n.location().clone(),
+                            token: EvaluableTokens::Name(n, c)
+                        }),
+                        a,
+                    ),
                 }))
             }
             TempEvaluableTokensOne::DynamicFunctionCall(n, a) => {
                 match new_evaluables.pop() {
                     Some(TempEvaluableTokensTwo::Operator(_)) => todo!(), // Can't be operator
-                    Some(TempEvaluableTokensTwo::EvaluableToken(e)) => {
-                        new_evaluables.push(TempEvaluableTokensTwo::EvaluableToken(EvaluableToken {
+                    Some(TempEvaluableTokensTwo::EvaluableToken(e)) => new_evaluables.push(
+                        TempEvaluableTokensTwo::EvaluableToken(EvaluableToken {
                             location: e.location.clone(),
-                            token: EvaluableTokens::FunctionCall(b!(EvaluableToken { location: n.location().clone(), token: EvaluableTokens::DynamicAccess(b!(e), n) }), a),
-                        }))
-                    },
+                            token: EvaluableTokens::FunctionCall(
+                                b!(EvaluableToken {
+                                    location: n.location().clone(),
+                                    token: EvaluableTokens::DynamicAccess(b!(e), n)
+                                }),
+                                a,
+                            ),
+                        }),
+                    ),
                     None => todo!(), // Must have previous
                 }
             }
             TempEvaluableTokensOne::StaticFunctionCall(n, a) => {
                 match new_evaluables.pop() {
                     Some(TempEvaluableTokensTwo::Operator(_)) => todo!(), // Can't be operator
-                    Some(TempEvaluableTokensTwo::EvaluableToken(e)) => {
-                        new_evaluables.push(TempEvaluableTokensTwo::EvaluableToken(EvaluableToken {
+                    Some(TempEvaluableTokensTwo::EvaluableToken(e)) => new_evaluables.push(
+                        TempEvaluableTokensTwo::EvaluableToken(EvaluableToken {
                             location: e.location.clone(),
-                            token: EvaluableTokens::FunctionCall(b!(EvaluableToken { location: n.location().clone(), token: EvaluableTokens::StaticAccess(b!(e), n) }), a),
-                        }))
-                    },
+                            token: EvaluableTokens::FunctionCall(
+                                b!(EvaluableToken {
+                                    location: n.location().clone(),
+                                    token: EvaluableTokens::StaticAccess(b!(e), n)
+                                }),
+                                a,
+                            ),
+                        }),
+                    ),
                     None => todo!(), // Must have previous
                 }
             }
-            TempEvaluableTokensOne::EvaluableToken(e) => new_evaluables.push(TempEvaluableTokensTwo::EvaluableToken(e)),
-            TempEvaluableTokensOne::Operator(o) => new_evaluables.push(TempEvaluableTokensTwo::Operator(o)),
+            TempEvaluableTokensOne::EvaluableToken(e) => {
+                new_evaluables.push(TempEvaluableTokensTwo::EvaluableToken(e))
+            }
+            TempEvaluableTokensOne::Operator(o) => {
+                new_evaluables.push(TempEvaluableTokensTwo::Operator(o))
+            }
         };
     }
 

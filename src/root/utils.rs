@@ -1,8 +1,8 @@
+use color_print::cprintln;
 use std::io;
 use std::io::ErrorKind;
 use std::ops::{Add, Rem, Sub};
 use std::process::ExitStatus;
-use color_print::cprintln;
 
 /// Tries to run an executable showing a suitable message upon failure
 pub fn try_run_program(name: &str, exit_status: io::Result<ExitStatus>) -> Result<ExitStatus, ()> {
