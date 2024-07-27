@@ -1,32 +1,29 @@
-struct StructA {
-    a: int,
-    b: StructB
-}
-
-struct StructB {
+struct MyStruct {
     a: int,
     b: int
 }
 
-impl StructA {
-    fn test(&self) {
+impl MyStruct {
+    fn print(&self) {
         printi(self.a);
+        printi(self.b);
+    }
+
+    fn increment(&self) {
+        self.a += 1;
+        self.b += 1;
     }
 }
 
 fn main() -> int {
-    let y: int = 13;
-
-    let x: StructA = StructA {
-        a: 190,
-        b: StructB {
-            a: 6,
-            b: 8
-        }
+    let x: MyStruct = MyStruct {
+        a: 3,
+        b: 4
     };
 
-    x.test();
+    x.print();
+    x.increment();
+    x.print();
 
-    y += x.b.a;
-    return y;
+    return x.a + x.b;
 }

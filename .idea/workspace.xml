@@ -7,43 +7,11 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Other">
-      <change afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/coerce_self.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Self coercion">
       <change beforePath="$PROJECT_DIR$/build/out.asm" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.asm" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/out.o" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/out.out" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.out" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.why" beforeDir="false" afterPath="$PROJECT_DIR$/main.why" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/core/referencing.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/core/referencing.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/functions/exit.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/functions/exit.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/bool/and.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/bool/and.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/bool/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/bool/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/bool/not.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/bool/not.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/bool/or.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/bool/or.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/bool/printb.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/bool/printb.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/int/add.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/int/add.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/int/comparators.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/int/comparators.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/int/div.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/int/div.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/int/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/int/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/int/modulo.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/int/modulo.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/int/mul.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/int/mul.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/int/p_add.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/int/p_add.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/int/p_sub.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/int/p_sub.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/int/printi.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/int/printi.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/int/sub.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/int/sub.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/assembly/utils.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/assembly/utils.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/compile_function_call.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile_function_call.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/function_only.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/function_only.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/into.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/into.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/new.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/new.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/type_only.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/type_only.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/resolve_function_signatures.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/resolve_function_signatures.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/ob.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/ob.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_evaluable.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_evaluable.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_parameters.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_parameters.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -260,15 +228,7 @@
       <workItem from="1722085225684" duration="70000" />
       <workItem from="1722085313184" duration="2000" />
       <workItem from="1722085411838" duration="80000" />
-      <workItem from="1722085508067" duration="7028000" />
-    </task>
-    <task id="LOCAL-00006" summary="Improved name system">
-      <option name="closed" value="true" />
-      <created>1717434442792</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1717434442792</updated>
+      <workItem from="1722085508067" duration="7396000" />
     </task>
     <task id="LOCAL-00007" summary="Began adding error system">
       <option name="closed" value="true" />
@@ -654,7 +614,15 @@
       <option name="project" value="LOCAL" />
       <updated>1721997775708</updated>
     </task>
-    <option name="localTasksCounter" value="55" />
+    <task id="LOCAL-00055" summary="Self coercion">
+      <option name="closed" value="true" />
+      <created>1722095029520</created>
+      <option name="number" value="00055" />
+      <option name="presentableId" value="LOCAL-00055" />
+      <option name="project" value="LOCAL" />
+      <updated>1722095029521</updated>
+    </task>
+    <option name="localTasksCounter" value="56" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -672,7 +640,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Added exit functions" />
     <MESSAGE value="More operators" />
     <MESSAGE value="Cargo fix" />
     <MESSAGE value="Cargo clippy" />
@@ -697,7 +664,8 @@
     <MESSAGE value="Added accessing" />
     <MESSAGE value="Completed adding accessing" />
     <MESSAGE value="Other" />
-    <option name="LAST_COMMIT_MESSAGE" value="Other" />
+    <MESSAGE value="Self coercion" />
+    <option name="LAST_COMMIT_MESSAGE" value="Self coercion" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
