@@ -17,12 +17,13 @@ use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse_function::parse_literal::{LiteralToken, LiteralTokens};
+use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{ByteSize, FunctionID, LocalAddress, TypeID};
 use crate::root::shared::types::Type;
 
 fn bool_op_sig() -> FunctionSignature {
     FunctionSignature::new_inline_builtin(
-        true,
+        SelfType::CopySelf,
         &[("lhs", BoolType::id().immediate()), ("rhs", BoolType::id().immediate())],
         Some(BoolType::id().immediate())
     )

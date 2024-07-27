@@ -5,28 +5,29 @@ use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable};
 use crate::root::shared::common::TypeRef;
 use crate::root::parser::parse_function::FunctionToken;
 use crate::root::parser::parse_name::SimpleNameToken;
+use crate::root::parser::parse_parameters::SelfType;
 
 #[derive(Getters)]
 /// A signature for a function
 pub struct FunctionSignature {
-    dynamic: bool,
+    self_type: SelfType,
     args: Vec<(SimpleNameToken, TypeRef)>,
     return_type: Option<TypeRef>
 }
 
 impl FunctionSignature {
-    pub fn new(dynamic: bool, args: Vec<(SimpleNameToken, TypeRef)>, return_type: Option<TypeRef>) -> FunctionSignature {
+    pub fn new(dynamic: SelfType, args: Vec<(SimpleNameToken, TypeRef)>, return_type: Option<TypeRef>) -> FunctionSignature {
         FunctionSignature {
-            dynamic,
+            self_type: dynamic,
             args,
             return_type
         }
     }
 
     /// Creates a signature for a builtin (lacking location information) function
-    pub fn new_inline_builtin(dynamic: bool, args: &[(&str, TypeRef)], return_type: Option<TypeRef>) -> FunctionSignature {
+    pub fn new_inline_builtin(dynamic: SelfType, args: &[(&str, TypeRef)], return_type: Option<TypeRef>) -> FunctionSignature {
         FunctionSignature {
-            dynamic,
+            self_type: dynamic,
             args: args.iter().map(|(name, t)| (SimpleNameToken::new_builtin(name.to_string()), t.clone())).collect_vec(),
             return_type
         }
@@ -52,7 +53,7 @@ pub fn resolve_function_signature(function_token: &FunctionToken, global_table: 
 
 
     Ok(FunctionSignature {
-        dynamic: *function_token.dynamic(),
+        self_type: *function_token.self_type(),
         args,
         return_type
     })

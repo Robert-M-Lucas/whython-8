@@ -7,7 +7,7 @@ use crate::root::parser::parse_blocks::{BRACE_TERMINATOR, BRACKET_TERMINATOR, pa
 use crate::root::parser::parse_function::parse_evaluable::{FullNameWithIndirectionToken, parse_full_name};
 use crate::root::parser::parse_function::parse_line::{LineTokens, parse_lines};
 use crate::root::parser::parse_name::{parse_simple_name, SimpleNameToken};
-use crate::root::parser::parse_parameters::{Parameters, parse_parameters};
+use crate::root::parser::parse_parameters::{Parameters, parse_parameters, SelfType};
 use crate::root::parser::parse_toplevel::{ToplevelTestFn, TopLevelTokens};
 use crate::root::parser::parse_util::{discard_ignored, require_ignored};
 
@@ -31,7 +31,7 @@ pub struct FunctionToken {
     end_location: Location,
     name: SimpleNameToken,
     return_type: Option<FullNameWithIndirectionToken>,
-    dynamic: bool,
+    self_type: SelfType,
     parameters: Parameters,
     lines: Vec<LineTokens>,
 }
@@ -81,7 +81,7 @@ pub fn parse_function<'a, 'b>(s: Span<'a>, allow_self: Option<&'b SimpleNameToke
     Ok((
         s,
         FunctionToken {
-            dynamic: has_self,
+            self_type: has_self,
             location,
             end_location,
             name,

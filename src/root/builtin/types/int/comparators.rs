@@ -3,7 +3,7 @@ use crate::root::builtin::{BuiltinInlineFunction, InlineFunctionGenerator, f_id}
 use crate::root::builtin::types::bool::BoolType;
 use crate::root::builtin::types::int::IntType;
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
-
+use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{FunctionID, LocalAddress, TypeID};
 
 #[derive(UniqueTypeId)]
@@ -27,7 +27,7 @@ impl BuiltinInlineFunction for IntEq {
 
     fn signature(&self) -> FunctionSignature {
         FunctionSignature::new_inline_builtin(
-            true,
+            SelfType::CopySelf,
             &[("lhs", IntType::id().immediate()), ("rhs", IntType::id().immediate())],
             Some(BoolType::id().immediate())
         )
@@ -79,7 +79,7 @@ impl BuiltinInlineFunction for IntNE {
 
     fn signature(&self) -> FunctionSignature {
         FunctionSignature::new_inline_builtin(
-            true,
+            SelfType::CopySelf,
             &[("lhs", IntType::id().immediate()), ("rhs", IntType::id().immediate())],
             Some(BoolType::id().immediate())
         )
@@ -131,7 +131,7 @@ impl BuiltinInlineFunction for IntGT {
 
     fn signature(&self) -> FunctionSignature {
         FunctionSignature::new_inline_builtin(
-            true,
+            SelfType::CopySelf,
             &[("lhs", IntType::id().immediate()), ("rhs", IntType::id().immediate())],
             Some(BoolType::id().immediate())
         )
@@ -183,7 +183,7 @@ impl BuiltinInlineFunction for IntLT {
 
     fn signature(&self) -> FunctionSignature {
         FunctionSignature::new_inline_builtin(
-            true,
+            SelfType::CopySelf,
             &[("lhs", IntType::id().immediate()), ("rhs", IntType::id().immediate())],
             Some(BoolType::id().immediate())
         )
@@ -235,7 +235,7 @@ impl BuiltinInlineFunction for IntGE {
 
     fn signature(&self) -> FunctionSignature {
         FunctionSignature::new_inline_builtin(
-            true,
+            SelfType::CopySelf,
             &[("lhs", IntType::id().immediate()), ("rhs", IntType::id().immediate())],
             Some(BoolType::id().immediate())
         )
@@ -287,7 +287,7 @@ impl BuiltinInlineFunction for IntLE {
 
     fn signature(&self) -> FunctionSignature {
         FunctionSignature::new_inline_builtin(
-            true,
+            SelfType::CopySelf,
             &[("lhs", IntType::id().immediate()), ("rhs", IntType::id().immediate())],
             Some(BoolType::id().immediate())
         )

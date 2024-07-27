@@ -9,8 +9,8 @@ struct StructB {
 }
 
 impl StructA {
-    fn test(self) {
-
+    fn test(&self) {
+        printi(self.a);
     }
 }
 
@@ -27,7 +27,6 @@ fn main() -> int {
 
     x.test();
 
-    &y = x.b.a;
-
+    y += x.b.a;
     return y;
 }

@@ -31,13 +31,13 @@ mod div;
 mod modulo;
 mod comparators;
 
-fn int_op_sig() -> FunctionSignature {
-    FunctionSignature::new_inline_builtin(
-        true,
-        &[("lhs", BoolType::id().immediate()), ("rhs", BoolType::id().immediate())],
-        Some(BoolType::id().immediate())
-    )
-}
+// fn int_op_sig() -> FunctionSignature {
+//     FunctionSignature::new_inline_builtin(
+//         true,
+//         &[("lhs", BoolType::id().immediate()), ("rhs", BoolType::id().immediate())],
+//         Some(BoolType::id().immediate())
+//     )
+// }
 
 pub fn register_int(global_table: &mut GlobalDefinitionTable) {
     global_table.register_builtin_type(b!(IntType));

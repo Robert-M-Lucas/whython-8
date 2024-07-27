@@ -4,7 +4,7 @@ use crate::root::builtin::types::bool::BoolType;
 use crate::root::builtin::types::bool::printb::PrintB;
 use crate::root::builtin::types::int::IntType;
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
-
+use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{FunctionID, LocalAddress, TypeID};
 
 #[derive(UniqueTypeId)]
@@ -22,7 +22,7 @@ impl BuiltinInlineFunction for BoolNot {
 
     fn signature(&self) -> FunctionSignature {
         FunctionSignature::new_inline_builtin(
-            true,
+            SelfType::CopySelf,
             &[("lhs", BoolType::id().immediate())],
             Some(BoolType::id().immediate())
         )

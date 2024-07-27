@@ -2,7 +2,7 @@ use unique_type_id::UniqueTypeId;
 use crate::root::builtin::{BuiltinInlineFunction, InlineFunctionGenerator, f_id};
 use crate::root::builtin::types::int::IntType;
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
-
+use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{FunctionID, LocalAddress, TypeID};
 
 #[derive(UniqueTypeId)]
@@ -20,7 +20,7 @@ impl BuiltinInlineFunction for IntSub {
 
     fn signature(&self) -> FunctionSignature {
         FunctionSignature::new_inline_builtin(
-            true,
+            SelfType::CopySelf,
             &[("lhs", IntType::id().immediate()), ("rhs", IntType::id().immediate())],
             Some(IntType::id().immediate())
         )

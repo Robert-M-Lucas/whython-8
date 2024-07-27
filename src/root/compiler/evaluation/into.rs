@@ -3,9 +3,10 @@ use either::{Left, Right};
 use itertools::Itertools;
 use crate::root::assembler::assembly_builder::AssemblyBuilder;
 use crate::root::builtin::core::referencing::{set_deref, set_reference};
-use crate::root::compiler::assembly::utils::copy;
+use crate::root::compiler::assembly::utils::{copy, copy_from_indirect_fixed_offset};
 use crate::root::compiler::compile_function_call::call_function;
 use crate::root::compiler::evaluation::{function_only, reference, type_only};
+use crate::root::compiler::evaluation::coerce_self::coerce_self;
 use crate::root::compiler::evaluation::reference::compile_evaluable_reference;
 use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
@@ -16,6 +17,7 @@ use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable, NameResult};
 use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, EvaluableTokens};
 use crate::root::parser::parse_function::parse_operator::{OperatorTokens, PrefixOrInfixEx};
+use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{AddressedTypeRef, FunctionID, LocalAddress};
 use crate::root::shared::types::Type;
 
@@ -68,19 +70,19 @@ pub fn compile_evaluable_into(
             let op_fn = global_table.get_operator_function(*lhs_type.type_id(), op, PrefixOrInfixEx::Infix)?;
             let signature = global_table.get_function_signature(op_fn);
 
-            if signature.get().args().len() != 2 {
+            if signature.args().len() != 2 {
                 return WErr::ne(
                     EvalErrs::InfixOpWrongArgumentCount(
                         op.operator().to_str().to_string(),
                         global_table.get_type(*lhs_type.type_id()).name().to_string(),
                         op.operator().get_method_name(PrefixOrInfixEx::Infix).unwrap(),
-                        signature.get().args().len()
+                        signature.args().len()
                     ),
                     op.location().clone()
                 );
             }
 
-            match signature.get().return_type() {
+            match signature.return_type() {
                 None => {
                     return WErr::ne(OpNoReturn(global_table.get_type_name(target.type_ref())), op.location().clone())
                 }
@@ -91,7 +93,7 @@ pub fn compile_evaluable_into(
                 }
             }
 
-            let (c, _) = call_function(fid, op_fn, et.location(), &op.operator().get_method_name(PrefixOrInfixEx::Infix).unwrap(), &[Left(lhs), Left(rhs)], Some(target), global_table, local_variables, global_tracker)?;
+            let (c, _) = call_function(fid, op_fn, signature.self_type().uses_self(), et.location(), &op.operator().get_method_name(PrefixOrInfixEx::Infix).unwrap(), &[Left(lhs), Left(rhs)], Some(target), global_table, local_variables, global_tracker)?;
 
             c
         },
@@ -126,19 +128,19 @@ pub fn compile_evaluable_into(
             let op_fn = global_table.get_operator_function(*lhs_type.type_id(), op, PrefixOrInfixEx::Prefix)?;
             let signature = global_table.get_function_signature(op_fn);
 
-            if signature.get().args().len() != 1 {
+            if signature.args().len() != 1 {
                 return WErr::ne(
                     EvalErrs::InfixOpWrongArgumentCount(
                         op.operator().to_str().to_string(),
                         global_table.get_type(*lhs_type.type_id()).name().to_string(),
                         op.operator().get_method_name(PrefixOrInfixEx::Prefix).unwrap(),
-                        signature.get().args().len()
+                        signature.args().len()
                     ),
                     op.location().clone()
                 );
             }
 
-            match signature.get().return_type() {
+            match signature.return_type() {
                 None => {
                     return WErr::ne(OpNoReturn(global_table.get_type_name(target.type_ref())), op.location().clone())
                 }
@@ -149,7 +151,7 @@ pub fn compile_evaluable_into(
                 }
             }
 
-            let (c, _) = call_function(fid, op_fn, et.location(), &op.operator().get_method_name(PrefixOrInfixEx::Prefix).unwrap(), &[Left(lhs)], Some(target), global_table, local_variables, global_tracker)?;
+            let (c, _) = call_function(fid, op_fn, signature.self_type().uses_self(), et.location(), &op.operator().get_method_name(PrefixOrInfixEx::Prefix).unwrap(), &[Left(lhs)], Some(target), global_table, local_variables, global_tracker)?;
             c
         },
         EvaluableTokens::DynamicAccess(inner, access) => {
@@ -158,6 +160,10 @@ pub fn compile_evaluable_into(
             ab.other(&c);
 
             let Some(inner) = inner else { todo!() };
+
+            if inner.type_ref().indirection().0 > 1 {
+                todo!()
+            }
 
             let t = global_table.get_type(*inner.type_ref().type_id());
             let attribs = t.get_attributes()?;
@@ -175,16 +181,26 @@ pub fn compile_evaluable_into(
 
             let Some(found_offset) = found_offset else { todo!() };
 
-            ab.other(&copy(LocalAddress(inner.local_address().0 + found_offset.0 as isize), *target.local_address(), global_table.get_size(target.type_ref())));
+            if inner.type_ref().indirection().has_indirection() {
+                ab.other(&copy_from_indirect_fixed_offset(LocalAddress(inner.local_address().0), found_offset, *target.local_address(), global_table.get_size(target.type_ref())));
+            }
+            else {
+                ab.other(&copy(LocalAddress(inner.local_address().0 + found_offset.0 as isize), *target.local_address(), global_table.get_size(target.type_ref())));
+            }
 
             ab.finish()
         },
         EvaluableTokens::StaticAccess(_, n) => return WErr::ne(NRErrs::CannotFindConstantAttribute(n.name().clone()), n.location().clone()), // Accessed methods must be called
         EvaluableTokens::FunctionCall(inner, args) => {
+            let mut ab = AssemblyBuilder::new();
             let (slf, ifid, name) = function_only::compile_evaluable_function_only(fid, inner, local_variables, global_table, global_tracker)?;
+            let self_type = *global_table.get_function_signature(ifid).self_type();
 
             let mut n_args = if let Some(slf) = slf.as_ref() {
                 let mut v = Vec::with_capacity(args.len() + 1);
+                let (c, slf) = compile_evaluable_reference(fid, slf, local_variables, global_table, global_tracker)?;
+                ab.other(&c);
+                let slf = slf.unwrap();
                 v.push(Right(slf));
                 v
             }
@@ -194,8 +210,9 @@ pub fn compile_evaluable_into(
 
             args.iter().for_each(|a| n_args.push(Left(a)));
 
-            let (code, _) = call_function(fid, ifid, et.location(), &name, &n_args, Some(target), global_table, local_variables, global_tracker)?;
-            code
+            let (c, _) = call_function(fid, ifid, self_type.uses_self(), et.location(), &name, &n_args, Some(target), global_table, local_variables, global_tracker)?;
+            ab.other(&c);
+            ab.finish()
         }
         EvaluableTokens::StructInitialiser(struct_init) => {
             let t = global_table.resolve_to_type_ref(struct_init.name())?;

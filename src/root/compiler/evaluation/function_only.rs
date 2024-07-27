@@ -1,3 +1,4 @@
+use crate::root::compiler::evaluation::type_only::compile_evaluable_type_only;
 use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::evaluable_errors::EvalErrs::ExpectedFunctionName;
@@ -7,13 +8,13 @@ use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, Evalu
 use crate::root::shared::common::{AddressedTypeRef, FunctionID};
 
 /// Evaluates `name` into a `FunctionID`
-pub fn compile_evaluable_function_only(
+pub fn compile_evaluable_function_only<'a>(
     fid: FunctionID,
-    name: &EvaluableToken,
+    name: &'a EvaluableToken,
     local_variables: &mut LocalVariableTable,
     global_table: &mut GlobalDefinitionTable,
     global_tracker: &mut GlobalTracker
-) -> Result<(Option<AddressedTypeRef>, FunctionID, String), WErr> {
+) -> Result<(Option<&'a EvaluableToken>, FunctionID, String), WErr> {
     Ok(match name.token() {
         EvaluableTokens::Name(name, containing_class) => {
             match global_table.resolve_name(name, containing_class.as_ref(), local_variables)? {
@@ -22,6 +23,20 @@ pub fn compile_evaluable_function_only(
                 }
                 _ => return WErr::ne(ExpectedFunctionName, name.location().clone()),
             }
+        }
+        EvaluableTokens::StaticAccess(inner, access) => {
+            let inner_type = compile_evaluable_type_only(fid, inner, local_variables, global_table, global_tracker)?;
+            let function = global_table.get_impl_function_by_name(*inner_type.type_id(), access.name());
+            let Some(function) = function else { todo!() };
+
+            (None, function, access.name().clone())
+        }
+        EvaluableTokens::DynamicAccess(inner, access) => {
+            let inner_type = compile_evaluable_type_only(fid, inner, local_variables, global_table, global_tracker)?;
+            let function = global_table.get_impl_function_by_name(*inner_type.type_id(), access.name());
+            let Some(function) = function else { todo!() };
+
+            (Some(inner), function, access.name().clone())
         }
         _ => return WErr::ne(ExpectedFunctionName, name.location().clone())
     })

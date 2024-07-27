@@ -48,7 +48,7 @@ pub fn compile_evaluable_type_only(
             // code += "\n";
             let op_fn = global_table.get_operator_function(*lhs_type.type_id(), op, PrefixOrInfixEx::Infix)?;
             let signature = global_table.get_function_signature(op_fn);
-            signature.get().return_type().as_ref().unwrap().clone()
+            signature.return_type().as_ref().unwrap().clone()
         },
         EvaluableTokens::PrefixOperator(op, lhs) => {
             let lhs_type = compile_evaluable_type_only(fid, lhs, local_variables, global_table, global_tracker)?;
@@ -67,7 +67,7 @@ pub fn compile_evaluable_type_only(
             // code += "\n";
             let op_fn = global_table.get_operator_function(*lhs_type.type_id(), op, PrefixOrInfixEx::Prefix)?;
             let signature = global_table.get_function_signature(op_fn);
-            signature.get().return_type().as_ref().unwrap().clone()
+            signature.return_type().as_ref().unwrap().clone()
         },
         EvaluableTokens::DynamicAccess(inner, access) => {
             let t = compile_evaluable_type_only(fid, inner, local_variables, global_table, global_tracker)?;
@@ -96,7 +96,7 @@ pub fn compile_evaluable_type_only(
             let (slf, ifid, _) = function_only::compile_evaluable_function_only(fid, inner, local_variables, global_table, global_tracker)?;
 
             let signature = global_table.get_function_signature(ifid);
-            let return_type = signature.get().return_type().clone().unwrap(); // TODO: Check type
+            let return_type = signature.return_type().clone().unwrap(); // TODO: Check type
             return_type
         }
         EvaluableTokens::StructInitialiser(struct_init) => {

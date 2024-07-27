@@ -2,7 +2,7 @@ use unique_type_id::UniqueTypeId;
 use crate::root::builtin::{BuiltinInlineFunction, f_id, InlineFunctionGenerator};
 use crate::root::builtin::types::bool::BoolType;
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
-
+use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{FunctionID, LocalAddress, TypeID};
 
 #[derive(UniqueTypeId)]
@@ -26,7 +26,7 @@ impl BuiltinInlineFunction for PrintB {
 
     fn signature(&self) -> FunctionSignature {
         FunctionSignature::new_inline_builtin(
-            false,
+            SelfType::None,
             &[("lhs", BoolType::id().immediate())],
             None
         )

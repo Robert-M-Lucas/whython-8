@@ -6,7 +6,6 @@ use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::name_resolver_errors::NRErrs;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
-use crate::root::ob::OB;
 use crate::root::parser::parse::Location;
 use crate::root::shared::types::Type;
 use crate::root::parser::parse_function::FunctionToken;
@@ -124,6 +123,11 @@ impl GlobalDefinitionTable {
         else {
             self.builtin_function_name_table.insert(inline.name().to_string(), inline.id());
         }
+    }
+
+    /// Gets a function impld for a type by name
+    pub fn get_impl_function_by_name(&self, base: TypeID, name: &str) -> Option<FunctionID> {
+        self.impl_definitions.get(&base).and_then(|i| i.get(name)).map(|f| *f)
     }
 
     /// Adds a type from a `StructToken`
@@ -262,8 +266,8 @@ impl GlobalDefinitionTable {
     }
 
     /// Returns the `FunctionSignature` of a function
-    pub fn get_function_signature(&self, function_id: FunctionID) -> OB<FunctionSignature> {
-        OB::b(self.function_signatures.get(&function_id).as_ref().unwrap())
+    pub fn get_function_signature(&self, function_id: FunctionID) -> &FunctionSignature {
+        self.function_signatures.get(&function_id).as_ref().unwrap()
     }
 
     /// Returns whether a main function has been defined
@@ -350,7 +354,7 @@ impl GlobalDefinitionTable {
     }
 
     /// Returns a function specified by the `FunctionID`
-    pub fn get_function(&self, function: FunctionID) -> (OB<FunctionSignature>, Option<&InlineFunctionGenerator>) {
+    pub fn get_function(&self, function: FunctionID) -> (&FunctionSignature, Option<&InlineFunctionGenerator>) {
         let signature = self.get_function_signature(function);
         let inline = self.inline_functions.get(&function);
         (signature, inline)

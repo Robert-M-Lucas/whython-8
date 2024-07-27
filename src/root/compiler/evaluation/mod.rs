@@ -6,6 +6,7 @@ pub mod into;
 pub mod reference;
 pub mod function_only;
 pub mod type_only;
+pub mod coerce_self;
 
 /// Error on an empty address
 pub fn expect_addr(r: (String, Option<AddressedTypeRef>)) -> Result<(String, AddressedTypeRef), WErr> {

@@ -58,6 +58,16 @@ impl FullNameWithIndirectionToken {
         }
     }
 
+    pub fn from_simple_with_indirection(simple: SimpleNameToken, containing_class: Option<SimpleNameToken>, location: Location, indirection: Indirection) -> FullNameWithIndirectionToken {
+        FullNameWithIndirectionToken {
+            indirection,
+            inner: FullNameToken {
+                location,
+                token: FullNameTokens::Name(simple, containing_class)
+            }
+        }
+    }
+
     pub fn into_inner(self) -> FullNameToken {
         self.inner
     }
