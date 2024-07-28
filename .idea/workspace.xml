@@ -7,9 +7,16 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Todo">
+    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Added null to all user types">
+      <change afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_27_07_2024__23_06__Changes_.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/root/compiler/assembly/null.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/out.asm" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.asm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/out.o" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/out.out" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.out" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.why" beforeDir="false" afterPath="$PROJECT_DIR$/main.why" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/root.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/assembly/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/assembly/mod.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/type_only.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/type_only.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/root/name_resolver/resolve_names.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/resolve_names.rs" afterDir="false" />
@@ -231,15 +238,7 @@
       <workItem from="1722085411838" duration="80000" />
       <workItem from="1722085508067" duration="7396000" />
       <workItem from="1722107093815" duration="3281000" />
-      <workItem from="1722200296112" duration="1297000" />
-    </task>
-    <task id="LOCAL-00009" summary="Improved error handling">
-      <option name="closed" value="true" />
-      <created>1717473365560</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
-      <option name="project" value="LOCAL" />
-      <updated>1717473365560</updated>
+      <workItem from="1722200296112" duration="2041000" />
     </task>
     <task id="LOCAL-00010" summary="Improved error handling">
       <option name="closed" value="true" />
@@ -625,7 +624,15 @@
       <option name="project" value="LOCAL" />
       <updated>1722123289634</updated>
     </task>
-    <option name="localTasksCounter" value="58" />
+    <task id="LOCAL-00058" summary="Added null to all user types">
+      <option name="closed" value="true" />
+      <created>1722203421689</created>
+      <option name="number" value="00058" />
+      <option name="presentableId" value="LOCAL-00058" />
+      <option name="project" value="LOCAL" />
+      <updated>1722203421689</updated>
+    </task>
+    <option name="localTasksCounter" value="59" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -643,7 +650,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Cargo clippy" />
     <MESSAGE value="Boolean improvements" />
     <MESSAGE value="More boolean operations" />
     <MESSAGE value="Int comparators" />
@@ -668,7 +674,8 @@
     <MESSAGE value="Self coercion" />
     <MESSAGE value="Begun work towards heap allocation" />
     <MESSAGE value="Todo" />
-    <option name="LAST_COMMIT_MESSAGE" value="Todo" />
+    <MESSAGE value="Added null to all user types" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added null to all user types" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

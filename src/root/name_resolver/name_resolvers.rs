@@ -101,6 +101,12 @@ impl GlobalDefinitionTable {
         self.builtin_type_name_table
             .insert(t.name().to_string(), id);
         self.type_definitions.insert(id, t);
+
+        // TODO: NOT A USER FUNCTION!
+        let fid = self.id_counter;
+        self.id_counter += 1;
+        let null_function = null_function(id, FunctionID(fid));
+        self.register_inline_function(&null_function);
     }
 
     // pub fn register_builtin_function(&mut self, name: String, t: FunctionSignature, id: FunctionID) {
