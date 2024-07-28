@@ -3,6 +3,23 @@ struct LL {
     first: &Node
 }
 
+impl LL {
+    fn new() -> LL {
+        return LL {
+            has_node: false,
+            first: Node::null()
+        };
+    }
+
+    fn add(&self, val: int) {
+        let x: &bool = self.has_node;
+        if (*x) {
+            self.first.add(val);
+        } else {
+            self.first = Node::new(val);
+        };
+    }
+}
 
 struct Node {
     val: int,
@@ -11,5 +28,8 @@ struct Node {
 }
 
 fn main() -> int {
-    let r: LL = LL { has_node: false, first: Node::null() };
+    let r: LL = LL::new();
+    printb(*(r.has_node));
+
+    return 0;
 }

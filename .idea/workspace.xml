@@ -7,22 +7,12 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Self coercion">
+    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Todo">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/out.asm" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.asm" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/out.o" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/out.out" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.out" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.why" beforeDir="false" afterPath="$PROJECT_DIR$/main.why" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/root.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/core/referencing.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/core/referencing.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/int/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/int/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/assembly/utils.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/assembly/utils.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/compile_function.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile_function.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/into.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/into.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/new.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/new.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/reference.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/reference.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/type_only.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/type_only.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/unrandom.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/unrandom.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/resolve_names.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/resolve_names.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,7 +41,7 @@
   <component name="GithubPullRequestsUISettings"><![CDATA[{
   "selectedUrlAndAccountId": {
     "url": "https://github.com/Robert-M-Lucas/whython-8.git",
-    "accountId": "4a322597-eb99-4adb-939a-37a7436c8242"
+    "accountId": "dcb8df19-0b39-47e1-9073-4a54f7034be8"
   }
 }]]></component>
   <component name="MacroExpansionManager">
@@ -241,22 +231,7 @@
       <workItem from="1722085411838" duration="80000" />
       <workItem from="1722085508067" duration="7396000" />
       <workItem from="1722107093815" duration="3281000" />
-    </task>
-    <task id="LOCAL-00007" summary="Began adding error system">
-      <option name="closed" value="true" />
-      <created>1717469659146</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1717469659146</updated>
-    </task>
-    <task id="LOCAL-00008" summary="Improved error handling">
-      <option name="closed" value="true" />
-      <created>1717473113692</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1717473113692</updated>
+      <workItem from="1722200296112" duration="1297000" />
     </task>
     <task id="LOCAL-00009" summary="Improved error handling">
       <option name="closed" value="true" />
@@ -634,7 +609,23 @@
       <option name="project" value="LOCAL" />
       <updated>1722095029521</updated>
     </task>
-    <option name="localTasksCounter" value="56" />
+    <task id="LOCAL-00056" summary="Begun work towards heap allocation">
+      <option name="closed" value="true" />
+      <created>1722123225852</created>
+      <option name="number" value="00056" />
+      <option name="presentableId" value="LOCAL-00056" />
+      <option name="project" value="LOCAL" />
+      <updated>1722123225852</updated>
+    </task>
+    <task id="LOCAL-00057" summary="Todo">
+      <option name="closed" value="true" />
+      <created>1722123289634</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1722123289634</updated>
+    </task>
+    <option name="localTasksCounter" value="58" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -652,8 +643,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="More operators" />
-    <MESSAGE value="Cargo fix" />
     <MESSAGE value="Cargo clippy" />
     <MESSAGE value="Boolean improvements" />
     <MESSAGE value="More boolean operations" />
@@ -677,7 +666,9 @@
     <MESSAGE value="Completed adding accessing" />
     <MESSAGE value="Other" />
     <MESSAGE value="Self coercion" />
-    <option name="LAST_COMMIT_MESSAGE" value="Self coercion" />
+    <MESSAGE value="Begun work towards heap allocation" />
+    <MESSAGE value="Todo" />
+    <option name="LAST_COMMIT_MESSAGE" value="Todo" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

@@ -33,11 +33,14 @@ pub fn compile_evaluable_type_only(
                         name.location().clone(),
                     )
                 }
-                NameResult::Type(_) => {
-                    return WErr::ne(
-                        EvalErrs::CannotEvalStandaloneType(name.name().clone()),
-                        name.location().clone(),
-                    )
+                NameResult::Type(t) => {
+                    t.immediate()
+                    // println!("> {}", name.name());
+                    // std::process::exit(123);
+                    // return WErr::ne(
+                    //     EvalErrs::CannotEvalStandaloneType(name.name().clone()),
+                    //     name.location().clone(),
+                    // )
                 }
                 NameResult::Variable(address) => address.type_ref().clone(),
             }

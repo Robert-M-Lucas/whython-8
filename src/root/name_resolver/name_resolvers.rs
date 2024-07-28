@@ -17,6 +17,7 @@ use crate::root::POINTER_SIZE;
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::rc::Rc;
+use crate::root::compiler::assembly::null::null_function;
 
 #[derive(Debug)]
 enum NameTreeEntry {
@@ -197,8 +198,12 @@ impl GlobalDefinitionTable {
     }
 
     /// Adds a type definition for a previously given `TypeID`
-    pub fn add_type(&mut self, given_id: TypeID, definition: Box<dyn Type>) {
+    pub fn add_user_type(&mut self, given_id: TypeID, definition: Box<dyn Type>) {
         self.type_definitions.insert(given_id, definition);
+        let fid = self.id_counter;
+        self.id_counter += 1;
+        let null_function = null_function(given_id, FunctionID(fid));
+        self.register_inline_function(&null_function);
     }
 
     /// Takes a name and resolves it to a type (or error)
@@ -321,11 +326,6 @@ impl GlobalDefinitionTable {
         Ok(address)
     }
 
-    /// Returns the `FunctionSignature` of a function
-    pub fn get_function_signature(&self, function_id: FunctionID) -> &FunctionSignature {
-        self.function_signatures.get(&function_id).as_ref().unwrap()
-    }
-
     /// Returns whether a main function has been defined
     pub fn has_main(&self) -> bool {
         self.function_signatures.contains_key(&FunctionID(0))
@@ -440,6 +440,11 @@ impl GlobalDefinitionTable {
                 operator.location().clone(),
             )
         }
+    }
+
+    /// Returns the `FunctionSignature` of a function
+    pub fn get_function_signature(&self, function_id: FunctionID) -> &FunctionSignature {
+        self.function_signatures.get(&function_id).as_ref().unwrap()
     }
 
     /// Returns a function specified by the `FunctionID`

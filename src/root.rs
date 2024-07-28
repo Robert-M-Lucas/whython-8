@@ -13,7 +13,7 @@ use std::fs;
 use std::io::ErrorKind;
 use std::path::PathBuf;
 #[cfg(debug_assertions)]
-pub const DEBUG_ON_ERROR: bool = false;
+pub const DEBUG_ON_ERROR: bool = true;
 
 // #[cfg(target_os = "windows")]
 // use crate::root::runner::run;
@@ -76,6 +76,8 @@ pub fn main_args(args: Args) -> Result<(), WErr> {
     time!(
         let parsed = parse(PathBuf::from(&args.input))?;
     );
+
+    println!("{:#?}", parsed);
 
     print!("Resolving Names... ");
     time!(
