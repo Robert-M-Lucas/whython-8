@@ -1,0 +1,68 @@
+struct LL {
+    first: &Node
+}
+
+impl LL {
+    fn new() -> LL {
+        return LL {
+            first: Node::null()
+        };
+    }
+
+    fn add(&self, val: int) {
+        if (Node::is_null(*self.first)) {
+            self.first = Node::new(val);
+        } else {
+            (*self.first).add(val);
+        };
+    }
+
+    fn print(&self) {
+        if (!Node::is_null(*self.first)) {
+            (*self.first).print();
+        };
+    }
+}
+
+struct Node {
+    val: int,
+    next: &Node
+}
+
+impl Node {
+    fn new(val: int) -> &Node {
+        return new Node {
+            val: val,
+            next: Node::null()
+        };
+    }
+
+    fn add(&self, val: int) {
+        if (Node::is_null(*self.next)) {
+            self.next = Node::new(val);
+        } else {
+            (*self.next).add(val);
+        };
+    }
+
+    fn print(&self) {
+        printi(*self.val);
+        if (!Node::is_null(*self.next)) {
+            (*self.next).print();
+        };
+    }
+}
+
+fn main() -> int {
+    let r: LL = LL::new();
+    r.add(2);
+    r.add(3);
+    r.add(2);
+    r.add(4);
+    r.add(7);
+    r.add(8);
+    r.add(4);
+    r.print();
+
+    return 0;
+}

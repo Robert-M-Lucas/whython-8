@@ -10,8 +10,12 @@ use clap::Parser;
 use color_print::cprintln;
 use shared::common::ByteSize;
 use std::fs;
+use std::fs::File;
 use std::io::ErrorKind;
 use std::path::PathBuf;
+use std::time::Instant;
+use num_format::{Locale, ToFormattedString};
+
 #[cfg(debug_assertions)]
 pub const DEBUG_ON_ERROR: bool = true;
 
@@ -100,9 +104,15 @@ pub fn main_args(args: Args) -> Result<(), WErr> {
     #[cfg(target_os = "linux")]
     {
         print!("Linking (gcc)... ");
-        time!(
-            link_gcc(&args.output).unwrap();
+
+        let t = Instant::now();
+        link_gcc(&args.output).unwrap();
+        let end = t.elapsed();
+        // TODO: Don't unwrap
+        let size = format!("{}",
+            File::open(format!("{}.out", args.output)).unwrap().metadata().unwrap().len().to_formatted_string(&Locale::en)
         );
+        cprintln!("<g,bold>Completed [{:?}] - {} bytes</>", end, size);
 
         if args.build {
             println!("Skipping execution")
