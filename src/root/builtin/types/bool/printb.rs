@@ -37,8 +37,8 @@ impl BuiltinInlineFunction for PrintB {
             let id_false = format!("{}_f_fstr", Self::id().string_id());
             let id_true = format!("{}_t_fstr", Self::id().string_id());
 
-            let data_false = format!("{id_false} db `Boolean: False`,0");
-            let data_true = format!("{id_true} db `Boolean: True`,0");
+            let data_false = format!("{id_false} db `Boolean: False\\n`,0");
+            let data_true = format!("{id_true} db `Boolean: True\\n`,0");
 
             gt.add_readonly_data(&id_false, &data_false);
             gt.add_readonly_data(&id_true, &data_true);

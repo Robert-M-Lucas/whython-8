@@ -86,7 +86,7 @@ pub struct TypeRef {
 impl TypeRef {
     pub fn new(type_id: TypeID, indirection: Indirection) -> TypeRef {
         TypeRef {
-            type_id,
+            type_id: type_id,
             indirection,
         }
     }

@@ -316,9 +316,9 @@ pub fn compile_evaluable_new(
                 todo!()
             };
 
-            let t = t.plus_one_indirect();
+            // let t = t.plus_one_indirect();
 
-            let target = global_table.add_local_variable_unnamed_base(t.clone(), local_variables);
+            let target = global_table.add_local_variable_unnamed_base(t.plus_one_indirect(), local_variables);
 
             if inner.type_ref().indirection().has_indirection() {
                 // TODO: Not 64 bit!

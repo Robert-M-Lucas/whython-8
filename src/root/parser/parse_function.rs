@@ -49,9 +49,9 @@ pub fn test_parse_function(s: Span<'_>) -> ParseResult<Span, ToplevelTestFn<'_>>
     }
 }
 
-pub fn parse_function<'a, 'b>(
+pub fn parse_function<'a>(
     s: Span<'a>,
-    allow_self: Option<&'b SimpleNameToken>,
+    allow_self: Option<&SimpleNameToken>,
 ) -> ParseResult<'a, Span<'a>, FunctionToken> {
     let location = Location::from_span(&s);
     let (s, _) = tag("fn").parse(s)?;

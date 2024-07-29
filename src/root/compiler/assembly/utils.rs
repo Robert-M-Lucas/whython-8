@@ -228,7 +228,7 @@ pub fn copy_to_indirect(from: LocalAddress, to: LocalAddress, amount: ByteSize) 
                 "mov al, byte {}",
                 LocalAddress(from + written as isize)
             ));
-            output.line(&format!("mov byte [rdx+{written}], byte"));
+            output.line(&format!("mov byte [rdx+{written}], al"));
             written += 1;
         } else {
             break;
