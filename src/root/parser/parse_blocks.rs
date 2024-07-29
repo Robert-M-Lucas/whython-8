@@ -120,7 +120,7 @@ pub fn take_until_or_end_discard_smart<'a>(s: Span<'a>, until: &str) -> ParseRes
     let original = s.clone();
     let mut s = s;
     let mut found = false;
-    while !s.is_empty() {
+    'outer: while !s.is_empty() {
         if let Ok((ns, _)) = tag::<&str, LocatedSpan<&str, &Rc<PathBuf>>, ErrorTree>(until)(s) {
             found = true;
             s = ns;
@@ -132,7 +132,7 @@ pub fn take_until_or_end_discard_smart<'a>(s: Span<'a>, until: &str) -> ParseRes
         for t in &DEFAULT_TERMINATORS {
             if t.opening == c {
                 s = parse_terminator_default_set(s, t)?.0;
-                continue;
+                continue 'outer;
             }
         }
 
@@ -151,7 +151,7 @@ pub fn take_until_or_end_discard_smart<'a>(s: Span<'a>, until: &str) -> ParseRes
 pub fn take_until_discard_smart<'a>(s: Span<'a>, until: &str) -> ParseResult<'a> {
     let original = s.clone();
     let mut s = s;
-    loop {
+    'outer: loop {
         if s.is_empty() {
             return Err(nom::Err::Error(ErrorTree::from_error_kind(
                 original,
@@ -169,7 +169,7 @@ pub fn take_until_discard_smart<'a>(s: Span<'a>, until: &str) -> ParseResult<'a>
         for t in &DEFAULT_TERMINATORS {
             if t.opening == c {
                 s = parse_terminator_default_set(s, t)?.0;
-                continue;
+                continue 'outer;
             }
         }
 

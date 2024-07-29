@@ -223,7 +223,6 @@ pub fn parse_evaluable<'a, 'b>(
     semicolon_terminated: bool,
 ) -> ParseResult<'a, Span<'a>, EvaluableToken> {
     let mut s = s;
-    println!("{s}");
 
     let mut evaluables = Vec::new();
 
@@ -234,6 +233,16 @@ pub fn parse_evaluable<'a, 'b>(
         // Terminate on semicolon if semicolon terminated
         if semicolon_terminated {
             if let Ok((ns, _)) = char::<_, ErrorTree>(';')(ns) {
+                if evaluables.is_empty() {
+                    return Ok((
+                        ns,
+                        EvaluableToken {
+                            location: Location::from_span(&ns),
+                            token: EvaluableTokens::None,
+                        },
+                    ));
+                }
+
                 s = ns;
                 break;
             }

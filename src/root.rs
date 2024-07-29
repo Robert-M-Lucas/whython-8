@@ -77,8 +77,6 @@ pub fn main_args(args: Args) -> Result<(), WErr> {
         let parsed = parse(PathBuf::from(&args.input))?;
     );
 
-    println!("{:#?}", parsed);
-
     print!("Resolving Names... ");
     time!(
         let (global_table, unprocessed_functions) = resolve(parsed)?;
