@@ -17,7 +17,7 @@ use crate::root::POINTER_SIZE;
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::rc::Rc;
-use crate::root::compiler::assembly::null::null_function;
+use crate::root::compiler::assembly::null::{is_null_function, null_function};
 
 #[derive(Debug)]
 enum NameTreeEntry {
@@ -107,6 +107,11 @@ impl GlobalDefinitionTable {
         self.id_counter += 1;
         let null_function = null_function(id, FunctionID(fid));
         self.register_inline_function(&null_function);
+
+        let fid = self.id_counter;
+        self.id_counter += 1;
+        let is_null_function = is_null_function(id, FunctionID(fid));
+        self.register_inline_function(&is_null_function);
     }
 
     // pub fn register_builtin_function(&mut self, name: String, t: FunctionSignature, id: FunctionID) {
@@ -206,10 +211,16 @@ impl GlobalDefinitionTable {
     /// Adds a type definition for a previously given `TypeID`
     pub fn add_user_type(&mut self, given_id: TypeID, definition: Box<dyn Type>) {
         self.type_definitions.insert(given_id, definition);
+
         let fid = self.id_counter;
         self.id_counter += 1;
         let null_function = null_function(given_id, FunctionID(fid));
         self.register_inline_function(&null_function);
+
+        let fid = self.id_counter;
+        self.id_counter += 1;
+        let is_null_function = is_null_function(given_id, FunctionID(fid));
+        self.register_inline_function(&is_null_function);
     }
 
     /// Takes a name and resolves it to a type (or error)

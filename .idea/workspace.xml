@@ -7,19 +7,15 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Added null to all user types">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Linked list">
       <change beforePath="$PROJECT_DIR$/build/out.asm" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.asm" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/out.o" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/out.out" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.out" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.why" beforeDir="false" afterPath="$PROJECT_DIR$/main.why" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/bool/printb.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/bool/printb.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/assembly/utils.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/assembly/utils.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/function_only.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/function_only.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/new.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/new.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_arguments.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_arguments.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/shared/common.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/shared/common.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/builtin/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/assembly/null.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/assembly/null.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/types.toml" beforeDir="false" afterPath="$PROJECT_DIR$/types.toml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -241,15 +237,7 @@
       <workItem from="1722200296112" duration="2041000" />
       <workItem from="1722250627023" duration="2433000" />
       <workItem from="1722257353726" duration="412000" />
-      <workItem from="1722262578285" duration="3600000" />
-    </task>
-    <task id="LOCAL-00010" summary="Improved error handling">
-      <option name="closed" value="true" />
-      <created>1717562697947</created>
-      <option name="number" value="00010" />
-      <option name="presentableId" value="LOCAL-00010" />
-      <option name="project" value="LOCAL" />
-      <updated>1717562697947</updated>
+      <workItem from="1722262578285" duration="4942000" />
     </task>
     <task id="LOCAL-00011" summary="Improved name evaluation">
       <option name="closed" value="true" />
@@ -635,7 +623,15 @@
       <option name="project" value="LOCAL" />
       <updated>1722203421689</updated>
     </task>
-    <option name="localTasksCounter" value="59" />
+    <task id="LOCAL-00059" summary="Linked list">
+      <option name="closed" value="true" />
+      <created>1722271892516</created>
+      <option name="number" value="00059" />
+      <option name="presentableId" value="LOCAL-00059" />
+      <option name="project" value="LOCAL" />
+      <updated>1722271892516</updated>
+    </task>
+    <option name="localTasksCounter" value="60" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -653,7 +649,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Boolean improvements" />
     <MESSAGE value="More boolean operations" />
     <MESSAGE value="Int comparators" />
     <MESSAGE value="Boolean comparators" />
@@ -678,7 +673,8 @@
     <MESSAGE value="Begun work towards heap allocation" />
     <MESSAGE value="Todo" />
     <MESSAGE value="Added null to all user types" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added null to all user types" />
+    <MESSAGE value="Linked list" />
+    <option name="LAST_COMMIT_MESSAGE" value="Linked list" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

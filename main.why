@@ -1,27 +1,24 @@
 struct LL {
-    has_first: bool,
     first: &Node
 }
 
 impl LL {
     fn new() -> LL {
         return LL {
-            has_first: false,
             first: Node::null()
         };
     }
 
     fn add(&self, val: int) {
-        if (*self.has_first) {
-            (*self.first).add(val);
-        } else {
-            self.has_first = true;
+        if (Node::is_null(*self.first)) {
             self.first = Node::new(val);
+        } else {
+            (*self.first).add(val);
         };
     }
 
     fn print(&self) {
-        if (*self.has_first) {
+        if (!Node::is_null(*self.first)) {
             (*self.first).print();
         };
     }
@@ -29,7 +26,6 @@ impl LL {
 
 struct Node {
     val: int,
-    has_next: bool,
     next: &Node
 }
 
@@ -37,23 +33,21 @@ impl Node {
     fn new(val: int) -> &Node {
         return new Node {
             val: val,
-            has_next: false,
             next: Node::null()
         };
     }
 
     fn add(&self, val: int) {
-        if (*self.has_next) {
-            (*self.next).add(val);
-        } else {
-            self.has_next = true;
+        if (Node::is_null(*self.next)) {
             self.next = Node::new(val);
+        } else {
+            (*self.next).add(val);
         };
     }
 
     fn print(&self) {
         printi(*self.val);
-        if (*self.has_next) {
+        if (!Node::is_null(*self.next)) {
             (*self.next).print();
         };
     }
@@ -64,7 +58,10 @@ fn main() -> int {
     r.add(2);
     r.add(3);
     r.add(2);
-    r.add(1);
+    r.add(4);
+    r.add(7);
+    r.add(8);
+    r.add(4);
     r.print();
 
     return 0;

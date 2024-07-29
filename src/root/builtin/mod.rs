@@ -22,12 +22,12 @@ pub type InlineFunctionGenerator =
     fn(&[LocalAddress], Option<LocalAddress>, &mut GlobalTracker, ByteSize) -> String;
 
 /// Converts a u16 unique ID to a non-zero, negative `FunctionID`
-const fn f_id(id: u16) -> FunctionID {
+pub const fn f_id(id: u16) -> FunctionID {
     FunctionID(-(id as isize) - 1)
 }
 
 /// Converts a u16 unique ID to a non-zero, negative `FunctionID`
-const fn t_id(id: u16) -> TypeID {
+pub const fn t_id(id: u16) -> TypeID {
     TypeID(-(id as isize) - 1)
 }
 

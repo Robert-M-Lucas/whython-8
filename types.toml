@@ -33,3 +33,4 @@ BoolE=31
 BoolEq=32
 BoolNE=33
 IntType=34
+IsNullFunction=35
