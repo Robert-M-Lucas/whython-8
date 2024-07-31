@@ -18,7 +18,7 @@ pub fn resolve(
     let unprocessed_functions = resolve_names(ast, &mut global_table)?;
 
     if !global_table.has_main() {
-        return WErr::locationless(NRErrs::NoMain);
+        return WErr::locationless_e(NRErrs::NoMain);
     }
 
     Ok((global_table, unprocessed_functions))

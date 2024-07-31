@@ -6,7 +6,7 @@ use color_print::cformat;
 use lazy_static::lazy_static;
 use nom::{IResult, InputTake};
 use nom_locate::LocatedSpan;
-use nom_supreme::error::GenericErrorTree;
+use nom_supreme::error::{BaseErrorKind, GenericErrorTree};
 use std::cmp::min;
 use std::ffi::OsStr;
 use std::fmt::{Display, Formatter, Write};
@@ -14,6 +14,7 @@ use std::fs;
 use std::marker::PhantomData;
 use std::path::PathBuf;
 use std::rc::Rc;
+use crate::root::parser::handle_errors::handle_error;
 
 pub type Span<'a> = LocatedSpan<&'a str, &'a Rc<PathBuf>>;
 
@@ -22,7 +23,7 @@ pub type ErrorTree<'a> = GenericErrorTree<
     Span<'a>,
     &'static str,
     &'static str,
-    Box<dyn std::error::Error + Send + Sync + 'static>,
+    String,
 >;
 
 lazy_static! {
@@ -46,9 +47,16 @@ pub struct WarningL;
 pub type Location = LocationTyped<ErrorL>;
 
 #[derive(Debug, Clone, Hash)]
+pub enum ErrorLocation {
+    Location(InnerLocation),
+    Builtin,
+    None
+}
+
+#[derive(Debug, Clone, Hash)]
 pub struct LocationTyped<ErrorType = ErrorL> {
     error_type: PhantomData<ErrorType>,
-    inner_location: Option<InnerLocation>,
+    inner_location: ErrorLocation,
 }
 
 impl LocationTyped<ErrorL> {
@@ -64,7 +72,7 @@ impl<ErrorType> LocationTyped<ErrorType> {
     pub fn from_span(span: &Span) -> LocationTyped<ErrorType> {
         LocationTyped {
             error_type: Default::default(),
-            inner_location: Some(InnerLocation {
+            inner_location: ErrorLocation::Location(InnerLocation {
                 path: span.extra.clone(),
                 offset: span.location_offset(),
                 line: span.location_line(),
@@ -77,7 +85,7 @@ impl<ErrorType> LocationTyped<ErrorType> {
 
         LocationTyped {
             error_type: Default::default(),
-            inner_location: Some(InnerLocation {
+            inner_location: ErrorLocation::Location(InnerLocation {
                 path: span.extra.clone(),
                 offset: span.location_offset(),
                 line: span.location_line(),
@@ -86,29 +94,46 @@ impl<ErrorType> LocationTyped<ErrorType> {
     }
 
     pub fn path(&self) -> Option<&Rc<PathBuf>> {
-        self.inner_location.as_ref().map(|l| &l.path)
+        match &self.inner_location {
+            ErrorLocation::Location(l) => Some(&l.path),
+            ErrorLocation::Builtin => None,
+            ErrorLocation::None => None
+        }
     }
 
     pub fn builtin() -> LocationTyped<ErrorType> {
         LocationTyped {
             error_type: Default::default(),
-            inner_location: None,
+            inner_location: ErrorLocation::Builtin,
         }
     }
 
-    pub fn is_builtin(&self) -> bool {
-        self.inner_location.is_none()
+    pub fn none() -> LocationTyped<ErrorType> {
+        LocationTyped {
+            error_type: Default::default(),
+            inner_location: ErrorLocation::None,
+        }
+    }
+
+    pub fn has_location(&self) -> bool {
+        !matches!(self.inner_location, ErrorLocation::None)
     }
 
     fn fmt_choice(&self, f: &mut Formatter<'_>, is_warning: bool) -> std::fmt::Result {
         // TODO: Inefficient!
         // (Maybe fine because it is a 'bad' path?)
 
-        if self.inner_location.is_none() {
-            writeln!(f, "{}", cformat!("<c,bold>Builtin Definition</>"))?;
-            return Ok(());
-        }
-        let location = self.inner_location.as_ref().unwrap();
+        let location = match &self.inner_location {
+            ErrorLocation::Builtin => {
+                writeln!(f, "{}", cformat!("<c,bold>Builtin Definition</>"))?;
+                return Ok(());
+            }
+            ErrorLocation::None => {
+                writeln!(f, "{}", cformat!("<c,bold>No Location</>"))?;
+                return Ok(());
+            }
+            ErrorLocation::Location(l) => l
+        };
 
         writeln!(f, "{}", cformat!("<c,bold>In File:</>"))?;
         writeln!(f, "    {}", location.path.as_path().to_string_lossy())?;
@@ -121,6 +146,10 @@ impl<ErrorType> LocationTyped<ErrorType> {
         let Ok(file) = fs::read_to_string(location.path.as_path()) else {
             return fail(f);
         };
+
+        if location.line == (file.lines().count() + 1) as u32 {
+            return writeln!(f, "{}", cformat!("    <c, bold>End Of File</>"));
+        }
 
         let mut offset = 0usize;
         let mut chars = file.chars();
@@ -269,15 +298,11 @@ pub fn parse(path: PathBuf) -> Result<Vec<TopLevelTokens>, WErr> {
     let path = Rc::new(path);
     let base = Span::new_extra(&text, &path);
 
-    let (remaining, output) = match parse_toplevel::parse_toplevel(base) {
-        Ok(v) => v,
-        Err(e) => {
-            // TODO:
-            println!("{:?}", e);
-            return WErr::ne(ParseError::ParserErrorsNotImplemented, Location::builtin());
-        }
-    };
+    let res = parse_toplevel::parse_toplevel(base);
+    let (remaining, output) = handle_error(res)?;
+
     debug_assert!(remaining.is_empty());
 
     Ok(output)
 }
+

@@ -1,8 +1,6 @@
 use crate::root::parser::parse::{ParseResult, Span};
 use crate::root::parser::parse_blocks::take_until_or_end_discard_smart;
-use crate::root::parser::parse_function::parse_evaluable::{
-    EvaluableToken, parse_evaluable,
-};
+use crate::root::parser::parse_function::parse_evaluable::{parse_evaluable, EvaluableToken};
 use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::parser::parse_util::discard_ignored;
 

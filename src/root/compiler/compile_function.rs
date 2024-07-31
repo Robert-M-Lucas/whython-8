@@ -1,4 +1,3 @@
-use color_print::cprintln;
 use crate::root::assembler::assembly_builder::AssemblyBuilder;
 use crate::root::builtin::types::bool::BoolType;
 use crate::root::builtin::types::int::IntType;
@@ -16,6 +15,7 @@ use crate::root::parser::parse_function::FunctionToken;
 use crate::root::shared::common::AddressedTypeRef;
 use crate::root::shared::common::{FunctionID, Indirection, LocalAddress, TypeRef};
 use crate::root::utils::warn;
+use color_print::cprintln;
 
 /// Compiles a given function into assembly
 pub fn compile_function(

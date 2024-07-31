@@ -48,12 +48,20 @@ impl WErr {
         Err(w)
     }
 
-    /// Create an error with no location information. Use only if truly applicable e.g. no main
-    pub fn locationless<T>(error: impl Display) -> Result<T, WErr> {
+    /// Create an error wrapped in `Err` with no location information. Use only if truly applicable e.g. no main
+    pub fn locationless_e<T>(error: impl Display) -> Result<T, WErr> {
         Err(WErr {
             error: format!("{error}"),
             location: None,
         })
+    }
+
+    /// Create an error with no location information. Use only if truly applicable e.g. no main
+    pub fn locationless(error: impl Display) -> WErr {
+        WErr {
+            error: format!("{error}"),
+            location: None,
+        }
     }
 }
 

@@ -8,13 +8,13 @@ use crate::root::runner::{assemble, link_gcc, run};
 use crate::time;
 use clap::Parser;
 use color_print::cprintln;
+use num_format::{Locale, ToFormattedString};
 use shared::common::ByteSize;
 use std::fs;
 use std::fs::File;
 use std::io::ErrorKind;
 use std::path::PathBuf;
 use std::time::Instant;
-use num_format::{Locale, ToFormattedString};
 
 #[cfg(debug_assertions)]
 pub const DEBUG_ON_ERROR: bool = true;
@@ -109,25 +109,37 @@ pub fn main_args(args: Args) -> Result<(), WErr> {
         link_gcc(&args.output).unwrap();
         let end = t.elapsed();
         // TODO: Don't unwrap
-        let size = format!("{}",
-            File::open(format!("{}.out", args.output)).unwrap().metadata().unwrap().len().to_formatted_string(&Locale::en)
+        let size = format!(
+            "{}",
+            File::open(format!("{}.out", args.output))
+                .unwrap()
+                .metadata()
+                .unwrap()
+                .len()
+                .to_formatted_string(&Locale::en)
         );
         cprintln!("<g,bold>Completed [{:?}] - {} bytes</>", end, size);
 
         if args.build {
             println!("Skipping execution")
         } else {
-            let termsize::Size {rows, cols} = termsize::get().unwrap();
+            let termsize::Size { rows, cols } = termsize::get().unwrap();
             const EXECUTING: &str = "Executing";
             if cols < EXECUTING.len() as u16 || cols > 300 {
                 cprintln!("<s><b>Executing...</>");
-            }
-            else {
+            } else {
                 let padl = (cols - EXECUTING.len() as u16) / 2;
                 let padr = if ((cols - EXECUTING.len() as u16) % 2) == 1 {
                     padl + 1
-                } else { padl };
-                cprintln!("<s><b>{}{}{}</>", "-".repeat(padl as usize), EXECUTING, "-".repeat(padr as usize));
+                } else {
+                    padl
+                };
+                cprintln!(
+                    "<s><b>{}{}{}</>",
+                    "-".repeat(padl as usize),
+                    EXECUTING,
+                    "-".repeat(padr as usize)
+                );
             }
             run(&args.output);
         }

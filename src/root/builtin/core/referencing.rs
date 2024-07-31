@@ -26,7 +26,6 @@ pub fn set_reference(
         );
     }
 
-
     // TODO: NOT 64 bit!
     Ok(format!(
         "    mov rax, rbp

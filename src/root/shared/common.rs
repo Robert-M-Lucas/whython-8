@@ -57,7 +57,6 @@ impl Indirection {
 #[derive(
     Debug, PartialEq, Eq, Hash, Display, Copy, Clone, Default, Add, AddAssign, Sub, SubAssign,
 )]
-#[display(fmt = "ByteSize: {}", .0)]
 /// The size of something, in bytes
 pub struct ByteSize(pub usize);
 

@@ -1,4 +1,6 @@
 use crate::root::builtin::{BuiltinInlineFunction, InlineFunctionGenerator};
+use crate::root::compiler::assembly::heap::free_function;
+use crate::root::compiler::assembly::null::{is_null_function, null_function};
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::name_resolver_errors::NRErrs;
 use crate::root::errors::WErr;
@@ -17,7 +19,6 @@ use crate::root::POINTER_SIZE;
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::rc::Rc;
-use crate::root::compiler::assembly::null::{is_null_function, null_function};
 
 #[derive(Debug)]
 enum NameTreeEntry {
@@ -112,6 +113,11 @@ impl GlobalDefinitionTable {
         self.id_counter += 1;
         let is_null_function = is_null_function(id, FunctionID(fid));
         self.register_inline_function(&is_null_function);
+
+        let fid = self.id_counter;
+        self.id_counter += 1;
+        let free_function = free_function(id, FunctionID(fid));
+        self.register_inline_function(&free_function);
     }
 
     // pub fn register_builtin_function(&mut self, name: String, t: FunctionSignature, id: FunctionID) {
@@ -221,6 +227,11 @@ impl GlobalDefinitionTable {
         self.id_counter += 1;
         let is_null_function = is_null_function(given_id, FunctionID(fid));
         self.register_inline_function(&is_null_function);
+
+        let fid = self.id_counter;
+        self.id_counter += 1;
+        let free_function = free_function(given_id, FunctionID(fid));
+        self.register_inline_function(&free_function);
     }
 
     /// Takes a name and resolves it to a type (or error)

@@ -1,14 +1,14 @@
-use unique_type_id::UniqueTypeId;
-use crate::root::builtin::{BuiltinInlineFunction, f_id, InlineFunctionGenerator};
 use crate::root::builtin::types::bool::BoolType;
+use crate::root::builtin::{f_id, BuiltinInlineFunction, InlineFunctionGenerator};
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{FunctionID, LocalAddress, TypeID};
+use unique_type_id::UniqueTypeId;
 
 pub struct NullFunction {
     id: FunctionID,
-    parent_type: TypeID
+    parent_type: TypeID,
 }
 
 impl BuiltinInlineFunction for NullFunction {
@@ -21,7 +21,11 @@ impl BuiltinInlineFunction for NullFunction {
     }
 
     fn signature(&self) -> FunctionSignature {
-        FunctionSignature::new(SelfType::None, vec![], Some(self.parent_type.with_indirection(1)))
+        FunctionSignature::new(
+            SelfType::None,
+            vec![],
+            Some(self.parent_type.with_indirection(1)),
+        )
     }
 
     fn inline(&self) -> InlineFunctionGenerator {
@@ -47,7 +51,7 @@ pub fn null_function(t: TypeID, f: FunctionID) -> NullFunction {
 #[UniqueTypeIdType = "u16"]
 pub struct IsNullFunction {
     id: FunctionID,
-    parent_type: TypeID
+    parent_type: TypeID,
 }
 
 impl IsNullFunction {
@@ -66,7 +70,14 @@ impl BuiltinInlineFunction for IsNullFunction {
     }
 
     fn signature(&self) -> FunctionSignature {
-        FunctionSignature::new(SelfType::None, vec![(SimpleNameToken::new_builtin("pointer".to_string()), self.parent_type.with_indirection(1))], Some(BoolType::id().immediate()))
+        FunctionSignature::new(
+            SelfType::None,
+            vec![(
+                SimpleNameToken::new_builtin("pointer".to_string()),
+                self.parent_type.with_indirection(1),
+            )],
+            Some(BoolType::id().immediate()),
+        )
     }
 
     fn inline(&self) -> InlineFunctionGenerator {
@@ -100,4 +111,3 @@ pub fn is_null_function(t: TypeID, f: FunctionID) -> IsNullFunction {
         parent_type: t,
     }
 }
-

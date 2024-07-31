@@ -31,7 +31,9 @@ pub fn parse_struct_init<'a, 'b>(
 ) -> ParseResult<'a, Span<'a>, StructInitToken> {
     let (s, _) = discard_ignored(s)?;
 
-    let (s, heap_alloc) = tag::<&str, Span, ErrorTree>("new")(s).map(|(ns, _)| (ns, true)).unwrap_or((s, false));
+    let (s, heap_alloc) = tag::<&str, Span, ErrorTree>("new")(s)
+        .map(|(ns, _)| (ns, true))
+        .unwrap_or((s, false));
 
     let (s, struct_name) = parse_full_name(s, containing_class.clone())?;
     debug_assert!(*struct_name.indirection() == Indirection(0)); // TODO

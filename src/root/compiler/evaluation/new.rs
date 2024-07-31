@@ -4,12 +4,10 @@ use itertools::Itertools;
 use crate::root::assembler::assembly_builder::AssemblyBuilder;
 use crate::root::builtin::core::referencing::{set_deref, set_reference};
 use crate::root::compiler::assembly::heap::heap_alloc;
-use crate::root::compiler::assembly::utils::{
-    copy, copy_to_indirect,
-};
+use crate::root::compiler::assembly::utils::{copy, copy_to_indirect};
 use crate::root::compiler::compile_function_call::call_function;
-use crate::root::compiler::evaluation::{function_only, into, reference, type_only};
 use crate::root::compiler::evaluation::reference::compile_evaluable_reference;
+use crate::root::compiler::evaluation::{function_only, into, reference, type_only};
 use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::evaluable_errors::EvalErrs;
@@ -318,7 +316,8 @@ pub fn compile_evaluable_new(
 
             // let t = t.plus_one_indirect();
 
-            let target = global_table.add_local_variable_unnamed_base(t.plus_one_indirect(), local_variables);
+            let target = global_table
+                .add_local_variable_unnamed_base(t.plus_one_indirect(), local_variables);
 
             if inner.type_ref().indirection().has_indirection() {
                 // TODO: Not 64 bit!
@@ -335,9 +334,12 @@ pub fn compile_evaluable_new(
             } else {
                 ab.other(&set_reference(
                     &Location::builtin(),
-                    AddressedTypeRef::new(LocalAddress(inner.local_address().0 + (found_offset.0 as isize)), t),
+                    AddressedTypeRef::new(
+                        LocalAddress(inner.local_address().0 + (found_offset.0 as isize)),
+                        t,
+                    ),
                     target.clone(),
-                    global_table
+                    global_table,
                 )?);
 
                 // ab.other(&copy(
@@ -452,10 +454,13 @@ pub fn compile_evaluable_new(
             if *struct_init.heap_alloc() {
                 let (c, ref_target) = heap_alloc(t, global_table, local_variables);
                 code.other(&c);
-                code.other(&copy_to_indirect(*target.local_address(), *ref_target.local_address(), size));
+                code.other(&copy_to_indirect(
+                    *target.local_address(),
+                    *ref_target.local_address(),
+                    size,
+                ));
                 (code.finish(), Some(ref_target))
-            }
-            else {
+            } else {
                 (code.finish(), Some(target))
             }
         }

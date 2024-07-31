@@ -66,14 +66,21 @@ pub fn run(output: &str) {
         };
     );
 
-    let termsize::Size {rows, cols} = termsize::get().unwrap();
+    let termsize::Size { rows, cols } = termsize::get().unwrap();
     const EXITED: &str = "Exited";
     if cols > EXITED.len() as u16 && cols < 300 {
         let padl = (cols - EXITED.len() as u16) / 2;
         let padr = if ((cols - EXITED.len() as u16) % 2) == 1 {
             padl + 1
-        } else { padl };
-        cprintln!("\n<s><r>{}{}{}</>", "-".repeat(padl as usize), EXITED, "-".repeat(padr as usize));
+        } else {
+            padl
+        };
+        cprintln!(
+            "\n<s><r>{}{}{}</>",
+            "-".repeat(padl as usize),
+            EXITED,
+            "-".repeat(padr as usize)
+        );
     }
 
     println!("\nExited with return code {}", code);

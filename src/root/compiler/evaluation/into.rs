@@ -3,6 +3,7 @@ use crate::root::builtin::core::referencing::{set_deref, set_reference};
 use crate::root::compiler::assembly::utils::{copy, copy_from_indirect_fixed_offset};
 use crate::root::compiler::compile_function_call::call_function;
 use crate::root::compiler::evaluation::coerce_self::coerce_self;
+use crate::root::compiler::evaluation::new::compile_evaluable_new;
 use crate::root::compiler::evaluation::reference::compile_evaluable_reference;
 use crate::root::compiler::evaluation::{function_only, reference, type_only};
 use crate::root::compiler::global_tracker::GlobalTracker;
@@ -14,6 +15,7 @@ use crate::root::errors::evaluable_errors::EvalErrs::{
 use crate::root::errors::name_resolver_errors::NRErrs;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable, NameResult};
+use crate::root::parser::parse::Location;
 use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, EvaluableTokens};
 use crate::root::parser::parse_function::parse_operator::{OperatorTokens, PrefixOrInfixEx};
 use crate::root::parser::parse_parameters::SelfType;
@@ -22,8 +24,6 @@ use crate::root::shared::types::Type;
 use either::{Left, Right};
 use itertools::Itertools;
 use std::any::Any;
-use crate::root::compiler::evaluation::new::compile_evaluable_new;
-use crate::root::parser::parse::Location;
 
 /// Evaluates `et` putting the result into `target`
 pub fn compile_evaluable_into(
@@ -301,7 +301,6 @@ pub fn compile_evaluable_into(
                 todo!()
             };
 
-
             if inner.type_ref().indirection().has_indirection() {
                 // TODO: Not 64 bit!
                 ab.line(&format!("mov rax, {}", inner.local_address()));
@@ -317,9 +316,12 @@ pub fn compile_evaluable_into(
             } else {
                 ab.other(&set_reference(
                     &Location::builtin(),
-                    AddressedTypeRef::new(LocalAddress(inner.local_address().0 + (found_offset.0 as isize)), target.type_ref().minus_one_indirect()),
+                    AddressedTypeRef::new(
+                        LocalAddress(inner.local_address().0 + (found_offset.0 as isize)),
+                        target.type_ref().minus_one_indirect(),
+                    ),
                     target.clone(),
-                    global_table
+                    global_table,
                 )?);
 
                 // ab.other(&copy(
@@ -390,15 +392,20 @@ pub fn compile_evaluable_into(
                     todo!()
                 }
                 let mut ab = AssemblyBuilder::new();
-                let (c, sr) = compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?;
+                let (c, sr) =
+                    compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?;
                 ab.other(&c);
                 let sr = sr.unwrap();
-                ab.other(&copy(*sr.local_address(), *target.local_address(), global_table.get_size(target.type_ref())));
+                ab.other(&copy(
+                    *sr.local_address(),
+                    *target.local_address(),
+                    global_table.get_size(target.type_ref()),
+                ));
                 return Ok(ab.finish());
             }
             debug_assert!(!t.indirection().has_indirection());
 
-            if *struct_init.heap_alloc() && &t.plus_one_indirect() != target.type_ref()  {
+            if *struct_init.heap_alloc() && &t.plus_one_indirect() != target.type_ref() {
                 todo!()
             }
             if !struct_init.heap_alloc() && &t != target.type_ref() {

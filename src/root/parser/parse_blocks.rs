@@ -8,7 +8,7 @@ use nom::{InputTake, Offset};
 use nom_locate::LocatedSpan;
 use std::path::PathBuf;
 use std::rc::Rc;
-
+use crate::root::errors::parser_errors::create_custom_error;
 // ! BROKEN
 
 pub struct Terminator {
@@ -103,7 +103,12 @@ pub fn parse_terminator<'a, 'b, 'c>(
 
                 if let Ok(_) = nchar::<_, ErrorTree>(t.closing)(s) {
                     // Unopened section closed
-                    todo!()
+                    return Err(
+                        create_custom_error(
+                            format!("Found closing tag '{}' before '{}' for opening tag '{}'", t.closing, terminator.closing, terminator.opening),
+                            initial_span
+                        )
+                    );
                 }
             }
 
