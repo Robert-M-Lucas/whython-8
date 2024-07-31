@@ -1,10 +1,12 @@
 use crate::root::assembler::assembly_builder::AssemblyBuilder;
 use crate::root::compiler::assembly::utils::{align_16_bytes, align_16_bytes_plus_8, copy};
+use crate::root::compiler::compiler_errors::CompErrs;
 use crate::root::compiler::evaluation::coerce_self::coerce_self;
 use crate::root::compiler::evaluation::into::compile_evaluable_into;
 use crate::root::compiler::evaluation::reference::compile_evaluable_reference;
 use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
+use crate::root::errors::evaluable_errors::EvalErrs;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
 use crate::root::parser::parse::Location;
@@ -13,8 +15,6 @@ use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{AddressedTypeRef, ByteSize, FunctionID};
 use either::Either;
 use itertools::Itertools;
-use crate::root::compiler::compiler_errors::CompErrs;
-use crate::root::errors::evaluable_errors::EvalErrs;
 
 // TODO: Cleanup code
 /// Calls a given function with arguments
@@ -66,7 +66,9 @@ pub fn call_function(
         } else {
             if let Some(return_address) = return_address {
                 return WErr::ne(
-                    CompErrs::ExpectedSomeReturn(global_table.get_type_name(return_address.type_ref())),
+                    CompErrs::ExpectedSomeReturn(
+                        global_table.get_type_name(return_address.type_ref()),
+                    ),
                     location.clone(),
                 );
             }
@@ -83,7 +85,11 @@ pub fn call_function(
 
         if signature_args.len() != arguments.len() {
             return WErr::ne(
-                EvalErrs::BadFunctionArgCount(name.to_string(), signature_args.len(), arguments.len()),
+                EvalErrs::BadFunctionArgCount(
+                    name.to_string(),
+                    signature_args.len(),
+                    arguments.len(),
+                ),
                 location.clone(),
             );
         }
@@ -177,7 +183,11 @@ pub fn call_function(
 
         if signature_args.len() != arguments.len() {
             return WErr::ne(
-                EvalErrs::BadFunctionArgCount(name.to_string(), signature_args.len(), arguments.len()),
+                EvalErrs::BadFunctionArgCount(
+                    name.to_string(),
+                    signature_args.len(),
+                    arguments.len(),
+                ),
                 location.clone(),
             );
         }
@@ -301,7 +311,9 @@ pub fn call_function(
         let return_addr = if let Some(return_address) = return_address {
             if return_addr.is_none() {
                 return WErr::ne(
-                    EvalErrs::ExpectedFunctionReturn(global_table.get_type_name(return_address.type_ref())),
+                    EvalErrs::ExpectedFunctionReturn(
+                        global_table.get_type_name(return_address.type_ref()),
+                    ),
                     location.clone(),
                 );
             }

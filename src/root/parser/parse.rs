@@ -1,5 +1,6 @@
 use crate::root::errors::parser_errors::ParseError;
 use crate::root::errors::WErr;
+use crate::root::parser::handle_errors::handle_error;
 use crate::root::parser::parse_toplevel;
 use crate::root::parser::parse_toplevel::TopLevelTokens;
 use color_print::cformat;
@@ -14,17 +15,11 @@ use std::fs;
 use std::marker::PhantomData;
 use std::path::PathBuf;
 use std::rc::Rc;
-use crate::root::parser::handle_errors::handle_error;
 
 pub type Span<'a> = LocatedSpan<&'a str, &'a Rc<PathBuf>>;
 
 pub type ParseResult<'a, I = Span<'a>, O = Span<'a>, E = ErrorTree<'a>> = IResult<I, O, E>;
-pub type ErrorTree<'a> = GenericErrorTree<
-    Span<'a>,
-    &'static str,
-    &'static str,
-    String,
->;
+pub type ErrorTree<'a> = GenericErrorTree<Span<'a>, &'static str, &'static str, String>;
 
 lazy_static! {
     static ref BUILTIN_PATH: &'static OsStr = OsStr::new("builtin");
@@ -50,7 +45,7 @@ pub type Location = LocationTyped<ErrorL>;
 pub enum ErrorLocation {
     Location(InnerLocation),
     Builtin,
-    None
+    None,
 }
 
 #[derive(Debug, Clone, Hash)]
@@ -97,7 +92,7 @@ impl<ErrorType> LocationTyped<ErrorType> {
         match &self.inner_location {
             ErrorLocation::Location(l) => Some(&l.path),
             ErrorLocation::Builtin => None,
-            ErrorLocation::None => None
+            ErrorLocation::None => None,
         }
     }
 
@@ -132,7 +127,7 @@ impl<ErrorType> LocationTyped<ErrorType> {
                 writeln!(f, "{}", cformat!("<c,bold>No Location</>"))?;
                 return Ok(());
             }
-            ErrorLocation::Location(l) => l
+            ErrorLocation::Location(l) => l,
         };
 
         writeln!(f, "{}", cformat!("<c,bold>In File:</>"))?;
@@ -305,4 +300,3 @@ pub fn parse(path: PathBuf) -> Result<Vec<TopLevelTokens>, WErr> {
 
     Ok(output)
 }
-

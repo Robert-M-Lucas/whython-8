@@ -93,7 +93,9 @@ pub fn compile_evaluable_new(
                     };
                     if !into.type_ref().indirection().has_indirection() {
                         return WErr::ne(
-                            EvalErrs::ExpectedReference(global_table.get_type_name(into.type_ref())),
+                            EvalErrs::ExpectedReference(
+                                global_table.get_type_name(into.type_ref()),
+                            ),
                             lhs.location().clone(),
                         );
                     }
@@ -424,9 +426,17 @@ pub fn compile_evaluable_new(
             /* } */;
 
             let tt = global_table.get_type(t.type_id().clone());
-            let attributes = tt.get_attributes(struct_init.location())
-                .map_err(|_| WErr::n(EvalErrs::TypeCannotBeInitialised(tt.name().to_string()), struct_init.location().clone()))?
-                .iter().map(|x| x.clone()).collect_vec();
+            let attributes = tt
+                .get_attributes(struct_init.location())
+                .map_err(|_| {
+                    WErr::n(
+                        EvalErrs::TypeCannotBeInitialised(tt.name().to_string()),
+                        struct_init.location().clone(),
+                    )
+                })?
+                .iter()
+                .map(|x| x.clone())
+                .collect_vec();
             let give_attrs = struct_init.contents();
 
             if attributes.len() != give_attrs.len() {

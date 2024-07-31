@@ -1,3 +1,4 @@
+use crate::root::errors::parser_errors::create_custom_error;
 use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
 use crate::root::parser::parse_util::discard_ignored;
 use itertools::Itertools;
@@ -8,7 +9,6 @@ use nom::{InputTake, Offset};
 use nom_locate::LocatedSpan;
 use std::path::PathBuf;
 use std::rc::Rc;
-use crate::root::errors::parser_errors::create_custom_error;
 // ! BROKEN
 
 pub struct Terminator {
@@ -103,12 +103,13 @@ pub fn parse_terminator<'a, 'b, 'c>(
 
                 if let Ok(_) = nchar::<_, ErrorTree>(t.closing)(s) {
                     // Unopened section closed
-                    return Err(
-                        create_custom_error(
-                            format!("Found closing tag '{}' before '{}' for opening tag '{}'", t.closing, terminator.closing, terminator.opening),
-                            initial_span
-                        )
-                    );
+                    return Err(create_custom_error(
+                        format!(
+                            "Found closing tag '{}' before '{}' for opening tag '{}'",
+                            t.closing, terminator.closing, terminator.opening
+                        ),
+                        initial_span,
+                    ));
                 }
             }
 

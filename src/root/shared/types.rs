@@ -14,8 +14,14 @@ pub trait Type {
 
     fn name(&self) -> &str;
 
-    fn get_attributes(&self, location: &Location) -> Result<&[(ByteSize, SimpleNameToken, TypeRef)], WErr> {
-        WErr::ne(EvalErrs::TypeDoesntHaveAttributes(self.name().to_string()), location.clone())
+    fn get_attributes(
+        &self,
+        location: &Location,
+    ) -> Result<&[(ByteSize, SimpleNameToken, TypeRef)], WErr> {
+        WErr::ne(
+            EvalErrs::TypeDoesntHaveAttributes(self.name().to_string()),
+            location.clone(),
+        )
     }
 
     fn instantiate_from_literal(

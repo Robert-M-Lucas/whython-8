@@ -2,6 +2,7 @@ use crate::root::assembler::assembly_builder::AssemblyBuilder;
 use crate::root::builtin::core::referencing::{set_deref, set_reference};
 use crate::root::compiler::assembly::utils::{copy, copy_from_indirect_fixed_offset};
 use crate::root::compiler::compile_function_call::call_function;
+use crate::root::compiler::compiler_errors::CompErrs;
 use crate::root::compiler::evaluation::coerce_self::coerce_self;
 use crate::root::compiler::evaluation::new::compile_evaluable_new;
 use crate::root::compiler::evaluation::reference::compile_evaluable_reference;
@@ -21,7 +22,6 @@ use crate::root::shared::types::Type;
 use either::{Left, Right};
 use itertools::Itertools;
 use std::any::Any;
-use crate::root::compiler::compiler_errors::CompErrs;
 
 /// Evaluates `et` putting the result into `target`
 pub fn compile_evaluable_into(
@@ -410,9 +410,17 @@ pub fn compile_evaluable_into(
             }
 
             let tt = global_table.get_type(t.type_id().clone());
-            let attributes = tt.get_attributes(struct_init.location())
-                .map_err(|_| WErr::n(EvalErrs::TypeCannotBeInitialised(tt.name().to_string()), struct_init.location().clone()))?
-                .iter().map(|x| x.clone()).collect_vec();
+            let attributes = tt
+                .get_attributes(struct_init.location())
+                .map_err(|_| {
+                    WErr::n(
+                        EvalErrs::TypeCannotBeInitialised(tt.name().to_string()),
+                        struct_init.location().clone(),
+                    )
+                })?
+                .iter()
+                .map(|x| x.clone())
+                .collect_vec();
             let give_attrs = struct_init.contents();
 
             if attributes.len() != give_attrs.len() {

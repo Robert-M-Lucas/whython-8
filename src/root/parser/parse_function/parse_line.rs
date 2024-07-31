@@ -1,3 +1,4 @@
+use crate::root::errors::parser_errors::create_custom_error;
 use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
 use crate::root::parser::parse_function::parse_break::{test_parse_break, BreakToken};
 use crate::root::parser::parse_function::parse_evaluable::{parse_evaluable, EvaluableToken};
@@ -14,7 +15,6 @@ use crate::root::parser::parse_util::discard_ignored;
 use nom::branch::alt;
 use nom::{IResult, Parser};
 use nom_supreme::error::BaseErrorKind;
-use crate::root::errors::parser_errors::create_custom_error;
 
 #[derive(Debug)]
 pub enum LineTokens {
@@ -66,19 +66,19 @@ pub fn parse_line<'a, 'b>(
         test_parse_if,
         #[cfg(debug_assertions)]
         test_parse_marker, // test_parse_assignment,
-    )).parse(s) {
-        Ok((_, parser)) => {
-            parser(s, containing_class)
-        }
+    ))
+    .parse(s)
+    {
+        Ok((_, parser)) => parser(s, containing_class),
         Err(e) => {
-            match parse_evaluable(s, containing_class, true).map(|(s, e)| (s, LineTokens::NoOp(e))) {
-                Ok(x) => {Ok(x)}
-                Err(_) => {
-                    Err(create_custom_error("Expected 'break', 'return', 'let', 'while', 'if', or an evaluable".to_string(), s))
-                }
+            match parse_evaluable(s, containing_class, true).map(|(s, e)| (s, LineTokens::NoOp(e)))
+            {
+                Ok(x) => Ok(x),
+                Err(_) => Err(create_custom_error(
+                    "Expected 'break', 'return', 'let', 'while', 'if', or an evaluable".to_string(),
+                    s,
+                )),
             }
         }
     }
-
-
 }

@@ -1,10 +1,12 @@
 use crate::root::assembler::assembly_builder::AssemblyBuilder;
 use crate::root::builtin::types::bool::BoolType;
 use crate::root::builtin::types::int::IntType;
+use crate::root::compiler::compiler_errors::CompErrs;
 use crate::root::compiler::evaluation::into::compile_evaluable_into;
 use crate::root::compiler::evaluation::reference::compile_evaluable_reference;
 use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
+use crate::root::errors::evaluable_errors::EvalErrs;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
 use crate::root::parser::parse_function::parse_line::LineTokens;
@@ -13,8 +15,6 @@ use crate::root::shared::common::AddressedTypeRef;
 use crate::root::shared::common::{FunctionID, Indirection, LocalAddress, TypeRef};
 use crate::root::utils::warn;
 use color_print::cprintln;
-use crate::root::compiler::compiler_errors::CompErrs;
-use crate::root::errors::evaluable_errors::EvalErrs;
 
 /// Compiles a given function into assembly
 pub fn compile_function(
@@ -279,7 +279,10 @@ fn recursively_compile_lines(
                     contents.line(&format!("mov rax, qword {}", address.local_address()));
                 } else if let Some(return_value) = rt.return_value() {
                     if return_variable.is_none() {
-                        return WErr::ne(CompErrs::ExpectedNoReturn, return_value.location().clone());
+                        return WErr::ne(
+                            CompErrs::ExpectedNoReturn,
+                            return_value.location().clone(),
+                        );
                     }
 
                     contents.other(&compile_evaluable_into(
