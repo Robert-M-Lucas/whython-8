@@ -114,7 +114,7 @@ pub fn compile_evaluable_type_only(
             )?;
 
             let t = global_table.get_type(*t.type_id());
-            let attribs = t.get_attributes()?;
+            let attribs = t.get_attributes(access.location())?;
 
             let mut out = None;
 

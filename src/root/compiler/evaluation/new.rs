@@ -6,6 +6,7 @@ use crate::root::builtin::core::referencing::{set_deref, set_reference};
 use crate::root::compiler::assembly::heap::heap_alloc;
 use crate::root::compiler::assembly::utils::{copy, copy_to_indirect};
 use crate::root::compiler::compile_function_call::call_function;
+use crate::root::compiler::compiler_errors::CErrs;
 use crate::root::compiler::evaluation::reference::compile_evaluable_reference;
 use crate::root::compiler::evaluation::{function_only, into, reference, type_only};
 use crate::root::compiler::global_tracker::GlobalTracker;
@@ -300,7 +301,7 @@ pub fn compile_evaluable_new(
             }
 
             let t = global_table.get_type(*inner.type_ref().type_id());
-            let attribs = t.get_attributes()?;
+            let attribs = t.get_attributes(access.location())?;
 
             let mut found = None;
 
@@ -424,7 +425,9 @@ pub fn compile_evaluable_new(
             /* } */;
 
             let tt = global_table.get_type(t.type_id().clone());
-            let attributes = tt.get_attributes()?.iter().map(|x| x.clone()).collect_vec();
+            let attributes = tt.get_attributes(struct_init.location())
+                .map_err(|_| WErr::n(CErrs::TypeCannotBeInitialised(tt.name().to_string()), struct_init.location().clone()))?
+                .iter().map(|x| x.clone()).collect_vec();
             let give_attrs = struct_init.contents();
 
             if attributes.len() != give_attrs.len() {

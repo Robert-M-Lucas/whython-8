@@ -23,4 +23,8 @@ pub enum CErrs {
     ExpectedFunctionReturn(String),
     #[error("Function ({0}) expects ({1}) arguments but found ({2})")]
     BadFunctionArgCount(String, usize, usize),
+    #[error("Type ({0}) does not have attributes")]
+    TypeDoesntHaveAttributes(String),
+    #[error("Type ({0}) cannot be initialised")]
+    TypeCannotBeInitialised(String)
 }

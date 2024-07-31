@@ -1,4 +1,6 @@
+use crate::root::compiler::compiler_errors::CErrs;
 use crate::root::errors::WErr;
+use crate::root::parser::parse::Location;
 use crate::root::parser::parse_function::parse_literal::LiteralToken;
 use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::shared::common::{ByteSize, LocalAddress, TypeID, TypeRef};
@@ -11,8 +13,8 @@ pub trait Type {
 
     fn name(&self) -> &str;
 
-    fn get_attributes(&self) -> Result<&[(ByteSize, SimpleNameToken, TypeRef)], WErr> {
-        Err(todo!())
+    fn get_attributes(&self, location: &Location) -> Result<&[(ByteSize, SimpleNameToken, TypeRef)], WErr> {
+        WErr::ne(CErrs::TypeDoesntHaveAttributes(self.name().to_string()), location.clone())
     }
 
     fn instantiate_from_literal(

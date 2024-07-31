@@ -61,7 +61,7 @@ impl Type for UserType {
         &self.name
     }
 
-    fn get_attributes(&self) -> Result<&[(ByteSize, SimpleNameToken, TypeRef)], WErr> {
+    fn get_attributes(&self, _: &Location) -> Result<&[(ByteSize, SimpleNameToken, TypeRef)], WErr> {
         Ok(&self.attributes)
     }
 
