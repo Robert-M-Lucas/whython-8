@@ -1,5 +1,5 @@
 use crate::root::compiler::assembly::utils::{copy_from_indirect, copy_from_indirect_fixed_offset};
-use crate::root::errors::evaluable_errors::EvalErrs::{ExpectedDifferentType, OpWrongReturnType};
+use crate::root::errors::evaluable_errors::EvalErrs;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
 use crate::root::parser::parse::Location;
@@ -18,7 +18,7 @@ pub fn set_reference(
         .with_indirection(to_ref.type_ref().indirection().0 + 1);
     if new_type != *into.type_ref() {
         return WErr::ne(
-            OpWrongReturnType(
+            EvalErrs::OpWrongReturnType(
                 global_table.get_type_name(into.type_ref()),
                 global_table.get_type_name(&new_type),
             ),
@@ -46,7 +46,7 @@ pub fn set_deref(
     let expected = into.type_ref().plus_one_indirect();
     if to_deref.type_ref() != &expected {
         return WErr::ne(
-            ExpectedDifferentType(
+            EvalErrs::ExpectedDifferentType(
                 global_table.get_type_name(&expected),
                 global_table.get_type_name(to_deref.type_ref()),
             ),

@@ -30,6 +30,16 @@ pub enum EvalErrs {
     ExpectedFunctionName,
     #[error("Expected a reference type but found ({0})")]
     ExpectedReference(String),
+    #[error("Expected type ({0}) but function returns ({1})")]
+    BadFunctionReturn(String, String),
+    #[error("Expected type ({0}) but function doesn't return a value")]
+    ExpectedFunctionReturn(String),
+    #[error("Function ({0}) expects ({1}) arguments but found ({2})")]
+    BadFunctionArgCount(String, usize, usize),
+    #[error("Type ({0}) does not have attributes")]
+    TypeDoesntHaveAttributes(String),
+    #[error("Type ({0}) cannot be initialised")]
+    TypeCannotBeInitialised(String)
 }
 
 // return Err(WErr::n(OpWrongReturnType(global_table.get_type_name(into.type_ref()), global_table.get_type_name(&new_type)), location.clone()));

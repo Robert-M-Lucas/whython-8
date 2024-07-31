@@ -13,7 +13,7 @@ use crate::root::builtin::types::int::printi::PrintI;
 use crate::root::builtin::types::int::sub::IntSub;
 use crate::root::builtin::{f_id, t_id, BuiltinInlineFunction, InlineFunctionGenerator};
 use crate::root::compiler::assembly::utils::write_64bit_int;
-use crate::root::compiler::compiler_errors::CErrs;
+use crate::root::compiler::compiler_errors::CompErrs;
 use crate::root::errors::evaluable_errors::EvalErrs;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
@@ -102,13 +102,13 @@ impl Type for IntType {
             LiteralTokens::Int(value) => {
                 if *value > i64::MAX as i128 {
                     return WErr::ne(
-                        CErrs::IntLiteralExceedsMax(*value, i64::MAX as i128),
+                        CompErrs::IntLiteralExceedsMax(*value, i64::MAX as i128),
                         literal.location().clone(),
                     );
                 }
                 if *value < i64::MIN as i128 {
                     return WErr::ne(
-                        CErrs::IntLiteralBelowMin(*value, i64::MAX as i128),
+                        CompErrs::IntLiteralBelowMin(*value, i64::MAX as i128),
                         literal.location().clone(),
                     );
                 }

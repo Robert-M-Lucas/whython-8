@@ -9,9 +9,6 @@ use crate::root::compiler::evaluation::{function_only, reference, type_only};
 use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::evaluable_errors::EvalErrs;
-use crate::root::errors::evaluable_errors::EvalErrs::{
-    ExpectedDifferentType, ExpectedNotNone, ExpectedType, OpNoReturn, OpWrongReturnType,
-};
 use crate::root::errors::name_resolver_errors::NRErrs;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable, NameResult};
@@ -24,7 +21,7 @@ use crate::root::shared::types::Type;
 use either::{Left, Right};
 use itertools::Itertools;
 use std::any::Any;
-use crate::root::compiler::compiler_errors::CErrs;
+use crate::root::compiler::compiler_errors::CompErrs;
 
 /// Evaluates `et` putting the result into `target`
 pub fn compile_evaluable_into(
@@ -55,7 +52,7 @@ pub fn compile_evaluable_into(
                 NameResult::Variable(address) => {
                     if address.type_ref() != target.type_ref() {
                         return WErr::ne(
-                            ExpectedDifferentType(
+                            EvalErrs::ExpectedDifferentType(
                                 global_table.get_type_name(target.type_ref()),
                                 global_table.get_type_name(address.type_ref()),
                             ),
@@ -85,7 +82,7 @@ pub fn compile_evaluable_into(
             match op.operator() {
                 OperatorTokens::Assign => {
                     return WErr::ne(
-                        ExpectedType(global_table.get_type_name(target.type_ref())),
+                        EvalErrs::ExpectedType(global_table.get_type_name(target.type_ref())),
                         et.location().clone(),
                     );
                 }
@@ -127,14 +124,14 @@ pub fn compile_evaluable_into(
             match signature.return_type() {
                 None => {
                     return WErr::ne(
-                        OpNoReturn(global_table.get_type_name(target.type_ref())),
+                        EvalErrs::OpNoReturn(global_table.get_type_name(target.type_ref())),
                         op.location().clone(),
                     )
                 }
                 Some(rt) => {
                     if rt != target.type_ref() {
                         return WErr::ne(
-                            OpWrongReturnType(
+                            EvalErrs::OpWrongReturnType(
                                 global_table.get_type_name(target.type_ref()),
                                 global_table.get_type_name(rt),
                             ),
@@ -180,7 +177,7 @@ pub fn compile_evaluable_into(
                         global_tracker,
                     )?;
                     let Some(val) = val else {
-                        return WErr::ne(ExpectedNotNone, lhs.location().clone());
+                        return WErr::ne(EvalErrs::ExpectedNotNone, lhs.location().clone());
                     };
 
                     if *val.type_ref() != lhs_type {
@@ -198,7 +195,7 @@ pub fn compile_evaluable_into(
                         global_tracker,
                     )?;
                     let Some(val) = val else {
-                        return WErr::ne(ExpectedNotNone, lhs.location().clone());
+                        return WErr::ne(EvalErrs::ExpectedNotNone, lhs.location().clone());
                     };
 
                     c += &set_deref(lhs.location(), val, target, global_table)?;
@@ -234,14 +231,14 @@ pub fn compile_evaluable_into(
             match signature.return_type() {
                 None => {
                     return WErr::ne(
-                        OpNoReturn(global_table.get_type_name(target.type_ref())),
+                        EvalErrs::OpNoReturn(global_table.get_type_name(target.type_ref())),
                         op.location().clone(),
                     )
                 }
                 Some(rt) => {
                     if rt != target.type_ref() {
                         return WErr::ne(
-                            OpWrongReturnType(
+                            EvalErrs::OpWrongReturnType(
                                 global_table.get_type_name(target.type_ref()),
                                 global_table.get_type_name(rt),
                             ),
@@ -414,7 +411,7 @@ pub fn compile_evaluable_into(
 
             let tt = global_table.get_type(t.type_id().clone());
             let attributes = tt.get_attributes(struct_init.location())
-                .map_err(|_| WErr::n(CErrs::TypeCannotBeInitialised(tt.name().to_string()), struct_init.location().clone()))?
+                .map_err(|_| WErr::n(EvalErrs::TypeCannotBeInitialised(tt.name().to_string()), struct_init.location().clone()))?
                 .iter().map(|x| x.clone()).collect_vec();
             let give_attrs = struct_init.contents();
 

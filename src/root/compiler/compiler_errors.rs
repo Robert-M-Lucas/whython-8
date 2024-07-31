@@ -2,7 +2,7 @@ use thiserror::Error;
 
 /// An error in the compiler step, excluding errors covered in `EvalErrs`
 #[derive(Error, Debug)]
-pub enum CErrs {
+pub enum CompErrs {
     #[error("Int literal ({0}) exceeds maximum value ({1}) for type")]
     IntLiteralExceedsMax(i128, i128),
     #[error("Int literal ({0}) below minimum value ({1}) for type")]
@@ -17,14 +17,4 @@ pub enum CErrs {
     ExpectedNoReturn,
     #[error("Cannot break - not in a loop")]
     CannotBreak,
-    #[error("Expected type ({0}) but function returns ({1})")]
-    BadFunctionReturn(String, String),
-    #[error("Expected type ({0}) but function doesn't return a value")]
-    ExpectedFunctionReturn(String),
-    #[error("Function ({0}) expects ({1}) arguments but found ({2})")]
-    BadFunctionArgCount(String, usize, usize),
-    #[error("Type ({0}) does not have attributes")]
-    TypeDoesntHaveAttributes(String),
-    #[error("Type ({0}) cannot be initialised")]
-    TypeCannotBeInitialised(String)
 }

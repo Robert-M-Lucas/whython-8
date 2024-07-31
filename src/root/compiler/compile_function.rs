@@ -1,9 +1,6 @@
 use crate::root::assembler::assembly_builder::AssemblyBuilder;
 use crate::root::builtin::types::bool::BoolType;
 use crate::root::builtin::types::int::IntType;
-use crate::root::compiler::compiler_errors::CErrs::{
-    CannotBreak, ExpectedNoReturn, ExpectedReturn, ExpectedSomeReturn,
-};
 use crate::root::compiler::evaluation::into::compile_evaluable_into;
 use crate::root::compiler::evaluation::reference::compile_evaluable_reference;
 use crate::root::compiler::global_tracker::GlobalTracker;
@@ -16,6 +13,8 @@ use crate::root::shared::common::AddressedTypeRef;
 use crate::root::shared::common::{FunctionID, Indirection, LocalAddress, TypeRef};
 use crate::root::utils::warn;
 use color_print::cprintln;
+use crate::root::compiler::compiler_errors::CompErrs;
+use crate::root::errors::evaluable_errors::EvalErrs;
 
 /// Compiles a given function into assembly
 pub fn compile_function(
@@ -73,7 +72,7 @@ pub fn compile_function(
             .map(|x| x.type_ref().clone())
             .unwrap_or_else(|| IntType::id().immediate());
         return WErr::ne(
-            ExpectedReturn(global_table.get_type_name(&type_ref)),
+            CompErrs::ExpectedReturn(global_table.get_type_name(&type_ref)),
             end_location,
         );
     }
@@ -258,7 +257,7 @@ fn recursively_compile_lines(
                 if fid.is_main() {
                     if rt.return_value().is_none() {
                         return WErr::ne(
-                            ExpectedSomeReturn(
+                            CompErrs::ExpectedSomeReturn(
                                 global_table.get_type_name(&IntType::id().immediate()),
                             ),
                             rt.location().clone(),
@@ -280,7 +279,7 @@ fn recursively_compile_lines(
                     contents.line(&format!("mov rax, qword {}", address.local_address()));
                 } else if let Some(return_value) = rt.return_value() {
                     if return_variable.is_none() {
-                        return WErr::ne(ExpectedNoReturn, return_value.location().clone());
+                        return WErr::ne(CompErrs::ExpectedNoReturn, return_value.location().clone());
                     }
 
                     contents.other(&compile_evaluable_into(
@@ -293,7 +292,7 @@ fn recursively_compile_lines(
                     )?);
                 } else if return_variable.is_some() {
                     return WErr::ne(
-                        ExpectedSomeReturn(
+                        CompErrs::ExpectedSomeReturn(
                             global_table
                                 .get_type_name(return_variable.as_ref().unwrap().type_ref()),
                         ),
@@ -313,7 +312,7 @@ fn recursively_compile_lines(
                 if let Some(break_tag) = break_tag {
                     contents.line(&format!("jmp {break_tag}"));
                 } else {
-                    return WErr::ne(CannotBreak, bt.location().clone());
+                    return WErr::ne(CompErrs::CannotBreak, bt.location().clone());
                 }
             }
             LineTokens::NoOp(et) => {
