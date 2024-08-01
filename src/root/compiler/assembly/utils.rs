@@ -1,5 +1,5 @@
 use crate::root::assembler::assembly_builder::AssemblyBuilder;
-use crate::root::shared::common::{ByteSize, LocalAddress};
+use crate::root::shared::common::{ByteSize, Indirection, LocalAddress};
 
 // pub fn get_jump_tag(id: FunctionID, jump_id: usize) -> String {
 //     if id.is_main() {
@@ -77,7 +77,7 @@ pub fn align_16_bytes_plus_8(bytes: ByteSize) -> ByteSize {
 
 /// Copies data. Expects `from` to be the address of a pointer pointing to the data to move
 /// and `to` to be the target
-pub fn copy_from_indirect(from: LocalAddress, to: LocalAddress, amount: ByteSize) -> String {
+pub fn copy_from_indirect(from: LocalAddress, to: LocalAddress, amount: ByteSize, indirectness: Indirection) -> String {
     if amount == ByteSize(0) {
         return String::new();
     }
@@ -86,7 +86,12 @@ pub fn copy_from_indirect(from: LocalAddress, to: LocalAddress, amount: ByteSize
     let mut written = 0;
     let mut output = AssemblyBuilder::new();
 
+    debug_assert!(indirectness.0 >= 1);
+
     output.line(&format!("mov rdx, qword {from}"));
+    for _ in 0..(indirectness.0 - 1) {
+        output.line("mov rdx, qword [rdx]");
+    }
 
     loop {
         let to_write = amount.0 - written;

@@ -5,7 +5,7 @@ use crate::root::errors::name_resolver_errors::NRErrs;
 use crate::root::errors::WErr;
 use derive_getters::Getters;
 use itertools::Itertools;
-
+use crate::root::errors::evaluable_errors::EvalErrs;
 use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
 use crate::root::name_resolver::resolve_function_signatures::resolve_function_signature;
 use crate::root::name_resolver::resolve_type_sizes::{resolve_type_sizes, UnsizedUserType};
@@ -73,7 +73,7 @@ impl Type for UserType {
         location: &LocalAddress,
         literal: &LiteralToken,
     ) -> Result<String, WErr> {
-        todo!()
+        WErr::ne(EvalErrs::TypeCannotBeInitialisedByLiteral(self.name().clone()), literal.location().clone())
     }
 }
 

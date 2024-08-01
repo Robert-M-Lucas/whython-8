@@ -40,6 +40,6 @@ pub enum EvalErrs {
     TypeDoesntHaveAttributes(String),
     #[error("Type ({0}) cannot be initialised")]
     TypeCannotBeInitialised(String),
+    #[error("Type ({0}) cannot be initialised from a literal")]
+    TypeCannotBeInitialisedByLiteral(String)
 }
-
-// return Err(WErr::n(OpWrongReturnType(global_table.get_type_name(into.type_ref()), global_table.get_type_name(&new_type)), location.clone()));

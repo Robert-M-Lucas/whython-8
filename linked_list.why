@@ -13,13 +13,13 @@ impl LL {
         if (Node::is_null(*self.first)) {
             self.first = Node::new(val);
         } else {
-            (*self.first).add(val);
+            self.first.add(val);
         };
     }
 
     fn print(&self) {
         if (!Node::is_null(*self.first)) {
-            (*self.first).print();
+            self.first.print();
         };
     }
 }
@@ -41,14 +41,14 @@ impl Node {
         if (Node::is_null(*self.next)) {
             self.next = Node::new(val);
         } else {
-            (*self.next).add(val);
+            self.next.add(val);
         };
     }
 
     fn print(&self) {
         printi(*self.val);
         if (!Node::is_null(*self.next)) {
-            (*self.next).print();
+            self.next.print();
         };
     }
 }

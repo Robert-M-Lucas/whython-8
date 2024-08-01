@@ -7,14 +7,8 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Added free and good parser errors">
+    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Cargo fmt">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/compiler_errors.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compiler_errors.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/into.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/into.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/new.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/new.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/type_only.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/type_only.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/resolve_names.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/resolve_names.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/shared/types.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/shared/types.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -240,31 +234,9 @@
       <workItem from="1722262578285" duration="5999000" />
       <workItem from="1722416334528" duration="393000" />
       <workItem from="1722416899204" duration="5190000" />
-      <workItem from="1722437424689" duration="549000" />
-    </task>
-    <task id="LOCAL-00016" summary="Improved errors">
-      <option name="closed" value="true" />
-      <created>1717614243407</created>
-      <option name="number" value="00016" />
-      <option name="presentableId" value="LOCAL-00016" />
-      <option name="project" value="LOCAL" />
-      <updated>1717614243407</updated>
-    </task>
-    <task id="LOCAL-00017" summary="Continued compiler work">
-      <option name="closed" value="true" />
-      <created>1717614696137</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
-      <option name="project" value="LOCAL" />
-      <updated>1717614696137</updated>
-    </task>
-    <task id="LOCAL-00018" summary="Started adding support for inline functions">
-      <option name="closed" value="true" />
-      <created>1717677552390</created>
-      <option name="number" value="00018" />
-      <option name="presentableId" value="LOCAL-00018" />
-      <option name="project" value="LOCAL" />
-      <updated>1717677552390</updated>
+      <workItem from="1722437424689" duration="1470000" />
+      <workItem from="1722505926614" duration="51000" />
+      <workItem from="1722505984752" duration="779000" />
     </task>
     <task id="LOCAL-00019" summary="Added first inline function">
       <option name="closed" value="true" />
@@ -634,7 +606,31 @@
       <option name="project" value="LOCAL" />
       <updated>1722426354247</updated>
     </task>
-    <option name="localTasksCounter" value="65" />
+    <task id="LOCAL-00065" summary="Resolved some todos">
+      <option name="closed" value="true" />
+      <created>1722437985882</created>
+      <option name="number" value="00065" />
+      <option name="presentableId" value="LOCAL-00065" />
+      <option name="project" value="LOCAL" />
+      <updated>1722437985882</updated>
+    </task>
+    <task id="LOCAL-00066" summary="Refactoring">
+      <option name="closed" value="true" />
+      <created>1722438273187</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1722438273187</updated>
+    </task>
+    <task id="LOCAL-00067" summary="Cargo fmt">
+      <option name="closed" value="true" />
+      <created>1722438292369</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1722438292369</updated>
+    </task>
+    <option name="localTasksCounter" value="68" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -691,8 +687,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Simplified code" />
-    <MESSAGE value="Improved function code" />
     <MESSAGE value="Tests" />
     <MESSAGE value="Deref and assign" />
     <MESSAGE value="Comments up to (inlcuding) errors folder" />
@@ -714,9 +708,11 @@
     <MESSAGE value="Linked list" />
     <MESSAGE value="Improvements" />
     <MESSAGE value="Added free" />
-    <MESSAGE value="Cargo fmt" />
     <MESSAGE value="Added free and good parser errors" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added free and good parser errors" />
+    <MESSAGE value="Resolved some todos" />
+    <MESSAGE value="Refactoring" />
+    <MESSAGE value="Cargo fmt" />
+    <option name="LAST_COMMIT_MESSAGE" value="Cargo fmt" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

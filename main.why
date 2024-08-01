@@ -1,9 +1,19 @@
-struct Leak {
+struct Test {
     a: int
 }
 
-fn main() -> int {
-    if (true) {};
+impl Test {
+    fn test(self) {
+        printi(*self.a);
+        self.a += 1;
+        printi(*self.a);
+    }
+}
 
-    return 0;
+fn main() -> int {
+    let x: Test = Test { a: 3 };
+    x::test();
+    printi(*x.a);
+
+    return 8;
 }

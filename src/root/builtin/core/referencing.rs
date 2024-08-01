@@ -3,7 +3,7 @@ use crate::root::errors::evaluable_errors::EvalErrs;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
 use crate::root::parser::parse::Location;
-use crate::root::shared::common::AddressedTypeRef;
+use crate::root::shared::common::{AddressedTypeRef, Indirection};
 
 /// Sets `into` to the address of `to_ref`
 pub fn set_reference(
@@ -57,5 +57,6 @@ pub fn set_deref(
         *to_deref.local_address(),
         *into.local_address(),
         global_table.get_size(into.type_ref()),
+        Indirection(1),
     ))
 }
