@@ -49,5 +49,5 @@ pub enum EvalErrs {
     #[error("Expected attribute ({0}) to be initialised next, not ({1})")]
     WrongAttributeNameInInit(String, String),
     #[error("Expected ({0}) attributes to be initialised - found ({1})")]
-    WrongAttributeCount(usize, usize)
+    WrongAttributeCount(usize, usize),
 }

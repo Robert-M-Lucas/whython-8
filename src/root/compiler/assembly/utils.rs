@@ -77,7 +77,12 @@ pub fn align_16_bytes_plus_8(bytes: ByteSize) -> ByteSize {
 
 /// Copies data. Expects `from` to be the address of a pointer pointing to the data to move
 /// and `to` to be the target
-pub fn copy_from_indirect(from: LocalAddress, to: LocalAddress, amount: ByteSize, indirectness: Indirection) -> String {
+pub fn copy_from_indirect(
+    from: LocalAddress,
+    to: LocalAddress,
+    amount: ByteSize,
+    indirectness: Indirection,
+) -> String {
     if amount == ByteSize(0) {
         return String::new();
     }

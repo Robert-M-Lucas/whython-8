@@ -1,3 +1,4 @@
+use crate::root::errors::parser_errors::create_custom_error;
 use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
 use crate::root::parser::parse_arguments::parse_arguments;
 use crate::root::parser::parse_blocks::{
@@ -15,7 +16,6 @@ use derive_getters::Getters;
 use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::character::complete::char;
-use crate::root::errors::parser_errors::create_custom_error;
 
 #[derive(Debug, Getters)]
 pub struct EvaluableToken {

@@ -1,11 +1,9 @@
 use std::any::Any;
 use std::collections::HashMap;
 
+use crate::root::errors::evaluable_errors::EvalErrs;
 use crate::root::errors::name_resolver_errors::NRErrs;
 use crate::root::errors::WErr;
-use derive_getters::Getters;
-use itertools::Itertools;
-use crate::root::errors::evaluable_errors::EvalErrs;
 use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
 use crate::root::name_resolver::resolve_function_signatures::resolve_function_signature;
 use crate::root::name_resolver::resolve_type_sizes::{resolve_type_sizes, UnsizedUserType};
@@ -19,6 +17,8 @@ use crate::root::shared::common::{ByteSize, FunctionID, TypeID};
 use crate::root::shared::common::{LocalAddress, TypeRef};
 use crate::root::shared::types::Type;
 use crate::root::unrandom::new_hashmap;
+use derive_getters::Getters;
+use itertools::Itertools;
 
 /// A Whython-code defined type
 #[derive(Getters)]
@@ -73,7 +73,10 @@ impl Type for UserType {
         location: &LocalAddress,
         literal: &LiteralToken,
     ) -> Result<String, WErr> {
-        WErr::ne(EvalErrs::TypeCannotBeInitialisedByLiteral(self.name().clone()), literal.location().clone())
+        WErr::ne(
+            EvalErrs::TypeCannotBeInitialisedByLiteral(self.name().clone()),
+            literal.location().clone(),
+        )
     }
 }
 

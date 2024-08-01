@@ -10,6 +10,7 @@ use crate::root::compiler::evaluation::{function_only, reference, type_only};
 use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::evaluable_errors::EvalErrs;
+use crate::root::errors::evaluable_errors::EvalErrs::WrongAttributeNameInInit;
 use crate::root::errors::name_resolver_errors::NRErrs;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable, NameResult};
@@ -22,7 +23,6 @@ use crate::root::shared::types::Type;
 use either::{Left, Right};
 use itertools::Itertools;
 use std::any::Any;
-use crate::root::errors::evaluable_errors::EvalErrs::WrongAttributeNameInInit;
 
 /// Evaluates `et` putting the result into `target`
 pub fn compile_evaluable_into(
@@ -277,14 +277,17 @@ pub fn compile_evaluable_into(
             ab.other(&c);
 
             let Some(inner) = inner else {
-                return WErr::ne(EvalErrs::ExpectedNotNone, inner_eval.location().clone())
+                return WErr::ne(EvalErrs::ExpectedNotNone, inner_eval.location().clone());
             };
 
             let inner = if inner.type_ref().indirection().0 > 1 {
-                let (c, inner) = coerce_self(inner, SelfType::RefSelf, global_table, local_variables)?;
+                let (c, inner) =
+                    coerce_self(inner, SelfType::RefSelf, global_table, local_variables)?;
                 ab.other(&c);
                 inner
-            } else { inner };
+            } else {
+                inner
+            };
 
             let t = global_table.get_type(*inner.type_ref().type_id());
             let attribs = t.get_attributes(access.location())?;
@@ -297,18 +300,22 @@ pub fn compile_evaluable_into(
                             EvalErrs::ExpectedDifferentType(
                                 global_table.get_type_name(target.type_ref()),
                                 global_table.get_type_name(&t.plus_one_indirect()),
-                            ), access.location().clone()
-                        )
+                            ),
+                            access.location().clone(),
+                        );
                     }
                     found_offset = Some(*offset);
                 }
             }
 
             let Some(found_offset) = found_offset else {
-                return WErr::ne(EvalErrs::TypeDoesntHaveAttribute(
-                    global_table.get_type_name(&t.id().immediate()),
-                    access.name().clone()
-                ), access.location().clone());
+                return WErr::ne(
+                    EvalErrs::TypeDoesntHaveAttribute(
+                        global_table.get_type_name(&t.id().immediate()),
+                        access.name().clone(),
+                    ),
+                    access.location().clone(),
+                );
             };
 
             if inner.type_ref().indirection().has_indirection() {
@@ -455,10 +462,10 @@ pub fn compile_evaluable_into(
             let give_attrs = struct_init.contents();
 
             if attributes.len() != give_attrs.len() {
-                return WErr::ne(EvalErrs::WrongAttributeCount(
-                    attributes.len(),
-                    give_attrs.len()
-                ), struct_init.location().clone());
+                return WErr::ne(
+                    EvalErrs::WrongAttributeCount(attributes.len(), give_attrs.len()),
+                    struct_init.location().clone(),
+                );
             }
 
             let mut code = AssemblyBuilder::new();
@@ -469,7 +476,7 @@ pub fn compile_evaluable_into(
                 if t_name.name() != name.name() {
                     return WErr::ne(
                         WrongAttributeNameInInit(t_name.name().clone(), name.name().clone()),
-                        name.location().clone()
+                        name.location().clone(),
                     );
                 }
 

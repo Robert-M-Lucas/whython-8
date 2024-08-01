@@ -7,9 +7,9 @@ use crate::root::compiler::assembly::heap::heap_alloc;
 use crate::root::compiler::assembly::utils::{copy, copy_to_indirect};
 use crate::root::compiler::compile_function_call::call_function;
 use crate::root::compiler::compiler_errors::CompErrs;
+use crate::root::compiler::evaluation::coerce_self::coerce_self;
 use crate::root::compiler::evaluation::reference::compile_evaluable_reference;
 use crate::root::compiler::evaluation::{function_only, into, reference, type_only};
-use crate::root::compiler::evaluation::coerce_self::coerce_self;
 use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::evaluable_errors::EvalErrs;
@@ -303,10 +303,13 @@ pub fn compile_evaluable_new(
             };
 
             let inner = if inner.type_ref().indirection().0 > 1 {
-                let (c, inner) = coerce_self(inner, SelfType::RefSelf, global_table, local_variables)?;
+                let (c, inner) =
+                    coerce_self(inner, SelfType::RefSelf, global_table, local_variables)?;
                 ab.other(&c);
                 inner
-            } else { inner };
+            } else {
+                inner
+            };
 
             let t = global_table.get_type(*inner.type_ref().type_id());
             let attribs = t.get_attributes(access.location())?;
@@ -320,10 +323,10 @@ pub fn compile_evaluable_new(
             }
 
             let Some((found_offset, t)) = found else {
-                return WErr::ne(EvalErrs::TypeDoesntHaveAttribute(
-                    t.name().to_string(),
-                    access.name().clone()
-                ), access.location().clone())
+                return WErr::ne(
+                    EvalErrs::TypeDoesntHaveAttribute(t.name().to_string(), access.name().clone()),
+                    access.location().clone(),
+                );
             };
 
             // let t = t.plus_one_indirect();
@@ -450,10 +453,10 @@ pub fn compile_evaluable_new(
             let give_attrs = struct_init.contents();
 
             if attributes.len() != give_attrs.len() {
-                return WErr::ne(EvalErrs::WrongAttributeCount(
-                    attributes.len(),
-                    give_attrs.len()
-                ), struct_init.location().clone());
+                return WErr::ne(
+                    EvalErrs::WrongAttributeCount(attributes.len(), give_attrs.len()),
+                    struct_init.location().clone(),
+                );
             }
 
             for ((offset, t_name, t_type), (name, val)) in attributes.iter().zip(give_attrs.iter())
@@ -461,7 +464,7 @@ pub fn compile_evaluable_new(
                 if t_name.name() != name.name() {
                     return WErr::ne(
                         WrongAttributeNameInInit(t_name.name().clone(), name.name().clone()),
-                        name.location().clone()
+                        name.location().clone(),
                     );
                 }
 

@@ -34,10 +34,13 @@ pub fn compile_evaluable_function_only<'a>(
             let function =
                 global_table.get_impl_function_by_name(*inner_type.type_id(), access.name());
             let Some(function) = function else {
-                return WErr::ne(EvalErrs::TypeDoesntHaveMethod(
-                    global_table.get_type_name(&inner_type.type_id().immediate()),
-                    access.name().clone()
-                ), access.location().clone());
+                return WErr::ne(
+                    EvalErrs::TypeDoesntHaveMethod(
+                        global_table.get_type_name(&inner_type.type_id().immediate()),
+                        access.name().clone(),
+                    ),
+                    access.location().clone(),
+                );
             };
 
             (None, function, access.name().clone())
@@ -53,10 +56,13 @@ pub fn compile_evaluable_function_only<'a>(
             let function =
                 global_table.get_impl_function_by_name(*inner_type.type_id(), access.name());
             let Some(function) = function else {
-                return WErr::ne(EvalErrs::TypeDoesntHaveMethod(
-                    global_table.get_type_name(&inner_type.type_id().immediate()),
-                    access.name().clone()
-                ), access.location().clone());
+                return WErr::ne(
+                    EvalErrs::TypeDoesntHaveMethod(
+                        global_table.get_type_name(&inner_type.type_id().immediate()),
+                        access.name().clone(),
+                    ),
+                    access.location().clone(),
+                );
             };
 
             (Some(inner), function, access.name().clone())

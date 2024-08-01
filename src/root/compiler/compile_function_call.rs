@@ -108,13 +108,19 @@ pub fn call_function(
                             )?;
                             code.other(&c);
                             let Some(into) = into else {
-                                return WErr::ne(EvalErrs::ExpectedNotNone, eval.location().clone());
+                                return WErr::ne(
+                                    EvalErrs::ExpectedNotNone,
+                                    eval.location().clone(),
+                                );
                             };
                             if into.type_ref().type_id() != signature_args[i].type_id() {
                                 return WErr::ne(
                                     EvalErrs::ExpectedDifferentType(
-                                        global_table.get_type_name(&into.type_ref().type_id().immediate()),
-                                        global_table.get_type_name(&signature_args[i].type_id().immediate()),
+                                        global_table
+                                            .get_type_name(&into.type_ref().type_id().immediate()),
+                                        global_table.get_type_name(
+                                            &signature_args[i].type_id().immediate(),
+                                        ),
                                     ),
                                     location.clone(),
                                 );
@@ -214,13 +220,19 @@ pub fn call_function(
                             )?;
                             code.other(&c);
                             let Some(into) = into else {
-                                return WErr::ne(EvalErrs::ExpectedNotNone, eval.location().clone());
+                                return WErr::ne(
+                                    EvalErrs::ExpectedNotNone,
+                                    eval.location().clone(),
+                                );
                             };
                             if into.type_ref().type_id() != signature_args[i].type_id() {
                                 return WErr::ne(
                                     EvalErrs::ExpectedDifferentType(
-                                        global_table.get_type_name(&into.type_ref().type_id().immediate()),
-                                        global_table.get_type_name(&signature_args[i].type_id().immediate()),
+                                        global_table
+                                            .get_type_name(&into.type_ref().type_id().immediate()),
+                                        global_table.get_type_name(
+                                            &signature_args[i].type_id().immediate(),
+                                        ),
                                     ),
                                     location.clone(),
                                 );

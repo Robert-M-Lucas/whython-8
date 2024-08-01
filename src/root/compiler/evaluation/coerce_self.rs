@@ -22,14 +22,16 @@ pub fn coerce_self(
                     local_variables,
                 );
 
-                (copy_from_indirect(
-                    *current_self.local_address(),
-                    *new_self.local_address(),
-                    global_table.get_size(new_self.type_ref()),
-                    Indirection(current_self.type_ref().indirection().0)
-                ), new_self)
-            }
-            else {
+                (
+                    copy_from_indirect(
+                        *current_self.local_address(),
+                        *new_self.local_address(),
+                        global_table.get_size(new_self.type_ref()),
+                        Indirection(current_self.type_ref().indirection().0),
+                    ),
+                    new_self,
+                )
+            } else {
                 (String::new(), current_self)
             }
         }
@@ -56,12 +58,15 @@ pub fn coerce_self(
                     local_variables,
                 );
 
-                (copy_from_indirect(
-                    *current_self.local_address(),
-                    *new_self.local_address(),
-                    global_table.get_size(new_self.type_ref()),
-                    Indirection(current_self.type_ref().indirection().0 - 1) // Want a ref, not inner type
-                ), new_self)
+                (
+                    copy_from_indirect(
+                        *current_self.local_address(),
+                        *new_self.local_address(),
+                        global_table.get_size(new_self.type_ref()),
+                        Indirection(current_self.type_ref().indirection().0 - 1), // Want a ref, not inner type
+                    ),
+                    new_self,
+                )
             }
         }
     })
