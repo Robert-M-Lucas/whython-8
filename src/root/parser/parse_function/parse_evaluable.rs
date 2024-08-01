@@ -131,6 +131,11 @@ impl FullNameTokens {
     }
 }
 
+pub struct STempEvaluableTokenOne<'a> {
+    pub inner: TempEvaluableTokensOne,
+    pub s: Span<'a>
+}
+
 #[allow(private_interfaces)]
 #[derive(Debug)]
 enum TempEvaluableTokensOne {
@@ -145,6 +150,11 @@ enum TempEvaluableTokensOne {
     ),
     StaticFunctionCall(SimpleNameToken, Vec<EvaluableToken>),
     DynamicFunctionCall(SimpleNameToken, Vec<EvaluableToken>),
+}
+
+pub struct STempEvaluableTokenTwo<'a> {
+    pub inner: TempEvaluableTokensTwo,
+    pub s: Span<'a>
 }
 
 #[derive(Debug)]
@@ -274,7 +284,12 @@ pub fn parse_evaluable<'a, 'b>(
         // Recursively parse bracketed sections
         let ns = if let Ok((ns, inner)) = parse_terminator_default_set(s, &BRACKET_TERMINATOR) {
             let (_, evaluable) = parse_evaluable(inner, containing_class, false)?;
-            evaluables.push(TempEvaluableTokensOne::EvaluableToken(evaluable));
+            evaluables.push(
+                STempEvaluableTokenOne {
+                    inner: TempEvaluableTokensOne::EvaluableToken(evaluable)),
+                    s: inner
+                }
+            );
             ns
         }
         // Parse evaluable
