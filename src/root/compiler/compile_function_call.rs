@@ -34,7 +34,7 @@ pub fn call_function(
 
     let self_type = *global_table.get_function_signature(fid).self_type();
     if uses_self && matches!(self_type, SelfType::None) {
-        todo!()
+        todo!() // ?
     }
 
     if let Some(inline) = global_table.get_function(fid).1 {
@@ -107,9 +107,17 @@ pub fn call_function(
                                 global_tracker,
                             )?;
                             code.other(&c);
-                            let Some(into) = into else { todo!() };
+                            let Some(into) = into else {
+                                return WErr::ne(EvalErrs::ExpectedNotNone, eval.location().clone());
+                            };
                             if into.type_ref().type_id() != signature_args[i].type_id() {
-                                todo!()
+                                return WErr::ne(
+                                    EvalErrs::ExpectedDifferentType(
+                                        global_table.get_type_name(&into.type_ref().type_id().immediate()),
+                                        global_table.get_type_name(&signature_args[i].type_id().immediate()),
+                                    ),
+                                    location.clone(),
+                                );
                             }
                             into
                         } else {
@@ -205,9 +213,17 @@ pub fn call_function(
                                 global_tracker,
                             )?;
                             code.other(&c);
-                            let Some(into) = into else { todo!() };
+                            let Some(into) = into else {
+                                return WErr::ne(EvalErrs::ExpectedNotNone, eval.location().clone());
+                            };
                             if into.type_ref().type_id() != signature_args[i].type_id() {
-                                todo!()
+                                return WErr::ne(
+                                    EvalErrs::ExpectedDifferentType(
+                                        global_table.get_type_name(&into.type_ref().type_id().immediate()),
+                                        global_table.get_type_name(&signature_args[i].type_id().immediate()),
+                                    ),
+                                    location.clone(),
+                                );
                             }
                             into
                         } else {

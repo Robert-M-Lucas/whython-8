@@ -1,6 +1,7 @@
 use crate::root::compiler::evaluation::type_only::compile_evaluable_type_only;
 use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
+use crate::root::errors::evaluable_errors::EvalErrs;
 use crate::root::errors::evaluable_errors::EvalErrs::ExpectedFunctionName;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable, NameResult};
@@ -32,7 +33,12 @@ pub fn compile_evaluable_function_only<'a>(
             )?;
             let function =
                 global_table.get_impl_function_by_name(*inner_type.type_id(), access.name());
-            let Some(function) = function else { todo!() };
+            let Some(function) = function else {
+                return WErr::ne(EvalErrs::TypeDoesntHaveMethod(
+                    global_table.get_type_name(&inner_type.type_id().immediate()),
+                    access.name().clone()
+                ), access.location().clone());
+            };
 
             (None, function, access.name().clone())
         }
@@ -46,7 +52,12 @@ pub fn compile_evaluable_function_only<'a>(
             )?;
             let function =
                 global_table.get_impl_function_by_name(*inner_type.type_id(), access.name());
-            let Some(function) = function else { todo!() };
+            let Some(function) = function else {
+                return WErr::ne(EvalErrs::TypeDoesntHaveMethod(
+                    global_table.get_type_name(&inner_type.type_id().immediate()),
+                    access.name().clone()
+                ), access.location().clone());
+            };
 
             (Some(inner), function, access.name().clone())
         }

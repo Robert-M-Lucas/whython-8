@@ -15,6 +15,7 @@ use derive_getters::Getters;
 use nom::branch::alt;
 use nom::bytes::complete::tag;
 use nom::character::complete::char;
+use crate::root::errors::parser_errors::create_custom_error;
 
 #[derive(Debug, Getters)]
 pub struct EvaluableToken {
@@ -212,7 +213,7 @@ pub fn parse_full_name<'a>(
 //     match either {
 //         Left(val) => {Ok(val)}
 //         Right(_) => {
-//             todo!()
+//
 //         }
 //     }
 // }
@@ -485,8 +486,12 @@ pub fn parse_evaluable<'a, 'b>(
                     enumerated_slice = &enumerated_slice[1..];
                     Some(op.clone())
                 }
-                (_, TempEvaluableTokensTwo::EvaluableToken(_)) => {
+                (_, TempEvaluableTokensTwo::EvaluableToken(e)) => {
                     // ? Expected infix connecting operator
+                    // return Err(create_custom_error(
+                    //
+                    //     e.location
+                    // ));
                     todo!()
                 }
             }

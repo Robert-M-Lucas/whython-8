@@ -38,8 +38,16 @@ pub enum EvalErrs {
     BadFunctionArgCount(String, usize, usize),
     #[error("Type ({0}) does not have attributes")]
     TypeDoesntHaveAttributes(String),
+    #[error("Type ({0}) does not have attribute ({1})")]
+    TypeDoesntHaveAttribute(String, String),
     #[error("Type ({0}) cannot be initialised")]
     TypeCannotBeInitialised(String),
     #[error("Type ({0}) cannot be initialised from a literal")]
-    TypeCannotBeInitialisedByLiteral(String)
+    TypeCannotBeInitialisedByLiteral(String),
+    #[error("Type ({0}) doesn't have method ({1})")]
+    TypeDoesntHaveMethod(String, String),
+    #[error("Expected attribute ({0}) to be initialised next, not ({1})")]
+    WrongAttributeNameInInit(String, String),
+    #[error("Expected ({0}) attributes to be initialised - found ({1})")]
+    WrongAttributeCount(usize, usize)
 }

@@ -22,6 +22,7 @@ use crate::root::shared::types::Type;
 use either::{Left, Right};
 use itertools::Itertools;
 use std::any::Any;
+use crate::root::errors::evaluable_errors::EvalErrs::WrongAttributeNameInInit;
 
 /// Evaluates `et` putting the result into `target`
 pub fn compile_evaluable_into(
@@ -264,22 +265,26 @@ pub fn compile_evaluable_into(
             )?;
             c
         }
-        EvaluableTokens::DynamicAccess(inner, access) => {
+        EvaluableTokens::DynamicAccess(inner_eval, access) => {
             let mut ab = AssemblyBuilder::new();
             let (c, inner) = compile_evaluable_reference(
                 fid,
-                inner,
+                inner_eval,
                 local_variables,
                 global_table,
                 global_tracker,
             )?;
             ab.other(&c);
 
-            let Some(inner) = inner else { todo!() };
+            let Some(inner) = inner else {
+                return WErr::ne(EvalErrs::ExpectedNotNone, inner_eval.location().clone())
+            };
 
-            if inner.type_ref().indirection().0 > 1 {
-                todo!()
-            }
+            let inner = if inner.type_ref().indirection().0 > 1 {
+                let (c, inner) = coerce_self(inner, SelfType::RefSelf, global_table, local_variables)?;
+                ab.other(&c);
+                inner
+            } else { inner };
 
             let t = global_table.get_type(*inner.type_ref().type_id());
             let attribs = t.get_attributes(access.location())?;
@@ -288,18 +293,26 @@ pub fn compile_evaluable_into(
             for (offset, name, t) in attribs {
                 if name.name() == access.name() {
                     if &t.plus_one_indirect() != target.type_ref() {
-                        todo!()
+                        return WErr::ne(
+                            EvalErrs::ExpectedDifferentType(
+                                global_table.get_type_name(target.type_ref()),
+                                global_table.get_type_name(&t.plus_one_indirect()),
+                            ), access.location().clone()
+                        )
                     }
                     found_offset = Some(*offset);
                 }
             }
 
             let Some(found_offset) = found_offset else {
-                todo!()
+                return WErr::ne(EvalErrs::TypeDoesntHaveAttribute(
+                    global_table.get_type_name(&t.id().immediate()),
+                    access.name().clone()
+                ), access.location().clone());
             };
 
             if inner.type_ref().indirection().has_indirection() {
-                // TODO: Not 64 bit!
+                // TODO: This is not full 64 bit!
                 ab.line(&format!("mov rax, {}", inner.local_address()));
                 ab.line(&format!("add rax, {}", found_offset.0));
                 ab.line(&format!("mov qword {}, rax", target.local_address()));
@@ -386,7 +399,13 @@ pub fn compile_evaluable_into(
 
             if *struct_init.heap_alloc() {
                 if target.type_ref() != &t.plus_one_indirect() {
-                    todo!()
+                    return WErr::ne(
+                        EvalErrs::ExpectedDifferentType(
+                            global_table.get_type_name(target.type_ref()),
+                            global_table.get_type_name(&t.plus_one_indirect()),
+                        ),
+                        struct_init.location().clone(),
+                    );
                 }
                 let mut ab = AssemblyBuilder::new();
                 let (c, sr) =
@@ -403,10 +422,22 @@ pub fn compile_evaluable_into(
             debug_assert!(!t.indirection().has_indirection());
 
             if *struct_init.heap_alloc() && &t.plus_one_indirect() != target.type_ref() {
-                todo!()
+                return WErr::ne(
+                    EvalErrs::ExpectedDifferentType(
+                        global_table.get_type_name(target.type_ref()),
+                        global_table.get_type_name(&t.plus_one_indirect()),
+                    ),
+                    struct_init.location().clone(),
+                );
             }
             if !struct_init.heap_alloc() && &t != target.type_ref() {
-                todo!();
+                return WErr::ne(
+                    EvalErrs::ExpectedDifferentType(
+                        global_table.get_type_name(target.type_ref()),
+                        global_table.get_type_name(&t),
+                    ),
+                    struct_init.location().clone(),
+                );
             }
 
             let tt = global_table.get_type(t.type_id().clone());
@@ -424,7 +455,10 @@ pub fn compile_evaluable_into(
             let give_attrs = struct_init.contents();
 
             if attributes.len() != give_attrs.len() {
-                todo!()
+                return WErr::ne(EvalErrs::WrongAttributeCount(
+                    attributes.len(),
+                    give_attrs.len()
+                ), struct_init.location().clone());
             }
 
             let mut code = AssemblyBuilder::new();
@@ -433,7 +467,10 @@ pub fn compile_evaluable_into(
             for ((offset, t_name, t_type), (name, val)) in attributes.iter().zip(give_attrs.iter())
             {
                 if t_name.name() != name.name() {
-                    todo!()
+                    return WErr::ne(
+                        WrongAttributeNameInInit(t_name.name().clone(), name.name().clone()),
+                        name.location().clone()
+                    );
                 }
 
                 let new_addr = AddressedTypeRef::new(

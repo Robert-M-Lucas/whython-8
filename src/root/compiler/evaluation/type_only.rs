@@ -128,7 +128,10 @@ pub fn compile_evaluable_type_only(
             if let Some(out) = out {
                 out.plus_one_indirect()
             } else {
-                todo!()
+                return WErr::ne(EvalErrs::TypeDoesntHaveAttribute(
+                    global_table.get_type_name(&t.id().immediate()),
+                    access.name().clone()
+                ), access.location().clone());
             }
         }
         EvaluableTokens::StaticAccess(_, n) => {

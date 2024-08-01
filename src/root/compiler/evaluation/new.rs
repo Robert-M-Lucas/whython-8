@@ -9,15 +9,18 @@ use crate::root::compiler::compile_function_call::call_function;
 use crate::root::compiler::compiler_errors::CompErrs;
 use crate::root::compiler::evaluation::reference::compile_evaluable_reference;
 use crate::root::compiler::evaluation::{function_only, into, reference, type_only};
+use crate::root::compiler::evaluation::coerce_self::coerce_self;
 use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::evaluable_errors::EvalErrs;
+use crate::root::errors::evaluable_errors::EvalErrs::{ExpectedNotNone, WrongAttributeNameInInit};
 use crate::root::errors::name_resolver_errors::NRErrs;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable, NameResult};
 use crate::root::parser::parse::Location;
 use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, EvaluableTokens};
 use crate::root::parser::parse_function::parse_operator::{OperatorTokens, PrefixOrInfixEx};
+use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{
     AddressedTypeRef, FunctionID, Indirection, LocalAddress, TypeRef,
 };
@@ -284,22 +287,26 @@ pub fn compile_evaluable_new(
             )?;
             (c, return_into)
         }
-        EvaluableTokens::DynamicAccess(inner, access) => {
+        EvaluableTokens::DynamicAccess(inner_eval, access) => {
             let mut ab = AssemblyBuilder::new();
             let (c, inner) = compile_evaluable_reference(
                 fid,
-                inner,
+                inner_eval,
                 local_variables,
                 global_table,
                 global_tracker,
             )?;
             ab.other(&c);
 
-            let Some(inner) = inner else { todo!() };
+            let Some(inner) = inner else {
+                return WErr::ne(ExpectedNotNone, inner_eval.location().clone());
+            };
 
-            if inner.type_ref().indirection().0 > 1 {
-                todo!()
-            }
+            let inner = if inner.type_ref().indirection().0 > 1 {
+                let (c, inner) = coerce_self(inner, SelfType::RefSelf, global_table, local_variables)?;
+                ab.other(&c);
+                inner
+            } else { inner };
 
             let t = global_table.get_type(*inner.type_ref().type_id());
             let attribs = t.get_attributes(access.location())?;
@@ -313,7 +320,10 @@ pub fn compile_evaluable_new(
             }
 
             let Some((found_offset, t)) = found else {
-                todo!()
+                return WErr::ne(EvalErrs::TypeDoesntHaveAttribute(
+                    t.name().to_string(),
+                    access.name().clone()
+                ), access.location().clone())
             };
 
             // let t = t.plus_one_indirect();
@@ -440,13 +450,19 @@ pub fn compile_evaluable_new(
             let give_attrs = struct_init.contents();
 
             if attributes.len() != give_attrs.len() {
-                todo!()
+                return WErr::ne(EvalErrs::WrongAttributeCount(
+                    attributes.len(),
+                    give_attrs.len()
+                ), struct_init.location().clone());
             }
 
             for ((offset, t_name, t_type), (name, val)) in attributes.iter().zip(give_attrs.iter())
             {
                 if t_name.name() != name.name() {
-                    todo!()
+                    return WErr::ne(
+                        WrongAttributeNameInInit(t_name.name().clone(), name.name().clone()),
+                        name.location().clone()
+                    );
                 }
 
                 let new_addr = AddressedTypeRef::new(

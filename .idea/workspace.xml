@@ -7,8 +7,17 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Cargo fmt">
+    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Improved self coercion">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.why" beforeDir="false" afterPath="$PROJECT_DIR$/main.why" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/compile_function_call.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile_function_call.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/function_only.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/function_only.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/into.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/into.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/new.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/new.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/type_only.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/type_only.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/errors/evaluable_errors.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/errors/evaluable_errors.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_evaluable.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_evaluable.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -236,15 +245,7 @@
       <workItem from="1722416899204" duration="5190000" />
       <workItem from="1722437424689" duration="1470000" />
       <workItem from="1722505926614" duration="51000" />
-      <workItem from="1722505984752" duration="779000" />
-    </task>
-    <task id="LOCAL-00019" summary="Added first inline function">
-      <option name="closed" value="true" />
-      <created>1717684897421</created>
-      <option name="number" value="00019" />
-      <option name="presentableId" value="LOCAL-00019" />
-      <option name="project" value="LOCAL" />
-      <updated>1717684897422</updated>
+      <workItem from="1722505984752" duration="5324000" />
     </task>
     <task id="LOCAL-00020" summary="Added ability for first inline function to run">
       <option name="closed" value="true" />
@@ -630,7 +631,15 @@
       <option name="project" value="LOCAL" />
       <updated>1722438292369</updated>
     </task>
-    <option name="localTasksCounter" value="68" />
+    <task id="LOCAL-00068" summary="Improved self coercion">
+      <option name="closed" value="true" />
+      <created>1722508292781</created>
+      <option name="number" value="00068" />
+      <option name="presentableId" value="LOCAL-00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1722508292781</updated>
+    </task>
+    <option name="localTasksCounter" value="69" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -687,7 +696,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Tests" />
     <MESSAGE value="Deref and assign" />
     <MESSAGE value="Comments up to (inlcuding) errors folder" />
     <MESSAGE value="Fixes" />
@@ -712,7 +720,8 @@
     <MESSAGE value="Resolved some todos" />
     <MESSAGE value="Refactoring" />
     <MESSAGE value="Cargo fmt" />
-    <option name="LAST_COMMIT_MESSAGE" value="Cargo fmt" />
+    <MESSAGE value="Improved self coercion" />
+    <option name="LAST_COMMIT_MESSAGE" value="Improved self coercion" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

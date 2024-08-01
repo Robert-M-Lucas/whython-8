@@ -3,17 +3,15 @@ struct Test {
 }
 
 impl Test {
-    fn test(self) {
-        printi(*self.a);
-        self.a += 1;
-        printi(*self.a);
+    fn static() {
+
     }
 }
 
 fn main() -> int {
     let x: Test = Test { a: 3 };
-    x::test();
-    printi(*x.a);
+
+    + a +
 
     return 8;
 }
