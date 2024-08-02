@@ -16,8 +16,25 @@ pub enum ParseError {
 }
 
 pub fn create_custom_error(e: String, l: Span) -> nom::Err<ErrorTree> {
-    nom::Err::Error(ErrorTree::Base {
+    nom::Err::Error(create_custom_error_tree(e, l))
+}
+
+pub fn create_custom_error_tree(e: String, l: Span) -> ErrorTree {
+    ErrorTree::Base {
         location: l,
         kind: BaseErrorKind::External(e),
-    })
+    }
+}
+
+pub fn to_error_tree<'a>(e: nom::Err<ErrorTree<'a>>, s: Span<'a>) -> ErrorTree<'a> {
+    match e {
+        nom::Err::Incomplete(i) => {
+            create_custom_error_tree(
+                "Expected more characters".to_string(),
+                s
+            )
+        }
+        nom::Err::Error(e) => e,
+        nom::Err::Failure(f) => f,
+    }
 }

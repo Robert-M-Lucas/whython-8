@@ -17,7 +17,7 @@ use std::path::PathBuf;
 use std::time::Instant;
 
 #[cfg(debug_assertions)]
-pub const DEBUG_ON_ERROR: bool = true;
+pub const DEBUG_ON_ERROR: bool = false;
 
 // #[cfg(target_os = "windows")]
 // use crate::root::runner::run;

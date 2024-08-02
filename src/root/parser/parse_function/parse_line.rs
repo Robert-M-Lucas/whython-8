@@ -1,4 +1,4 @@
-use crate::root::errors::parser_errors::create_custom_error;
+use crate::root::errors::parser_errors::{create_custom_error, create_custom_error_tree, to_error_tree};
 use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
 use crate::root::parser::parse_function::parse_break::{test_parse_break, BreakToken};
 use crate::root::parser::parse_function::parse_evaluable::{parse_evaluable, EvaluableToken};
@@ -74,10 +74,16 @@ pub fn parse_line<'a, 'b>(
             match parse_evaluable(s, containing_class, true).map(|(s, e)| (s, LineTokens::NoOp(e)))
             {
                 Ok(x) => Ok(x),
-                Err(_) => Err(create_custom_error(
-                    "Expected 'break', 'return', 'let', 'while', 'if', or an evaluable".to_string(),
-                    s,
-                )),
+                Err(e) => Err(
+                    nom::Err::Error(ErrorTree::Alt(vec![
+                        create_custom_error_tree(
+                            "Expected 'break', 'return', 'let', 'while', 'if', or an evaluable. Evaluable parsing error shown next.".to_string(),
+                            s,
+                        ),
+                        to_error_tree(e, s)
+                    ]))
+
+                    ),
             }
         }
     }
