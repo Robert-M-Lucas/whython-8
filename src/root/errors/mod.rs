@@ -2,6 +2,7 @@ use crate::root::parser::parse::Location;
 #[cfg(debug_assertions)]
 use crate::root::DEBUG_ON_ERROR;
 use color_print::cformat;
+#[cfg(debug_assertions)]
 use std::backtrace::Backtrace;
 use std::fmt::{Display, Formatter};
 

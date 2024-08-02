@@ -140,6 +140,7 @@ pub fn copy_from_indirect(
 
 /// Copies data. Expects `from` to be the address of a pointer pointing to the data to move
 /// and `to` to be the target
+#[allow(dead_code)]
 pub fn copy_from_indirect_fixed_offset(
     from: LocalAddress,
     offset: ByteSize,

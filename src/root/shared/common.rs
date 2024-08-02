@@ -1,7 +1,6 @@
 use derive_getters::{Dissolve, Getters};
 use derive_more::{Add, AddAssign, Display, Sub, SubAssign};
 use std::fmt::{Display, Formatter};
-use std::ops::Add;
 
 #[derive(Debug, PartialEq, Eq, Hash, Display, Copy, Clone)]
 #[display(fmt = "TypeID: {}", .0)]
@@ -85,7 +84,7 @@ pub struct TypeRef {
 impl TypeRef {
     pub fn new(type_id: TypeID, indirection: Indirection) -> TypeRef {
         TypeRef {
-            type_id: type_id,
+            type_id,
             indirection,
         }
     }

@@ -6,7 +6,7 @@ use crate::root::errors::evaluable_errors::EvalErrs::ExpectedFunctionName;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable, NameResult};
 use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, EvaluableTokens};
-use crate::root::shared::common::{AddressedTypeRef, FunctionID};
+use crate::root::shared::common::FunctionID;
 
 /// Evaluates `name` into a `FunctionID`
 pub fn compile_evaluable_function_only<'a>(

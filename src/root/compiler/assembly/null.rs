@@ -81,7 +81,7 @@ impl BuiltinInlineFunction for IsNullFunction {
     }
 
     fn inline(&self) -> InlineFunctionGenerator {
-        |args: &[LocalAddress], return_into, gt, sz| -> String {
+        |args: &[LocalAddress], return_into, gt, _| -> String {
             let jmp_false = gt.get_unique_tag(IsNullFunction::const_id());
             let jmp_end = gt.get_unique_tag(IsNullFunction::const_id());
 

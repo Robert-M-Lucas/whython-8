@@ -1,6 +1,5 @@
 use derive_getters::Getters;
 use nom::character::complete::char;
-use nom::Parser;
 use nom_supreme::tag::complete::tag;
 
 use crate::root::parser::parse::{Location, ParseResult, Span};

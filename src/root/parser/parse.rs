@@ -1,20 +1,21 @@
-use crate::root::errors::parser_errors::ParseError;
-use crate::root::errors::WErr;
-use crate::root::parser::handle_errors::handle_error;
-use crate::root::parser::parse_toplevel;
-use crate::root::parser::parse_toplevel::TopLevelTokens;
-use color_print::cformat;
-use lazy_static::lazy_static;
-use nom::{IResult, InputTake};
-use nom_locate::LocatedSpan;
-use nom_supreme::error::{BaseErrorKind, GenericErrorTree};
 use std::cmp::min;
 use std::ffi::OsStr;
-use std::fmt::{Display, Formatter, Write};
+use std::fmt::{Display, Formatter};
 use std::fs;
 use std::marker::PhantomData;
 use std::path::PathBuf;
 use std::rc::Rc;
+
+use color_print::cformat;
+use lazy_static::lazy_static;
+use nom::{IResult, InputTake};
+use nom_locate::LocatedSpan;
+use nom_supreme::error::GenericErrorTree;
+
+use crate::root::errors::WErr;
+use crate::root::parser::handle_errors::handle_error;
+use crate::root::parser::parse_toplevel;
+use crate::root::parser::parse_toplevel::TopLevelTokens;
 
 pub type Span<'a> = LocatedSpan<&'a str, &'a Rc<PathBuf>>;
 
@@ -42,7 +43,7 @@ pub struct WarningL;
 pub type Location = LocationTyped<ErrorL>;
 
 #[derive(Debug, Clone, Hash)]
-pub enum ErrorLocation {
+enum ErrorLocation {
     Location(InnerLocation),
     Builtin,
     None,
@@ -55,7 +56,7 @@ pub struct LocationTyped<ErrorType = ErrorL> {
 }
 
 impl LocationTyped<ErrorL> {
-    pub fn to_warning(self) -> LocationTyped<WarningL> {
+    pub fn into_warning(self) -> LocationTyped<WarningL> {
         LocationTyped {
             error_type: Default::default(),
             inner_location: self.inner_location,

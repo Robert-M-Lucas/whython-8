@@ -1,11 +1,12 @@
-use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
+use nom::character::complete::char;
+
+use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
 use crate::root::parser::parse_function::parse_evaluable::{
     parse_full_name, FullNameWithIndirectionToken,
 };
 use crate::root::parser::parse_name::{parse_simple_name, SimpleNameToken};
 use crate::root::parser::parse_util::discard_ignored;
 use crate::root::shared::common::Indirection;
-use nom::character::complete::char;
 
 pub type Parameters = Vec<(SimpleNameToken, FullNameWithIndirectionToken)>;
 
@@ -71,7 +72,7 @@ pub fn parse_parameters<'a>(
                 let (ns, _) = discard_ignored(ns)?;
                 let (ns, _) = char(':')(ns)?;
                 let (ns, _) = discard_ignored(ns)?;
-                let t_location = Location::from_span(&ns);
+                // let t_location = Location::from_span(&ns);
                 let (ns, type_name_token) = parse_full_name(ns, allow_self)?;
                 let (ns, _) = discard_ignored(ns)?;
                 (ns, type_name_token)

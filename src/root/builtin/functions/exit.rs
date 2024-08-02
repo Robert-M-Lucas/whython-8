@@ -33,7 +33,7 @@ impl BuiltinInlineFunction for ExitFunction {
     }
 
     fn inline(&self) -> InlineFunctionGenerator {
-        |args: &[LocalAddress], _, gt, sz| -> String {
+        |args: &[LocalAddress], _, _, _| -> String {
             let lhs = &args[0];
 
             // 0 us exit syscall

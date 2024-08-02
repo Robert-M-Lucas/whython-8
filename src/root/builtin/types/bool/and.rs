@@ -1,11 +1,11 @@
+use unique_type_id::UniqueTypeId;
+
 use crate::root::builtin::types::bool::printb::PrintB;
 use crate::root::builtin::types::bool::{bool_op_sig, BoolType};
-use crate::root::builtin::types::int::IntType;
 use crate::root::builtin::{f_id, BuiltinInlineFunction, InlineFunctionGenerator};
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{FunctionID, LocalAddress, TypeID};
-use unique_type_id::UniqueTypeId;
 
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
@@ -25,7 +25,7 @@ impl BuiltinInlineFunction for BoolAnd {
     }
 
     fn inline(&self) -> InlineFunctionGenerator {
-        |args: &[LocalAddress], return_into, gt, sz| -> String {
+        |args, return_into, gt, _| -> String {
             let jmp_false = gt.get_unique_tag(PrintB::id());
             let jmp_end = gt.get_unique_tag(PrintB::id());
 
@@ -77,7 +77,7 @@ impl BuiltinInlineFunction for BoolAsAnd {
     }
 
     fn inline(&self) -> InlineFunctionGenerator {
-        |args: &[LocalAddress], _, gt, sz| -> String {
+        |args: &[LocalAddress], _, gt, _| -> String {
             let jmp_true = gt.get_unique_tag(PrintB::id());
 
             let lhs = args[0];

@@ -1,9 +1,10 @@
+use unique_type_id::UniqueTypeId;
+
 use crate::root::builtin::types::int::IntType;
 use crate::root::builtin::{f_id, BuiltinInlineFunction, InlineFunctionGenerator};
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse_parameters::SelfType;
-use crate::root::shared::common::{FunctionID, LocalAddress, TypeID};
-use unique_type_id::UniqueTypeId;
+use crate::root::shared::common::{FunctionID, TypeID};
 
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
@@ -27,7 +28,7 @@ impl BuiltinInlineFunction for IntPAdd {
     }
 
     fn inline(&self) -> InlineFunctionGenerator {
-        |args: &[LocalAddress], return_into: Option<LocalAddress>, _, _| -> String { String::new() }
+        |_, _, _, _| -> String { String::new() }
     }
 
     fn parent_type(&self) -> Option<TypeID> {

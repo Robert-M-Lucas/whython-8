@@ -1,9 +1,9 @@
+use nom_supreme::error::{BaseErrorKind, StackContext};
+
 use crate::root::errors::parser_errors::ParseError;
 use crate::root::errors::WErr;
 use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
 use crate::root::parser::parse_toplevel::TopLevelTokens;
-use nom::error::ErrorKind;
-use nom_supreme::error::{BaseErrorKind, StackContext};
 
 pub fn handle_error<'a>(
     res: ParseResult<'a, Span<'a>, Vec<TopLevelTokens>>,
@@ -11,7 +11,7 @@ pub fn handle_error<'a>(
     match res {
         Ok(v) => Ok(v),
         Err(e) => match &e {
-            nom::Err::Incomplete(x) => WErr::ne(
+            nom::Err::Incomplete(_n) => WErr::ne(
                 ParseError::ParserIncompleteErrorsNotImplemented, // TODO
                 Location::builtin(),
             ),
