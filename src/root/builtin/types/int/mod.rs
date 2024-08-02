@@ -1,7 +1,7 @@
 use b_box::b;
 use unique_type_id::UniqueTypeId;
 
-use crate::root::builtin::types::bool::BoolType;
+use crate::root::builtin::t_id;
 use crate::root::builtin::types::int::add::{IntAdd, IntAsAdd};
 use crate::root::builtin::types::int::comparators::{IntEq, IntGE, IntGT, IntLE, IntLT, IntNE};
 use crate::root::builtin::types::int::div::{IntAsDiv, IntDiv};
@@ -11,15 +11,12 @@ use crate::root::builtin::types::int::p_add::IntPAdd;
 use crate::root::builtin::types::int::p_sub::{IntAsSub, IntPSub};
 use crate::root::builtin::types::int::printi::PrintI;
 use crate::root::builtin::types::int::sub::IntSub;
-use crate::root::builtin::{f_id, t_id, BuiltinInlineFunction, InlineFunctionGenerator};
 use crate::root::compiler::assembly::utils::write_64bit_int;
 use crate::root::compiler::compiler_errors::CompErrs;
-use crate::root::errors::evaluable_errors::EvalErrs;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
-use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse_function::parse_literal::{LiteralToken, LiteralTokens};
-use crate::root::shared::common::{ByteSize, FunctionID, LocalAddress, TypeID};
+use crate::root::shared::common::{ByteSize, LocalAddress, TypeID};
 use crate::root::shared::types::Type;
 
 mod add;

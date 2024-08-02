@@ -15,7 +15,7 @@ pub struct ReturnToken {
     return_value: Option<EvaluableToken>,
 }
 
-pub fn test_parse_return<'a, 'b>(s: Span<'a>) -> ParseResult<Span, LineTestFn<'a, 'b>> {
+pub fn test_parse_return<'b>(s: Span) -> ParseResult<Span, LineTestFn<'_, 'b>> {
     match (tag("return"), require_ignored).parse(s) {
         Ok(_) => Ok((s, |x, c| {
             parse_return(x, c).map(|(s, x)| (s, LineTokens::Return(x)))
@@ -24,9 +24,9 @@ pub fn test_parse_return<'a, 'b>(s: Span<'a>) -> ParseResult<Span, LineTestFn<'a
     }
 }
 
-pub fn parse_return<'a, 'b>(
+pub fn parse_return<'a>(
     s: Span<'a>,
-    containing_class: Option<&'b SimpleNameToken>,
+    containing_class: Option<&SimpleNameToken>,
 ) -> ParseResult<'a, Span<'a>, ReturnToken> {
     let (s, l) = tag("return")(s)?;
     let (s, _) = require_ignored(s)?;

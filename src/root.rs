@@ -109,21 +109,18 @@ pub fn main_args(args: Args) -> Result<(), WErr> {
         link_gcc(&args.output).unwrap();
         let end = t.elapsed();
         // TODO: Don't unwrap
-        let size = format!(
-            "{}",
-            File::open(format!("{}.out", args.output))
-                .unwrap()
-                .metadata()
-                .unwrap()
-                .len()
-                .to_formatted_string(&Locale::en)
-        );
+        let size = File::open(format!("{}.out", args.output))
+            .unwrap()
+            .metadata()
+            .unwrap()
+            .len()
+            .to_formatted_string(&Locale::en);
         cprintln!("<g,bold>Completed [{:?}] - {} bytes</>", end, size);
 
         if args.build {
             println!("Skipping execution")
         } else {
-            let termsize::Size { rows, cols } = termsize::get().unwrap();
+            let termsize::Size { rows: _, cols } = termsize::get().unwrap();
             const EXECUTING: &str = "Executing";
             if cols < EXECUTING.len() as u16 || cols > 300 {
                 cprintln!("<s><b>Executing...</>");

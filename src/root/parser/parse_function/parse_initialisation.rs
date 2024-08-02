@@ -18,7 +18,7 @@ pub struct InitialisationToken {
     value: EvaluableToken,
 }
 
-pub fn test_parse_initialisation<'a, 'b>(s: Span<'a>) -> ParseResult<Span, LineTestFn<'a, 'b>> {
+pub fn test_parse_initialisation<'b>(s: Span<'_>) -> ParseResult<Span, LineTestFn<'_, 'b>> {
     match (tag("let"), require_ignored).parse(s) {
         Ok(_) => Ok((s, |x, c| {
             parse_initialisation(x, c).map(|(s, x)| (s, LineTokens::Initialisation(x)))
@@ -27,9 +27,9 @@ pub fn test_parse_initialisation<'a, 'b>(s: Span<'a>) -> ParseResult<Span, LineT
     }
 }
 
-pub fn parse_initialisation<'a, 'b>(
+pub fn parse_initialisation<'a>(
     s: Span<'a>,
-    containing_class: Option<&'b SimpleNameToken>,
+    containing_class: Option<&SimpleNameToken>,
 ) -> ParseResult<'a, Span<'a>, InitialisationToken> {
     let (s, l) = tag("let")(s)?;
     let (s, _) = require_ignored(s)?;

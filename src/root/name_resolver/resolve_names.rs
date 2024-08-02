@@ -1,4 +1,3 @@
-use std::any::Any;
 use std::collections::HashMap;
 
 use crate::root::errors::evaluable_errors::EvalErrs;
@@ -70,7 +69,7 @@ impl Type for UserType {
 
     fn instantiate_from_literal(
         &self,
-        location: &LocalAddress,
+        _location: &LocalAddress,
         literal: &LiteralToken,
     ) -> Result<String, WErr> {
         WErr::ne(

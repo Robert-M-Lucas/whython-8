@@ -1,11 +1,10 @@
-use crate::root::builtin::types::bool::printb::PrintB;
+use unique_type_id::UniqueTypeId;
+
 use crate::root::builtin::types::bool::{bool_op_sig, BoolType};
-use crate::root::builtin::types::int::IntType;
 use crate::root::builtin::{f_id, BuiltinInlineFunction, InlineFunctionGenerator};
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{FunctionID, LocalAddress, TypeID};
-use unique_type_id::UniqueTypeId;
 
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
@@ -25,7 +24,7 @@ impl BuiltinInlineFunction for BoolOr {
     }
 
     fn inline(&self) -> InlineFunctionGenerator {
-        |args: &[LocalAddress], return_into, gt, sz| -> String {
+        |args: &[LocalAddress], return_into, _, _| -> String {
             let lhs = args[0];
             let rhs = args[1];
             let return_into = return_into.unwrap();
@@ -68,7 +67,7 @@ impl BuiltinInlineFunction for BoolAsOr {
     }
 
     fn inline(&self) -> InlineFunctionGenerator {
-        |args: &[LocalAddress], _, gt, sz| -> String {
+        |args: &[LocalAddress], _, _, _| -> String {
             let lhs = args[0];
             let rhs = args[1];
             format!(

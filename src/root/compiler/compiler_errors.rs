@@ -9,8 +9,8 @@ pub enum CompErrs {
     IntLiteralBelowMin(i128, i128),
     #[error("Expected return ({0})")]
     ExpectedReturn(String),
-    #[error("Expected return type ({0}) but found ({1})")]
-    ExpectedReturnType(String, String),
+    // #[error("Expected return type ({0}) but found ({1})")]
+    // ExpectedReturnType(String, String),
     #[error("Expected return type ({0}), not none")]
     ExpectedSomeReturn(String),
     #[error("Expected return with no value")]

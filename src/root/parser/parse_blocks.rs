@@ -1,14 +1,16 @@
-use crate::root::errors::parser_errors::create_custom_error;
-use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
-use crate::root::parser::parse_util::discard_ignored;
-use itertools::Itertools;
-use nom::bytes::complete::{tag, take_until};
+use std::path::PathBuf;
+use std::rc::Rc;
+
+use nom::bytes::complete::tag;
 use nom::character::complete::{anychar, char as nchar};
 use nom::error::{ErrorKind, ParseError};
 use nom::{InputTake, Offset};
 use nom_locate::LocatedSpan;
-use std::path::PathBuf;
-use std::rc::Rc;
+
+use crate::root::errors::parser_errors::create_custom_error;
+use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
+use crate::root::parser::parse_util::discard_ignored;
+
 // ! BROKEN
 
 pub struct Terminator {
@@ -42,17 +44,14 @@ pub const STRING_TERMINATOR: Terminator = Terminator {
 pub const DEFAULT_TERMINATORS: [Terminator; 3] =
     [BRACE_TERMINATOR, BRACKET_TERMINATOR, STRING_TERMINATOR];
 
-pub fn parse_terminator_default_set<'a, 'b>(
-    s: Span<'a>,
-    terminator: &'b Terminator,
-) -> ParseResult<'a> {
+pub fn parse_terminator_default_set<'a>(s: Span<'a>, terminator: &Terminator) -> ParseResult<'a> {
     parse_terminator(s, terminator, &DEFAULT_TERMINATORS)
 }
 
-pub fn parse_terminator<'a, 'b, 'c>(
+pub fn parse_terminator<'a>(
     s: Span<'a>,
-    terminator: &'b Terminator,
-    all_terminators: &'c [Terminator],
+    terminator: &Terminator,
+    all_terminators: &[Terminator],
 ) -> ParseResult<'a> {
     let (initial_span, _) = nchar(terminator.opening)(s)?;
 
@@ -96,12 +95,12 @@ pub fn parse_terminator<'a, 'b, 'c>(
 
         if terminator.code_inner {
             for t in all_terminators {
-                if let Ok(_) = nchar::<_, ErrorTree>(t.opening)(s) {
+                if nchar::<_, ErrorTree>(t.opening)(s).is_ok() {
                     s = parse_terminator(s, t, all_terminators)?.0;
                     continue 'main;
                 }
 
-                if let Ok(_) = nchar::<_, ErrorTree>(t.closing)(s) {
+                if nchar::<_, ErrorTree>(t.closing)(s).is_ok() {
                     // Unopened section closed
                     return Err(create_custom_error(
                         format!(
@@ -123,7 +122,7 @@ pub fn parse_terminator<'a, 'b, 'c>(
 }
 
 pub fn take_until_or_end_discard_smart<'a>(s: Span<'a>, until: &str) -> ParseResult<'a> {
-    let original = s.clone();
+    let original = s;
     let mut s = s;
     let mut found = false;
     'outer: while !s.is_empty() {
@@ -154,8 +153,9 @@ pub fn take_until_or_end_discard_smart<'a>(s: Span<'a>, until: &str) -> ParseRes
     Ok((end, inner))
 }
 
+#[allow(dead_code)]
 pub fn take_until_discard_smart<'a>(s: Span<'a>, until: &str) -> ParseResult<'a> {
-    let original = s.clone();
+    let original = s;
     let mut s = s;
     'outer: loop {
         if s.is_empty() {

@@ -1,4 +1,7 @@
-use crate::root::errors::name_resolver_errors::NRErrs;
+use std::collections::HashMap;
+
+use derive_getters::Dissolve;
+
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
 use crate::root::name_resolver::resolve_names::UserType;
@@ -7,8 +10,6 @@ use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::shared::common::TypeRef;
 use crate::root::shared::common::{ByteSize, TypeID};
 use crate::root::POINTER_SIZE;
-use derive_getters::Dissolve;
-use std::collections::HashMap;
 
 #[derive(Dissolve)]
 /// A user type with TBD size

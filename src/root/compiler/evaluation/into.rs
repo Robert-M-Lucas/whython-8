@@ -1,8 +1,10 @@
+use either::{Left, Right};
+use itertools::Itertools;
+
 use crate::root::assembler::assembly_builder::AssemblyBuilder;
 use crate::root::builtin::core::referencing::{set_deref, set_reference};
-use crate::root::compiler::assembly::utils::{copy, copy_from_indirect_fixed_offset};
+use crate::root::compiler::assembly::utils::copy;
 use crate::root::compiler::compile_function_call::call_function;
-use crate::root::compiler::compiler_errors::CompErrs;
 use crate::root::compiler::evaluation::coerce_self::coerce_self;
 use crate::root::compiler::evaluation::new::compile_evaluable_new;
 use crate::root::compiler::evaluation::reference::compile_evaluable_reference;
@@ -19,10 +21,6 @@ use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, Evalu
 use crate::root::parser::parse_function::parse_operator::{OperatorTokens, PrefixOrInfixEx};
 use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{AddressedTypeRef, FunctionID, LocalAddress};
-use crate::root::shared::types::Type;
-use either::{Left, Right};
-use itertools::Itertools;
-use std::any::Any;
 
 /// Evaluates `et` putting the result into `target`
 pub fn compile_evaluable_into(
@@ -80,14 +78,11 @@ pub fn compile_evaluable_into(
             t.instantiate_from_literal(target.local_address(), literal)?
         }
         EvaluableTokens::InfixOperator(lhs, op, rhs) => {
-            match op.operator() {
-                OperatorTokens::Assign => {
-                    return WErr::ne(
-                        EvalErrs::ExpectedType(global_table.get_type_name(target.type_ref())),
-                        et.location().clone(),
-                    );
-                }
-                _ => {}
+            if op.operator() == &OperatorTokens::Assign {
+                return WErr::ne(
+                    EvalErrs::ExpectedType(global_table.get_type_name(target.type_ref())),
+                    et.location().clone(),
+                );
             };
 
             let lhs_type = type_only::compile_evaluable_type_only(
@@ -447,7 +442,7 @@ pub fn compile_evaluable_into(
                 );
             }
 
-            let tt = global_table.get_type(t.type_id().clone());
+            let tt = global_table.get_type(*t.type_id());
             let attributes = tt
                 .get_attributes(struct_init.location())
                 .map_err(|_| {
@@ -457,7 +452,7 @@ pub fn compile_evaluable_into(
                     )
                 })?
                 .iter()
-                .map(|x| x.clone())
+                .cloned()
                 .collect_vec();
             let give_attrs = struct_init.contents();
 

@@ -4,9 +4,9 @@ use crate::root::parser::parse_function::parse_evaluable::{parse_evaluable, Eval
 use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::parser::parse_util::discard_ignored;
 
-pub fn parse_arguments<'a, 'b>(
+pub fn parse_arguments<'a>(
     s: Span<'a>,
-    containing_class: Option<&'b SimpleNameToken>,
+    containing_class: Option<&SimpleNameToken>,
 ) -> ParseResult<'a, (), Vec<EvaluableToken>> {
     let mut s = s;
     let mut args = Vec::new();

@@ -1,3 +1,6 @@
+#[cfg(debug_assertions)]
+use color_print::cprintln;
+
 use crate::root::assembler::assembly_builder::AssemblyBuilder;
 use crate::root::builtin::types::bool::BoolType;
 use crate::root::builtin::types::int::IntType;
@@ -6,7 +9,6 @@ use crate::root::compiler::evaluation::into::compile_evaluable_into;
 use crate::root::compiler::evaluation::reference::compile_evaluable_reference;
 use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
-use crate::root::errors::evaluable_errors::EvalErrs;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
 use crate::root::parser::parse_function::parse_line::LineTokens;
@@ -14,7 +16,6 @@ use crate::root::parser::parse_function::FunctionToken;
 use crate::root::shared::common::AddressedTypeRef;
 use crate::root::shared::common::{FunctionID, Indirection, LocalAddress, TypeRef};
 use crate::root::utils::warn;
-use color_print::cprintln;
 
 /// Compiles a given function into assembly
 pub fn compile_function(
@@ -307,7 +308,7 @@ fn recursively_compile_lines(
                 contents.line("ret");
 
                 if line_i != lines.len() - 1 {
-                    warn(&format!("Return isn't the last instruction in the block. Following lines in block will not be compiled/run.\n{}", rt.location().clone().to_warning()))
+                    warn(&format!("Return isn't the last instruction in the block. Following lines in block will not be compiled/run.\n{}", rt.location().clone().into_warning()))
                 }
                 break;
             }

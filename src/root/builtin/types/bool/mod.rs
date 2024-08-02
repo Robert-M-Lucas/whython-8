@@ -1,25 +1,25 @@
-mod and;
-mod comparators;
-mod not;
-mod or;
-mod printb;
+use b_box::b;
+use unique_type_id::UniqueTypeId;
 
+use crate::root::builtin::t_id;
 use crate::root::builtin::types::bool::and::{BoolAnd, BoolAsAnd};
 use crate::root::builtin::types::bool::comparators::{BoolEq, BoolNE};
 use crate::root::builtin::types::bool::not::BoolNot;
 use crate::root::builtin::types::bool::or::{BoolAsOr, BoolOr};
 use crate::root::builtin::types::bool::printb::PrintB;
-use crate::root::builtin::types::int::IntType;
-use crate::root::builtin::{f_id, t_id, BuiltinInlineFunction, InlineFunctionGenerator};
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse_function::parse_literal::{LiteralToken, LiteralTokens};
 use crate::root::parser::parse_parameters::SelfType;
-use crate::root::shared::common::{ByteSize, FunctionID, LocalAddress, TypeID};
+use crate::root::shared::common::{ByteSize, LocalAddress, TypeID};
 use crate::root::shared::types::Type;
-use b_box::b;
-use unique_type_id::UniqueTypeId;
+
+mod and;
+mod comparators;
+mod not;
+mod or;
+mod printb;
 
 fn bool_op_sig() -> FunctionSignature {
     FunctionSignature::new_inline_builtin(

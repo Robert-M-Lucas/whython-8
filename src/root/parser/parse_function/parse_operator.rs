@@ -1,7 +1,6 @@
 use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
 use derive_getters::Getters;
 use nom::Err::Error;
-use nom::Parser;
 use nom_supreme::error::GenericErrorTree;
 use nom_supreme::tag::complete::tag;
 use nom_supreme::tag::TagError;

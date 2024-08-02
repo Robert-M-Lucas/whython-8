@@ -1,21 +1,27 @@
-use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
-use crate::root::parser::parse_function::parse_evaluable::{parse_evaluable, EvaluableToken};
-use crate::root::parser::parse_function::parse_line::{LineTestFn, LineTokens};
-use crate::root::parser::parse_name::SimpleNameToken;
-use crate::root::parser::parse_util::{discard_ignored, require_ignored};
+#[cfg(debug_assertions)]
 use derive_getters::Getters;
+#[cfg(debug_assertions)]
 use nom::bytes::complete::take_till;
+#[cfg(debug_assertions)]
 use nom::character::complete::char;
+#[cfg(debug_assertions)]
 use nom::sequence::Tuple;
-use nom_supreme::tag::complete::tag;
 
+#[cfg(debug_assertions)]
+use crate::root::parser::parse::{ParseResult, Span};
+#[cfg(debug_assertions)]
+use crate::root::parser::parse_function::parse_line::{LineTestFn, LineTokens};
+#[cfg(debug_assertions)]
+use crate::root::parser::parse_util::{discard_ignored, require_ignored};
+
+#[cfg(debug_assertions)]
 #[derive(Debug, Getters)]
 pub struct MarkerToken {
     value: String,
 }
 
 #[cfg(debug_assertions)]
-pub fn test_parse_marker<'a, 'b>(s: Span<'a>) -> ParseResult<Span, LineTestFn<'a, 'b>> {
+pub fn test_parse_marker<'b>(s: Span) -> ParseResult<Span, LineTestFn<'_, 'b>> {
     match (char('@'), require_ignored).parse(s) {
         Ok(_) => Ok((s, |x, _| {
             parse_marker(x).map(|(s, x)| (s, LineTokens::Marker(x)))

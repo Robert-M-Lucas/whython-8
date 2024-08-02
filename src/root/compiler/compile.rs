@@ -1,3 +1,8 @@
+use std::collections::HashMap;
+
+#[cfg(debug_assertions)]
+use itertools::Itertools;
+
 use crate::root::compiler::compile_function::compile_function;
 use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::errors::WErr;
@@ -5,8 +10,6 @@ use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
 use crate::root::parser::parse_function::FunctionToken;
 use crate::root::shared::common::FunctionID;
 use crate::root::unrandom::{new_hashmap, new_hashset};
-use itertools::Itertools;
-use std::collections::{HashMap, HashSet};
 
 /// Compiles the entire program. Returns assembly.
 pub fn compile(
@@ -67,7 +70,7 @@ section .text
         .iter()
         .sorted_by(|(x, _), (y, _)| x.0.cmp(&y.0))
     {
-        s += &f;
+        s += f;
         s += "\n\n";
     }
 

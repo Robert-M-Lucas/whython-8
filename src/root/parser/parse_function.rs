@@ -70,7 +70,7 @@ pub fn parse_function<'a>(
 
     let (s, return_type) = if let Ok((s, _)) = tag::<_, _, ErrorTree>("->")(s) {
         let (s, _) = discard_ignored(s)?;
-        let location = Location::from_span(&s);
+        // let location = Location::from_span(&s);
         let (s, return_type) = parse_full_name(s, allow_self)?;
         (discard_ignored(s)?.0, Some(return_type))
     } else {

@@ -1,4 +1,3 @@
-use crate::root::compiler::compiler_errors::CompErrs;
 use crate::root::errors::evaluable_errors::EvalErrs;
 use crate::root::errors::WErr;
 use crate::root::parser::parse::Location;

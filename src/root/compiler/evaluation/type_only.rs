@@ -1,6 +1,4 @@
-use crate::root::assembler::assembly_builder::AssemblyBuilder;
 use crate::root::compiler::evaluation::function_only;
-use crate::root::compiler::evaluation::reference::compile_evaluable_reference;
 use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::evaluable_errors::EvalErrs;
@@ -10,9 +8,7 @@ use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable, NameResult};
 use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, EvaluableTokens};
 use crate::root::parser::parse_function::parse_operator::{OperatorTokens, PrefixOrInfixEx};
-use crate::root::shared::common::{
-    AddressedTypeRef, FunctionID, Indirection, LocalAddress, TypeRef,
-};
+use crate::root::shared::common::{FunctionID, Indirection, TypeRef};
 
 /// Evaluates the type `et` evaluates to. Does not generate any assembly.
 pub fn compile_evaluable_type_only(
@@ -143,8 +139,8 @@ pub fn compile_evaluable_type_only(
                 n.location().clone(),
             )
         } // Accessed methods must be called
-        EvaluableTokens::FunctionCall(inner, args) => {
-            let (slf, ifid, _) = function_only::compile_evaluable_function_only(
+        EvaluableTokens::FunctionCall(inner, _args) => {
+            let (_slf, ifid, _) = function_only::compile_evaluable_function_only(
                 fid,
                 inner,
                 local_variables,

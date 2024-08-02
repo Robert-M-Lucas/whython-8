@@ -1,4 +1,4 @@
-use crate::root::compiler::assembly::utils::{copy_from_indirect, copy_from_indirect_fixed_offset};
+use crate::root::compiler::assembly::utils::copy_from_indirect;
 use crate::root::errors::evaluable_errors::EvalErrs;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;

@@ -1,12 +1,10 @@
-use crate::root::assembler::assembly_builder::AssemblyBuilder;
 use crate::root::builtin::{BuiltinInlineFunction, InlineFunctionGenerator};
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::parser::parse_parameters::SelfType;
-use crate::root::shared::common::{AddressedTypeRef, FunctionID, LocalAddress, TypeID, TypeRef};
-use num_format::Locale::se;
+use crate::root::shared::common::{AddressedTypeRef, FunctionID, TypeID, TypeRef};
 
 pub fn heap_alloc(
     t: TypeRef,

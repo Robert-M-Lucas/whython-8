@@ -152,7 +152,7 @@ impl GlobalDefinitionTable {
         self.impl_definitions
             .get(&base)
             .and_then(|i| i.get(name))
-            .map(|f| *f)
+            .copied()
     }
 
     /// Adds a type from a `StructToken`
@@ -296,7 +296,7 @@ impl GlobalDefinitionTable {
             return Ok(TypeRef::new(*r, *indirection));
         }
 
-        if let Some(r) = self.builtin_function_name_table.get(name.name()) {
+        if let Some(_fid) = self.builtin_function_name_table.get(name.name()) {
             return WErr::ne(
                 NRErrs::FoundFunctionNotType(name.name().clone()),
                 full_name.location().clone(),
@@ -376,7 +376,7 @@ impl GlobalDefinitionTable {
     pub fn get_type_name(&self, type_ref: &TypeRef) -> String {
         format!(
             "{}{}",
-            unsafe { String::from_utf8_unchecked(vec!['&' as u8; type_ref.indirection().0]) },
+            unsafe { String::from_utf8_unchecked(vec![b'&'; type_ref.indirection().0]) },
             self.get_type(*type_ref.type_id()).name()
         )
     }
@@ -385,7 +385,7 @@ impl GlobalDefinitionTable {
     pub fn resolve_name(
         &mut self,
         name: &SimpleNameToken,
-        containing_class: Option<&SimpleNameToken>,
+        _containing_class: Option<&SimpleNameToken>,
         local_variable_table: &LocalVariableTable,
     ) -> Result<NameResult, WErr> {
         if let Some(variable) = local_variable_table.get(name.name()) {

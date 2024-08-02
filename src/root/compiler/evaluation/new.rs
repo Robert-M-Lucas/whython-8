@@ -6,7 +6,6 @@ use crate::root::builtin::core::referencing::{set_deref, set_reference};
 use crate::root::compiler::assembly::heap::heap_alloc;
 use crate::root::compiler::assembly::utils::{copy, copy_to_indirect};
 use crate::root::compiler::compile_function_call::call_function;
-use crate::root::compiler::compiler_errors::CompErrs;
 use crate::root::compiler::evaluation::coerce_self::coerce_self;
 use crate::root::compiler::evaluation::reference::compile_evaluable_reference;
 use crate::root::compiler::evaluation::{function_only, into, reference, type_only};
@@ -24,7 +23,6 @@ use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{
     AddressedTypeRef, FunctionID, Indirection, LocalAddress, TypeRef,
 };
-use crate::root::shared::types::Type;
 
 /// Evaluates `et` into a new address
 pub fn compile_evaluable_new(
@@ -81,49 +79,39 @@ pub fn compile_evaluable_new(
             )
         }
         EvaluableTokens::InfixOperator(lhs, op, rhs) => {
-            match op.operator() {
-                OperatorTokens::Assign => {
-                    let (mut c, into) = compile_evaluable_new(
-                        fid,
-                        lhs,
-                        local_variables,
-                        global_table,
-                        global_tracker,
-                    )?;
+            if op.operator() == &OperatorTokens::Assign {
+                let (mut c, into) =
+                    compile_evaluable_new(fid, lhs, local_variables, global_table, global_tracker)?;
 
-                    let Some(into) = into else {
-                        return WErr::ne(EvalErrs::ExpectedNotNone, lhs.location().clone());
-                    };
-                    if !into.type_ref().indirection().has_indirection() {
-                        return WErr::ne(
-                            EvalErrs::ExpectedReference(
-                                global_table.get_type_name(into.type_ref()),
-                            ),
-                            lhs.location().clone(),
-                        );
-                    }
-
-                    let val = global_table.add_local_variable_unnamed_base(
-                        into.type_ref().minus_one_indirect(),
-                        local_variables,
+                let Some(into) = into else {
+                    return WErr::ne(EvalErrs::ExpectedNotNone, lhs.location().clone());
+                };
+                if !into.type_ref().indirection().has_indirection() {
+                    return WErr::ne(
+                        EvalErrs::ExpectedReference(global_table.get_type_name(into.type_ref())),
+                        lhs.location().clone(),
                     );
-                    c += &into::compile_evaluable_into(
-                        fid,
-                        rhs,
-                        val.clone(),
-                        local_variables,
-                        global_table,
-                        global_tracker,
-                    )?;
-
-                    c += &copy_to_indirect(
-                        *val.local_address(),
-                        *into.local_address(),
-                        global_table.get_size(val.type_ref()),
-                    );
-                    return Ok((c, None));
                 }
-                _ => {}
+
+                let val = global_table.add_local_variable_unnamed_base(
+                    into.type_ref().minus_one_indirect(),
+                    local_variables,
+                );
+                c += &into::compile_evaluable_into(
+                    fid,
+                    rhs,
+                    val.clone(),
+                    local_variables,
+                    global_table,
+                    global_tracker,
+                )?;
+
+                c += &copy_to_indirect(
+                    *val.local_address(),
+                    *into.local_address(),
+                    global_table.get_size(val.type_ref()),
+                );
+                return Ok((c, None));
             };
 
             let lhs_type = type_only::compile_evaluable_type_only(
@@ -438,7 +426,7 @@ pub fn compile_evaluable_new(
                 global_table.add_local_variable_unnamed_base(t.clone(), local_variables)
             /* } */;
 
-            let tt = global_table.get_type(t.type_id().clone());
+            let tt = global_table.get_type(*t.type_id());
             let attributes = tt
                 .get_attributes(struct_init.location())
                 .map_err(|_| {
@@ -448,7 +436,7 @@ pub fn compile_evaluable_new(
                     )
                 })?
                 .iter()
-                .map(|x| x.clone())
+                .cloned()
                 .collect_vec();
             let give_attrs = struct_init.contents();
 

@@ -1,6 +1,7 @@
-use crate::root::errors::parser_errors::{
-    create_custom_error, create_custom_error_tree, to_error_tree,
-};
+use nom::branch::alt;
+use nom::Parser;
+
+use crate::root::errors::parser_errors::{create_custom_error_tree, to_error_tree};
 use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
 use crate::root::parser::parse_function::parse_break::{test_parse_break, BreakToken};
 use crate::root::parser::parse_function::parse_evaluable::{parse_evaluable, EvaluableToken};
@@ -14,9 +15,6 @@ use crate::root::parser::parse_function::parse_return::{test_parse_return, Retur
 use crate::root::parser::parse_function::parse_while::{test_parse_while, WhileToken};
 use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::parser::parse_util::discard_ignored;
-use nom::branch::alt;
-use nom::{IResult, Parser};
-use nom_supreme::error::BaseErrorKind;
 
 #[derive(Debug)]
 pub enum LineTokens {
@@ -34,9 +32,9 @@ pub enum LineTokens {
 pub type LineTestFn<'a, 'b> =
     fn(Span<'a>, Option<&'b SimpleNameToken>) -> ParseResult<'a, Span<'a>, LineTokens>;
 
-pub fn parse_lines<'a, 'b>(
+pub fn parse_lines<'a>(
     contents: Span<'a>,
-    containing_class: Option<&'b SimpleNameToken>,
+    containing_class: Option<&SimpleNameToken>,
 ) -> ParseResult<'a, (), Vec<LineTokens>> {
     let mut lines = Vec::new();
 
@@ -56,9 +54,9 @@ pub fn parse_lines<'a, 'b>(
     Ok(((), lines))
 }
 
-pub fn parse_line<'a, 'b>(
+pub fn parse_line<'a>(
     s: Span<'a>,
-    containing_class: Option<&'b SimpleNameToken>,
+    containing_class: Option<&SimpleNameToken>,
 ) -> ParseResult<'a, Span<'a>, LineTokens> {
     match alt((
         test_parse_break,
@@ -72,7 +70,7 @@ pub fn parse_line<'a, 'b>(
     .parse(s)
     {
         Ok((_, parser)) => parser(s, containing_class),
-        Err(e) => {
+        Err(_e) => {
             match parse_evaluable(s, containing_class, true).map(|(s, e)| (s, LineTokens::NoOp(e)))
             {
                 Ok(x) => Ok(x),

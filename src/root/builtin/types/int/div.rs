@@ -74,7 +74,7 @@ impl BuiltinInlineFunction for IntAsDiv {
     }
 
     fn inline(&self) -> InlineFunctionGenerator {
-        |args: &[LocalAddress], return_into: Option<LocalAddress>, _, _| -> String {
+        |args: &[LocalAddress], _, _, _| -> String {
             let lhs = args[0];
             let rhs = args[1];
             format!(

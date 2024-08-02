@@ -66,7 +66,7 @@ pub fn run(output: &str) {
         };
     );
 
-    let termsize::Size { rows, cols } = termsize::get().unwrap();
+    let termsize::Size { rows: _, cols } = termsize::get().unwrap();
     const EXITED: &str = "Exited";
     if cols > EXITED.len() as u16 && cols < 300 {
         let padl = (cols - EXITED.len() as u16) / 2;

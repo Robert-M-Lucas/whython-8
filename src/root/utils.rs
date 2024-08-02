@@ -49,7 +49,10 @@ macro_rules! ret_time {
     ($out: expr, $($tts:tt)*) => {
         let t = std::time::Instant::now();
         $($tts)*
-        $out = t.elapsed();
+        #[allow(clippy::needless_late_init)]
+        {
+            $out = t.elapsed();
+        }
     };
 }
 
