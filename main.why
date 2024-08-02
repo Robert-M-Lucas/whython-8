@@ -11,7 +11,7 @@ impl Test {
 fn main() -> int {
     let x: Test = Test { a: 3 };
 
-    + a +
+    ::a;
 
     return 8;
 }

@@ -225,7 +225,7 @@ pub fn parse_evaluable<'a, 'b>(
 ) -> ParseResult<'a, Span<'a>, EvaluableToken> {
     let mut s = s;
 
-    let mut evaluables = Vec::new();
+    let mut evaluables: Vec<(TempEvaluableTokensOne, Span)> = Vec::new();
 
     // Collect evaluable sections into initial vec
     loop {
@@ -274,11 +274,12 @@ pub fn parse_evaluable<'a, 'b>(
         // Recursively parse bracketed sections
         let ns = if let Ok((ns, inner)) = parse_terminator_default_set(s, &BRACKET_TERMINATOR) {
             let (_, evaluable) = parse_evaluable(inner, containing_class, false)?;
-            evaluables.push(TempEvaluableTokensOne::EvaluableToken(evaluable));
+            evaluables.push((TempEvaluableTokensOne::EvaluableToken(evaluable), inner));
             ns
         }
         // Parse evaluable
         else {
+            let t_span = ns;
             let (ns, token) = alt((
                 |x| {
                     parse_literal(x)
@@ -343,43 +344,63 @@ pub fn parse_evaluable<'a, 'b>(
                     })
                 },
             ))(ns)?;
-            evaluables.push(token);
+            evaluables.push((token, t_span));
             ns
         };
 
         s = ns;
     }
 
-    let mut new_evaluables: Vec<TempEvaluableTokensTwo> = Vec::new();
+    let mut new_evaluables: Vec<(TempEvaluableTokensTwo, Span)> = Vec::new();
 
-    for eval in evaluables {
+    for (eval, t1_span) in evaluables {
         match eval {
             TempEvaluableTokensOne::StaticAccess(n) => {
-                match new_evaluables.pop() {
-                    Some(TempEvaluableTokensTwo::Operator(_)) => todo!(), // Can't be operator
-                    Some(TempEvaluableTokensTwo::EvaluableToken(e)) => new_evaluables.push(
+                let Some((token, t2_span)) = new_evaluables.pop() else {
+                    return Err(create_custom_error(
+                        "Must have something to perform a static access on".to_string(),
+                        t1_span
+                    ));
+                };
+
+                match token {
+                    TempEvaluableTokensTwo::Operator(_) => return Err(create_custom_error(
+                        "Cannot perform a static access on an operator".to_string(),
+                        t2_span
+                    )),
+                    TempEvaluableTokensTwo::EvaluableToken(e) => new_evaluables.push((
                         TempEvaluableTokensTwo::EvaluableToken(EvaluableToken {
                             location: e.location.clone(),
                             token: EvaluableTokens::StaticAccess(b!(e), n),
                         }),
-                    ),
-                    None => todo!(), // Must have previous
+                        t1_span,
+                    )),
                 }
             }
             TempEvaluableTokensOne::DynamicAccess(n) => {
-                match new_evaluables.pop() {
-                    Some(TempEvaluableTokensTwo::Operator(_)) => todo!(), // Can't be operator
-                    Some(TempEvaluableTokensTwo::EvaluableToken(e)) => new_evaluables.push(
+                let Some((token, t2_span)) = new_evaluables.pop() else {
+                    return Err(create_custom_error(
+                        "Must have something to perform a dynamic access on".to_string(),
+                        t1_span
+                    ));
+                };
+
+                match token {
+                    TempEvaluableTokensTwo::Operator(_) => return Err(create_custom_error(
+                        "Cannot perform a dynamic access on an operator".to_string(),
+                        t2_span
+                    )),
+                    TempEvaluableTokensTwo::EvaluableToken(e) => new_evaluables.push((
                         TempEvaluableTokensTwo::EvaluableToken(EvaluableToken {
                             location: e.location.clone(),
                             token: EvaluableTokens::DynamicAccess(b!(e), n),
                         }),
-                    ),
-                    None => todo!(), // Must have previous
+                        t1_span,
+                    )),
                 }
             }
-            TempEvaluableTokensOne::FunctionCall(n, c, a) => {
-                new_evaluables.push(TempEvaluableTokensTwo::EvaluableToken(EvaluableToken {
+            TempEvaluableTokensOne::FunctionCall(n, c, a) => new_evaluables.push((
+                TempEvaluableTokensTwo::EvaluableToken(EvaluableToken {
                     location: n.location().clone(),
                     token: EvaluableTokens::FunctionCall(
                         b!(EvaluableToken {
@@ -388,49 +409,74 @@ pub fn parse_evaluable<'a, 'b>(
                         }),
                         a,
                     ),
-                }))
-            }
+                }),
+                t1_span,
+            )),
             TempEvaluableTokensOne::DynamicFunctionCall(n, a) => {
-                match new_evaluables.pop() {
-                    Some(TempEvaluableTokensTwo::Operator(_)) => todo!(), // Can't be operator
-                    Some(TempEvaluableTokensTwo::EvaluableToken(e)) => new_evaluables.push(
-                        TempEvaluableTokensTwo::EvaluableToken(EvaluableToken {
-                            location: e.location.clone(),
-                            token: EvaluableTokens::FunctionCall(
-                                b!(EvaluableToken {
-                                    location: n.location().clone(),
-                                    token: EvaluableTokens::DynamicAccess(b!(e), n)
-                                }),
-                                a,
-                            ),
-                        }),
+                let Some((token, t2_span)) = new_evaluables.pop() else {
+                    return Err(create_custom_error(
+                        "Must have something to perform a method call on".to_string(),
+                        t1_span
+                    ));
+                };
+
+                match token {
+                    TempEvaluableTokensTwo::Operator(_) => return Err(create_custom_error(
+                        "Cannot perform a method on an operator".to_string(),
+                        t2_span
+                    )),
+                    TempEvaluableTokensTwo::EvaluableToken(e) => new_evaluables.push(
+                        (
+                            TempEvaluableTokensTwo::EvaluableToken(EvaluableToken {
+                                location: e.location.clone(),
+                                token: EvaluableTokens::FunctionCall(
+                                    b!(EvaluableToken {
+                                        location: n.location().clone(),
+                                        token: EvaluableTokens::DynamicAccess(b!(e), n)
+                                    }),
+                                    a,
+                                ),
+                            }),
+                            t1_span,
+                        ), // TODO: Review if using t1 instead of t2 is correct
                     ),
-                    None => todo!(), // Must have previous
                 }
             }
             TempEvaluableTokensOne::StaticFunctionCall(n, a) => {
-                match new_evaluables.pop() {
-                    Some(TempEvaluableTokensTwo::Operator(_)) => todo!(), // Can't be operator
-                    Some(TempEvaluableTokensTwo::EvaluableToken(e)) => new_evaluables.push(
-                        TempEvaluableTokensTwo::EvaluableToken(EvaluableToken {
-                            location: e.location.clone(),
-                            token: EvaluableTokens::FunctionCall(
-                                b!(EvaluableToken {
-                                    location: n.location().clone(),
-                                    token: EvaluableTokens::StaticAccess(b!(e), n)
-                                }),
-                                a,
-                            ),
-                        }),
+                let Some((token, t2_span)) = new_evaluables.pop() else {
+                    return Err(create_custom_error(
+                        "Must have something to perform a static function call on".to_string(),
+                        t1_span
+                    ));
+                };
+
+                match token {
+                    TempEvaluableTokensTwo::Operator(_) => return Err(create_custom_error(
+                        "Cannot perform a static function call on an operator".to_string(),
+                        t2_span
+                    )),
+                    TempEvaluableTokensTwo::EvaluableToken(e) => new_evaluables.push(
+                        (
+                            TempEvaluableTokensTwo::EvaluableToken(EvaluableToken {
+                                location: e.location.clone(),
+                                token: EvaluableTokens::FunctionCall(
+                                    b!(EvaluableToken {
+                                        location: n.location().clone(),
+                                        token: EvaluableTokens::StaticAccess(b!(e), n)
+                                    }),
+                                    a,
+                                ),
+                            }),
+                            t1_span,
+                        ),
                     ),
-                    None => todo!(), // Must have previous
                 }
             }
             TempEvaluableTokensOne::EvaluableToken(e) => {
-                new_evaluables.push(TempEvaluableTokensTwo::EvaluableToken(e))
+                new_evaluables.push((TempEvaluableTokensTwo::EvaluableToken(e), t1_span))
             }
             TempEvaluableTokensOne::Operator(o) => {
-                new_evaluables.push(TempEvaluableTokensTwo::Operator(o))
+                new_evaluables.push((TempEvaluableTokensTwo::Operator(o), t1_span))
             }
         };
     }
@@ -444,22 +490,25 @@ pub fn parse_evaluable<'a, 'b>(
         Value(usize),
     }
 
-    fn parse_prefix(
-        section: &[(usize, TempEvaluableTokensTwo)],
-    ) -> ParseResult<&[(usize, TempEvaluableTokensTwo)], TempOperation> {
-        let TempEvaluableTokensTwo::Operator(operator) = &section[0].1 else {
+    fn parse_prefix<'a, 'b: 'c, 'c>(
+        section: &'a [(usize, (TempEvaluableTokensTwo, Span<'b>))],
+    ) -> ParseResult<'c, &'a [(usize, (TempEvaluableTokensTwo, Span<'b>))], TempOperation> {
+        let (TempEvaluableTokensTwo::Operator(operator), span) = &section[0].1 else {
             panic!()
         };
 
         if section.len() < 2 {
-            todo!()
+            return Err(create_custom_error(
+                "Expected evaluable after prefix operator".to_string(),
+                *span,
+            ));
         }
 
         let (remaining, operand) = match &section[1] {
-            (p, TempEvaluableTokensTwo::EvaluableToken(_)) => {
+            (p, (TempEvaluableTokensTwo::EvaluableToken(_), _)) => {
                 (&section[2..], TempOperation::Value(*p))
             }
-            (_, TempEvaluableTokensTwo::Operator(_)) => parse_prefix(&section[1..])?,
+            (_, (TempEvaluableTokensTwo::Operator(_), _)) => parse_prefix(&section[1..])?,
         };
 
         Ok((
@@ -468,49 +517,50 @@ pub fn parse_evaluable<'a, 'b>(
         ))
     }
 
-    let enumerated: Vec<(usize, TempEvaluableTokensTwo)> =
+    let enumerated: Vec<(usize, (TempEvaluableTokensTwo, Span))> =
         evaluables.into_iter().enumerate().collect();
 
     let mut base = None;
     let mut after = Vec::new();
 
-    let mut enumerated_slice: &[(usize, TempEvaluableTokensTwo)] = &enumerated;
+    let mut enumerated_slice: &[(usize, (TempEvaluableTokensTwo, Span))] = &enumerated;
 
     let mut operator_priority = Vec::new();
 
     while !enumerated_slice.is_empty() {
         let operator = if base.is_some() {
             match &enumerated_slice[0] {
-                (_, TempEvaluableTokensTwo::Operator(op)) => {
+                (_, (TempEvaluableTokensTwo::Operator(op), span)) => {
                     operator_priority.push(op.get_priority_t());
                     enumerated_slice = &enumerated_slice[1..];
-                    Some(op.clone())
+                    Some((op.clone(), *span))
                 }
-                (_, TempEvaluableTokensTwo::EvaluableToken(e)) => {
-                    // ? Expected infix connecting operator
-                    // return Err(create_custom_error(
-                    //
-                    //     e.location
-                    // ));
-                    todo!()
+                (_, (TempEvaluableTokensTwo::EvaluableToken(e), span)) => {
+                    return Err(create_custom_error(
+                        "Expected infix operator between previous and this evaluable".to_string(),
+                        *span,
+                    ));
                 }
             }
         } else {
             None
         };
 
+        if enumerated_slice.is_empty() {
+            // Trailing operator
+            return Err(create_custom_error(
+                "Trailing operator".to_string(),
+                operator.unwrap().1,
+            ));
+        }
+
         let value = match &enumerated_slice[0] {
-            (p, TempEvaluableTokensTwo::EvaluableToken(_)) => {
+            (p, (TempEvaluableTokensTwo::EvaluableToken(_), _)) => {
                 enumerated_slice = &enumerated_slice[1..];
                 TempOperation::Value(*p)
             }
-            (_, TempEvaluableTokensTwo::Operator(_)) => {
-                let (new_slice, value) = match parse_prefix(enumerated_slice) {
-                    Ok(r) => r,
-                    Err(_) => {
-                        todo!()
-                    }
-                };
+            (_, (TempEvaluableTokensTwo::Operator(_), _)) => {
+                let (new_slice, value) = parse_prefix(enumerated_slice)?;
                 enumerated_slice = new_slice;
                 value
             }
@@ -526,16 +576,16 @@ pub fn parse_evaluable<'a, 'b>(
     operator_priority.sort();
 
     for priority in operator_priority {
-        for (pos, (op, _)) in after.iter().map(|x| x.as_ref().unwrap()).enumerate() {
+        for (pos, ((op, _), _)) in after.iter().map(|x| x.as_ref().unwrap()).enumerate() {
             if op.get_priority_t() != priority {
                 continue;
             }
 
             if pos == 0 {
-                let (op, rhs) = after.remove(pos).unwrap();
+                let ((op, _), rhs) = after.remove(pos).unwrap();
                 base = Some(TempOperation::Infix(b!(base.unwrap()), op, b!(rhs)))
             } else {
-                let (op, rhs) = after.remove(pos).unwrap();
+                let ((op, _), rhs) = after.remove(pos).unwrap();
                 let (lop, base) = after[pos - 1].take().unwrap();
                 after[pos - 1] = Some((lop, TempOperation::Infix(b!(base), op, b!(rhs))));
             }
@@ -550,7 +600,7 @@ pub fn parse_evaluable<'a, 'b>(
 
     fn recursively_convert_temp(
         base: TempOperation,
-        evaluables: &mut Vec<Option<TempEvaluableTokensTwo>>,
+        evaluables: &mut Vec<Option<(TempEvaluableTokensTwo, Span)>>,
     ) -> EvaluableToken {
         fn not_operator(te: TempEvaluableTokensTwo) -> EvaluableToken {
             match te {
@@ -580,7 +630,7 @@ pub fn parse_evaluable<'a, 'b>(
                     b!(recursively_convert_temp(*operand, evaluables)),
                 ),
             },
-            TempOperation::Value(p) => not_operator(evaluables[p].take().unwrap()),
+            TempOperation::Value(p) => not_operator(evaluables[p].take().unwrap().0),
         }
     }
 

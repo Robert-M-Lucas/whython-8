@@ -12,7 +12,7 @@ pub fn handle_error<'a>(
         Ok(v) => Ok(v),
         Err(e) => match &e {
             nom::Err::Incomplete(x) => WErr::ne(
-                ParseError::ParserIncompleteErrorsNotImplemented,
+                ParseError::ParserIncompleteErrorsNotImplemented, // TODO
                 Location::builtin(),
             ),
             nom::Err::Error(y) | nom::Err::Failure(y) => Err(handle_error_tree(y)),
@@ -59,10 +59,10 @@ fn handle_error_tree(e: &ErrorTree) -> WErr {
             WErr::locationless(sb)
         }
         ErrorTree::Alt(z) => {
-            let mut sb = "Failed multiple parsers -".to_string();
+            let mut sb = "Failed multiple parsers -\n".to_string();
 
             for (i, e) in z.iter().enumerate() {
-                sb += &format!("\n{}:\n", i + 1);
+                sb += &format!("{}:\n", i + 1);
 
                 let werr = handle_error_tree(e).to_string();
                 for line in werr.lines() {
