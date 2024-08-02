@@ -1,4 +1,6 @@
-use crate::root::errors::parser_errors::{create_custom_error, create_custom_error_tree, to_error_tree};
+use crate::root::errors::parser_errors::{
+    create_custom_error, create_custom_error_tree, to_error_tree,
+};
 use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
 use crate::root::parser::parse_function::parse_break::{test_parse_break, BreakToken};
 use crate::root::parser::parse_function::parse_evaluable::{parse_evaluable, EvaluableToken};

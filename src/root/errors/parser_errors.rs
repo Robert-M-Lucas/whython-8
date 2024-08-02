@@ -29,10 +29,7 @@ pub fn create_custom_error_tree(e: String, l: Span) -> ErrorTree {
 pub fn to_error_tree<'a>(e: nom::Err<ErrorTree<'a>>, s: Span<'a>) -> ErrorTree<'a> {
     match e {
         nom::Err::Incomplete(i) => {
-            create_custom_error_tree(
-                "Expected more characters".to_string(),
-                s
-            )
+            create_custom_error_tree("Expected more characters".to_string(), s)
         }
         nom::Err::Error(e) => e,
         nom::Err::Failure(f) => f,

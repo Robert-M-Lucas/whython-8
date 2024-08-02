@@ -7,12 +7,7 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Added more errors">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.why" beforeDir="false" afterPath="$PROJECT_DIR$/main.why" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_evaluable.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_evaluable.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_line.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_line.rs" afterDir="false" />
-    </list>
+    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Improved parser errors" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -268,15 +263,7 @@
       <workItem from="1722437424689" duration="1470000" />
       <workItem from="1722505926614" duration="51000" />
       <workItem from="1722505984752" duration="5673000" />
-      <workItem from="1722589603461" duration="2437000" />
-    </task>
-    <task id="LOCAL-00021" summary="Improved function call code">
-      <option name="closed" value="true" />
-      <created>1717769943602</created>
-      <option name="number" value="00021" />
-      <option name="presentableId" value="LOCAL-00021" />
-      <option name="project" value="LOCAL" />
-      <updated>1717769943602</updated>
+      <workItem from="1722589603461" duration="3118000" />
     </task>
     <task id="LOCAL-00022" summary="Got functions working (maybe)">
       <option name="closed" value="true" />
@@ -662,7 +649,15 @@
       <option name="project" value="LOCAL" />
       <updated>1722512295536</updated>
     </task>
-    <option name="localTasksCounter" value="70" />
+    <task id="LOCAL-00070" summary="Improved parser errors">
+      <option name="closed" value="true" />
+      <created>1722592721179</created>
+      <option name="number" value="00070" />
+      <option name="presentableId" value="LOCAL-00070" />
+      <option name="project" value="LOCAL" />
+      <updated>1722592721179</updated>
+    </task>
+    <option name="localTasksCounter" value="71" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -719,7 +714,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Comments up to (inlcuding) errors folder" />
     <MESSAGE value="Fixes" />
     <MESSAGE value="Full comments" />
     <MESSAGE value="Made assembly deterministic in debug mode" />
@@ -744,7 +738,8 @@
     <MESSAGE value="Cargo fmt" />
     <MESSAGE value="Improved self coercion" />
     <MESSAGE value="Added more errors" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added more errors" />
+    <MESSAGE value="Improved parser errors" />
+    <option name="LAST_COMMIT_MESSAGE" value="Improved parser errors" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
