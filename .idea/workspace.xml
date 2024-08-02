@@ -7,64 +7,11 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="All parser errors have an implementation">
+    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Refactoring">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.why" beforeDir="false" afterPath="$PROJECT_DIR$/main.why" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/root.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/core/referencing.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/core/referencing.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/functions/exit.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/functions/exit.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/bool/and.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/bool/and.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/bool/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/bool/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/bool/not.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/bool/not.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/bool/or.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/bool/or.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/int/add.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/int/add.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/int/div.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/int/div.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/int/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/int/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/int/modulo.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/int/modulo.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/int/mul.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/int/mul.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/int/p_add.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/int/p_add.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/int/p_sub.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/int/p_sub.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/assembly/heap.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/assembly/heap.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/assembly/null.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/assembly/null.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/assembly/utils.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/assembly/utils.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/compile.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/compile_function.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile_function.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/compiler_errors.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compiler_errors.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/function_only.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/function_only.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/into.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/into.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/new.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/new.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/reference.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/reference.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/type_only.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/type_only.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/errors/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/errors/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/errors/parser_errors.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/errors/parser_errors.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/root/name_resolver/resolve_names.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/resolve_names.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/resolve_type_sizes.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/resolve_type_sizes.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/handle_errors.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/handle_errors.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_arguments.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_arguments.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_blocks.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_blocks.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_break.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_break.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_evaluable.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_evaluable.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_if.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_if.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_initialisation.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_initialisation.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_line.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_line.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_literal.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_literal.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_marker.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_marker.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_operator.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_operator.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_return.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_return.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_struct_init.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_struct_init.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_while.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_while.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_parameters.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_parameters.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_util.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_util.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/runner.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/runner.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/shared/common.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/shared/common.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/shared/types.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/shared/types.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/unrandom.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/unrandom.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/utils.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/utils.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -139,35 +86,35 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Cargo.Build `Run whython-8`.executor": "Run",
-    "Cargo.Run whython-8.executor": "Run",
-    "Cargo.Test whython-8.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.rust.reset.selective.auto.import": "true",
-    "Shell Script.Test Asm.executor": "Run",
-    "git-widget-placeholder": "dev",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "/home/robertlucas/RustroverProjects/whython-8",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "org.rust.cargo.project.model.PROJECT_DISCOVERY": "true",
-    "org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon": "",
-    "org.rust.first.attach.projects": "true",
-    "settings.editor.selected.configurable": "language.rust.cargo.check",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Cargo.Build `Run whython-8`.executor&quot;: &quot;Run&quot;,
+    &quot;Cargo.Run whython-8.executor&quot;: &quot;Run&quot;,
+    &quot;Cargo.Test whython-8.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.rust.reset.selective.auto.import&quot;: &quot;true&quot;,
+    &quot;Shell Script.Test Asm.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;dev&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/robertlucas/RustroverProjects/whython-8&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;org.rust.cargo.project.model.PROJECT_DISCOVERY&quot;: &quot;true&quot;,
+    &quot;org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon&quot;: &quot;&quot;,
+    &quot;org.rust.first.attach.projects&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;language.rust.cargo.check&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
-      "Rust"
+  &quot;keyToStringList&quot;: {
+    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
+      &quot;Rust&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
@@ -325,15 +272,9 @@
       <workItem from="1722437424689" duration="1470000" />
       <workItem from="1722505926614" duration="51000" />
       <workItem from="1722505984752" duration="5673000" />
-      <workItem from="1722589603461" duration="5663000" />
-    </task>
-    <task id="LOCAL-00023" summary="Testing">
-      <option name="closed" value="true" />
-      <created>1717794233364</created>
-      <option name="number" value="00023" />
-      <option name="presentableId" value="LOCAL-00023" />
-      <option name="project" value="LOCAL" />
-      <updated>1717794233364</updated>
+      <workItem from="1722589603461" duration="6045000" />
+      <workItem from="1722618894942" duration="1095000" />
+      <workItem from="1722625341403" duration="1505000" />
     </task>
     <task id="LOCAL-00024" summary="Testing">
       <option name="closed" value="true" />
@@ -719,7 +660,15 @@
       <option name="project" value="LOCAL" />
       <updated>1722593040036</updated>
     </task>
-    <option name="localTasksCounter" value="72" />
+    <task id="LOCAL-00072" summary="Refactoring">
+      <option name="closed" value="true" />
+      <created>1722599152100</created>
+      <option name="number" value="00072" />
+      <option name="presentableId" value="LOCAL-00072" />
+      <option name="project" value="LOCAL" />
+      <updated>1722599152100</updated>
+    </task>
+    <option name="localTasksCounter" value="73" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -795,13 +744,13 @@
     <MESSAGE value="Added free" />
     <MESSAGE value="Added free and good parser errors" />
     <MESSAGE value="Resolved some todos" />
-    <MESSAGE value="Refactoring" />
     <MESSAGE value="Cargo fmt" />
     <MESSAGE value="Improved self coercion" />
     <MESSAGE value="Added more errors" />
     <MESSAGE value="Improved parser errors" />
     <MESSAGE value="All parser errors have an implementation" />
-    <option name="LAST_COMMIT_MESSAGE" value="All parser errors have an implementation" />
+    <MESSAGE value="Refactoring" />
+    <option name="LAST_COMMIT_MESSAGE" value="Refactoring" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

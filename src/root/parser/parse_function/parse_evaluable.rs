@@ -517,7 +517,7 @@ pub fn parse_evaluable<'a, 'b>(
 
         Ok((
             remaining,
-            TempOperation::Prefix(operator.clone(), Box::new(operand)),
+            TempOperation::Prefix(operator.clone(), b!(operand)),
         ))
     }
 

@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-
+use b_box::b;
 use crate::root::errors::evaluable_errors::EvalErrs;
 use crate::root::errors::name_resolver_errors::NRErrs;
 use crate::root::errors::WErr;
@@ -187,7 +187,7 @@ pub fn resolve_names(
     }
 
     for (id, user_type) in final_types {
-        global_table.add_user_type(id, Box::new(user_type));
+        global_table.add_user_type(id, b!(user_type));
     }
 
     // (final_types, type_names, unprocessed_functions)
