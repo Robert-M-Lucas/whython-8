@@ -1,12 +1,12 @@
-use crate::root::errors::parser_errors::create_custom_error;
-use crate::root::parser::location::{Location, ToLocation};
-use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
-use crate::root::parser::parse_util::discard_ignored;
+use std::path::PathBuf;
+
 use nom::bytes::complete::{tag, take_till};
 use nom::character::complete::anychar;
-use nom::complete::take;
-use std::fmt::format;
-use std::path::PathBuf;
+
+use crate::root::errors::parser_errors::create_custom_error;
+use crate::root::parser::location::Location;
+use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
+use crate::root::parser::parse_util::discard_ignored;
 
 pub fn parse_uses(s: Span) -> ParseResult<Span, Vec<(PathBuf, Location)>> {
     let mut s = s;

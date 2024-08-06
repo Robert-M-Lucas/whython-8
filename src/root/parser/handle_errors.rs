@@ -3,8 +3,7 @@ use nom_supreme::error::{BaseErrorKind, StackContext};
 use crate::root::errors::parser_errors::ParseError;
 use crate::root::errors::WErr;
 use crate::root::parser::location::Location;
-use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
-use crate::root::parser::parse_toplevel::TopLevelTokens;
+use crate::root::parser::parse::{ErrorTree, ParseResult};
 
 pub fn handle_error<A, B>(res: ParseResult<A, B>) -> Result<(A, B), WErr> {
     match res {

@@ -26,10 +26,9 @@ pub fn set_reference(
         );
     }
 
-    // TODO: NOT 64 bit!
     Ok(format!(
         "    mov rax, rbp
-    add rax, {}
+    add rax, {:#018x}
     mov qword {}, rax\n",
         to_ref.local_address().0,
         into.local_address()

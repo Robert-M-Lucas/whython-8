@@ -323,9 +323,8 @@ pub fn compile_evaluable_new(
                 .add_local_variable_unnamed_base(t.plus_one_indirect(), local_variables);
 
             if inner.type_ref().indirection().has_indirection() {
-                // TODO: Not 64 bit!
                 ab.line(&format!("mov rax, {}", inner.local_address()));
-                ab.line(&format!("add rax, {}", found_offset.0));
+                ab.line(&format!("add rax, {:#018x}", found_offset.0));
                 ab.line(&format!("mov qword {}, rax", target.local_address()));
 
                 // ab.other(&copy_from_indirect_fixed_offset(

@@ -430,21 +430,19 @@ pub fn parse_evaluable<'a, 'b>(
                             t2_span,
                         ))
                     }
-                    TempEvaluableTokensTwo::EvaluableToken(e) => new_evaluables.push(
-                        (
-                            TempEvaluableTokensTwo::EvaluableToken(EvaluableToken {
-                                location: e.location.clone(),
-                                token: EvaluableTokens::FunctionCall(
-                                    b!(EvaluableToken {
-                                        location: n.location().clone(),
-                                        token: EvaluableTokens::DynamicAccess(b!(e), n)
-                                    }),
-                                    a,
-                                ),
-                            }),
-                            t1_span,
-                        ), // TODO: Review if using t1 instead of t2 is correct
-                    ),
+                    TempEvaluableTokensTwo::EvaluableToken(e) => new_evaluables.push((
+                        TempEvaluableTokensTwo::EvaluableToken(EvaluableToken {
+                            location: e.location.clone(),
+                            token: EvaluableTokens::FunctionCall(
+                                b!(EvaluableToken {
+                                    location: n.location().clone(),
+                                    token: EvaluableTokens::DynamicAccess(b!(e), n)
+                                }),
+                                a,
+                            ),
+                        }),
+                        t1_span,
+                    )),
                 }
             }
             TempEvaluableTokensOne::StaticFunctionCall(n, a) => {

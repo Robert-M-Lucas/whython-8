@@ -103,7 +103,6 @@ impl GlobalDefinitionTable {
             .insert(t.name().to_string(), id);
         self.type_definitions.insert(id, t);
 
-        // TODO: NOT A USER FUNCTION!
         let fid = self.id_counter;
         self.id_counter += 1;
         let null_function = null_function(id, FunctionID(fid));

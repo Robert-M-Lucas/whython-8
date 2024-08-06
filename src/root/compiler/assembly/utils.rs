@@ -156,7 +156,7 @@ pub fn copy_from_indirect_fixed_offset(
     let mut output = AssemblyBuilder::new();
 
     output.line(&format!("mov rdx, qword {from}"));
-    output.line(&format!("add rdx, {}", offset.0));
+    output.line(&format!("add rdx, {:#018x}", offset.0));
 
     loop {
         let to_write = amount.0 - written;

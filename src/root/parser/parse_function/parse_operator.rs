@@ -94,7 +94,6 @@ pub enum OperatorTokens {
 }
 
 impl OperatorTokens {
-    // TODO: Implement functionally
     pub fn is_prefix_op(&self) -> bool {
         for (_, op, prefix, _) in &OPERATOR_MAPS {
             if self == op {

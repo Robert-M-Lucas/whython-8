@@ -2,16 +2,17 @@ use std::fs;
 use std::path::PathBuf;
 use std::rc::Rc;
 
-use crate::root::errors::parser_errors::ParseError;
-use crate::root::errors::WErr;
-use crate::root::parser::handle_errors::handle_error;
-use crate::root::parser::location::{Location, ToLocation};
-use crate::root::parser::parse_toplevel;
-use crate::root::parser::parse_toplevel::TopLevelTokens;
-use crate::root::parser::use_parser::parse_uses;
 use nom::IResult;
 use nom_locate::LocatedSpan;
 use nom_supreme::error::GenericErrorTree;
+
+use crate::root::errors::parser_errors::ParseError;
+use crate::root::errors::WErr;
+use crate::root::parser::handle_errors::handle_error;
+use crate::root::parser::location::Location;
+use crate::root::parser::parse_toplevel;
+use crate::root::parser::parse_toplevel::TopLevelTokens;
+use crate::root::parser::use_parser::parse_uses;
 
 pub type Span<'a> = LocatedSpan<&'a str, &'a Rc<PathBuf>>;
 

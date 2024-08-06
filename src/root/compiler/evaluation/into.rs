@@ -314,9 +314,8 @@ pub fn compile_evaluable_into(
             };
 
             if inner.type_ref().indirection().has_indirection() {
-                // TODO: This is not full 64 bit!
-                ab.line(&format!("mov rax, {}", inner.local_address()));
-                ab.line(&format!("add rax, {}", found_offset.0));
+                ab.line(&format!("mov rax, qword {}", inner.local_address()));
+                ab.line(&format!("add rax, {:#018x}", found_offset.0));
                 ab.line(&format!("mov qword {}, rax", target.local_address()));
 
                 // ab.other(&copy_from_indirect_fixed_offset(
@@ -465,7 +464,6 @@ pub fn compile_evaluable_into(
 
             let mut code = AssemblyBuilder::new();
 
-            // TODO: Doable without clone?
             for ((offset, t_name, t_type), (name, val)) in attributes.iter().zip(give_attrs.iter())
             {
                 if t_name.name() != name.name() {

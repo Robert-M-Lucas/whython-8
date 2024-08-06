@@ -329,9 +329,15 @@ pub fn call_function(
             ));
         }
 
-        code.line(&format!("sub rsp, {}", local_variables.stack_size().0));
+        code.line(&format!(
+            "sub rsp, {:#018x}",
+            local_variables.stack_size().0
+        ));
         code.line(&format!("call {}", fid.string_id()));
-        code.line(&format!("add rsp, {}", local_variables.stack_size().0));
+        code.line(&format!(
+            "add rsp, {:#018x}",
+            local_variables.stack_size().0
+        ));
 
         // ? Leave block (invalidate parameters)
         local_variables.leave_scope();

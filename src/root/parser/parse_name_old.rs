@@ -47,7 +47,7 @@
 // }
 
 // pub fn parse_full_name_old(s: Span, containing_class: Option<String>) -> ParseResult<Span, UnresolvedNameToken> {
-//     // TODO: Handle indirection
+//     // TOD: Handle indirection
 //
 //     let (s, _) = discard_ignored(s)?;
 //

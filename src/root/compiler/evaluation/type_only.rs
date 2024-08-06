@@ -149,7 +149,9 @@ pub fn compile_evaluable_type_only(
             )?;
 
             let signature = global_table.get_function_signature(ifid);
-            let return_type = signature.return_type().clone().unwrap(); // TODO: Check type
+            let Some(return_type) = signature.return_type().clone() else {
+                return WErr::ne(EvalErrs::ExpectedNotNone, et.location().clone());
+            };
             return_type
         }
         EvaluableTokens::StructInitialiser(struct_init) => {

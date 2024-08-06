@@ -122,9 +122,6 @@ impl<ErrorType> LocationTyped<ErrorType> {
     }
 
     fn fmt_choice(&self, f: &mut Formatter<'_>, is_warning: bool) -> std::fmt::Result {
-        // TODO: Inefficient!
-        // (Maybe fine because it is a 'bad' path?)
-
         let location = match &self.inner_location {
             ErrorLocation::Builtin => {
                 writeln!(f, "{}", cformat!("<c,bold>Builtin Definition</>"))?;
