@@ -44,18 +44,18 @@ pub enum EvaluableTokens {
 }
 
 #[derive(Debug, Getters)]
-pub struct FullNameWithIndirectionToken {
+pub struct UnresolvedTypeRefToken {
     indirection: Indirection,
     inner: FullNameToken,
 }
 
-impl FullNameWithIndirectionToken {
+impl UnresolvedTypeRefToken {
     pub fn from_simple(
         simple: SimpleNameToken,
         containing_class: Option<SimpleNameToken>,
         location: Location,
-    ) -> FullNameWithIndirectionToken {
-        FullNameWithIndirectionToken {
+    ) -> UnresolvedTypeRefToken {
+        UnresolvedTypeRefToken {
             indirection: Indirection(0),
             inner: FullNameToken {
                 location,
@@ -69,8 +69,8 @@ impl FullNameWithIndirectionToken {
         containing_class: Option<SimpleNameToken>,
         location: Location,
         indirection: Indirection,
-    ) -> FullNameWithIndirectionToken {
-        FullNameWithIndirectionToken {
+    ) -> UnresolvedTypeRefToken {
+        UnresolvedTypeRefToken {
             indirection,
             inner: FullNameToken {
                 location,
@@ -95,8 +95,8 @@ impl FullNameToken {
         FullNameToken { location, token }
     }
 
-    pub fn with_no_indirection(self) -> FullNameWithIndirectionToken {
-        FullNameWithIndirectionToken {
+    pub fn with_no_indirection(self) -> UnresolvedTypeRefToken {
+        UnresolvedTypeRefToken {
             indirection: Indirection(0),
             inner: self,
         }
@@ -155,7 +155,7 @@ enum TempEvaluableTokensTwo {
 pub fn parse_full_name<'a>(
     s: Span<'a>,
     containing_class: Option<&SimpleNameToken>,
-) -> ParseResult<'a, Span<'a>, FullNameWithIndirectionToken> {
+) -> ParseResult<'a, Span<'a>, UnresolvedTypeRefToken> {
     let mut indirection: usize = 0;
     let mut s = s;
     loop {
@@ -201,7 +201,7 @@ pub fn parse_full_name<'a>(
 
     Ok((
         s,
-        FullNameWithIndirectionToken {
+        UnresolvedTypeRefToken {
             indirection: Indirection(indirection),
             inner: current,
         },

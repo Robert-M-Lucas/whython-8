@@ -27,7 +27,7 @@ impl BuiltinInlineFunction for PrintB {
     fn signature(&self) -> FunctionSignature {
         FunctionSignature::new_inline_builtin(
             SelfType::None,
-            &[("lhs", BoolType::id().immediate())],
+            &[("lhs", BoolType::id().immediate_single())],
             None,
         )
     }

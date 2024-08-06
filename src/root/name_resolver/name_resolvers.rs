@@ -7,7 +7,7 @@ use crate::root::errors::WErr;
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::location::Location;
 use crate::root::parser::parse_function::parse_evaluable::{
-    FullNameToken, FullNameTokens, FullNameWithIndirectionToken,
+    FullNameToken, FullNameTokens, UnresolvedTypeRefToken,
 };
 use crate::root::parser::parse_function::parse_operator::{OperatorToken, PrefixOrInfixEx};
 use crate::root::parser::parse_function::FunctionToken;
@@ -236,7 +236,7 @@ impl GlobalDefinitionTable {
     /// Takes a name and resolves it to a type (or error)
     pub fn resolve_to_type_ref(
         &mut self,
-        name: &FullNameWithIndirectionToken,
+        name: &UnresolvedTypeRefToken,
     ) -> Result<TypeRef, WErr> {
         let (indirection, full_name) = (name.indirection(), name.inner());
 
@@ -264,7 +264,7 @@ impl GlobalDefinitionTable {
 
         let process_tree = |tree: &NameTree| -> Option<_> {
             tree.get_entry(name.name()).map(|val| match val {
-                NameTreeEntry::Type(t) => Ok(TypeRef::new(*t, *indirection)),
+                NameTreeEntry::Type(t) => Ok(TypeRef::new(*t, 1, *indirection)),
                 NameTreeEntry::Function(_) => WErr::ne(
                     NRErrs::FoundFunctionNotType(name.name().clone()),
                     full_name.location().clone(),
@@ -292,7 +292,7 @@ impl GlobalDefinitionTable {
         }
 
         if let Some(r) = self.builtin_type_name_table.get(name.name()) {
-            return Ok(TypeRef::new(*r, *indirection));
+            return Ok(TypeRef::new(*r, 1, *indirection));
         }
 
         if let Some(_fid) = self.builtin_function_name_table.get(name.name()) {
@@ -331,7 +331,7 @@ impl GlobalDefinitionTable {
     /// Adds a local, unnamed variable to the `LocalVariableTable` and returns the address
     pub fn add_local_variable_unnamed(
         &mut self,
-        t: &FullNameWithIndirectionToken,
+        t: &UnresolvedTypeRefToken,
         local_variable_table: &mut LocalVariableTable,
     ) -> Result<AddressedTypeRef, WErr> {
         let t = self.resolve_to_type_ref(t)?;
@@ -342,7 +342,7 @@ impl GlobalDefinitionTable {
     pub fn add_local_variable_named(
         &mut self,
         name: String,
-        t: &FullNameWithIndirectionToken,
+        t: &UnresolvedTypeRefToken,
         local_variable_table: &mut LocalVariableTable,
     ) -> Result<AddressedTypeRef, WErr> {
         let t = self.resolve_to_type_ref(t)?;

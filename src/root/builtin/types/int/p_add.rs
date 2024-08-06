@@ -22,8 +22,8 @@ impl BuiltinInlineFunction for IntPAdd {
     fn signature(&self) -> FunctionSignature {
         FunctionSignature::new_inline_builtin(
             SelfType::CopySelf,
-            &[("lhs", IntType::id().immediate())],
-            Some(IntType::id().immediate()),
+            &[("lhs", IntType::id().immediate_single())],
+            Some(IntType::id().immediate_single()),
         )
     }
 

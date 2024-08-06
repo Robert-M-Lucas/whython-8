@@ -117,9 +117,9 @@ pub fn call_function(
                                 return WErr::ne(
                                     EvalErrs::ExpectedDifferentType(
                                         global_table
-                                            .get_type_name(&into.type_ref().type_id().immediate()),
+                                            .get_type_name(&into.type_ref().type_id().immediate_single()),
                                         global_table.get_type_name(
-                                            &signature_args[i].type_id().immediate(),
+                                            &signature_args[i].type_id().immediate_single(),
                                         ),
                                     ),
                                     location.clone(),
@@ -229,9 +229,9 @@ pub fn call_function(
                                 return WErr::ne(
                                     EvalErrs::ExpectedDifferentType(
                                         global_table
-                                            .get_type_name(&into.type_ref().type_id().immediate()),
+                                            .get_type_name(&into.type_ref().type_id().immediate_single()),
                                         global_table.get_type_name(
-                                            &signature_args[i].type_id().immediate(),
+                                            &signature_args[i].type_id().immediate_single(),
                                         ),
                                     ),
                                     location.clone(),

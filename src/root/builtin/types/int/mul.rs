@@ -22,10 +22,10 @@ impl BuiltinInlineFunction for IntMul {
         FunctionSignature::new_inline_builtin(
             SelfType::CopySelf,
             &[
-                ("lhs", IntType::id().immediate()),
-                ("rhs", IntType::id().immediate()),
+                ("lhs", IntType::id().immediate_single()),
+                ("rhs", IntType::id().immediate_single()),
             ],
-            Some(IntType::id().immediate()),
+            Some(IntType::id().immediate_single()),
         )
     }
 
@@ -65,8 +65,8 @@ impl BuiltinInlineFunction for IntAsMul {
         FunctionSignature::new_inline_builtin(
             SelfType::RefSelf,
             &[
-                ("lhs", IntType::id().with_indirection(1)),
-                ("rhs", IntType::id().immediate()),
+                ("lhs", IntType::id().with_indirection_single(1)),
+                ("rhs", IntType::id().immediate_single()),
             ],
             None,
         )

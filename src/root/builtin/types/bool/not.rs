@@ -23,8 +23,8 @@ impl BuiltinInlineFunction for BoolNot {
     fn signature(&self) -> FunctionSignature {
         FunctionSignature::new_inline_builtin(
             SelfType::CopySelf,
-            &[("lhs", BoolType::id().immediate())],
-            Some(BoolType::id().immediate()),
+            &[("lhs", BoolType::id().immediate_single())],
+            Some(BoolType::id().immediate_single()),
         )
     }
 

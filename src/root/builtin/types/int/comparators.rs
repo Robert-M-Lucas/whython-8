@@ -29,10 +29,10 @@ impl BuiltinInlineFunction for IntEq {
         FunctionSignature::new_inline_builtin(
             SelfType::CopySelf,
             &[
-                ("lhs", IntType::id().immediate()),
-                ("rhs", IntType::id().immediate()),
+                ("lhs", IntType::id().immediate_single()),
+                ("rhs", IntType::id().immediate_single()),
             ],
-            Some(BoolType::id().immediate()),
+            Some(BoolType::id().immediate_single()),
         )
     }
 
@@ -85,10 +85,10 @@ impl BuiltinInlineFunction for IntNE {
         FunctionSignature::new_inline_builtin(
             SelfType::CopySelf,
             &[
-                ("lhs", IntType::id().immediate()),
-                ("rhs", IntType::id().immediate()),
+                ("lhs", IntType::id().immediate_single()),
+                ("rhs", IntType::id().immediate_single()),
             ],
-            Some(BoolType::id().immediate()),
+            Some(BoolType::id().immediate_single()),
         )
     }
 
@@ -141,10 +141,10 @@ impl BuiltinInlineFunction for IntGT {
         FunctionSignature::new_inline_builtin(
             SelfType::CopySelf,
             &[
-                ("lhs", IntType::id().immediate()),
-                ("rhs", IntType::id().immediate()),
+                ("lhs", IntType::id().immediate_single()),
+                ("rhs", IntType::id().immediate_single()),
             ],
-            Some(BoolType::id().immediate()),
+            Some(BoolType::id().immediate_single()),
         )
     }
 
@@ -197,10 +197,10 @@ impl BuiltinInlineFunction for IntLT {
         FunctionSignature::new_inline_builtin(
             SelfType::CopySelf,
             &[
-                ("lhs", IntType::id().immediate()),
-                ("rhs", IntType::id().immediate()),
+                ("lhs", IntType::id().immediate_single()),
+                ("rhs", IntType::id().immediate_single()),
             ],
-            Some(BoolType::id().immediate()),
+            Some(BoolType::id().immediate_single()),
         )
     }
 
@@ -253,10 +253,10 @@ impl BuiltinInlineFunction for IntGE {
         FunctionSignature::new_inline_builtin(
             SelfType::CopySelf,
             &[
-                ("lhs", IntType::id().immediate()),
-                ("rhs", IntType::id().immediate()),
+                ("lhs", IntType::id().immediate_single()),
+                ("rhs", IntType::id().immediate_single()),
             ],
-            Some(BoolType::id().immediate()),
+            Some(BoolType::id().immediate_single()),
         )
     }
 
@@ -309,10 +309,10 @@ impl BuiltinInlineFunction for IntLE {
         FunctionSignature::new_inline_builtin(
             SelfType::CopySelf,
             &[
-                ("lhs", IntType::id().immediate()),
-                ("rhs", IntType::id().immediate()),
+                ("lhs", IntType::id().immediate_single()),
+                ("rhs", IntType::id().immediate_single()),
             ],
-            Some(BoolType::id().immediate()),
+            Some(BoolType::id().immediate_single()),
         )
     }
 

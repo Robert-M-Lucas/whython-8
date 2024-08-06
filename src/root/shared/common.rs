@@ -1,6 +1,7 @@
+use std::fmt::{Display, Formatter};
+
 use derive_getters::{Dissolve, Getters};
 use derive_more::{Add, AddAssign, Display, Sub, SubAssign};
-use std::fmt::{Display, Formatter};
 
 #[derive(Debug, PartialEq, Eq, Hash, Display, Copy, Clone)]
 #[display(fmt = "TypeID: {}", .0)]
@@ -8,12 +9,20 @@ use std::fmt::{Display, Formatter};
 pub struct TypeID(pub isize);
 
 impl TypeID {
-    pub fn with_indirection(self, indirection: usize) -> TypeRef {
-        TypeRef::new(self, Indirection(indirection))
+    pub fn with_indirection(self, elements: usize, indirection: usize) -> TypeRef {
+        TypeRef::new(self, elements, Indirection(indirection))
     }
 
-    pub fn immediate(self) -> TypeRef {
-        TypeRef::new(self, Indirection(0))
+    pub fn with_indirection_single(self, indirection: usize) -> TypeRef {
+        TypeRef::new(self, 1, Indirection(indirection))
+    }
+
+    pub fn immediate(self, elements: usize) -> TypeRef {
+        TypeRef::new(self, elements, Indirection(0))
+    }
+
+    pub fn immediate_single(self) -> TypeRef {
+        TypeRef::new(self, 1, Indirection(0))
     }
 }
 
@@ -51,6 +60,14 @@ impl Indirection {
     pub fn has_indirection(&self) -> bool {
         self.0 != 0
     }
+    
+    pub fn plus(&self, amount: usize) -> Indirection {
+        Indirection(self.0 + amount)
+    }
+
+    pub fn minus(&self, amount: usize) -> Indirection {
+        Indirection(self.0 - amount)
+    }
 }
 
 #[derive(
@@ -78,20 +95,33 @@ impl Display for LocalAddress {
 /// A `TypeID` with `Indirection`
 pub struct TypeRef {
     type_id: TypeID,
+    elements: usize,
     indirection: Indirection,
 }
 
 impl TypeRef {
-    pub fn new(type_id: TypeID, indirection: Indirection) -> TypeRef {
+    pub fn new(type_id: TypeID, elements: usize, indirection: Indirection) -> TypeRef {
         TypeRef {
             type_id,
+            elements,
             indirection,
         }
     }
+    
+    pub fn is_array(&self) -> bool { self.elements == 1 }
 
+    pub fn with_indirection(&self, indirection: Indirection) -> TypeRef {
+        TypeRef {
+            type_id: self.type_id,
+            elements: self.elements,
+            indirection
+        }
+    }
+    
     pub fn plus_one_indirect(&self) -> TypeRef {
         TypeRef {
             type_id: self.type_id,
+            elements: self.elements,
             indirection: Indirection(self.indirection.0 + 1),
         }
     }
@@ -99,7 +129,16 @@ impl TypeRef {
     pub fn minus_one_indirect(&self) -> TypeRef {
         TypeRef {
             type_id: self.type_id,
+            elements: self.elements,
             indirection: Indirection(self.indirection.0 - 1),
+        }
+    }
+    
+    pub fn immediate(&self) -> TypeRef {
+        TypeRef {
+            type_id: self.type_id,
+            elements: self.elements,
+            indirection: Indirection(0),
         }
     }
 }

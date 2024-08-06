@@ -30,7 +30,7 @@ pub fn compile_evaluable_type_only(
                     )
                 }
                 NameResult::Type(t) => {
-                    t.immediate()
+                    t.immediate_single()
                     // println!("> {}", name.name());
                     // std::process::exit(123);
                     // return WErr::ne(
@@ -43,7 +43,8 @@ pub fn compile_evaluable_type_only(
         }
         EvaluableTokens::Literal(literal) => {
             let tid = literal.literal().default_type();
-            TypeRef::new(tid, Indirection(0))
+            // TODO: Don't use 0 here
+            TypeRef::new(tid, 0, Indirection(0))
         }
         EvaluableTokens::InfixOperator(lhs, op, _) => {
             // if op.is_prefix_opt_t() {
@@ -126,7 +127,7 @@ pub fn compile_evaluable_type_only(
             } else {
                 return WErr::ne(
                     EvalErrs::TypeDoesntHaveAttribute(
-                        global_table.get_type_name(&t.id().immediate()),
+                        global_table.get_type_name(&t.id().immediate_single()),
                         access.name().clone(),
                     ),
                     access.location().clone(),

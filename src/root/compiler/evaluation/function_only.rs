@@ -36,7 +36,7 @@ pub fn compile_evaluable_function_only<'a>(
             let Some(function) = function else {
                 return WErr::ne(
                     EvalErrs::TypeDoesntHaveMethod(
-                        global_table.get_type_name(&inner_type.type_id().immediate()),
+                        global_table.get_type_name(&inner_type.immediate()),
                         access.name().clone(),
                     ),
                     access.location().clone(),
@@ -58,7 +58,7 @@ pub fn compile_evaluable_function_only<'a>(
             let Some(function) = function else {
                 return WErr::ne(
                     EvalErrs::TypeDoesntHaveMethod(
-                        global_table.get_type_name(&inner_type.type_id().immediate()),
+                        global_table.get_type_name(&inner_type.immediate()),
                         access.name().clone(),
                     ),
                     access.location().clone(),

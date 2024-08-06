@@ -71,7 +71,7 @@ pub fn compile_function(
     if (return_variable.is_some() || fid.is_main()) && !last_return {
         let type_ref = return_variable
             .map(|x| x.type_ref().clone())
-            .unwrap_or_else(|| IntType::id().immediate());
+            .unwrap_or_else(|| IntType::id().immediate_single());
         return WErr::ne(
             CompErrs::ExpectedReturn(global_table.get_type_name(&type_ref)),
             end_location,
@@ -133,7 +133,7 @@ fn recursively_compile_lines(
             }
             LineTokens::If(if_token) => {
                 let condition_addr = global_table
-                    .add_local_variable_unnamed_base(BoolType::id().immediate(), local_variables);
+                    .add_local_variable_unnamed_base(BoolType::id().immediate_single(), local_variables);
                 contents.other(&compile_evaluable_into(
                     fid,
                     if_token.if_condition(),
@@ -173,7 +173,7 @@ fn recursively_compile_lines(
                     next_tag = global_tracker.get_unique_tag(fid);
 
                     let condition_addr = global_table.add_local_variable_unnamed_base(
-                        BoolType::id().immediate(),
+                        BoolType::id().immediate_single(),
                         local_variables,
                     );
                     contents.other(&compile_evaluable_into(
@@ -226,7 +226,7 @@ fn recursively_compile_lines(
                 contents.line(&format!("{start_tag}:"));
 
                 let condition_addr = global_table
-                    .add_local_variable_unnamed_base(BoolType::id().immediate(), local_variables);
+                    .add_local_variable_unnamed_base(BoolType::id().immediate_single(), local_variables);
                 contents.other(&compile_evaluable_into(
                     fid,
                     while_token.condition(),
@@ -259,14 +259,14 @@ fn recursively_compile_lines(
                     if rt.return_value().is_none() {
                         return WErr::ne(
                             CompErrs::ExpectedSomeReturn(
-                                global_table.get_type_name(&IntType::id().immediate()),
+                                global_table.get_type_name(&IntType::id().immediate_single()),
                             ),
                             rt.location().clone(),
                         );
                     }
 
                     let address = global_table.add_local_variable_unnamed_base(
-                        TypeRef::new(IntType::id(), Indirection(0)),
+                        TypeRef::new(IntType::id(), 1, Indirection(0)),
                         local_variables,
                     );
                     contents.other(&compile_evaluable_into(

@@ -24,7 +24,7 @@ impl BuiltinInlineFunction for NullFunction {
         FunctionSignature::new(
             SelfType::None,
             vec![],
-            Some(self.parent_type.with_indirection(1)),
+            Some(self.parent_type.with_indirection_single(1)),
         )
     }
 
@@ -74,9 +74,9 @@ impl BuiltinInlineFunction for IsNullFunction {
             SelfType::None,
             vec![(
                 SimpleNameToken::new_builtin("pointer".to_string()),
-                self.parent_type.with_indirection(1),
+                self.parent_type.with_indirection_single(1),
             )],
-            Some(BoolType::id().immediate()),
+            Some(BoolType::id().immediate_single()),
         )
     }
 

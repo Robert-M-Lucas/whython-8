@@ -22,10 +22,10 @@ impl BuiltinInlineFunction for IntSub {
         FunctionSignature::new_inline_builtin(
             SelfType::CopySelf,
             &[
-                ("lhs", IntType::id().immediate()),
-                ("rhs", IntType::id().immediate()),
+                ("lhs", IntType::id().immediate_single()),
+                ("rhs", IntType::id().immediate_single()),
             ],
-            Some(IntType::id().immediate()),
+            Some(IntType::id().immediate_single()),
         )
     }
 

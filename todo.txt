@@ -1,0 +1,9 @@
+
+- Add array support
+  - Move all Type name -> TypeRef resolution to pre-evaluation
+  - Add proper size evaluation in GlobalDefinitionsTable for array types
+  - Add support for arrays into UnresolvedTypeRefToken
+  - Add [int; 12] / &[int; 12] parsing support into UnresolvedTypeRefToken
+  - Add support for parsing array literals
+  - Add evaluation support for array literals
+- Namespacing

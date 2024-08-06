@@ -49,7 +49,7 @@ impl BuiltinInlineFunction for FreeFunction {
             SelfType::None,
             vec![(
                 SimpleNameToken::new_builtin("heap_pointer".to_string()),
-                self.parent_type.with_indirection(1),
+                self.parent_type.with_indirection_single(1),
             )],
             None,
         )

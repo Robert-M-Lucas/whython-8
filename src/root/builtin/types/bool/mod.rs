@@ -25,10 +25,10 @@ fn bool_op_sig() -> FunctionSignature {
     FunctionSignature::new_inline_builtin(
         SelfType::CopySelf,
         &[
-            ("lhs", BoolType::id().immediate()),
-            ("rhs", BoolType::id().immediate()),
+            ("lhs", BoolType::id().immediate_single()),
+            ("rhs", BoolType::id().immediate_single()),
         ],
-        Some(BoolType::id().immediate()),
+        Some(BoolType::id().immediate_single()),
     )
 }
 

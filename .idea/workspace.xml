@@ -7,11 +7,14 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Refactoring">
+    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Fmt">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/resolve_names.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/resolve_names.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_evaluable.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_evaluable.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/out.asm" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.asm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/out.o" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/out.out" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.out" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/builtin/core/referencing.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/core/referencing.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/builtin/functions/exit.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/functions/exit.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/shared/common.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/shared/common.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,7 +53,7 @@
                 <list>
                   <RecentBranch>
                     <option name="branchName" value="dev" />
-                    <option name="lastUsedInstant" value="1722589612" />
+                    <option name="lastUsedInstant" value="1722955034" />
                   </RecentBranch>
                   <RecentBranch>
                     <option name="branchName" value="master" />
@@ -97,7 +100,7 @@
     &quot;Shell Script.Test Asm.executor&quot;: &quot;Run&quot;,
     &quot;git-widget-placeholder&quot;: &quot;dev&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/robertlucas/RustroverProjects/whython-8&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/robertlucas/RustroverProjects/whython-8/src/root/builtin/functions&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -117,18 +120,18 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/root/builtin/functions" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/src/root/builtin/types/int" />
       <recent name="$PROJECT_DIR$/src/root/builtin/types/bool" />
       <recent name="$PROJECT_DIR$/src/root/builtin/types" />
-      <recent name="$PROJECT_DIR$/src/root/builtin/int" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/std" />
       <recent name="C:\Users\rober\Documents\Coding\RustProjects\whython-8\src\root\compiler\evaluation" />
       <recent name="$PROJECT_DIR$/src/root/builtin/types/int" />
       <recent name="$PROJECT_DIR$/src/root/builtin/types" />
       <recent name="$PROJECT_DIR$/src/root/builtin/int" />
-      <recent name="$PROJECT_DIR$/reference" />
     </key>
   </component>
   <component name="RsExternalLinterProjectSettings">
@@ -275,62 +278,7 @@
       <workItem from="1722589603461" duration="6045000" />
       <workItem from="1722618894942" duration="1095000" />
       <workItem from="1722625341403" duration="1505000" />
-    </task>
-    <task id="LOCAL-00024" summary="Testing">
-      <option name="closed" value="true" />
-      <created>1717794747334</created>
-      <option name="number" value="00024" />
-      <option name="presentableId" value="LOCAL-00024" />
-      <option name="project" value="LOCAL" />
-      <updated>1717794747334</updated>
-    </task>
-    <task id="LOCAL-00025" summary="Todo">
-      <option name="closed" value="true" />
-      <created>1717819316020</created>
-      <option name="number" value="00025" />
-      <option name="presentableId" value="LOCAL-00025" />
-      <option name="project" value="LOCAL" />
-      <updated>1717819316020</updated>
-    </task>
-    <task id="LOCAL-00026" summary="Improved operator support">
-      <option name="closed" value="true" />
-      <created>1717826853448</created>
-      <option name="number" value="00026" />
-      <option name="presentableId" value="LOCAL-00026" />
-      <option name="project" value="LOCAL" />
-      <updated>1717826853448</updated>
-    </task>
-    <task id="LOCAL-00027" summary="Printing and function calls">
-      <option name="closed" value="true" />
-      <created>1718558711741</created>
-      <option name="number" value="00027" />
-      <option name="presentableId" value="LOCAL-00027" />
-      <option name="project" value="LOCAL" />
-      <updated>1718558711741</updated>
-    </task>
-    <task id="LOCAL-00028" summary="Testing">
-      <option name="closed" value="true" />
-      <created>1718558898901</created>
-      <option name="number" value="00028" />
-      <option name="presentableId" value="LOCAL-00028" />
-      <option name="project" value="LOCAL" />
-      <updated>1718558898901</updated>
-    </task>
-    <task id="LOCAL-00029" summary="Added exit functions">
-      <option name="closed" value="true" />
-      <created>1718636633009</created>
-      <option name="number" value="00029" />
-      <option name="presentableId" value="LOCAL-00029" />
-      <option name="project" value="LOCAL" />
-      <updated>1718636633009</updated>
-    </task>
-    <task id="LOCAL-00030" summary="More operators">
-      <option name="closed" value="true" />
-      <created>1718798005819</created>
-      <option name="number" value="00030" />
-      <option name="presentableId" value="LOCAL-00030" />
-      <option name="project" value="LOCAL" />
-      <updated>1718798005819</updated>
+      <workItem from="1722969496898" duration="697000" />
     </task>
     <task id="LOCAL-00031" summary="Cargo fix">
       <option name="closed" value="true" />
@@ -668,7 +616,63 @@
       <option name="project" value="LOCAL" />
       <updated>1722599152100</updated>
     </task>
-    <option name="localTasksCounter" value="73" />
+    <task id="LOCAL-00073" summary="location.rs refactor">
+      <option name="closed" value="true" />
+      <created>1722955321706</created>
+      <option name="number" value="00073" />
+      <option name="presentableId" value="LOCAL-00073" />
+      <option name="project" value="LOCAL" />
+      <updated>1722955321707</updated>
+    </task>
+    <task id="LOCAL-00074" summary="Added imports">
+      <option name="closed" value="true" />
+      <created>1722957672545</created>
+      <option name="number" value="00074" />
+      <option name="presentableId" value="LOCAL-00074" />
+      <option name="project" value="LOCAL" />
+      <updated>1722957672545</updated>
+    </task>
+    <task id="LOCAL-00075" summary="fmt">
+      <option name="closed" value="true" />
+      <created>1722957687892</created>
+      <option name="number" value="00075" />
+      <option name="presentableId" value="LOCAL-00075" />
+      <option name="project" value="LOCAL" />
+      <updated>1722957687892</updated>
+    </task>
+    <task id="LOCAL-00076" summary="Cleanup">
+      <option name="closed" value="true" />
+      <created>1722959111522</created>
+      <option name="number" value="00076" />
+      <option name="presentableId" value="LOCAL-00076" />
+      <option name="project" value="LOCAL" />
+      <updated>1722959111522</updated>
+    </task>
+    <task id="LOCAL-00077" summary="Printnl">
+      <option name="closed" value="true" />
+      <created>1722960033973</created>
+      <option name="number" value="00077" />
+      <option name="presentableId" value="LOCAL-00077" />
+      <option name="project" value="LOCAL" />
+      <updated>1722960033973</updated>
+    </task>
+    <task id="LOCAL-00078" summary="Imports">
+      <option name="closed" value="true" />
+      <created>1722960050485</created>
+      <option name="number" value="00078" />
+      <option name="presentableId" value="LOCAL-00078" />
+      <option name="project" value="LOCAL" />
+      <updated>1722960050486</updated>
+    </task>
+    <task id="LOCAL-00079" summary="Fmt">
+      <option name="closed" value="true" />
+      <created>1722960060813</created>
+      <option name="number" value="00079" />
+      <option name="presentableId" value="LOCAL-00079" />
+      <option name="project" value="LOCAL" />
+      <updated>1722960060813</updated>
+    </task>
+    <option name="localTasksCounter" value="80" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -725,13 +729,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Full comments" />
-    <MESSAGE value="Made assembly deterministic in debug mode" />
-    <MESSAGE value="Changes" />
-    <MESSAGE value="Improved block parsing" />
-    <MESSAGE value="Markers" />
-    <MESSAGE value="Unrandom" />
-    <MESSAGE value="Small refactor" />
     <MESSAGE value="Added accessing" />
     <MESSAGE value="Completed adding accessing" />
     <MESSAGE value="Other" />
@@ -750,7 +747,14 @@
     <MESSAGE value="Improved parser errors" />
     <MESSAGE value="All parser errors have an implementation" />
     <MESSAGE value="Refactoring" />
-    <option name="LAST_COMMIT_MESSAGE" value="Refactoring" />
+    <MESSAGE value="location.rs refactor" />
+    <MESSAGE value="Added imports" />
+    <MESSAGE value="fmt" />
+    <MESSAGE value="Cleanup" />
+    <MESSAGE value="Printnl" />
+    <MESSAGE value="Imports" />
+    <MESSAGE value="Fmt" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fmt" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

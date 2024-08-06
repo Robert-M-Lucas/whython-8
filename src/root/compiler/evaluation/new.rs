@@ -67,8 +67,9 @@ pub fn compile_evaluable_new(
         }
         EvaluableTokens::Literal(literal) => {
             let tid = literal.literal().default_type();
+            // TODO: Don't use 1 element
             let address = global_table.add_local_variable_unnamed_base(
-                TypeRef::new(tid, Indirection(0)),
+                TypeRef::new(tid, 1, Indirection(0)),
                 local_variables,
             );
             let t = global_table.get_type(tid);

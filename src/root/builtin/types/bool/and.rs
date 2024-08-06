@@ -69,8 +69,8 @@ impl BuiltinInlineFunction for BoolAsAnd {
         FunctionSignature::new_inline_builtin(
             SelfType::RefSelf,
             &[
-                ("lhs", BoolType::id().with_indirection(1)),
-                ("rhs", BoolType::id().immediate()),
+                ("lhs", BoolType::id().with_indirection_single(1)),
+                ("rhs", BoolType::id().immediate_single()),
             ],
             None,
         )

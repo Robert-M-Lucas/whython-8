@@ -1,7 +1,7 @@
 use crate::root::parser::location::Location;
 use crate::root::parser::parse::{ParseResult, Span};
 use crate::root::parser::parse_function::parse_evaluable::{
-    parse_evaluable, parse_full_name, EvaluableToken, FullNameWithIndirectionToken,
+    parse_evaluable, parse_full_name, EvaluableToken, UnresolvedTypeRefToken,
 };
 use crate::root::parser::parse_function::parse_line::{LineTestFn, LineTokens};
 use crate::root::parser::parse_name::{parse_simple_name, SimpleNameToken};
@@ -15,7 +15,7 @@ use nom_supreme::tag::complete::tag;
 pub struct InitialisationToken {
     location: Location,
     name: SimpleNameToken,
-    type_name: FullNameWithIndirectionToken,
+    type_name: UnresolvedTypeRefToken,
     value: EvaluableToken,
 }
 

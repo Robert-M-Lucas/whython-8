@@ -306,7 +306,7 @@ pub fn compile_evaluable_into(
             let Some(found_offset) = found_offset else {
                 return WErr::ne(
                     EvalErrs::TypeDoesntHaveAttribute(
-                        global_table.get_type_name(&t.id().immediate()),
+                        global_table.get_type_name(&t.id().immediate_single()),
                         access.name().clone(),
                     ),
                     access.location().clone(),

@@ -4,7 +4,7 @@ use crate::root::parser::parse_blocks::{
     parse_terminator_default_set, BRACE_TERMINATOR, BRACKET_TERMINATOR,
 };
 use crate::root::parser::parse_function::parse_evaluable::{
-    parse_full_name, FullNameWithIndirectionToken,
+    parse_full_name, UnresolvedTypeRefToken,
 };
 use crate::root::parser::parse_function::parse_line::{parse_lines, LineTokens};
 use crate::root::parser::parse_name::{parse_simple_name, SimpleNameToken};
@@ -35,7 +35,7 @@ pub struct FunctionToken {
     location: Location,
     end_location: Location,
     name: SimpleNameToken,
-    return_type: Option<FullNameWithIndirectionToken>,
+    return_type: Option<UnresolvedTypeRefToken>,
     self_type: SelfType,
     parameters: Parameters,
     lines: Vec<LineTokens>,
