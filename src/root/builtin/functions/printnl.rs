@@ -1,9 +1,9 @@
-use crate::root::builtin::types::int::IntType;
-use crate::root::builtin::{f_id, BuiltinInlineFunction, InlineFunctionGenerator};
+use unique_type_id::UniqueTypeId;
+
+use crate::root::builtin::{BuiltinInlineFunction, f_id, InlineFunctionGenerator};
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse_parameters::SelfType;
-use crate::root::shared::common::{FunctionID, LocalAddress, TypeID};
-use unique_type_id::UniqueTypeId;
+use crate::root::shared::common::{FunctionID, TypeID};
 
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
