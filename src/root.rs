@@ -1,9 +1,7 @@
-use crate::root::parser::parse::parse;
-// use crate::root::assembler::assemble::generate_assembly;
-// use crate::root::name_resolver::processor::process;
 use crate::root::compiler::compile::compile;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::resolve::resolve;
+use crate::root::parser::parse::parse;
 use crate::root::runner::{assemble, link_gcc, run};
 use crate::time;
 use clap::Parser;
@@ -18,17 +16,6 @@ use std::time::Instant;
 
 #[cfg(debug_assertions)]
 pub const DEBUG_ON_ERROR: bool = false;
-
-// #[cfg(target_os = "windows")]
-// use crate::root::runner::run;
-// #[cfg(target_os = "windows")]
-// use runner::link;
-//
-// #[cfg(target_os = "linux")]
-// use crate::root::runner::run_wine_experimental;
-// #[cfg(target_os = "linux")]
-// use runner::link_gcc_experimental;
-// use crate::root::parser::parse::parse;
 
 pub mod assembler;
 pub mod builtin;
@@ -108,13 +95,13 @@ pub fn main_args(args: Args) -> Result<(), WErr> {
         let t = Instant::now();
         link_gcc(&args.output).unwrap();
         let end = t.elapsed();
-        // TODO: Don't unwrap
         let size = File::open(format!("{}.out", args.output))
             .unwrap()
             .metadata()
             .unwrap()
             .len()
             .to_formatted_string(&Locale::en);
+
         cprintln!("<g,bold>Completed [{:?}] - {} bytes</>", end, size);
 
         if args.build {
@@ -140,6 +127,10 @@ pub fn main_args(args: Args) -> Result<(), WErr> {
             }
             run(&args.output);
         }
+    }
+    #[cfg(not(target_os = "linux"))]
+    {
+        println!("Not linking / executing as OS is not Linux");
     }
 
     cprintln!("<g,bold>Done!</>");

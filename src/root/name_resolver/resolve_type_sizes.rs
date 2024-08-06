@@ -5,7 +5,7 @@ use derive_getters::Dissolve;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
 use crate::root::name_resolver::resolve_names::UserType;
-use crate::root::parser::parse::Location;
+use crate::root::parser::location::Location;
 use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::shared::common::TypeRef;
 use crate::root::shared::common::{ByteSize, TypeID};

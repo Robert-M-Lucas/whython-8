@@ -1,12 +1,10 @@
-use std::collections::HashMap;
-
 use crate::root::errors::evaluable_errors::EvalErrs;
 use crate::root::errors::name_resolver_errors::NRErrs;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
 use crate::root::name_resolver::resolve_function_signatures::resolve_function_signature;
 use crate::root::name_resolver::resolve_type_sizes::{resolve_type_sizes, UnsizedUserType};
-use crate::root::parser::parse::Location;
+use crate::root::parser::location::Location;
 use crate::root::parser::parse_function::parse_evaluable::{FullNameToken, FullNameTokens};
 use crate::root::parser::parse_function::parse_literal::LiteralToken;
 use crate::root::parser::parse_function::FunctionToken;
@@ -16,8 +14,10 @@ use crate::root::shared::common::{ByteSize, FunctionID, TypeID};
 use crate::root::shared::common::{LocalAddress, TypeRef};
 use crate::root::shared::types::Type;
 use crate::root::unrandom::new_hashmap;
+use b_box::b;
 use derive_getters::Getters;
 use itertools::Itertools;
+use std::collections::HashMap;
 
 /// A Whython-code defined type
 #[derive(Getters)]
@@ -187,7 +187,7 @@ pub fn resolve_names(
     }
 
     for (id, user_type) in final_types {
-        global_table.add_user_type(id, Box::new(user_type));
+        global_table.add_user_type(id, b!(user_type));
     }
 
     // (final_types, type_names, unprocessed_functions)

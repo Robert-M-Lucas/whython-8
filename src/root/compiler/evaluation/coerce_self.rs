@@ -3,7 +3,7 @@ use crate::root::compiler::assembly::utils::copy_from_indirect;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
-use crate::root::parser::parse::Location;
+use crate::root::parser::location::Location;
 use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{AddressedTypeRef, Indirection};
 

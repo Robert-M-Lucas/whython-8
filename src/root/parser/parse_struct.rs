@@ -1,4 +1,5 @@
-use crate::root::parser::parse::{Location, ParseResult, Span};
+use crate::root::parser::location::Location;
+use crate::root::parser::parse::{ParseResult, Span};
 use crate::root::parser::parse_blocks::{parse_terminator_default_set, BRACE_TERMINATOR};
 use crate::root::parser::parse_name::{parse_simple_name, SimpleNameToken};
 use crate::root::parser::parse_parameters::{parse_parameters, Parameters};

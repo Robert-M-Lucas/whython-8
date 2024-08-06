@@ -2,7 +2,7 @@ use crate::root::compiler::assembly::utils::copy_from_indirect;
 use crate::root::errors::evaluable_errors::EvalErrs;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
-use crate::root::parser::parse::Location;
+use crate::root::parser::location::Location;
 use crate::root::shared::common::{AddressedTypeRef, Indirection};
 
 /// Sets `into` to the address of `to_ref`

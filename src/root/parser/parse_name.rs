@@ -1,4 +1,5 @@
-use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
+use crate::root::parser::location::Location;
+use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
 use derive_getters::Getters;
 use nom::bytes::complete::take_till;
 use nom::Err::Error;

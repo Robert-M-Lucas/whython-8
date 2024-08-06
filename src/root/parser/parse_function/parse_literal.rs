@@ -1,6 +1,7 @@
 use crate::root::builtin::types::bool::BoolType;
 use crate::root::builtin::types::int::IntType;
-use crate::root::parser::parse::{Location, ParseResult, Span};
+use crate::root::parser::location::Location;
+use crate::root::parser::parse::{ParseResult, Span};
 use crate::root::parser::parse_util::discard_ignored;
 use crate::root::shared::common::TypeID;
 use derive_getters::{Dissolve, Getters};

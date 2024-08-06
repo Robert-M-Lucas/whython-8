@@ -5,7 +5,8 @@ use nom::bytes::complete::tag;
 use nom::character::complete::char;
 
 use crate::root::errors::parser_errors::create_custom_error;
-use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
+use crate::root::parser::location::Location;
+use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
 use crate::root::parser::parse_arguments::parse_arguments;
 use crate::root::parser::parse_blocks::{parse_terminator_default_set, BRACKET_TERMINATOR};
 use crate::root::parser::parse_function::parse_literal::{parse_literal, LiteralToken};
@@ -517,7 +518,7 @@ pub fn parse_evaluable<'a, 'b>(
 
         Ok((
             remaining,
-            TempOperation::Prefix(operator.clone(), Box::new(operand)),
+            TempOperation::Prefix(operator.clone(), b!(operand)),
         ))
     }
 

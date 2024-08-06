@@ -1,4 +1,5 @@
-use crate::root::parser::parse::{Location, ParseResult, Span};
+use crate::root::parser::location::Location;
+use crate::root::parser::parse::{ParseResult, Span};
 use crate::root::parser::parse_function::parse_evaluable::{
     parse_evaluable, parse_full_name, EvaluableToken, FullNameWithIndirectionToken,
 };

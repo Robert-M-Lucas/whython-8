@@ -2,12 +2,11 @@ use nom_supreme::error::{BaseErrorKind, StackContext};
 
 use crate::root::errors::parser_errors::ParseError;
 use crate::root::errors::WErr;
-use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
+use crate::root::parser::location::Location;
+use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
 use crate::root::parser::parse_toplevel::TopLevelTokens;
 
-pub fn handle_error<'a>(
-    res: ParseResult<'a, Span<'a>, Vec<TopLevelTokens>>,
-) -> Result<(Span<'a>, Vec<TopLevelTokens>), WErr> {
+pub fn handle_error<A, B>(res: ParseResult<A, B>) -> Result<(A, B), WErr> {
     match res {
         Ok(v) => Ok(v),
         Err(e) => match &e {

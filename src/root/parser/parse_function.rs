@@ -1,4 +1,5 @@
-use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
+use crate::root::parser::location::Location;
+use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
 use crate::root::parser::parse_blocks::{
     parse_terminator_default_set, BRACE_TERMINATOR, BRACKET_TERMINATOR,
 };
