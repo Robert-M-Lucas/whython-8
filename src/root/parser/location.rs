@@ -8,6 +8,28 @@ use color_print::cformat;
 use nom::InputTake;
 use crate::root::parser::parse::Span;
 
+pub enum ToLocation<'a> {
+    Location(Location),
+    Span(Span<'a>)
+}
+
+impl<'a> ToLocation<'a> {
+    pub fn from_location(location: Location) -> ToLocation<'a> {
+        ToLocation::Location(location)
+    }
+    
+    pub fn from_span(span: Span<'a>) -> ToLocation<'a> {
+        ToLocation::Span(span)
+    }
+    
+    pub fn to_location(self) -> Location {
+        match self {
+            ToLocation::Location(location) => location,
+            ToLocation::Span(s) => Location::from_span(&s)
+        }
+    }
+}
+
 #[derive(Debug, Clone, Hash)]
 struct InnerLocation {
     /// Path of file

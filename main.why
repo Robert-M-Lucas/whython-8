@@ -1,17 +1,10 @@
 use linked_list;
 
-struct Test {
-    a: int
-}
-
-impl Test {
-    fn static() {
-
-    }
-}
 
 fn main() -> int {
-    let x: Test = Test { a: 3 };
+    let x: LL = LL::new();
+    x.add(12);
+    x.print();
 
     return 8;
 }
