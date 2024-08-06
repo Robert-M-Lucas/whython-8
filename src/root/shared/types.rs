@@ -1,6 +1,6 @@
 use crate::root::errors::evaluable_errors::EvalErrs;
 use crate::root::errors::WErr;
-use crate::root::parser::parse::Location;
+use crate::root::parser::location::Location;
 use crate::root::parser::parse_function::parse_literal::LiteralToken;
 use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::shared::common::{ByteSize, LocalAddress, TypeID, TypeRef};

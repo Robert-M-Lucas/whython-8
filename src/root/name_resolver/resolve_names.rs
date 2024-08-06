@@ -6,7 +6,7 @@ use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
 use crate::root::name_resolver::resolve_function_signatures::resolve_function_signature;
 use crate::root::name_resolver::resolve_type_sizes::{resolve_type_sizes, UnsizedUserType};
-use crate::root::parser::parse::Location;
+use crate::root::parser::location::Location;
 use crate::root::parser::parse_function::parse_evaluable::{FullNameToken, FullNameTokens};
 use crate::root::parser::parse_function::parse_literal::LiteralToken;
 use crate::root::parser::parse_function::FunctionToken;

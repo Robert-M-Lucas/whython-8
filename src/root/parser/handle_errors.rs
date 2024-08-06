@@ -2,7 +2,8 @@ use nom_supreme::error::{BaseErrorKind, StackContext};
 
 use crate::root::errors::parser_errors::ParseError;
 use crate::root::errors::WErr;
-use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
+use crate::root::parser::location::Location;
+use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
 use crate::root::parser::parse_toplevel::TopLevelTokens;
 
 pub fn handle_error<'a>(

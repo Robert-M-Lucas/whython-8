@@ -5,7 +5,7 @@ use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::name_resolver_errors::NRErrs;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
-use crate::root::parser::parse::Location;
+use crate::root::parser::location::Location;
 use crate::root::parser::parse_function::parse_evaluable::{
     FullNameToken, FullNameTokens, FullNameWithIndirectionToken,
 };

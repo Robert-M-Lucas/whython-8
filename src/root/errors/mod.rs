@@ -1,4 +1,4 @@
-use crate::root::parser::parse::Location;
+use crate::root::parser::location::Location;
 #[cfg(debug_assertions)]
 use crate::root::DEBUG_ON_ERROR;
 use color_print::cformat;

@@ -1,3 +1,5 @@
+use linked_list;
+
 struct Test {
     a: int
 }

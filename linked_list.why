@@ -52,17 +52,3 @@ impl Node {
         };
     }
 }
-
-fn main() -> int {
-    let r: LL = LL::new();
-    r.add(2);
-    r.add(3);
-    r.add(2);
-    r.add(4);
-    r.add(7);
-    r.add(8);
-    r.add(4);
-    r.print();
-
-    return 0;
-}

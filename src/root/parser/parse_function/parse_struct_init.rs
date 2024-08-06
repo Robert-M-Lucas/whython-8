@@ -1,13 +1,13 @@
 use derive_getters::{Dissolve, Getters};
 use nom::bytes::complete::tag;
 use nom::character::streaming::char;
-
-use crate::root::parser::parse::{ErrorTree, Location, ParseResult, Span};
+use crate::root::parser::location::Location;
+use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
 use crate::root::parser::parse_blocks::{
-    parse_terminator_default_set, take_until_or_end_discard_smart, BRACE_TERMINATOR,
+    BRACE_TERMINATOR, parse_terminator_default_set, take_until_or_end_discard_smart,
 };
 use crate::root::parser::parse_function::parse_evaluable::{
-    parse_evaluable, parse_full_name, EvaluableToken, FullNameWithIndirectionToken,
+    EvaluableToken, FullNameWithIndirectionToken, parse_evaluable, parse_full_name,
 };
 use crate::root::parser::parse_name::{parse_simple_name, SimpleNameToken};
 use crate::root::parser::parse_util::discard_ignored;
