@@ -1,20 +1,20 @@
+use crate::root::parser::location::Location;
 use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
 use crate::root::parser::parse_blocks::{
-    BRACE_TERMINATOR, BRACKET_TERMINATOR, parse_terminator_default_set,
+    parse_terminator_default_set, BRACE_TERMINATOR, BRACKET_TERMINATOR,
 };
 use crate::root::parser::parse_function::parse_evaluable::{
-    FullNameWithIndirectionToken, parse_full_name,
+    parse_full_name, FullNameWithIndirectionToken,
 };
-use crate::root::parser::parse_function::parse_line::{LineTokens, parse_lines};
+use crate::root::parser::parse_function::parse_line::{parse_lines, LineTokens};
 use crate::root::parser::parse_name::{parse_simple_name, SimpleNameToken};
-use crate::root::parser::parse_parameters::{Parameters, parse_parameters, SelfType};
-use crate::root::parser::parse_toplevel::{ToplevelTestFn, TopLevelTokens};
+use crate::root::parser::parse_parameters::{parse_parameters, Parameters, SelfType};
+use crate::root::parser::parse_toplevel::{TopLevelTokens, ToplevelTestFn};
 use crate::root::parser::parse_util::{discard_ignored, require_ignored};
 use derive_getters::{Dissolve, Getters};
 use nom::sequence::Tuple;
 use nom::Parser;
 use nom_supreme::tag::complete::tag;
-use crate::root::parser::location::Location;
 
 pub mod parse_assigner;
 pub mod parse_assignment;

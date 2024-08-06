@@ -1,7 +1,7 @@
-use crate::root::parser::parse::parse;
 use crate::root::compiler::compile::compile;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::resolve::resolve;
+use crate::root::parser::parse::parse;
 use crate::root::runner::{assemble, link_gcc, run};
 use crate::time;
 use clap::Parser;
@@ -101,7 +101,7 @@ pub fn main_args(args: Args) -> Result<(), WErr> {
             .unwrap()
             .len()
             .to_formatted_string(&Locale::en);
-        
+
         cprintln!("<g,bold>Completed [{:?}] - {} bytes</>", end, size);
 
         if args.build {

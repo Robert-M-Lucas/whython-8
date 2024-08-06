@@ -1,9 +1,9 @@
+use crate::root::parser::location::Location;
 use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
 use derive_getters::Getters;
 use nom::bytes::complete::take_till;
 use nom::Err::Error;
 use nom_supreme::error::{BaseErrorKind, Expectation};
-use crate::root::parser::location::Location;
 
 #[derive(Debug, Getters, Clone)]
 pub struct SimpleNameToken {

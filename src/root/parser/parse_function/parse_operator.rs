@@ -1,10 +1,10 @@
+use crate::root::parser::location::Location;
 use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
 use derive_getters::Getters;
 use nom::Err::Error;
 use nom_supreme::error::GenericErrorTree;
 use nom_supreme::tag::complete::tag;
 use nom_supreme::tag::TagError;
-use crate::root::parser::location::Location;
 
 #[derive(PartialEq, Debug)]
 pub enum PrefixOrInfix {

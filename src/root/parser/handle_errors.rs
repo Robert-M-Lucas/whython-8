@@ -6,9 +6,7 @@ use crate::root::parser::location::Location;
 use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
 use crate::root::parser::parse_toplevel::TopLevelTokens;
 
-pub fn handle_error<A, B>(
-    res: ParseResult<A, B>,
-) -> Result<(A, B), WErr> {
+pub fn handle_error<A, B>(res: ParseResult<A, B>) -> Result<(A, B), WErr> {
     match res {
         Ok(v) => Ok(v),
         Err(e) => match &e {

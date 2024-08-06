@@ -1,17 +1,17 @@
-use derive_getters::{Dissolve, Getters};
-use nom::bytes::complete::tag;
-use nom::character::streaming::char;
 use crate::root::parser::location::Location;
 use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
 use crate::root::parser::parse_blocks::{
-    BRACE_TERMINATOR, parse_terminator_default_set, take_until_or_end_discard_smart,
+    parse_terminator_default_set, take_until_or_end_discard_smart, BRACE_TERMINATOR,
 };
 use crate::root::parser::parse_function::parse_evaluable::{
-    EvaluableToken, FullNameWithIndirectionToken, parse_evaluable, parse_full_name,
+    parse_evaluable, parse_full_name, EvaluableToken, FullNameWithIndirectionToken,
 };
 use crate::root::parser::parse_name::{parse_simple_name, SimpleNameToken};
 use crate::root::parser::parse_util::discard_ignored;
 use crate::root::shared::common::Indirection;
+use derive_getters::{Dissolve, Getters};
+use nom::bytes::complete::tag;
+use nom::character::streaming::char;
 
 #[derive(Debug, Dissolve, Getters)]
 pub struct StructInitToken {

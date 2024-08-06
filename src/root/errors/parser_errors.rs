@@ -14,7 +14,7 @@ pub enum ParseError {
     #[error("Failed parsing {0}")]
     NomErrorKind(String),
     #[error("Failed to open file [{0}]")]
-    FailedToOpenFile(String)
+    FailedToOpenFile(String),
 }
 
 pub fn create_custom_error(e: String, l: Span) -> nom::Err<ErrorTree> {

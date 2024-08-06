@@ -1,31 +1,31 @@
-use std::marker::PhantomData;
-use std::rc::Rc;
-use std::path::PathBuf;
-use std::fmt::{Display, Formatter};
-use std::fs;
-use std::cmp::min;
+use crate::root::parser::parse::Span;
 use color_print::cformat;
 use nom::InputTake;
-use crate::root::parser::parse::Span;
+use std::cmp::min;
+use std::fmt::{Display, Formatter};
+use std::fs;
+use std::marker::PhantomData;
+use std::path::PathBuf;
+use std::rc::Rc;
 
 pub enum ToLocation<'a> {
     Location(Location),
-    Span(Span<'a>)
+    Span(Span<'a>),
 }
 
 impl<'a> ToLocation<'a> {
     pub fn from_location(location: Location) -> ToLocation<'a> {
         ToLocation::Location(location)
     }
-    
+
     pub fn from_span(span: Span<'a>) -> ToLocation<'a> {
         ToLocation::Span(span)
     }
-    
+
     pub fn to_location(self) -> Location {
         match self {
             ToLocation::Location(location) => location,
-            ToLocation::Span(s) => Location::from_span(&s)
+            ToLocation::Span(s) => Location::from_span(&s),
         }
     }
 }
