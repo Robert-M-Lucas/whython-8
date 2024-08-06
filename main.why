@@ -1,10 +1,22 @@
-use linked_list;
+use std/linked_list;
 
 
 fn main() -> int {
     let x: LL = LL::new();
-    x.add(12);
+    x.push(12);
+    x.push(7);
+    x.push(8);
+    x.print();
+    printnl();
+
+    printi(x.get(1));
+    printnl();
+
+    printi(x.pop());
+    printnl();
+
     x.print();
 
     return 8;
 }
+
