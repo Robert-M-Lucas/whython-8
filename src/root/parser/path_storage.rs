@@ -50,13 +50,13 @@ pub struct PathStorage {
 }
 
 impl PathStorage {
-    pub fn new(base: &str) -> Result<PathStorage, WErr> {
+    pub fn new(main: &str) -> Result<PathStorage, WErr> {
         // TODO: Only allow certain characters in base
         let mut folders = vec![CodeFolder::root()];
         let mut files = Vec::new();
 
         let mut current = FolderID(0);
-        for (is_last, section) in base.split('/').identify_last() {
+        for (is_last, section) in main.split('/').identify_last() {
             if is_last {
                 files.push(CodeFile {
                     parent: current,

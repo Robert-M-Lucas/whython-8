@@ -1,4 +1,8 @@
 
+- Add support for .. in imports
+- Add support for preceding / in import path to use absolute (relative to main.why) path
+- Namespacing
+
 - Add array support
   - Move all Type name -> TypeRef resolution to pre-evaluation
   - Add proper size evaluation in GlobalDefinitionsTable for array types
@@ -7,6 +11,4 @@
   - Add support for parsing array literals
   - Add evaluation support for array literals
   
-- Check for circular imports
-- Restrict characters usable in path
-- Namespacing
+
