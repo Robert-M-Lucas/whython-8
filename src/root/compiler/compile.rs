@@ -16,7 +16,7 @@ use crate::root::unrandom::{new_hashmap, new_hashset};
 pub fn compile(
     mut global_table: GlobalDefinitionTable,
     unprocessed_functions: HashMap<FunctionID, FunctionToken>,
-    path_storage: &PathStorage
+    path_storage: &PathStorage,
 ) -> Result<String, WErr> {
     let mut unprocessed_functions = unprocessed_functions;
     let mut compiled_functions = new_hashmap();

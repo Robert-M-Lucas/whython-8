@@ -1,4 +1,5 @@
 use crate::root::parser::parse::Span;
+use crate::root::parser::path_storage::{FileID, PathStorage};
 use color_print::cformat;
 use nom::InputTake;
 use std::cmp::min;
@@ -7,7 +8,6 @@ use std::fs;
 use std::marker::PhantomData;
 use std::path::PathBuf;
 use std::rc::Rc;
-use crate::root::parser::path_storage::{FileID, PathStorage};
 
 pub enum ToLocation<'a> {
     Location(Location),
@@ -104,10 +104,13 @@ impl<ErrorType> LocationTyped<ErrorType> {
         }
     }
 
-    pub fn with_context<'a>(&'a self, path_storage: &'a PathStorage) -> LocationContext<'a, ErrorType> {
+    pub fn with_context<'a>(
+        &'a self,
+        path_storage: &'a PathStorage,
+    ) -> LocationContext<'a, ErrorType> {
         LocationContext {
             location: self,
-            path_storage
+            path_storage,
         }
     }
 
@@ -129,7 +132,12 @@ impl<ErrorType> LocationTyped<ErrorType> {
         !matches!(self.inner_location, ErrorLocation::None)
     }
 
-    fn fmt_choice(&self, f: &mut Formatter<'_>, is_warning: bool, path_storage: &PathStorage) -> std::fmt::Result {
+    fn fmt_choice(
+        &self,
+        f: &mut Formatter<'_>,
+        is_warning: bool,
+        path_storage: &PathStorage,
+    ) -> std::fmt::Result {
         let location = match &self.inner_location {
             ErrorLocation::Builtin => {
                 writeln!(f, "{}", cformat!("<c,bold>Builtin Definition</>"))?;
@@ -306,7 +314,7 @@ impl LocationFilledFmt for LocationTyped<WarningL> {
 
 pub struct LocationContext<'a, ErrorType> {
     location: &'a LocationTyped<ErrorType>,
-    path_storage: &'a PathStorage
+    path_storage: &'a PathStorage,
 }
 
 impl<'a> Display for LocationContext<'a, ErrorL> {

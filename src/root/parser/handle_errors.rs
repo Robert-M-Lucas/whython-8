@@ -6,7 +6,10 @@ use crate::root::parser::location::Location;
 use crate::root::parser::parse::{ErrorTree, ParseResult};
 use crate::root::parser::path_storage::PathStorage;
 
-pub fn handle_error<A, B>(res: ParseResult<A, B>, path_storage: &PathStorage) -> Result<(A, B), WErr> {
+pub fn handle_error<A, B>(
+    res: ParseResult<A, B>,
+    path_storage: &PathStorage,
+) -> Result<(A, B), WErr> {
     match res {
         Ok(v) => Ok(v),
         Err(e) => match &e {
@@ -34,7 +37,11 @@ fn handle_error_tree(e: &ErrorTree, path_storage: &PathStorage) -> WErr {
         },
         ErrorTree::Stack { base, contexts } => {
             let mut sb = "Base Error:\n".to_string();
-            for l in handle_error_tree(base, path_storage).with_context(path_storage).to_string().lines() {
+            for l in handle_error_tree(base, path_storage)
+                .with_context(path_storage)
+                .to_string()
+                .lines()
+            {
                 sb += "     ";
                 sb += l;
                 sb += "\n";
@@ -48,7 +55,11 @@ fn handle_error_tree(e: &ErrorTree, path_storage: &PathStorage) -> WErr {
                     StackContext::Context(c) => c.to_string(),
                 };
 
-                for l in WErr::n(e, Location::from_span(s)).with_context(path_storage).to_string().lines() {
+                for l in WErr::n(e, Location::from_span(s))
+                    .with_context(path_storage)
+                    .to_string()
+                    .lines()
+                {
                     sb += "    ";
                     sb += l;
                     sb += "\n";
@@ -63,7 +74,9 @@ fn handle_error_tree(e: &ErrorTree, path_storage: &PathStorage) -> WErr {
             for (i, e) in z.iter().enumerate() {
                 sb += &format!("{}:\n", i + 1);
 
-                let werr = handle_error_tree(e, path_storage).with_context(path_storage).to_string();
+                let werr = handle_error_tree(e, path_storage)
+                    .with_context(path_storage)
+                    .to_string();
                 for line in werr.lines() {
                     sb += "    ";
                     sb += line;

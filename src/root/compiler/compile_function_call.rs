@@ -116,8 +116,9 @@ pub fn call_function(
                             if into.type_ref().type_id() != signature_args[i].type_id() {
                                 return WErr::ne(
                                     EvalErrs::ExpectedDifferentType(
-                                        global_table
-                                            .get_type_name(&into.type_ref().type_id().immediate_single()),
+                                        global_table.get_type_name(
+                                            &into.type_ref().type_id().immediate_single(),
+                                        ),
                                         global_table.get_type_name(
                                             &signature_args[i].type_id().immediate_single(),
                                         ),
@@ -228,8 +229,9 @@ pub fn call_function(
                             if into.type_ref().type_id() != signature_args[i].type_id() {
                                 return WErr::ne(
                                     EvalErrs::ExpectedDifferentType(
-                                        global_table
-                                            .get_type_name(&into.type_ref().type_id().immediate_single()),
+                                        global_table.get_type_name(
+                                            &into.type_ref().type_id().immediate_single(),
+                                        ),
                                         global_table.get_type_name(
                                             &signature_args[i].type_id().immediate_single(),
                                         ),

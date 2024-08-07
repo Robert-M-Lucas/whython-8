@@ -1,17 +1,19 @@
-use std::collections::{HashMap, HashSet};
-use std::fmt::{Display, Formatter};
-use nom::character::complete::anychar;
 use crate::root::errors::parser_errors::{create_custom_error, create_custom_error_tree};
 use crate::root::errors::WErr;
 use crate::root::parser::location::{Location, LocationFilledFmt};
 use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
 use crate::root::utils::identify_first_last::{IdentifyFirstLast, IdentifyLast};
+use nom::character::complete::anychar;
+use std::collections::{HashMap, HashSet};
+use std::fmt::{Display, Formatter};
 
 #[derive(Hash, Copy, Clone, Debug, Eq, PartialEq)]
 pub struct FileID(usize);
 
 impl FileID {
-    pub fn main_file() -> FileID { FileID(0) }    
+    pub fn main_file() -> FileID {
+        FileID(0)
+    }
 }
 
 #[derive(Hash, Copy, Clone, Debug, Eq, PartialEq)]
@@ -21,7 +23,7 @@ struct CodeFolder {
     parent: FolderID,
     child_folders: HashMap<String, FolderID>,
     child_files: HashMap<String, FileID>,
-    current: String
+    current: String,
 }
 
 impl CodeFolder {
@@ -35,8 +37,6 @@ impl CodeFolder {
     }
 }
 
-
-
 struct CodeFile {
     parent: FolderID,
     current: String,
@@ -46,7 +46,7 @@ struct CodeFile {
 
 pub struct PathStorage {
     folders: Vec<CodeFolder>,
-    files: Vec<CodeFile>
+    files: Vec<CodeFile>,
 }
 
 impl PathStorage {
@@ -54,18 +54,17 @@ impl PathStorage {
         // TODO: Only allow certain characters in base
         let mut folders = vec![CodeFolder::root()];
         let mut files = Vec::new();
-        
+
         let mut current = FolderID(0);
         for (is_last, section) in base.split('/').identify_last() {
             if is_last {
-                files.push(CodeFile { 
-                    parent: current, 
+                files.push(CodeFile {
+                    parent: current,
                     current: section.to_string(),
                     use_files: vec![],
                     use_folders: vec![],
                 });
-            }
-            else {
+            } else {
                 folders.push(CodeFolder {
                     parent: current,
                     child_folders: Default::default(),
@@ -75,11 +74,8 @@ impl PathStorage {
                 current = FolderID(folders.len() - 1);
             }
         }
-        
-        Ok(PathStorage {
-            folders,
-            files,
-        })
+
+        Ok(PathStorage { folders, files })
     }
 
     fn get_file(&self, file_id: FileID) -> &CodeFile {
@@ -117,8 +113,11 @@ impl PathStorage {
         }
         sb
     }
-    
-    pub fn get_file_path_id_checked<'a>(&mut self, path: Span<'a>) -> ParseResult<(), (FileID, bool), ErrorTree<'a>> {
+
+    pub fn get_file_path_id_checked<'a>(
+        &mut self,
+        path: Span<'a>,
+    ) -> ParseResult<(), (FileID, bool), ErrorTree<'a>> {
         let mut path_rem = path;
         let mut last_dot = false;
         while let Ok((rem, c)) = anychar::<_, ErrorTree>(path_rem) {
@@ -138,13 +137,12 @@ impl PathStorage {
                 last_dot = true;
                 continue;
             }
-            
+
             let mut utf8 = [0u8; 4];
             c.encode_utf8(&mut utf8);
             let mut utf8_str = "[".to_string();
             utf8_str += &utf8.map(|b| format!("{b:02X}")).join(", ");
             utf8_str.push(']');
-
 
             return Err(create_custom_error(
                 format!("Invalid character in path '{}' - UTF-8 bytes: {}. Allowed characters are alphanumerics, '_' and '/'", c, utf8_str),
@@ -159,13 +157,19 @@ impl PathStorage {
                 return if let Some(id) = self.get_folder(current).child_files.get(section) {
                     Ok(((), (*id, false)))
                 } else {
-                    self.files.push(CodeFile { parent: current, current: section.to_string(), use_files: vec![], use_folders: vec![] });
+                    self.files.push(CodeFile {
+                        parent: current,
+                        current: section.to_string(),
+                        use_files: vec![],
+                        use_folders: vec![],
+                    });
                     let id = FileID(self.files.len() - 1);
-                    self.get_folder_mut(current).child_files.insert(section.to_string(), id);
+                    self.get_folder_mut(current)
+                        .child_files
+                        .insert(section.to_string(), id);
                     Ok(((), (id, true)))
                 };
-            }
-            else {
+            } else {
                 current = if let Some(id) = self.get_folder(current).child_folders.get(section) {
                     *id
                 } else {
@@ -176,7 +180,9 @@ impl PathStorage {
                         current: section.to_string(),
                     });
                     let id = FolderID(self.folders.len() - 1);
-                    self.get_folder_mut(current).child_folders.insert(section.to_string(), id);
+                    self.get_folder_mut(current)
+                        .child_folders
+                        .insert(section.to_string(), id);
                     id
                 };
             }

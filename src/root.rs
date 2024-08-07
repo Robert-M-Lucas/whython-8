@@ -2,6 +2,7 @@ use crate::root::compiler::compile::compile;
 use crate::root::errors::{WErr, WErrContext};
 use crate::root::name_resolver::resolve::resolve;
 use crate::root::parser::parse::parse;
+use crate::root::parser::path_storage::PathStorage;
 use crate::root::runner::{assemble, link_gcc, run};
 use crate::time;
 use clap::Parser;
@@ -13,7 +14,6 @@ use std::fs::File;
 use std::io::ErrorKind;
 use std::path::PathBuf;
 use std::time::Instant;
-use crate::root::parser::path_storage::PathStorage;
 
 #[cfg(debug_assertions)]
 pub const DEBUG_ON_ERROR: bool = false;
@@ -64,10 +64,9 @@ pub fn main_args(args: Args) -> Result<(), String> {
         }
     }
 
-    
     print!("Parsing files... ");
     time!(
-        let mut path_storage = PathStorage::new(&args.input).unwrap(); // TODO: 
+        let mut path_storage = PathStorage::new(&args.input).unwrap(); // TODO:
         let toplevel_tokens = parse(&mut path_storage)
             .map_err(|e| e.with_context(&path_storage).to_string())?;
     );

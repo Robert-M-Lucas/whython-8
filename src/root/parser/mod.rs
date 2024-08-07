@@ -12,6 +12,6 @@ pub mod parse_parameters;
 pub mod parse_struct;
 pub mod parse_toplevel;
 pub mod parse_util;
+pub mod path_storage;
 pub mod soft_alt;
 mod use_parser;
-pub mod path_storage;

@@ -1,7 +1,7 @@
+use crate::root::parser::path_storage::PathStorage;
 use crate::root::shared::common::FunctionID;
 use derive_getters::{Dissolve, Getters};
 use std::collections::HashSet;
-use crate::root::parser::path_storage::PathStorage;
 
 /// Tracks data between function compilations
 #[derive(Dissolve, Getters)]
@@ -23,7 +23,7 @@ impl<'a> GlobalTracker<'a> {
             unique_tag_counter: 0,
         }
     }
-    
+
     pub fn functions_mut(&mut self) -> &mut HashSet<FunctionID> {
         &mut self.function_calls
     }

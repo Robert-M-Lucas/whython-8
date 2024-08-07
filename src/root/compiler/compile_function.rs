@@ -132,8 +132,10 @@ fn recursively_compile_lines(
                 )?);
             }
             LineTokens::If(if_token) => {
-                let condition_addr = global_table
-                    .add_local_variable_unnamed_base(BoolType::id().immediate_single(), local_variables);
+                let condition_addr = global_table.add_local_variable_unnamed_base(
+                    BoolType::id().immediate_single(),
+                    local_variables,
+                );
                 contents.other(&compile_evaluable_into(
                     fid,
                     if_token.if_condition(),
@@ -225,8 +227,10 @@ fn recursively_compile_lines(
 
                 contents.line(&format!("{start_tag}:"));
 
-                let condition_addr = global_table
-                    .add_local_variable_unnamed_base(BoolType::id().immediate_single(), local_variables);
+                let condition_addr = global_table.add_local_variable_unnamed_base(
+                    BoolType::id().immediate_single(),
+                    local_variables,
+                );
                 contents.other(&compile_evaluable_into(
                     fid,
                     while_token.condition(),

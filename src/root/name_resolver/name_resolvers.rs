@@ -13,13 +13,13 @@ use crate::root::parser::parse_function::parse_operator::{OperatorToken, PrefixO
 use crate::root::parser::parse_function::FunctionToken;
 use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::parser::parse_struct::StructToken;
+use crate::root::parser::path_storage::FileID;
 use crate::root::shared::common::{AddressedTypeRef, ByteSize, FunctionID, TypeID, TypeRef};
 use crate::root::shared::types::Type;
 use crate::root::POINTER_SIZE;
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::rc::Rc;
-use crate::root::parser::path_storage::FileID;
 
 #[derive(Debug)]
 enum NameTreeEntry {
@@ -235,10 +235,7 @@ impl GlobalDefinitionTable {
     }
 
     /// Takes a name and resolves it to a type (or error)
-    pub fn resolve_to_type_ref(
-        &mut self,
-        name: &UnresolvedTypeRefToken,
-    ) -> Result<TypeRef, WErr> {
+    pub fn resolve_to_type_ref(&mut self, name: &UnresolvedTypeRefToken) -> Result<TypeRef, WErr> {
         let (indirection, full_name) = (name.indirection(), name.inner());
 
         fn find_error_point(name: &FullNameToken, prev_location: &Location) -> Location {

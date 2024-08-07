@@ -1,16 +1,15 @@
 use crate::root::parser::location::{ErrorL, Location, LocationTyped};
+use crate::root::parser::path_storage::PathStorage;
 #[cfg(debug_assertions)]
 use crate::root::DEBUG_ON_ERROR;
 use color_print::cformat;
 #[cfg(debug_assertions)]
 use std::backtrace::Backtrace;
 use std::fmt::{Display, Formatter};
-use crate::root::parser::path_storage::PathStorage;
 
 pub mod evaluable_errors;
 pub mod name_resolver_errors;
 pub mod parser_errors;
-
 
 /// Universal error for Whython-8
 #[derive(Debug)]
@@ -77,7 +76,11 @@ impl WErr {
 
     fn fmt(&self, f: &mut Formatter<'_>, path_storage: &PathStorage) -> std::fmt::Result {
         let text = if let Some(location) = &self.location {
-            cformat!("<r,bold>Error:</>\n    {}\n{}\n", self.error, location.with_context(path_storage))
+            cformat!(
+                "<r,bold>Error:</>\n    {}\n{}\n",
+                self.error,
+                location.with_context(path_storage)
+            )
         } else {
             cformat!("<r,bold>Error:</>\n    {}", self.error)
         };
@@ -87,7 +90,7 @@ impl WErr {
 
 pub struct WErrContext<'a> {
     err: &'a WErr,
-    path_storage: &'a PathStorage
+    path_storage: &'a PathStorage,
 }
 
 impl<'a> Display for WErrContext<'a> {

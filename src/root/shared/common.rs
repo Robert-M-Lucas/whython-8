@@ -60,7 +60,7 @@ impl Indirection {
     pub fn has_indirection(&self) -> bool {
         self.0 != 0
     }
-    
+
     pub fn plus(&self, amount: usize) -> Indirection {
         Indirection(self.0 + amount)
     }
@@ -107,17 +107,19 @@ impl TypeRef {
             indirection,
         }
     }
-    
-    pub fn is_array(&self) -> bool { self.elements == 1 }
+
+    pub fn is_array(&self) -> bool {
+        self.elements == 1
+    }
 
     pub fn with_indirection(&self, indirection: Indirection) -> TypeRef {
         TypeRef {
             type_id: self.type_id,
             elements: self.elements,
-            indirection
+            indirection,
         }
     }
-    
+
     pub fn plus_one_indirect(&self) -> TypeRef {
         TypeRef {
             type_id: self.type_id,
@@ -133,7 +135,7 @@ impl TypeRef {
             indirection: Indirection(self.indirection.0 - 1),
         }
     }
-    
+
     pub fn immediate(&self) -> TypeRef {
         TypeRef {
             type_id: self.type_id,

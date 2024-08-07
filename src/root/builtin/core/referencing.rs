@@ -12,8 +12,7 @@ pub fn set_reference(
     into: AddressedTypeRef,
     global_table: &GlobalDefinitionTable,
 ) -> Result<String, WErr> {
-    let new_type = to_ref
-        .type_ref().plus_one_indirect();
+    let new_type = to_ref.type_ref().plus_one_indirect();
     if new_type != *into.type_ref() {
         return WErr::ne(
             EvalErrs::OpWrongReturnType(

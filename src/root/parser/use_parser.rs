@@ -9,7 +9,10 @@ use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
 use crate::root::parser::parse_util::discard_ignored;
 use crate::root::parser::path_storage::{FileID, PathStorage};
 
-pub fn parse_uses<'a>(s: Span<'a>, path_storage: &mut PathStorage) -> ParseResult<'a, Span<'a>, Vec<(FileID, Location)>> {
+pub fn parse_uses<'a>(
+    s: Span<'a>,
+    path_storage: &mut PathStorage,
+) -> ParseResult<'a, Span<'a>, Vec<(FileID, Location)>> {
     let mut s = s;
     let mut found_paths = Vec::new();
     loop {
@@ -37,11 +40,11 @@ pub fn parse_uses<'a>(s: Span<'a>, path_storage: &mut PathStorage) -> ParseResul
         }
 
         let (_, (id, new)) = path_storage.get_file_path_id_checked(path)?;
-        
+
         if new {
             found_paths.push((id, Location::from_span(&path)));
         }
-        
+
         s = ns;
     }
 }
