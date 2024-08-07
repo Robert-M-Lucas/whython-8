@@ -9,12 +9,7 @@
   <component name="ChangeListManager">
     <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Fmt">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/out.asm" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.asm" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/out.o" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/out.out" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.out" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/core/referencing.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/core/referencing.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/builtin/functions/exit.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/functions/exit.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/shared/common.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/shared/common.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/use_parser.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/use_parser.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,12 +63,12 @@
       </RecentBranches>
     </option>
   </component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/Robert-M-Lucas/whython-8.git&quot;,
-    &quot;accountId&quot;: &quot;dcb8df19-0b39-47e1-9073-4a54f7034be8&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/Robert-M-Lucas/whython-8.git",
+    "accountId": "4a322597-eb99-4adb-939a-37a7436c8242"
   }
-}</component>
+}]]></component>
   <component name="MacroExpansionManager">
     <option name="directoryName" value="u41t3cql" />
   </component>
@@ -133,10 +128,6 @@
       <recent name="$PROJECT_DIR$/src/root/builtin/types" />
       <recent name="$PROJECT_DIR$/src/root/builtin/int" />
     </key>
-  </component>
-  <component name="RsExternalLinterProjectSettings">
-    <option name="runOnTheFly" value="true" />
-    <option name="tool" value="Clippy" />
   </component>
   <component name="RunManager" selected="Cargo.Run whython-8">
     <configuration name="Run whython-8" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
@@ -279,6 +270,7 @@
       <workItem from="1722618894942" duration="1095000" />
       <workItem from="1722625341403" duration="1505000" />
       <workItem from="1722969496898" duration="697000" />
+      <workItem from="1723026258349" duration="1557000" />
     </task>
     <task id="LOCAL-00031" summary="Cargo fix">
       <option name="closed" value="true" />

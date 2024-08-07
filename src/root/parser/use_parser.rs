@@ -35,6 +35,25 @@ pub fn parse_uses(s: Span) -> ParseResult<Span, Vec<(PathBuf, Location)>> {
             ));
         }
 
+        let mut path_rem = path;
+        while let Ok((rem, c)) = anychar::<_, ErrorTree>(path_rem) {
+            if c.is_alphanumeric() || c == '_' || c == '/' {
+                path_rem = rem;
+                continue;
+            }
+            let mut utf8 = [0u8; 4];
+            c.encode_utf8(&mut utf8);
+            let mut utf8_str = "[".to_string();
+            utf8_str += &utf8.map(|b| format!("{b:02X}")).join(", ");
+            utf8_str.push(']');
+
+
+            return Err(create_custom_error(
+                format!("Invalid character in path '{}' - UTF-8 bytes: {}. Allowed characters are alphanumerics, '_' and '/'", c, utf8_str),
+                path_rem,
+            ));
+        }
+
         let path_buf = PathBuf::from(format!("{}.why", path));
         found_paths.push((path_buf, Location::from_span(&path)));
 
