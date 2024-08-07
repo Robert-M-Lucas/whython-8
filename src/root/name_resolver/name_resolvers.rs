@@ -19,6 +19,7 @@ use crate::root::POINTER_SIZE;
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::rc::Rc;
+use crate::root::parser::path_storage::FileID;
 
 #[derive(Debug)]
 enum NameTreeEntry {
@@ -45,16 +46,16 @@ impl NameTree {
 /// Top level of tree containing all named objects/functions/types
 #[derive(Default)]
 struct TopLevelNameTree {
-    table: HashMap<Rc<PathBuf>, NameTree>,
+    table: HashMap<FileID, NameTree>,
 }
 
 impl TopLevelNameTree {
-    pub fn get_tree_mut(&mut self, path: Rc<PathBuf>) -> &mut NameTree {
-        if !self.table.contains_key(&path) {
-            self.table.insert(path.clone(), Default::default());
+    pub fn get_tree_mut(&mut self, file_id: FileID) -> &mut NameTree {
+        if !self.table.contains_key(&file_id) {
+            self.table.insert(file_id, Default::default());
         }
 
-        self.table.get_mut(&path).unwrap()
+        self.table.get_mut(&file_id).unwrap()
     }
 }
 
@@ -161,7 +162,7 @@ impl GlobalDefinitionTable {
         // TODO
         let file_level_tree = self
             .name_table
-            .get_tree_mut(st.location().path().unwrap().clone());
+            .get_tree_mut(st.location().file_id().unwrap());
         self.id_counter += 1;
         let id = TypeID(self.id_counter - 1);
 
@@ -196,7 +197,7 @@ impl GlobalDefinitionTable {
             // TODO
             let file_level_tree = self
                 .name_table
-                .get_tree_mut(ft.location().path().unwrap().clone());
+                .get_tree_mut(ft.location().file_id().unwrap());
             file_level_tree.add_entry(ft.name().name().clone(), NameTreeEntry::Function(id));
         }
 
@@ -275,7 +276,7 @@ impl GlobalDefinitionTable {
         // TODO
         if let Some(r) = process_tree(
             self.name_table
-                .get_tree_mut(full_name.location().path().unwrap().clone()),
+                .get_tree_mut(full_name.location().file_id().unwrap()),
         ) {
             return r;
         }
@@ -284,7 +285,7 @@ impl GlobalDefinitionTable {
             .name_table
             .table
             .iter()
-            .filter(|(p, _)| *p != full_name.location().path().unwrap())
+            .filter(|(p, _)| **p != full_name.location().file_id().unwrap())
         {
             if let Some(r) = process_tree(tree) {
                 return r;
@@ -401,7 +402,7 @@ impl GlobalDefinitionTable {
         // TODO
         if let Some(r) = process_tree(
             self.name_table
-                .get_tree_mut(name.location().path().unwrap().clone()),
+                .get_tree_mut(name.location().file_id().unwrap()),
         ) {
             return r;
         }
@@ -411,7 +412,7 @@ impl GlobalDefinitionTable {
             .name_table
             .table
             .iter()
-            .filter(|(p, _)| *p != name.location().path().unwrap())
+            .filter(|(p, _)| **p != name.location().file_id().unwrap())
         {
             if let Some(r) = process_tree(tree) {
                 return r;

@@ -6,4 +6,7 @@
   - Add [int; 12] / &[int; 12] parsing support into UnresolvedTypeRefToken
   - Add support for parsing array literals
   - Add evaluation support for array literals
+  
+- Check for circular imports
+- Restrict characters usable in path
 - Namespacing

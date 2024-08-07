@@ -126,7 +126,7 @@ pub fn take_until_or_end_discard_smart<'a>(s: Span<'a>, until: &str) -> ParseRes
     let mut s = s;
     let mut found = false;
     'outer: while !s.is_empty() {
-        if let Ok((ns, _)) = tag::<&str, LocatedSpan<&str, &Rc<PathBuf>>, ErrorTree>(until)(s) {
+        if let Ok((ns, _)) = tag::<_, _, ErrorTree>(until)(s) {
             found = true;
             s = ns;
             break;
@@ -165,7 +165,7 @@ pub fn take_until_discard_smart<'a>(s: Span<'a>, until: &str) -> ParseResult<'a>
             )));
         }
 
-        if let Ok((ns, _)) = tag::<&str, LocatedSpan<&str, &Rc<PathBuf>>, ErrorTree>(until)(s) {
+        if let Ok((ns, _)) = tag::<_, _, ErrorTree>(until)(s) {
             s = ns;
             break;
         }

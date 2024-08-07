@@ -1,5 +1,5 @@
 use crate::root::compiler::compile::compile;
-use crate::root::errors::WErr;
+use crate::root::errors::{WErr, WErrContext};
 use crate::root::name_resolver::resolve::resolve;
 use crate::root::parser::parse::parse;
 use crate::root::runner::{assemble, link_gcc, run};
@@ -13,6 +13,7 @@ use std::fs::File;
 use std::io::ErrorKind;
 use std::path::PathBuf;
 use std::time::Instant;
+use crate::root::parser::path_storage::PathStorage;
 
 #[cfg(debug_assertions)]
 pub const DEBUG_ON_ERROR: bool = false;
@@ -53,7 +54,7 @@ pub fn main() {
     }
 }
 
-pub fn main_args(args: Args) -> Result<(), WErr> {
+pub fn main_args(args: Args) -> Result<(), String> {
     if let Some(path) = PathBuf::from(&args.output).parent() {
         if let Err(e) = fs::create_dir_all(path) {
             if !matches!(e.kind(), ErrorKind::AlreadyExists) {
@@ -63,19 +64,24 @@ pub fn main_args(args: Args) -> Result<(), WErr> {
         }
     }
 
-    print!("Parsing... ");
+    
+    print!("Parsing files... ");
     time!(
-        let parsed = parse(PathBuf::from(&args.input))?;
+        let mut path_storage = PathStorage::new(&args.input).unwrap(); // TODO: 
+        let toplevel_tokens = parse(&mut path_storage)
+            .map_err(|e| e.with_context(&path_storage).to_string())?;
     );
 
     print!("Resolving Names... ");
     time!(
-        let (global_table, unprocessed_functions) = resolve(parsed)?;
+        let (global_table, unprocessed_functions) = resolve(toplevel_tokens)
+        .map_err(|e| e.with_context(&path_storage).to_string())?;
     );
 
     print!("Compiling... ");
     time!(
-        let assembly = compile(global_table, unprocessed_functions)?;
+        let assembly = compile(global_table, unprocessed_functions, &path_storage)
+            .map_err(|e| e.with_context(&path_storage).to_string())?;
     );
 
     print!("Writing Assembly... ");

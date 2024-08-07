@@ -1,3 +1,0 @@
-fn main() -> int {
-    printb(true, false);
-}

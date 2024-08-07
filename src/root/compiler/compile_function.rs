@@ -308,7 +308,11 @@ fn recursively_compile_lines(
                 contents.line("ret");
 
                 if line_i != lines.len() - 1 {
-                    warn(&format!("Return isn't the last instruction in the block. Following lines in block will not be compiled/run.\n{}", rt.location().clone().into_warning()))
+                    warn(
+                        &format!("Return isn't the last instruction in the block. Following lines in block will not be compiled/run.\n{}", 
+                                 rt.location().clone().into_warning().with_context(global_tracker.path_storage())
+                        )
+                    )
                 }
                 break;
             }

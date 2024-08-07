@@ -7,8 +7,9 @@ use crate::root::errors::parser_errors::create_custom_error;
 use crate::root::parser::location::Location;
 use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
 use crate::root::parser::parse_util::discard_ignored;
+use crate::root::parser::path_storage::{FileID, PathStorage};
 
-pub fn parse_uses(s: Span) -> ParseResult<Span, Vec<(PathBuf, Location)>> {
+pub fn parse_uses<'a>(s: Span<'a>, path_storage: &mut PathStorage) -> ParseResult<'a, Span<'a>, Vec<(FileID, Location)>> {
     let mut s = s;
     let mut found_paths = Vec::new();
     loop {
@@ -35,28 +36,12 @@ pub fn parse_uses(s: Span) -> ParseResult<Span, Vec<(PathBuf, Location)>> {
             ));
         }
 
-        let mut path_rem = path;
-        while let Ok((rem, c)) = anychar::<_, ErrorTree>(path_rem) {
-            if c.is_alphanumeric() || c == '_' || c == '/' {
-                path_rem = rem;
-                continue;
-            }
-            let mut utf8 = [0u8; 4];
-            c.encode_utf8(&mut utf8);
-            let mut utf8_str = "[".to_string();
-            utf8_str += &utf8.map(|b| format!("{b:02X}")).join(", ");
-            utf8_str.push(']');
-
-
-            return Err(create_custom_error(
-                format!("Invalid character in path '{}' - UTF-8 bytes: {}. Allowed characters are alphanumerics, '_' and '/'", c, utf8_str),
-                path_rem,
-            ));
+        let (_, (id, new)) = path_storage.get_file_path_id_checked(path)?;
+        
+        if new {
+            found_paths.push((id, Location::from_span(&path)));
         }
-
-        let path_buf = PathBuf::from(format!("{}.why", path));
-        found_paths.push((path_buf, Location::from_span(&path)));
-
+        
         s = ns;
     }
 }

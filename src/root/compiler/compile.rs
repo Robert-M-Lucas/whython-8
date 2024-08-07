@@ -8,6 +8,7 @@ use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
 use crate::root::parser::parse_function::FunctionToken;
+use crate::root::parser::path_storage::PathStorage;
 use crate::root::shared::common::FunctionID;
 use crate::root::unrandom::{new_hashmap, new_hashset};
 
@@ -15,6 +16,7 @@ use crate::root::unrandom::{new_hashmap, new_hashset};
 pub fn compile(
     mut global_table: GlobalDefinitionTable,
     unprocessed_functions: HashMap<FunctionID, FunctionToken>,
+    path_storage: &PathStorage
 ) -> Result<String, WErr> {
     let mut unprocessed_functions = unprocessed_functions;
     let mut compiled_functions = new_hashmap();
@@ -22,7 +24,7 @@ pub fn compile(
 
     let mut open_set = new_hashset();
     open_set.insert(FunctionID(0)); // Start with main
-    let mut global_tracker = GlobalTracker::default();
+    let mut global_tracker = GlobalTracker::new(path_storage);
 
     while !open_set.is_empty() {
         global_tracker.reset_functions();
