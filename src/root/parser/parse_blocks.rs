@@ -1,11 +1,7 @@
-use std::path::PathBuf;
-use std::rc::Rc;
-
+use nom::{InputTake, Offset};
 use nom::bytes::complete::tag;
 use nom::character::complete::{anychar, char as nchar};
 use nom::error::{ErrorKind, ParseError};
-use nom::{InputTake, Offset};
-use nom_locate::LocatedSpan;
 
 use crate::root::errors::parser_errors::create_custom_error;
 use crate::root::parser::parse::{ErrorTree, ParseResult, Span};

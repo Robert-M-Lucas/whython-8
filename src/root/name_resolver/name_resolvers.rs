@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::root::builtin::{BuiltinInlineFunction, InlineFunctionGenerator};
 use crate::root::compiler::assembly::heap::free_function;
 use crate::root::compiler::assembly::null::{is_null_function, null_function};
@@ -6,20 +8,17 @@ use crate::root::errors::name_resolver_errors::NRErrs;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::location::Location;
+use crate::root::parser::parse_function::FunctionToken;
 use crate::root::parser::parse_function::parse_evaluable::{
     FullNameToken, FullNameTokens, UnresolvedTypeRefToken,
 };
 use crate::root::parser::parse_function::parse_operator::{OperatorToken, PrefixOrInfixEx};
-use crate::root::parser::parse_function::FunctionToken;
 use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::parser::parse_struct::StructToken;
 use crate::root::parser::path_storage::FileID;
+use crate::root::POINTER_SIZE;
 use crate::root::shared::common::{AddressedTypeRef, ByteSize, FunctionID, TypeID, TypeRef};
 use crate::root::shared::types::Type;
-use crate::root::POINTER_SIZE;
-use std::collections::HashMap;
-use std::path::PathBuf;
-use std::rc::Rc;
 
 #[derive(Debug)]
 enum NameTreeEntry {

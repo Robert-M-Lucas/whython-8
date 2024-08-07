@@ -1,19 +1,21 @@
-use crate::root::compiler::compile::compile;
-use crate::root::errors::{WErr, WErrContext};
-use crate::root::name_resolver::resolve::resolve;
-use crate::root::parser::parse::parse;
-use crate::root::parser::path_storage::PathStorage;
-use crate::root::runner::{assemble, link_gcc, run};
-use crate::time;
-use clap::Parser;
-use color_print::cprintln;
-use num_format::{Locale, ToFormattedString};
-use shared::common::ByteSize;
 use std::fs;
 use std::fs::File;
 use std::io::ErrorKind;
 use std::path::PathBuf;
 use std::time::Instant;
+
+use clap::Parser;
+use color_print::cprintln;
+use num_format::{Locale, ToFormattedString};
+
+use shared::common::ByteSize;
+
+use crate::root::compiler::compile::compile;
+use crate::root::name_resolver::resolve::resolve;
+use crate::root::parser::parse::parse;
+use crate::root::parser::path_storage::PathStorage;
+use crate::root::runner::{assemble, link_gcc, run};
+use crate::time;
 
 #[cfg(debug_assertions)]
 pub const DEBUG_ON_ERROR: bool = false;

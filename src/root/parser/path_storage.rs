@@ -1,12 +1,11 @@
-use crate::root::errors::parser_errors::{create_custom_error, create_custom_error_tree};
-use crate::root::errors::WErr;
-use crate::root::parser::location::{Location, LocationFilledFmt};
-use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
-use crate::root::utils::identify_first_last::{IdentifyFirstLast, IdentifyLast};
-use nom::character::complete::anychar;
-use std::collections::{HashMap, HashSet};
-use std::fmt::{Display, Formatter};
+use std::collections::HashMap;
 
+use nom::character::complete::anychar;
+
+use crate::root::errors::parser_errors::create_custom_error;
+use crate::root::errors::WErr;
+use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
+use crate::root::utils::identify_first_last::IdentifyLast;
 #[derive(Hash, Copy, Clone, Debug, Eq, PartialEq)]
 pub struct FileID(usize);
 
@@ -82,6 +81,7 @@ impl PathStorage {
         &self.files[file_id.0]
     }
 
+    #[allow(dead_code)]
     fn get_file_mut(&mut self, file_id: FileID) -> &mut CodeFile {
         &mut self.files[file_id.0]
     }

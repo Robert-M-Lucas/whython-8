@@ -1,5 +1,3 @@
-use std::path::PathBuf;
-
 use nom::bytes::complete::{tag, take_till};
 use nom::character::complete::anychar;
 

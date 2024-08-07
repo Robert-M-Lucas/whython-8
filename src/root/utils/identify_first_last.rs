@@ -4,10 +4,12 @@
 //! This module contains general helper traits.
 use std::{iter, mem};
 
+#[allow(dead_code)]
 pub trait IdentifyFirstLast: Iterator + Sized {
     fn identify_first_last(self) -> IterFirstLast<Self>;
 }
 
+#[allow(dead_code)]
 pub trait IdentifyFirst: Iterator + Sized {
     fn identify_first(self) -> IterFirst<Self>;
 }
@@ -39,7 +41,7 @@ where
     I: Iterator,
 {
     fn identify_last(self) -> IterLast<Self> {
-        IterLast(true, self.peekable())
+        IterLast(self.peekable())
     }
 }
 
@@ -51,7 +53,7 @@ pub struct IterFirst<I>(bool, I)
 where
     I: Iterator;
 
-pub struct IterLast<I>(bool, iter::Peekable<I>)
+pub struct IterLast<I>(iter::Peekable<I>)
 where
     I: Iterator;
 
@@ -86,6 +88,6 @@ where
     type Item = (bool, I::Item);
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.1.next().map(|e| (self.1.peek().is_none(), e))
+        self.0.next().map(|e| (self.0.peek().is_none(), e))
     }
 }

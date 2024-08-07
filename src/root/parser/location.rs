@@ -1,13 +1,13 @@
-use crate::root::parser::parse::Span;
-use crate::root::parser::path_storage::{FileID, PathStorage};
-use color_print::cformat;
-use nom::InputTake;
 use std::cmp::min;
 use std::fmt::{Display, Formatter};
 use std::fs;
 use std::marker::PhantomData;
-use std::path::PathBuf;
-use std::rc::Rc;
+
+use color_print::cformat;
+use nom::InputTake;
+
+use crate::root::parser::parse::Span;
+use crate::root::parser::path_storage::{FileID, PathStorage};
 
 pub enum ToLocation<'a> {
     Location(Location),
