@@ -7,8 +7,10 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Updated todo.txt">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Fixed warnings">
+      <change beforePath="$PROJECT_DIR$/src/root.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/global_tracker.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/global_tracker.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -274,15 +276,7 @@
       <workItem from="1722625341403" duration="1505000" />
       <workItem from="1722969496898" duration="697000" />
       <workItem from="1723026258349" duration="1557000" />
-      <workItem from="1723045013060" duration="8124000" />
-    </task>
-    <task id="LOCAL-00034" summary="More boolean operations">
-      <option name="closed" value="true" />
-      <created>1718805301324</created>
-      <option name="number" value="00034" />
-      <option name="presentableId" value="LOCAL-00034" />
-      <option name="project" value="LOCAL" />
-      <updated>1718805301324</updated>
+      <workItem from="1723045013060" duration="8645000" />
     </task>
     <task id="LOCAL-00035" summary="Int comparators">
       <option name="closed" value="true" />
@@ -668,7 +662,15 @@
       <option name="project" value="LOCAL" />
       <updated>1723051436594</updated>
     </task>
-    <option name="localTasksCounter" value="83" />
+    <task id="LOCAL-00083" summary="Fixed warnings">
+      <option name="closed" value="true" />
+      <created>1723053543861</created>
+      <option name="number" value="00083" />
+      <option name="presentableId" value="LOCAL-00083" />
+      <option name="project" value="LOCAL" />
+      <updated>1723053543861</updated>
+    </task>
+    <option name="localTasksCounter" value="84" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -725,7 +727,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Other" />
     <MESSAGE value="Self coercion" />
     <MESSAGE value="Begun work towards heap allocation" />
     <MESSAGE value="Todo" />
@@ -750,7 +751,8 @@
     <MESSAGE value="Transitioned to PathStorage for paths" />
     <MESSAGE value="Cargo fmt" />
     <MESSAGE value="Updated todo.txt" />
-    <option name="LAST_COMMIT_MESSAGE" value="Updated todo.txt" />
+    <MESSAGE value="Fixed warnings" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed warnings" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

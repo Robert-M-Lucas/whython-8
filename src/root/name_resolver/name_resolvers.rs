@@ -19,6 +19,7 @@ use crate::root::parser::path_storage::FileID;
 use crate::root::POINTER_SIZE;
 use crate::root::shared::common::{AddressedTypeRef, ByteSize, FunctionID, TypeID, TypeRef};
 use crate::root::shared::types::Type;
+use crate::root::unrandom::new_hashmap;
 
 #[derive(Debug)]
 enum NameTreeEntry {
@@ -86,9 +87,9 @@ impl GlobalDefinitionTable {
     pub fn new() -> GlobalDefinitionTable {
         GlobalDefinitionTable {
             id_counter: 2,
-            type_definitions: Default::default(),
-            impl_definitions: Default::default(),
-            function_signatures: Default::default(),
+            type_definitions: new_hashmap(),
+            impl_definitions: new_hashmap(),
+            function_signatures: new_hashmap(),
             inline_functions: Default::default(),
             name_table: Default::default(),
             builtin_type_name_table: Default::default(),

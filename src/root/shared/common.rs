@@ -1,10 +1,9 @@
 use std::fmt::{Display, Formatter};
 
 use derive_getters::{Dissolve, Getters};
-use derive_more::{Add, AddAssign, Display, Sub, SubAssign};
+use derive_more::{Add, AddAssign, Sub, SubAssign};
 
-#[derive(Debug, PartialEq, Eq, Hash, Display, Copy, Clone)]
-#[display(fmt = "TypeID: {}", .0)]
+#[derive(Debug, PartialEq, Eq, Hash, Copy, Clone)]
 /// A unique type ID. Negative is builtin, positive is user-defined
 pub struct TypeID(pub isize);
 
@@ -26,8 +25,7 @@ impl TypeID {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Display, Copy, Clone)]
-#[display(fmt = "FunctionID: {}", .0)]
+#[derive(Debug, PartialEq, Eq, Hash, Copy, Clone)]
 /// A unique function ID. Negative is builtin, 0 is main, and positive is user-defined
 pub struct FunctionID(pub isize);
 
@@ -51,8 +49,7 @@ impl FunctionID {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Display, Copy, Clone, Add, AddAssign, Sub, SubAssign)]
-#[display(fmt = "Indirection: {}", .0)]
+#[derive(Debug, PartialEq, Eq, Hash, Copy, Clone, Add, AddAssign, Sub, SubAssign)]
 /// The indirection to an address i.e. how many pointers you have to go through
 pub struct Indirection(pub usize);
 
@@ -71,10 +68,16 @@ impl Indirection {
 }
 
 #[derive(
-    Debug, PartialEq, Eq, Hash, Display, Copy, Clone, Default, Add, AddAssign, Sub, SubAssign,
+    Debug, PartialEq, Eq, Hash, Copy, Clone, Default, Add, AddAssign, Sub, SubAssign,
 )]
 /// The size of something, in bytes
 pub struct ByteSize(pub usize);
+
+impl Display for ByteSize {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
 
 #[derive(Debug, PartialEq, Eq, Hash, Copy, Clone, Add, AddAssign, Sub, SubAssign)]
 /// A stack-frame-relative local address. Like in assembly, negative addresses are in the current
