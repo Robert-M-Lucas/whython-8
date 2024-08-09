@@ -105,7 +105,7 @@ impl PathStorage {
     }
 
     pub fn reconstruct_folder(&self, id: FolderID) -> String {
-        let mut sb = format!("{}", &self.get_folder(id).current);
+        let mut sb = self.get_folder(id).current.to_string();
         let mut current = self.get_folder(id).parent;
         while current.0 != 0 {
             sb = self.get_folder(current).current.clone() + "/" + &sb;

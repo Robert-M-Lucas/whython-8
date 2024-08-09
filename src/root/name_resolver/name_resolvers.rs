@@ -8,18 +8,18 @@ use crate::root::errors::name_resolver_errors::NRErrs;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::location::Location;
-use crate::root::parser::parse_function::FunctionToken;
 use crate::root::parser::parse_function::parse_evaluable::{
     FullNameToken, FullNameTokens, UnresolvedTypeRefToken,
 };
 use crate::root::parser::parse_function::parse_operator::{OperatorToken, PrefixOrInfixEx};
+use crate::root::parser::parse_function::FunctionToken;
 use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::parser::parse_struct::StructToken;
 use crate::root::parser::path_storage::FileID;
-use crate::root::POINTER_SIZE;
 use crate::root::shared::common::{AddressedTypeRef, ByteSize, FunctionID, TypeID, TypeRef};
 use crate::root::shared::types::Type;
 use crate::root::unrandom::new_hashmap;
+use crate::root::POINTER_SIZE;
 
 #[derive(Debug)]
 enum NameTreeEntry {
@@ -51,9 +51,7 @@ struct TopLevelNameTree {
 
 impl TopLevelNameTree {
     pub fn get_tree_mut(&mut self, file_id: FileID) -> &mut NameTree {
-        if !self.table.contains_key(&file_id) {
-            self.table.insert(file_id, Default::default());
-        }
+        self.table.entry(file_id).or_default();
 
         self.table.get_mut(&file_id).unwrap()
     }

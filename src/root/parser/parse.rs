@@ -28,18 +28,18 @@ pub fn parse(path_storage: &mut PathStorage) -> Result<Vec<TopLevelTokens>, WErr
         print!("\n  - {}", &reconstructed);
         let Ok(text) = fs::read_to_string(Path::new(&reconstructed)) else {
             return WErr::ne(
-                ParseError::FailedToOpenFile(format!("{}", reconstructed)),
+                ParseError::FailedToOpenFile(reconstructed.to_string()),
                 location,
             );
         };
 
         let base = Span::new_extra(&text, file_id);
 
-        let (after_use, new_files) = handle_error(parse_uses(base, path_storage), &path_storage)?;
+        let (after_use, new_files) = handle_error(parse_uses(base, path_storage), path_storage)?;
         path_queue.extend(new_files);
 
         let res = parse_toplevel::parse_toplevel(after_use);
-        let (remaining, new_output) = handle_error(res, &path_storage)?;
+        let (remaining, new_output) = handle_error(res, path_storage)?;
         debug_assert!(remaining.is_empty());
         output.extend(new_output);
     }

@@ -4,10 +4,10 @@ use std::fmt::{Display, Formatter};
 
 use color_print::cformat;
 
-#[cfg(debug_assertions)]
-use crate::root::DEBUG_ON_ERROR;
 use crate::root::parser::location::Location;
 use crate::root::parser::path_storage::PathStorage;
+#[cfg(debug_assertions)]
+use crate::root::DEBUG_ON_ERROR;
 
 pub mod evaluable_errors;
 pub mod name_resolver_errors;

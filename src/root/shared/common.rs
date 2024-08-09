@@ -67,9 +67,7 @@ impl Indirection {
     }
 }
 
-#[derive(
-    Debug, PartialEq, Eq, Hash, Copy, Clone, Default, Add, AddAssign, Sub, SubAssign,
-)]
+#[derive(Debug, PartialEq, Eq, Hash, Copy, Clone, Default, Add, AddAssign, Sub, SubAssign)]
 /// The size of something, in bytes
 pub struct ByteSize(pub usize);
 

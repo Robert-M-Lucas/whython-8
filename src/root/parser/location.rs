@@ -23,7 +23,7 @@ impl<'a> ToLocation<'a> {
         ToLocation::Span(span)
     }
 
-    pub fn to_location(self) -> Location {
+    pub fn into_location(self) -> Location {
         match self {
             ToLocation::Location(location) => location,
             ToLocation::Span(s) => Location::from_span(&s),

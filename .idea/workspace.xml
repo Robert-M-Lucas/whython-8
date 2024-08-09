@@ -7,10 +7,11 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Fixed warnings">
-      <change beforePath="$PROJECT_DIR$/src/root.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/global_tracker.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/global_tracker.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs" afterDir="false" />
+    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Updated packages">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/out.asm" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.asm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/out.o" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/out.out" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.out" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -64,12 +65,12 @@
       </RecentBranches>
     </option>
   </component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/Robert-M-Lucas/whython-8.git",
-    "accountId": "dcb8df19-0b39-47e1-9073-4a54f7034be8"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Robert-M-Lucas/whython-8.git&quot;,
+    &quot;accountId&quot;: &quot;dcb8df19-0b39-47e1-9073-4a54f7034be8&quot;
   }
-}]]></component>
+}</component>
   <component name="MacroExpansionManager">
     <option name="directoryName" value="u41t3cql" />
   </component>
@@ -276,15 +277,10 @@
       <workItem from="1722625341403" duration="1505000" />
       <workItem from="1722969496898" duration="697000" />
       <workItem from="1723026258349" duration="1557000" />
-      <workItem from="1723045013060" duration="8645000" />
-    </task>
-    <task id="LOCAL-00035" summary="Int comparators">
-      <option name="closed" value="true" />
-      <created>1718888868217</created>
-      <option name="number" value="00035" />
-      <option name="presentableId" value="LOCAL-00035" />
-      <option name="project" value="LOCAL" />
-      <updated>1718888868217</updated>
+      <workItem from="1723045013060" duration="8954000" />
+      <workItem from="1723127499434" duration="1119000" />
+      <workItem from="1723130972719" duration="14000" />
+      <workItem from="1723141139786" duration="603000" />
     </task>
     <task id="LOCAL-00036" summary="Boolean comparators">
       <option name="closed" value="true" />
@@ -670,7 +666,15 @@
       <option name="project" value="LOCAL" />
       <updated>1723053543861</updated>
     </task>
-    <option name="localTasksCounter" value="84" />
+    <task id="LOCAL-00084" summary="Updated packages">
+      <option name="closed" value="true" />
+      <created>1723054195988</created>
+      <option name="number" value="00084" />
+      <option name="presentableId" value="LOCAL-00084" />
+      <option name="project" value="LOCAL" />
+      <updated>1723054195988</updated>
+    </task>
+    <option name="localTasksCounter" value="85" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -727,7 +731,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Self coercion" />
     <MESSAGE value="Begun work towards heap allocation" />
     <MESSAGE value="Todo" />
     <MESSAGE value="Added null to all user types" />
@@ -752,7 +755,8 @@
     <MESSAGE value="Cargo fmt" />
     <MESSAGE value="Updated todo.txt" />
     <MESSAGE value="Fixed warnings" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed warnings" />
+    <MESSAGE value="Updated packages" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated packages" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
