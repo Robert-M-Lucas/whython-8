@@ -44,7 +44,7 @@ pub fn parse_imports<'a>(
         }
 
         let (_, ids) = path_storage.get_id_and_add_to_file(current_file, is_use, path)?;
-        
+
         for id in ids {
             found_paths.push((id, Location::from_span(&path)));
         }

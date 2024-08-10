@@ -14,6 +14,7 @@ pub fn resolve(
     ast: Vec<TopLevelTokens>,
 ) -> Result<(GlobalDefinitionTable, HashMap<FunctionID, FunctionToken>), WErr> {
     let mut global_table = GlobalDefinitionTable::new();
+
     register_builtin(&mut global_table);
     let unprocessed_functions = resolve_names(ast, &mut global_table)?;
 

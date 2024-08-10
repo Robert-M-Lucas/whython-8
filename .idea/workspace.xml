@@ -7,11 +7,8 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Refactoring">
+    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Continued import implementation">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/out.asm" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.asm" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/out.o" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/out.out" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.out" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.why" beforeDir="false" afterPath="$PROJECT_DIR$/main.why" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/root/compiler/compile.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/root/parser/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/mod.rs" afterDir="false" />
@@ -289,15 +286,7 @@
       <workItem from="1723141139786" duration="603000" />
       <workItem from="1723212841248" duration="1106000" />
       <workItem from="1723216662767" duration="1364000" />
-      <workItem from="1723294201690" duration="6254000" />
-    </task>
-    <task id="LOCAL-00037" summary="Simplified code">
-      <option name="closed" value="true" />
-      <created>1718895358320</created>
-      <option name="number" value="00037" />
-      <option name="presentableId" value="LOCAL-00037" />
-      <option name="project" value="LOCAL" />
-      <updated>1718895358320</updated>
+      <workItem from="1723294201690" duration="6774000" />
     </task>
     <task id="LOCAL-00038" summary="Improvements">
       <option name="closed" value="true" />
@@ -683,7 +672,15 @@
       <option name="project" value="LOCAL" />
       <updated>1723213598029</updated>
     </task>
-    <option name="localTasksCounter" value="86" />
+    <task id="LOCAL-00086" summary="Continued import implementation">
+      <option name="closed" value="true" />
+      <created>1723305700296</created>
+      <option name="number" value="00086" />
+      <option name="presentableId" value="LOCAL-00086" />
+      <option name="project" value="LOCAL" />
+      <updated>1723305700297</updated>
+    </task>
+    <option name="localTasksCounter" value="87" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -740,7 +737,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Begun work towards heap allocation" />
     <MESSAGE value="Todo" />
     <MESSAGE value="Added null to all user types" />
     <MESSAGE value="Linked list" />
@@ -765,7 +761,8 @@
     <MESSAGE value="Fixed warnings" />
     <MESSAGE value="Updated packages" />
     <MESSAGE value="Refactoring" />
-    <option name="LAST_COMMIT_MESSAGE" value="Refactoring" />
+    <MESSAGE value="Continued import implementation" />
+    <option name="LAST_COMMIT_MESSAGE" value="Continued import implementation" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

@@ -1,11 +1,11 @@
-use std::collections::HashMap;
-use std::fs;
 use crate::root::errors::parser_errors::create_custom_error;
 use crate::root::errors::WErr;
 use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
 use crate::root::utils::identify_first_last::IdentifyLast;
 use nom::character::complete::anychar;
 use nom::InputTake;
+use std::collections::HashMap;
+use std::fs;
 #[derive(Hash, Copy, Clone, Debug, Eq, PartialEq)]
 pub struct FileID(usize);
 
@@ -52,7 +52,9 @@ pub struct PathStorage {
 impl PathStorage {
     pub fn new(main: &str) -> Result<PathStorage, WErr> {
         // TODO: Only allow certain characters in base
-        if !main.ends_with(".why") { todo!() }
+        if !main.ends_with(".why") {
+            todo!()
+        }
         let main = &main[..main.len() - ".why".len()];
 
         let mut folders = vec![CodeFolder::root()];
@@ -195,24 +197,38 @@ impl PathStorage {
                 if is_folder {
                     let folder = self.add_folder(section, current);
                     if !is_use {
-                        self.get_file_mut(current_file).imported_folders.push(folder);
+                        self.get_file_mut(current_file)
+                            .imported_folders
+                            .push(folder);
                     }
                     let folder_path = self.reconstruct_folder(folder);
                     let mut new_files = Vec::new();
 
-                    let Ok(subpaths) = fs::read_dir(folder_path) else { todo!() };
+                    let Ok(subpaths) = fs::read_dir(folder_path) else {
+                        todo!()
+                    };
                     for path in subpaths {
                         let Ok(path) = path else { todo!() };
                         let Ok(t) = path.file_type() else { todo!() };
-                        if !t.is_file() { continue; }
-                        let path = path.path();
-                        if !path.extension().and_then(|e| e.to_str()).is_some_and(|e| e == "why") {
+                        if !t.is_file() {
                             continue;
                         }
-                        let Some(name) = path.file_stem().and_then(|f| f.to_str()) else { todo!() };
+                        let path = path.path();
+                        if !path
+                            .extension()
+                            .and_then(|e| e.to_str())
+                            .is_some_and(|e| e == "why")
+                        {
+                            continue;
+                        }
+                        let Some(name) = path.file_stem().and_then(|f| f.to_str()) else {
+                            todo!()
+                        };
 
                         let (file, is_new) = self.add_file(name, folder);
-                        if is_new { new_files.push(file); }
+                        if is_new {
+                            new_files.push(file);
+                        }
                         if is_use {
                             self.get_file_mut(current_file).imported_files.push(file);
                         }
@@ -235,7 +251,7 @@ impl PathStorage {
                         Ok(((), vec![file]))
                     } else {
                         Ok(((), vec![]))
-                    }
+                    };
                 }
             } else {
                 current = self.add_folder(section, current);

@@ -35,7 +35,8 @@ pub fn parse(path_storage: &mut PathStorage) -> Result<Vec<TopLevelTokens>, WErr
 
         let base = Span::new_extra(&text, file_id);
 
-        let (after_use, new_files) = handle_error(parse_imports(base, path_storage, file_id), path_storage)?;
+        let (after_use, new_files) =
+            handle_error(parse_imports(base, path_storage, file_id), path_storage)?;
         path_queue.extend(new_files);
 
         let res = parse_toplevel::parse_toplevel(after_use);

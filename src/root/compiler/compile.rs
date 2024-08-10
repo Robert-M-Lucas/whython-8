@@ -37,7 +37,7 @@ pub fn compile(
 
         let current_function = *open_set.iter().next().unwrap();
         open_set.remove(&current_function);
-        
+
         compiled_count += 1;
 
         let Some(current_function_token) = unprocessed_functions.remove(&current_function) else {

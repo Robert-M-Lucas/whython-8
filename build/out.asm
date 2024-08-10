@@ -2,6 +2,230 @@
 
 section .text
 
+_12:
+    push rbp
+    mov rbp, rsp
+    mov rax, [rbp+16]
+    add rax, 0x0000000000000000
+    mov qword [rbp-8], rax
+    mov rdx, qword [rbp-8]
+    mov rax, qword [rdx+0]
+    mov qword [rbp-16], rax
+    mov rax, qword [rbp+24]
+    mov qword [rbp-24], rax
+    mov rax, qword [rbp-24]
+    mov qword [rbp-48], rax
+    mov rax, qword [rbp-16]
+    mov qword [rbp-56], rax
+    sub rsp, 0x0000000000000038
+    call _17
+    add rsp, 0x0000000000000038
+    mov rax, qword [rbp-40]
+    mov qword [rbp+32], rax
+    leave
+    ret
+
+
+_19:
+    push rbp
+    mov rbp, rsp
+    mov rax, [rbp+16]
+    add rax, 0x0000000000000000
+    mov qword [rbp-16], rax
+    mov rdx, qword [rbp-16]
+    mov rax, qword [rdx+0]
+    mov qword [rbp-8], rax
+    mov rdi, __8_fstr
+    mov rsi, [rbp-8]
+    mov al, 0
+    sub rsp, 16
+    extern printf
+    call printf
+    add rsp, 16
+    mov rax, [rbp+16]
+    add rax, 0x0000000000000008
+    mov qword [rbp-34], rax
+    mov rdx, qword [rbp-34]
+    mov rax, qword [rdx+0]
+    mov qword [rbp-26], rax
+    mov rax, qword [rbp-26]
+    cmp rax, 0
+    jz __36_18
+    mov byte [rbp-18], 0
+    jmp __36_19
+    __36_18:
+    mov byte [rbp-18], 1
+    __36_19:
+    mov al, byte [rbp-18]
+    cmp al, 0
+    jz __23_20
+    mov byte [rbp-17], 0
+    jmp __23_21
+    __23_20:
+    mov byte [rbp-17], 1
+    __23_21:
+    cmp byte [rbp-17], 0
+    jz _19_22
+    mov rax, [rbp+16]
+    add rax, 0x0000000000000008
+    mov qword [rbp-42], rax
+    mov rdx, qword [rbp-42]
+    mov rax, qword [rdx+0]
+    mov qword [rbp-50], rax
+    mov rax, qword [rbp-50]
+    mov qword [rbp-58], rax
+    sub rsp, 0x000000000000003a
+    call _19
+    add rsp, 0x000000000000003a
+    _19_23:
+    _19_22:
+
+leave
+ret
+
+_10:
+    push rbp
+    mov rbp, rsp
+    mov qword [rbp+16], 0
+    leave
+    ret
+
+
+_13:
+    push rbp
+    mov rbp, rsp
+    mov rax, [rbp+16]
+    add rax, 0x0000000000000000
+    mov qword [rbp-17], rax
+    mov rdx, qword [rbp-17]
+    mov rax, qword [rdx+0]
+    mov qword [rbp-25], rax
+    mov rax, [rbp-25]
+    add rax, 0x0000000000000008
+    mov qword [rbp-33], rax
+    mov rdx, qword [rbp-33]
+    mov rax, qword [rdx+0]
+    mov qword [rbp-9], rax
+    mov rax, qword [rbp-9]
+    cmp rax, 0
+    jz __36_6
+    mov byte [rbp-1], 0
+    jmp __36_7
+    __36_6:
+    mov byte [rbp-1], 1
+    __36_7:
+    cmp byte [rbp-1], 0
+    jz _13_8
+    mov rax, [rbp+16]
+    add rax, 0x0000000000000000
+    mov qword [rbp-49], rax
+    mov rdx, qword [rbp-49]
+    mov rax, qword [rdx+0]
+    mov qword [rbp-57], rax
+    mov rax, [rbp-57]
+    add rax, 0x0000000000000000
+    mov qword [rbp-65], rax
+    mov rdx, qword [rbp-65]
+    mov rax, qword [rdx+0]
+    mov qword [rbp-41], rax
+    mov rax, [rbp+16]
+    add rax, 0x0000000000000000
+    mov qword [rbp-81], rax
+    mov rdx, qword [rbp-81]
+    mov rax, qword [rdx+0]
+    mov qword [rbp-73], rax
+    mov rdi, qword [rbp-73]
+    sub rsp, 81
+    extern free
+    call free
+    add rsp, 81
+    mov rax, [rbp+16]
+    add rax, 0x0000000000000000
+    mov qword [rbp-89], rax
+    mov qword [rbp-97], 0
+    mov rdx, qword [rbp-89]
+    mov rax, qword [rbp-97]
+    mov qword [rdx+0], rax
+    mov rax, qword [rbp-41]
+    mov qword [rbp+24], rax
+    leave
+    ret
+    _13_9:
+    _13_8:
+    mov rax, [rbp+16]
+    add rax, 0x0000000000000000
+    mov qword [rbp-41], rax
+    mov rdx, qword [rbp-41]
+    mov rax, qword [rdx+0]
+    mov qword [rbp-49], rax
+    mov rax, qword [rbp-49]
+    mov qword [rbp-65], rax
+    sub rsp, 0x0000000000000041
+    call _18
+    add rsp, 0x0000000000000041
+    mov rax, qword [rbp-57]
+    mov qword [rbp+24], rax
+    leave
+    ret
+
+
+_11:
+    push rbp
+    mov rbp, rsp
+    mov rax, [rbp+16]
+    add rax, 0x0000000000000000
+    mov qword [rbp-17], rax
+    mov rdx, qword [rbp-17]
+    mov rax, qword [rdx+0]
+    mov qword [rbp-9], rax
+    mov rax, qword [rbp-9]
+    cmp rax, 0
+    jz __36_24
+    mov byte [rbp-1], 0
+    jmp __36_25
+    __36_24:
+    mov byte [rbp-1], 1
+    __36_25:
+    cmp byte [rbp-1], 0
+    jz _11_27
+    mov rax, [rbp+16]
+    add rax, 0x0000000000000000
+    mov qword [rbp-25], rax
+    mov rax, qword [rbp+24]
+    mov qword [rbp-41], rax
+    mov rax, qword [rbp-41]
+    mov qword [rbp-57], rax
+    sub rsp, 0x0000000000000039
+    call _15
+    add rsp, 0x0000000000000039
+    mov rax, qword [rbp-49]
+    mov qword [rbp-33], rax
+    mov rdx, qword [rbp-25]
+    mov rax, qword [rbp-33]
+    mov qword [rdx+0], rax
+    jmp _11_26
+    _11_27:
+    mov rax, [rbp+16]
+    add rax, 0x0000000000000000
+    mov qword [rbp-25], rax
+    mov rdx, qword [rbp-25]
+    mov rax, qword [rdx+0]
+    mov qword [rbp-33], rax
+    mov rax, qword [rbp+24]
+    mov qword [rbp-41], rax
+    mov rax, qword [rbp-41]
+    mov qword [rbp-65], rax
+    mov rax, qword [rbp-33]
+    mov qword [rbp-73], rax
+    sub rsp, 0x0000000000000049
+    call _16
+    add rsp, 0x0000000000000049
+    _11_28:
+    _11_26:
+
+leave
+ret
+
 main:
     push rbp
     mov rbp, rsp
@@ -120,35 +344,71 @@ main:
     ret
 
 
-_10:
-    push rbp
-    mov rbp, rsp
-    mov qword [rbp+16], 0
-    leave
-    ret
-
-
-_11:
+_14:
     push rbp
     mov rbp, rsp
     mov rax, [rbp+16]
     add rax, 0x0000000000000000
+    mov qword [rbp-18], rax
+    mov rdx, qword [rbp-18]
+    mov rax, qword [rdx+0]
+    mov qword [rbp-10], rax
+    mov rax, qword [rbp-10]
+    cmp rax, 0
+    jz __36_0
+    mov byte [rbp-2], 0
+    jmp __36_1
+    __36_0:
+    mov byte [rbp-2], 1
+    __36_1:
+    mov al, byte [rbp-2]
+    cmp al, 0
+    jz __23_2
+    mov byte [rbp-1], 0
+    jmp __23_3
+    __23_2:
+    mov byte [rbp-1], 1
+    __23_3:
+    cmp byte [rbp-1], 0
+    jz _14_4
+    mov rax, [rbp+16]
+    add rax, 0x0000000000000000
+    mov qword [rbp-26], rax
+    mov rdx, qword [rbp-26]
+    mov rax, qword [rdx+0]
+    mov qword [rbp-34], rax
+    mov rax, qword [rbp-34]
+    mov qword [rbp-42], rax
+    sub rsp, 0x000000000000002a
+    call _19
+    add rsp, 0x000000000000002a
+    _14_5:
+    _14_4:
+
+leave
+ret
+
+_16:
+    push rbp
+    mov rbp, rsp
+    mov rax, [rbp+16]
+    add rax, 0x0000000000000008
     mov qword [rbp-17], rax
     mov rdx, qword [rbp-17]
     mov rax, qword [rdx+0]
     mov qword [rbp-9], rax
     mov rax, qword [rbp-9]
     cmp rax, 0
-    jz __36_16
+    jz __36_29
     mov byte [rbp-1], 0
-    jmp __36_17
-    __36_16:
+    jmp __36_30
+    __36_29:
     mov byte [rbp-1], 1
-    __36_17:
+    __36_30:
     cmp byte [rbp-1], 0
-    jz _11_19
+    jz _16_32
     mov rax, [rbp+16]
-    add rax, 0x0000000000000000
+    add rax, 0x0000000000000008
     mov qword [rbp-25], rax
     mov rax, qword [rbp+24]
     mov qword [rbp-41], rax
@@ -162,10 +422,10 @@ _11:
     mov rdx, qword [rbp-25]
     mov rax, qword [rbp-33]
     mov qword [rdx+0], rax
-    jmp _11_18
-    _11_19:
+    jmp _16_31
+    _16_32:
     mov rax, [rbp+16]
-    add rax, 0x0000000000000000
+    add rax, 0x0000000000000008
     mov qword [rbp-25], rax
     mov rdx, qword [rbp-25]
     mov rax, qword [rdx+0]
@@ -179,41 +439,17 @@ _11:
     sub rsp, 0x0000000000000049
     call _16
     add rsp, 0x0000000000000049
-    _11_20:
-    _11_18:
+    _16_33:
+    _16_31:
 
 leave
 ret
 
-_12:
+_18:
     push rbp
     mov rbp, rsp
     mov rax, [rbp+16]
-    add rax, 0x0000000000000000
-    mov qword [rbp-8], rax
-    mov rdx, qword [rbp-8]
-    mov rax, qword [rdx+0]
-    mov qword [rbp-16], rax
-    mov rax, qword [rbp+24]
-    mov qword [rbp-24], rax
-    mov rax, qword [rbp-24]
-    mov qword [rbp-48], rax
-    mov rax, qword [rbp-16]
-    mov qword [rbp-56], rax
-    sub rsp, 0x0000000000000038
-    call _17
-    add rsp, 0x0000000000000038
-    mov rax, qword [rbp-40]
-    mov qword [rbp+32], rax
-    leave
-    ret
-
-
-_13:
-    push rbp
-    mov rbp, rsp
-    mov rax, [rbp+16]
-    add rax, 0x0000000000000000
+    add rax, 0x0000000000000008
     mov qword [rbp-17], rax
     mov rdx, qword [rbp-17]
     mov rax, qword [rdx+0]
@@ -226,16 +462,16 @@ _13:
     mov qword [rbp-9], rax
     mov rax, qword [rbp-9]
     cmp rax, 0
-    jz __36_26
+    jz __36_10
     mov byte [rbp-1], 0
-    jmp __36_27
-    __36_26:
+    jmp __36_11
+    __36_10:
     mov byte [rbp-1], 1
-    __36_27:
+    __36_11:
     cmp byte [rbp-1], 0
-    jz _13_28
+    jz _18_12
     mov rax, [rbp+16]
-    add rax, 0x0000000000000000
+    add rax, 0x0000000000000008
     mov qword [rbp-49], rax
     mov rdx, qword [rbp-49]
     mov rax, qword [rdx+0]
@@ -247,7 +483,7 @@ _13:
     mov rax, qword [rdx+0]
     mov qword [rbp-41], rax
     mov rax, [rbp+16]
-    add rax, 0x0000000000000000
+    add rax, 0x0000000000000008
     mov qword [rbp-81], rax
     mov rdx, qword [rbp-81]
     mov rax, qword [rdx+0]
@@ -258,7 +494,7 @@ _13:
     call free
     add rsp, 81
     mov rax, [rbp+16]
-    add rax, 0x0000000000000000
+    add rax, 0x0000000000000008
     mov qword [rbp-89], rax
     mov qword [rbp-97], 0
     mov rdx, qword [rbp-89]
@@ -268,10 +504,10 @@ _13:
     mov qword [rbp+24], rax
     leave
     ret
-    _13_29:
-    _13_28:
+    _18_13:
+    _18_12:
     mov rax, [rbp+16]
-    add rax, 0x0000000000000000
+    add rax, 0x0000000000000008
     mov qword [rbp-41], rax
     mov rdx, qword [rbp-41]
     mov rax, qword [rdx+0]
@@ -287,130 +523,6 @@ _13:
     ret
 
 
-_14:
-    push rbp
-    mov rbp, rsp
-    mov rax, [rbp+16]
-    add rax, 0x0000000000000000
-    mov qword [rbp-18], rax
-    mov rdx, qword [rbp-18]
-    mov rax, qword [rdx+0]
-    mov qword [rbp-10], rax
-    mov rax, qword [rbp-10]
-    cmp rax, 0
-    jz __36_4
-    mov byte [rbp-2], 0
-    jmp __36_5
-    __36_4:
-    mov byte [rbp-2], 1
-    __36_5:
-    mov al, byte [rbp-2]
-    cmp al, 0
-    jz __23_6
-    mov byte [rbp-1], 0
-    jmp __23_7
-    __23_6:
-    mov byte [rbp-1], 1
-    __23_7:
-    cmp byte [rbp-1], 0
-    jz _14_8
-    mov rax, [rbp+16]
-    add rax, 0x0000000000000000
-    mov qword [rbp-26], rax
-    mov rdx, qword [rbp-26]
-    mov rax, qword [rdx+0]
-    mov qword [rbp-34], rax
-    mov rax, qword [rbp-34]
-    mov qword [rbp-42], rax
-    sub rsp, 0x000000000000002a
-    call _19
-    add rsp, 0x000000000000002a
-    _14_9:
-    _14_8:
-
-leave
-ret
-
-_15:
-    push rbp
-    mov rbp, rsp
-    mov rax, qword [rbp+16]
-    mov qword [rbp-16], rax
-    mov qword [rbp-8], 0
-    mov rdi, 16
-    sub rsp, 16
-    extern malloc
-    call malloc
-    add rsp, 16
-    mov qword [rbp-24], rax
-    mov rdx, qword [rbp-24]
-    mov rax, qword [rbp-16]
-    mov qword [rdx+0], rax
-    mov rax, qword [rbp-8]
-    mov qword [rdx+8], rax
-    mov rax, qword [rbp-24]
-    mov qword [rbp+24], rax
-    leave
-    ret
-
-
-_16:
-    push rbp
-    mov rbp, rsp
-    mov rax, [rbp+16]
-    add rax, 0x0000000000000008
-    mov qword [rbp-17], rax
-    mov rdx, qword [rbp-17]
-    mov rax, qword [rdx+0]
-    mov qword [rbp-9], rax
-    mov rax, qword [rbp-9]
-    cmp rax, 0
-    jz __36_21
-    mov byte [rbp-1], 0
-    jmp __36_22
-    __36_21:
-    mov byte [rbp-1], 1
-    __36_22:
-    cmp byte [rbp-1], 0
-    jz _16_24
-    mov rax, [rbp+16]
-    add rax, 0x0000000000000008
-    mov qword [rbp-25], rax
-    mov rax, qword [rbp+24]
-    mov qword [rbp-41], rax
-    mov rax, qword [rbp-41]
-    mov qword [rbp-57], rax
-    sub rsp, 0x0000000000000039
-    call _15
-    add rsp, 0x0000000000000039
-    mov rax, qword [rbp-49]
-    mov qword [rbp-33], rax
-    mov rdx, qword [rbp-25]
-    mov rax, qword [rbp-33]
-    mov qword [rdx+0], rax
-    jmp _16_23
-    _16_24:
-    mov rax, [rbp+16]
-    add rax, 0x0000000000000008
-    mov qword [rbp-25], rax
-    mov rdx, qword [rbp-25]
-    mov rax, qword [rdx+0]
-    mov qword [rbp-33], rax
-    mov rax, qword [rbp+24]
-    mov qword [rbp-41], rax
-    mov rax, qword [rbp-41]
-    mov qword [rbp-65], rax
-    mov rax, qword [rbp-33]
-    mov qword [rbp-73], rax
-    sub rsp, 0x0000000000000049
-    call _16
-    add rsp, 0x0000000000000049
-    _16_25:
-    _16_23:
-
-leave
-ret
-
 _17:
     push rbp
     mov rbp, rsp
@@ -419,14 +531,14 @@ _17:
     mov qword [rbp-17], 0
     mov rax, qword [rbp-9]
     cmp rax, qword [rbp-17]
-    jz __16_0
+    jz __16_14
     mov byte [rbp-1], 0
-    jmp __16_1
-    __16_0:
+    jmp __16_15
+    __16_14:
     mov byte [rbp-1], 1
-    __16_1:
+    __16_15:
     cmp byte [rbp-1], 0
-    jz _17_2
+    jz _17_16
     mov rax, [rbp+16]
     add rax, 0x0000000000000000
     mov qword [rbp-25], rax
@@ -435,8 +547,8 @@ _17:
     mov qword [rbp+32], rax
     leave
     ret
-    _17_3:
-    _17_2:
+    _17_17:
+    _17_16:
     mov rax, [rbp+16]
     add rax, 0x0000000000000008
     mov qword [rbp-25], rax
@@ -462,140 +574,28 @@ _17:
     ret
 
 
-_18:
+_15:
     push rbp
     mov rbp, rsp
-    mov rax, [rbp+16]
-    add rax, 0x0000000000000008
-    mov qword [rbp-17], rax
-    mov rdx, qword [rbp-17]
-    mov rax, qword [rdx+0]
-    mov qword [rbp-25], rax
-    mov rax, [rbp-25]
-    add rax, 0x0000000000000008
-    mov qword [rbp-33], rax
-    mov rdx, qword [rbp-33]
-    mov rax, qword [rdx+0]
-    mov qword [rbp-9], rax
-    mov rax, qword [rbp-9]
-    cmp rax, 0
-    jz __36_30
-    mov byte [rbp-1], 0
-    jmp __36_31
-    __36_30:
-    mov byte [rbp-1], 1
-    __36_31:
-    cmp byte [rbp-1], 0
-    jz _18_32
-    mov rax, [rbp+16]
-    add rax, 0x0000000000000008
-    mov qword [rbp-49], rax
-    mov rdx, qword [rbp-49]
-    mov rax, qword [rdx+0]
-    mov qword [rbp-57], rax
-    mov rax, [rbp-57]
-    add rax, 0x0000000000000000
-    mov qword [rbp-65], rax
-    mov rdx, qword [rbp-65]
-    mov rax, qword [rdx+0]
-    mov qword [rbp-41], rax
-    mov rax, [rbp+16]
-    add rax, 0x0000000000000008
-    mov qword [rbp-81], rax
-    mov rdx, qword [rbp-81]
-    mov rax, qword [rdx+0]
-    mov qword [rbp-73], rax
-    mov rdi, qword [rbp-73]
-    sub rsp, 81
-    extern free
-    call free
-    add rsp, 81
-    mov rax, [rbp+16]
-    add rax, 0x0000000000000008
-    mov qword [rbp-89], rax
-    mov qword [rbp-97], 0
-    mov rdx, qword [rbp-89]
-    mov rax, qword [rbp-97]
-    mov qword [rdx+0], rax
-    mov rax, qword [rbp-41]
-    mov qword [rbp+24], rax
-    leave
-    ret
-    _18_33:
-    _18_32:
-    mov rax, [rbp+16]
-    add rax, 0x0000000000000008
-    mov qword [rbp-41], rax
-    mov rdx, qword [rbp-41]
-    mov rax, qword [rdx+0]
-    mov qword [rbp-49], rax
-    mov rax, qword [rbp-49]
-    mov qword [rbp-65], rax
-    sub rsp, 0x0000000000000041
-    call _18
-    add rsp, 0x0000000000000041
-    mov rax, qword [rbp-57]
-    mov qword [rbp+24], rax
-    leave
-    ret
-
-
-_19:
-    push rbp
-    mov rbp, rsp
-    mov rax, [rbp+16]
-    add rax, 0x0000000000000000
+    mov rax, qword [rbp+16]
     mov qword [rbp-16], rax
-    mov rdx, qword [rbp-16]
-    mov rax, qword [rdx+0]
-    mov qword [rbp-8], rax
-    mov rdi, __8_fstr
-    mov rsi, [rbp-8]
-    mov al, 0
+    mov qword [rbp-8], 0
+    mov rdi, 16
     sub rsp, 16
-    extern printf
-    call printf
+    extern malloc
+    call malloc
     add rsp, 16
-    mov rax, [rbp+16]
-    add rax, 0x0000000000000008
-    mov qword [rbp-34], rax
-    mov rdx, qword [rbp-34]
-    mov rax, qword [rdx+0]
-    mov qword [rbp-26], rax
-    mov rax, qword [rbp-26]
-    cmp rax, 0
-    jz __36_10
-    mov byte [rbp-18], 0
-    jmp __36_11
-    __36_10:
-    mov byte [rbp-18], 1
-    __36_11:
-    mov al, byte [rbp-18]
-    cmp al, 0
-    jz __23_12
-    mov byte [rbp-17], 0
-    jmp __23_13
-    __23_12:
-    mov byte [rbp-17], 1
-    __23_13:
-    cmp byte [rbp-17], 0
-    jz _19_14
-    mov rax, [rbp+16]
-    add rax, 0x0000000000000008
-    mov qword [rbp-42], rax
-    mov rdx, qword [rbp-42]
-    mov rax, qword [rdx+0]
-    mov qword [rbp-50], rax
-    mov rax, qword [rbp-50]
-    mov qword [rbp-58], rax
-    sub rsp, 0x000000000000003a
-    call _19
-    add rsp, 0x000000000000003a
-    _19_15:
-    _19_14:
+    mov qword [rbp-24], rax
+    mov rdx, qword [rbp-24]
+    mov rax, qword [rbp-16]
+    mov qword [rdx+0], rax
+    mov rax, qword [rbp-8]
+    mov qword [rdx+8], rax
+    mov rax, qword [rbp-24]
+    mov qword [rbp+24], rax
+    leave
+    ret
 
-leave
-ret
 
 section .data_readonly
     __42_fstr db `\n`,0
