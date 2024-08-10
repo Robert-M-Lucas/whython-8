@@ -7,11 +7,17 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Updated packages">
+    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Refactoring">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/out.asm" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.asm" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/out.o" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/out.out" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.out" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.why" beforeDir="false" afterPath="$PROJECT_DIR$/main.why" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/compile.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/path_storage.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/path_storage.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/use_parser.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_imports.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -106,7 +112,7 @@
     &quot;org.rust.cargo.project.model.PROJECT_DISCOVERY&quot;: &quot;true&quot;,
     &quot;org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon&quot;: &quot;&quot;,
     &quot;org.rust.first.attach.projects&quot;: &quot;true&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;language.rust.cargo.check&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
   &quot;keyToStringList&quot;: {
@@ -281,14 +287,9 @@
       <workItem from="1723127499434" duration="1119000" />
       <workItem from="1723130972719" duration="14000" />
       <workItem from="1723141139786" duration="603000" />
-    </task>
-    <task id="LOCAL-00036" summary="Boolean comparators">
-      <option name="closed" value="true" />
-      <created>1718889832262</created>
-      <option name="number" value="00036" />
-      <option name="presentableId" value="LOCAL-00036" />
-      <option name="project" value="LOCAL" />
-      <updated>1718889832262</updated>
+      <workItem from="1723212841248" duration="1106000" />
+      <workItem from="1723216662767" duration="1364000" />
+      <workItem from="1723294201690" duration="6254000" />
     </task>
     <task id="LOCAL-00037" summary="Simplified code">
       <option name="closed" value="true" />
@@ -674,7 +675,15 @@
       <option name="project" value="LOCAL" />
       <updated>1723054195988</updated>
     </task>
-    <option name="localTasksCounter" value="85" />
+    <task id="LOCAL-00085" summary="Refactoring">
+      <option name="closed" value="true" />
+      <created>1723213598029</created>
+      <option name="number" value="00085" />
+      <option name="presentableId" value="LOCAL-00085" />
+      <option name="project" value="LOCAL" />
+      <updated>1723213598029</updated>
+    </task>
+    <option name="localTasksCounter" value="86" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -743,7 +752,6 @@
     <MESSAGE value="Added more errors" />
     <MESSAGE value="Improved parser errors" />
     <MESSAGE value="All parser errors have an implementation" />
-    <MESSAGE value="Refactoring" />
     <MESSAGE value="location.rs refactor" />
     <MESSAGE value="Added imports" />
     <MESSAGE value="fmt" />
@@ -756,7 +764,8 @@
     <MESSAGE value="Updated todo.txt" />
     <MESSAGE value="Fixed warnings" />
     <MESSAGE value="Updated packages" />
-    <option name="LAST_COMMIT_MESSAGE" value="Updated packages" />
+    <MESSAGE value="Refactoring" />
+    <option name="LAST_COMMIT_MESSAGE" value="Refactoring" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

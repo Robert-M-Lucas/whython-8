@@ -7,15 +7,21 @@ use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
 use crate::root::parser::parse_util::discard_ignored;
 use crate::root::parser::path_storage::{FileID, PathStorage};
 
-pub fn parse_uses<'a>(
+pub fn parse_imports<'a>(
     s: Span<'a>,
     path_storage: &mut PathStorage,
+    current_file: FileID,
 ) -> ParseResult<'a, Span<'a>, Vec<(FileID, Location)>> {
     let mut s = s;
     let mut found_paths = Vec::new();
     loop {
         let (ns, _) = discard_ignored(s)?;
-        let Ok((ns, _)) = tag::<_, _, ErrorTree>("use")(ns) else {
+        let mut is_use = true;
+
+        let Ok((ns, _)) = tag::<_, _, ErrorTree>("use")(ns).or_else(|_| {
+            is_use = false;
+            tag::<_, _, ErrorTree>("import")(ns)
+        }) else {
             return Ok((ns, found_paths));
         };
 
@@ -37,9 +43,9 @@ pub fn parse_uses<'a>(
             ));
         }
 
-        let (_, (id, new)) = path_storage.get_file_path_id_checked(path)?;
-
-        if new {
+        let (_, ids) = path_storage.get_id_and_add_to_file(current_file, is_use, path)?;
+        
+        for id in ids {
             found_paths.push((id, Location::from_span(&path)));
         }
 

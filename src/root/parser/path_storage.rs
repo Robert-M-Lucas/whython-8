@@ -1,11 +1,11 @@
 use std::collections::HashMap;
-
-use nom::character::complete::anychar;
-
+use std::fs;
 use crate::root::errors::parser_errors::create_custom_error;
 use crate::root::errors::WErr;
 use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
 use crate::root::utils::identify_first_last::IdentifyLast;
+use nom::character::complete::anychar;
+use nom::InputTake;
 #[derive(Hash, Copy, Clone, Debug, Eq, PartialEq)]
 pub struct FileID(usize);
 
@@ -40,7 +40,8 @@ struct CodeFile {
     parent: FolderID,
     current: String,
     use_files: Vec<FileID>,
-    use_folders: Vec<FolderID>,
+    imported_files: Vec<FileID>,
+    imported_folders: Vec<FolderID>, // Use folder converts to import subfiles + folders
 }
 
 pub struct PathStorage {
@@ -51,6 +52,9 @@ pub struct PathStorage {
 impl PathStorage {
     pub fn new(main: &str) -> Result<PathStorage, WErr> {
         // TODO: Only allow certain characters in base
+        if !main.ends_with(".why") { todo!() }
+        let main = &main[..main.len() - ".why".len()];
+
         let mut folders = vec![CodeFolder::root()];
         let mut files = Vec::new();
 
@@ -61,7 +65,8 @@ impl PathStorage {
                     parent: current,
                     current: section.to_string(),
                     use_files: vec![],
-                    use_folders: vec![],
+                    imported_files: vec![],
+                    imported_folders: vec![],
                 });
             } else {
                 folders.push(CodeFolder {
@@ -95,10 +100,10 @@ impl PathStorage {
     }
 
     pub fn reconstruct_file(&self, id: FileID) -> String {
-        let mut sb = self.get_file(id).current.clone();
+        let mut sb = self.get_file(id).current.clone() + ".why";
         let mut current = self.get_file(id).parent;
         while current.0 != 0 {
-            sb = self.get_folder(current).current.clone() + "/" + &sb;
+            sb = self.get_folder(current).current.clone() + std::path::MAIN_SEPARATOR_STR + &sb;
             current = self.get_folder(current).parent;
         }
         sb
@@ -108,33 +113,62 @@ impl PathStorage {
         let mut sb = self.get_folder(id).current.to_string();
         let mut current = self.get_folder(id).parent;
         while current.0 != 0 {
-            sb = self.get_folder(current).current.clone() + "/" + &sb;
+            sb = self.get_folder(current).current.clone() + std::path::MAIN_SEPARATOR_STR + &sb;
             current = self.get_folder(current).parent;
         }
         sb
     }
 
-    pub fn get_file_path_id_checked<'a>(
+    pub fn get_id_and_add_to_file<'a>(
         &mut self,
+        current_file: FileID,
+        is_use: bool,
         path: Span<'a>,
-    ) -> ParseResult<(), (FileID, bool), ErrorTree<'a>> {
+    ) -> ParseResult<(), Vec<FileID>, ErrorTree<'a>> {
         let mut path_rem = path;
-        let mut last_dot = false;
+
+        let Some(last) = path_rem.chars().last() else {
+            todo!()
+        };
+        // let wildcard = if last == '*' {
+        //     let (_, p) = path_rem.take_split(path_rem.len() - 1);
+        //     path_rem = p;
+        //     true
+        // } else {
+        //     false
+        // };
+
+        let is_folder = if let Some(last) = path_rem.chars().last() {
+            if last == '/' {
+                let (_, p) = path_rem.take_split(path_rem.len() - 1);
+                path_rem = p;
+                true
+            } else {
+                false
+            }
+        } else {
+            false
+        };
+
+        let is_absolute = if let Some(last) = path_rem.chars().next() {
+            if last == '/' {
+                let (p, _) = path_rem.take_split(1);
+                path_rem = p;
+                true
+            } else {
+                false
+            }
+        } else {
+            false
+        };
+
+        // if wildcard && !is_folder {
+        //     todo!()
+        // }
+
         while let Ok((rem, c)) = anychar::<_, ErrorTree>(path_rem) {
             if c.is_alphanumeric() || c == '_' || c == '/' {
-                last_dot = false;
                 path_rem = rem;
-                continue;
-            }
-            if c == '.' {
-                if last_dot {
-                    return Err(create_custom_error(
-                        "Double '.'s not allowed in path".to_string(),
-                        path_rem,
-                    ));
-                }
-                path_rem = rem;
-                last_dot = true;
                 continue;
             }
 
@@ -150,44 +184,101 @@ impl PathStorage {
             ));
         }
 
-        let mut current = FolderID(0);
+        let mut current: FolderID = if is_absolute {
+            FolderID(0)
+        } else {
+            self.get_file(current_file).parent
+        };
 
-        for (is_last, section) in path.split('/').identify_last() {
+        for (is_last, section) in path.split_terminator('/').identify_last() {
             if is_last {
-                return if let Some(id) = self.get_folder(current).child_files.get(section) {
-                    Ok(((), (*id, false)))
+                if is_folder {
+                    let folder = self.add_folder(section, current);
+                    if !is_use {
+                        self.get_file_mut(current_file).imported_folders.push(folder);
+                    }
+                    let folder_path = self.reconstruct_folder(folder);
+                    let mut new_files = Vec::new();
+
+                    let Ok(subpaths) = fs::read_dir(folder_path) else { todo!() };
+                    for path in subpaths {
+                        let Ok(path) = path else { todo!() };
+                        let Ok(t) = path.file_type() else { todo!() };
+                        if !t.is_file() { continue; }
+                        let path = path.path();
+                        if !path.extension().and_then(|e| e.to_str()).is_some_and(|e| e == "why") {
+                            continue;
+                        }
+                        let Some(name) = path.file_stem().and_then(|f| f.to_str()) else { todo!() };
+
+                        let (file, is_new) = self.add_file(name, folder);
+                        if is_new { new_files.push(file); }
+                        if is_use {
+                            self.get_file_mut(current_file).imported_files.push(file);
+                        }
+                    }
+
+                    return Ok(((), new_files));
                 } else {
-                    self.files.push(CodeFile {
-                        parent: current,
-                        current: section.to_string(),
-                        use_files: vec![],
-                        use_folders: vec![],
-                    });
-                    let id = FileID(self.files.len() - 1);
-                    self.get_folder_mut(current)
-                        .child_files
-                        .insert(section.to_string(), id);
-                    Ok(((), (id, true)))
-                };
+                    let (file, is_new) = self.add_file(section, current);
+                    if file == current_file {
+                        todo!();
+                    }
+
+                    if is_use {
+                        self.get_file_mut(current_file).use_files.push(file);
+                    } else {
+                        self.get_file_mut(current_file).imported_files.push(file);
+                    }
+
+                    return if is_new {
+                        Ok(((), vec![file]))
+                    } else {
+                        Ok(((), vec![]))
+                    }
+                }
             } else {
-                current = if let Some(id) = self.get_folder(current).child_folders.get(section) {
-                    *id
-                } else {
-                    self.folders.push(CodeFolder {
-                        parent: current,
-                        child_folders: Default::default(),
-                        child_files: Default::default(),
-                        current: section.to_string(),
-                    });
-                    let id = FolderID(self.folders.len() - 1);
-                    self.get_folder_mut(current)
-                        .child_folders
-                        .insert(section.to_string(), id);
-                    id
-                };
+                current = self.add_folder(section, current);
             }
         }
 
         panic!()
+    }
+
+    fn add_file(&mut self, name: &str, parent: FolderID) -> (FileID, bool) {
+        if let Some(id) = self.get_folder(parent).child_files.get(name) {
+            (*id, false)
+        } else {
+            self.files.push(CodeFile {
+                parent,
+                current: name.to_string(),
+                use_files: vec![],
+                imported_files: vec![],
+                imported_folders: vec![],
+            });
+            let id = FileID(self.files.len() - 1);
+            self.get_folder_mut(parent)
+                .child_files
+                .insert(name.to_string(), id);
+            (id, true)
+        }
+    }
+
+    fn add_folder(&mut self, name: &str, parent: FolderID) -> FolderID {
+        if let Some(id) = self.get_folder(parent).child_folders.get(name) {
+            *id
+        } else {
+            self.folders.push(CodeFolder {
+                parent,
+                child_folders: Default::default(),
+                child_files: Default::default(),
+                current: name.to_string(),
+            });
+            let id = FolderID(self.folders.len() - 1);
+            self.get_folder_mut(parent)
+                .child_folders
+                .insert(name.to_string(), id);
+            id
+        }
     }
 }

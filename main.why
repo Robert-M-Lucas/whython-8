@@ -1,4 +1,4 @@
-use std/linked_list.why;
+use std/;
 
 
 fn main() -> int {

@@ -9,10 +9,10 @@ use crate::root::errors::parser_errors::ParseError;
 use crate::root::errors::WErr;
 use crate::root::parser::handle_errors::handle_error;
 use crate::root::parser::location::Location;
+use crate::root::parser::parse_imports::parse_imports;
 use crate::root::parser::parse_toplevel;
 use crate::root::parser::parse_toplevel::TopLevelTokens;
 use crate::root::parser::path_storage::{FileID, PathStorage};
-use crate::root::parser::use_parser::parse_uses;
 
 pub type Span<'a> = LocatedSpan<&'a str, FileID>;
 
@@ -35,7 +35,7 @@ pub fn parse(path_storage: &mut PathStorage) -> Result<Vec<TopLevelTokens>, WErr
 
         let base = Span::new_extra(&text, file_id);
 
-        let (after_use, new_files) = handle_error(parse_uses(base, path_storage), path_storage)?;
+        let (after_use, new_files) = handle_error(parse_imports(base, path_storage, file_id), path_storage)?;
         path_queue.extend(new_files);
 
         let res = parse_toplevel::parse_toplevel(after_use);
