@@ -1,14 +1,10 @@
 
-- Add support for .. in imports
-- Add support for preceding / in import path to use absolute (relative to main.why) path
-- Namespacing
+- Add proper imports
+    - Make the name resolver create a HashMap<FileID, (Vec<TypeID>, Vec<FunctionID>)>
+    - Make the name resolver support uses and imports
+    - Have the open set be a HashMap<FileID, Vec<FunctionID>
+    - Select the FileID with the most functions to compile and do all of those first
+    - When switching between files being compiled, rebuild the Tree used to find types when compiling
 
-- Add array support
-  - Move all Type name -> TypeRef resolution to pre-evaluation
-  - Add proper size evaluation in GlobalDefinitionsTable for array types
-  - Add support for arrays into UnresolvedTypeRefToken
-  - Add [int; 12] / &[int; 12] parsing support into UnresolvedTypeRefToken
-  - Add support for parsing array literals
-  - Add evaluation support for array literals
-  
+- Improve type system
 
