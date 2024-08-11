@@ -1,5 +1,5 @@
 use crate::root::errors::WErr;
-use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
+use crate::root::name_resolver::name_resolvers::GlobalTable;
 use crate::root::parser::parse_function::FunctionToken;
 use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::parser::parse_parameters::SelfType;
@@ -48,7 +48,7 @@ impl FunctionSignature {
 /// Converts a `FunctionToken` into a `FunctionSignature`
 pub fn resolve_function_signature(
     function_token: &FunctionToken,
-    global_table: &mut GlobalDefinitionTable,
+    global_table: &mut GlobalTable,
 ) -> Result<FunctionSignature, WErr> {
     let mut args = Vec::new();
 

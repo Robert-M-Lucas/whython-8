@@ -2,13 +2,13 @@ use nom::character::complete::char;
 
 use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
 use crate::root::parser::parse_function::parse_evaluable::{
-    parse_full_name, FullNameWithIndirectionToken,
+    parse_full_name, UnresolvedTypeRefToken,
 };
 use crate::root::parser::parse_name::{parse_simple_name, SimpleNameToken};
 use crate::root::parser::parse_util::discard_ignored;
 use crate::root::shared::common::Indirection;
 
-pub type Parameters = Vec<(SimpleNameToken, FullNameWithIndirectionToken)>;
+pub type Parameters = Vec<(SimpleNameToken, UnresolvedTypeRefToken)>;
 
 #[derive(Debug, Copy, Clone)]
 pub enum SelfType {
@@ -61,7 +61,7 @@ pub fn parse_parameters<'a>(
                 } else {
                     Indirection(0)
                 };
-                let p_type = FullNameWithIndirectionToken::from_simple_with_indirection(
+                let p_type = UnresolvedTypeRefToken::from_simple_with_indirection(
                     s.clone(),
                     Some(s.clone()),
                     name.location().clone(),

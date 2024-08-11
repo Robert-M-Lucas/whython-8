@@ -36,4 +36,6 @@ pub enum NRErrs {
     OpCantBeInfix(String),
     #[error("Size of type ({0}) cannot be determined due to circular definition with no indirection ({1})")]
     CircularType(String, String),
+    #[error("Circular import [{0}]")]
+    CircularImport(String),
 }

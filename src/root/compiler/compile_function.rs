@@ -10,7 +10,7 @@ use crate::root::compiler::evaluation::reference::compile_evaluable_reference;
 use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::WErr;
-use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
+use crate::root::name_resolver::name_resolvers::GlobalTable;
 use crate::root::parser::parse_function::parse_line::LineTokens;
 use crate::root::parser::parse_function::FunctionToken;
 use crate::root::shared::common::AddressedTypeRef;
@@ -21,7 +21,7 @@ use crate::root::utils::warn;
 pub fn compile_function(
     fid: FunctionID,
     function: FunctionToken,
-    global_table: &mut GlobalDefinitionTable,
+    global_table: &mut GlobalTable,
     global_tracker: &mut GlobalTracker,
 ) -> Result<String, WErr> {
     let mut local_variables = LocalVariableTable::new();
@@ -71,7 +71,7 @@ pub fn compile_function(
     if (return_variable.is_some() || fid.is_main()) && !last_return {
         let type_ref = return_variable
             .map(|x| x.type_ref().clone())
-            .unwrap_or_else(|| IntType::id().immediate());
+            .unwrap_or_else(|| IntType::id().immediate_single());
         return WErr::ne(
             CompErrs::ExpectedReturn(global_table.get_type_name(&type_ref)),
             end_location,
@@ -104,7 +104,7 @@ fn recursively_compile_lines(
     return_variable: &Option<AddressedTypeRef>,
     break_tag: &Option<&str>,
     local_variables: &mut LocalVariableTable,
-    global_table: &mut GlobalDefinitionTable,
+    global_table: &mut GlobalTable,
     global_tracker: &mut GlobalTracker,
 ) -> Result<(String, bool), WErr> {
     local_variables.enter_scope();
@@ -132,8 +132,10 @@ fn recursively_compile_lines(
                 )?);
             }
             LineTokens::If(if_token) => {
-                let condition_addr = global_table
-                    .add_local_variable_unnamed_base(BoolType::id().immediate(), local_variables);
+                let condition_addr = global_table.add_local_variable_unnamed_base(
+                    BoolType::id().immediate_single(),
+                    local_variables,
+                );
                 contents.other(&compile_evaluable_into(
                     fid,
                     if_token.if_condition(),
@@ -173,7 +175,7 @@ fn recursively_compile_lines(
                     next_tag = global_tracker.get_unique_tag(fid);
 
                     let condition_addr = global_table.add_local_variable_unnamed_base(
-                        BoolType::id().immediate(),
+                        BoolType::id().immediate_single(),
                         local_variables,
                     );
                     contents.other(&compile_evaluable_into(
@@ -225,8 +227,10 @@ fn recursively_compile_lines(
 
                 contents.line(&format!("{start_tag}:"));
 
-                let condition_addr = global_table
-                    .add_local_variable_unnamed_base(BoolType::id().immediate(), local_variables);
+                let condition_addr = global_table.add_local_variable_unnamed_base(
+                    BoolType::id().immediate_single(),
+                    local_variables,
+                );
                 contents.other(&compile_evaluable_into(
                     fid,
                     while_token.condition(),
@@ -259,14 +263,14 @@ fn recursively_compile_lines(
                     if rt.return_value().is_none() {
                         return WErr::ne(
                             CompErrs::ExpectedSomeReturn(
-                                global_table.get_type_name(&IntType::id().immediate()),
+                                global_table.get_type_name(&IntType::id().immediate_single()),
                             ),
                             rt.location().clone(),
                         );
                     }
 
                     let address = global_table.add_local_variable_unnamed_base(
-                        TypeRef::new(IntType::id(), Indirection(0)),
+                        TypeRef::new(IntType::id(), 1, Indirection(0)),
                         local_variables,
                     );
                     contents.other(&compile_evaluable_into(
@@ -308,7 +312,11 @@ fn recursively_compile_lines(
                 contents.line("ret");
 
                 if line_i != lines.len() - 1 {
-                    warn(&format!("Return isn't the last instruction in the block. Following lines in block will not be compiled/run.\n{}", rt.location().clone().into_warning()))
+                    warn(
+                        &format!("Return isn't the last instruction in the block. Following lines in block will not be compiled/run.\n{}", 
+                                 rt.location().clone().into_warning().with_context(global_tracker.path_storage())
+                        )
+                    )
                 }
                 break;
             }

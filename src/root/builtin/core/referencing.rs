@@ -1,7 +1,7 @@
 use crate::root::compiler::assembly::utils::copy_from_indirect;
 use crate::root::errors::evaluable_errors::EvalErrs;
 use crate::root::errors::WErr;
-use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
+use crate::root::name_resolver::name_resolvers::GlobalTable;
 use crate::root::parser::location::Location;
 use crate::root::shared::common::{AddressedTypeRef, Indirection};
 
@@ -10,12 +10,9 @@ pub fn set_reference(
     location: &Location,
     to_ref: AddressedTypeRef,
     into: AddressedTypeRef,
-    global_table: &GlobalDefinitionTable,
+    global_table: &GlobalTable,
 ) -> Result<String, WErr> {
-    let new_type = to_ref
-        .type_ref()
-        .type_id()
-        .with_indirection(to_ref.type_ref().indirection().0 + 1);
+    let new_type = to_ref.type_ref().plus_one_indirect();
     if new_type != *into.type_ref() {
         return WErr::ne(
             EvalErrs::OpWrongReturnType(
@@ -26,10 +23,9 @@ pub fn set_reference(
         );
     }
 
-    // TODO: NOT 64 bit!
     Ok(format!(
         "    mov rax, rbp
-    add rax, {}
+    add rax, {:#018x}
     mov qword {}, rax\n",
         to_ref.local_address().0,
         into.local_address()
@@ -41,7 +37,7 @@ pub fn set_deref(
     location: &Location,
     to_deref: AddressedTypeRef,
     into: AddressedTypeRef,
-    global_table: &mut GlobalDefinitionTable,
+    global_table: &mut GlobalTable,
 ) -> Result<String, WErr> {
     let expected = into.type_ref().plus_one_indirect();
     if to_deref.type_ref() != &expected {

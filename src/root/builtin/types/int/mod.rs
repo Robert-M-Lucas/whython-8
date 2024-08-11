@@ -14,7 +14,7 @@ use crate::root::builtin::types::int::sub::IntSub;
 use crate::root::compiler::assembly::utils::write_64bit_int;
 use crate::root::compiler::compiler_errors::CompErrs;
 use crate::root::errors::WErr;
-use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
+use crate::root::name_resolver::name_resolvers::GlobalTable;
 use crate::root::parser::parse_function::parse_literal::{LiteralToken, LiteralTokens};
 use crate::root::shared::common::{ByteSize, LocalAddress, TypeID};
 use crate::root::shared::types::Type;
@@ -37,7 +37,7 @@ mod sub;
 //     )
 // }
 
-pub fn register_int(global_table: &mut GlobalDefinitionTable) {
+pub fn register_int(global_table: &mut GlobalTable) {
     global_table.register_builtin_type(b!(IntType));
     global_table.register_inline_function(&IntAdd);
     global_table.register_inline_function(&IntAsAdd);

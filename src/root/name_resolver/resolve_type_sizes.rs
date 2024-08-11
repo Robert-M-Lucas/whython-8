@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use derive_getters::Dissolve;
 
 use crate::root::errors::WErr;
-use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
+use crate::root::name_resolver::name_resolvers::GlobalTable;
 use crate::root::name_resolver::resolve_names::UserType;
 use crate::root::parser::location::Location;
 use crate::root::parser::parse_name::SimpleNameToken;
@@ -41,7 +41,7 @@ pub fn resolve_type_sizes(
     unsized_type: UnsizedUserType,
     final_types: &mut HashMap<TypeID, UserType>,
     unsized_types: &mut HashMap<TypeID, UnsizedUserType>,
-    global_table: &GlobalDefinitionTable,
+    global_table: &GlobalTable,
 ) -> Result<Result<ByteSize, Vec<(String, TypeID, Location)>>, WErr> {
     let (id, name, attributes, location) = unsized_type.dissolve();
 

@@ -1,12 +1,13 @@
-use crate::root::parser::parse::Span;
-use color_print::cformat;
-use nom::InputTake;
 use std::cmp::min;
 use std::fmt::{Display, Formatter};
 use std::fs;
 use std::marker::PhantomData;
-use std::path::PathBuf;
-use std::rc::Rc;
+
+use color_print::cformat;
+use nom::InputTake;
+
+use crate::root::parser::parse::Span;
+use crate::root::parser::path_storage::{FileID, PathStorage};
 
 pub enum ToLocation<'a> {
     Location(Location),
@@ -22,7 +23,7 @@ impl<'a> ToLocation<'a> {
         ToLocation::Span(span)
     }
 
-    pub fn to_location(self) -> Location {
+    pub fn into_location(self) -> Location {
         match self {
             ToLocation::Location(location) => location,
             ToLocation::Span(s) => Location::from_span(&s),
@@ -32,8 +33,8 @@ impl<'a> ToLocation<'a> {
 
 #[derive(Debug, Clone, Hash)]
 struct InnerLocation {
-    /// Path of file
-    path: Rc<PathBuf>,
+    /// File id
+    file_id: FileID,
     /// Offset in the line, counted from 0
     offset: usize,
     /// Line number, counted from 1
@@ -56,7 +57,7 @@ enum ErrorLocation {
 }
 
 #[derive(Debug, Clone, Hash)]
-pub struct LocationTyped<ErrorType = ErrorL> {
+pub struct LocationTyped<ErrorType> {
     error_type: PhantomData<ErrorType>,
     inner_location: ErrorLocation,
 }
@@ -75,7 +76,7 @@ impl<ErrorType> LocationTyped<ErrorType> {
         LocationTyped {
             error_type: Default::default(),
             inner_location: ErrorLocation::Location(InnerLocation {
-                path: span.extra.clone(),
+                file_id: span.extra,
                 offset: span.location_offset(),
                 line: span.location_line(),
             }),
@@ -88,18 +89,28 @@ impl<ErrorType> LocationTyped<ErrorType> {
         LocationTyped {
             error_type: Default::default(),
             inner_location: ErrorLocation::Location(InnerLocation {
-                path: span.extra.clone(),
+                file_id: span.extra,
                 offset: span.location_offset(),
                 line: span.location_line(),
             }),
         }
     }
 
-    pub fn path(&self) -> Option<&Rc<PathBuf>> {
+    pub fn file_id(&self) -> Option<FileID> {
         match &self.inner_location {
-            ErrorLocation::Location(l) => Some(&l.path),
+            ErrorLocation::Location(l) => Some(l.file_id),
             ErrorLocation::Builtin => None,
             ErrorLocation::None => None,
+        }
+    }
+
+    pub fn with_context<'a>(
+        &'a self,
+        path_storage: &'a PathStorage,
+    ) -> LocationContext<'a, ErrorType> {
+        LocationContext {
+            location: self,
+            path_storage,
         }
     }
 
@@ -121,10 +132,12 @@ impl<ErrorType> LocationTyped<ErrorType> {
         !matches!(self.inner_location, ErrorLocation::None)
     }
 
-    fn fmt_choice(&self, f: &mut Formatter<'_>, is_warning: bool) -> std::fmt::Result {
-        // TODO: Inefficient!
-        // (Maybe fine because it is a 'bad' path?)
-
+    fn fmt_choice(
+        &self,
+        f: &mut Formatter<'_>,
+        is_warning: bool,
+        path_storage: &PathStorage,
+    ) -> std::fmt::Result {
         let location = match &self.inner_location {
             ErrorLocation::Builtin => {
                 writeln!(f, "{}", cformat!("<c,bold>Builtin Definition</>"))?;
@@ -138,14 +151,14 @@ impl<ErrorType> LocationTyped<ErrorType> {
         };
 
         writeln!(f, "{}", cformat!("<c,bold>In File:</>"))?;
-        writeln!(f, "    {}", location.path.as_path().to_string_lossy())?;
+        writeln!(f, "    {}", path_storage.reconstruct_file(location.file_id))?;
         writeln!(f, "{}", cformat!("<c,bold>At:</>"))?;
 
         fn fail(f: &mut Formatter<'_>) -> std::fmt::Result {
             write!(f, "Failed to fetch file reference (has the file changed?)")
         }
 
-        let Ok(file) = fs::read_to_string(location.path.as_path()) else {
+        let Ok(file) = fs::read_to_string(path_storage.reconstruct_file(location.file_id)) else {
             return fail(f);
         };
 
@@ -283,14 +296,35 @@ impl<ErrorType> LocationTyped<ErrorType> {
 
 const CHAR_LIMIT: usize = 61;
 
-impl Display for LocationTyped<ErrorL> {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        self.fmt_choice(f, false)
+pub trait LocationFilledFmt {
+    fn fmt(&self, f: &mut Formatter<'_>, path_storage: &PathStorage) -> std::fmt::Result;
+}
+
+impl LocationFilledFmt for LocationTyped<ErrorL> {
+    fn fmt(&self, f: &mut Formatter<'_>, path_storage: &PathStorage) -> std::fmt::Result {
+        self.fmt_choice(f, false, path_storage)
     }
 }
 
-impl Display for LocationTyped<WarningL> {
+impl LocationFilledFmt for LocationTyped<WarningL> {
+    fn fmt(&self, f: &mut Formatter<'_>, path_storage: &PathStorage) -> std::fmt::Result {
+        self.fmt_choice(f, true, path_storage)
+    }
+}
+
+pub struct LocationContext<'a, ErrorType> {
+    location: &'a LocationTyped<ErrorType>,
+    path_storage: &'a PathStorage,
+}
+
+impl<'a> Display for LocationContext<'a, ErrorL> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        self.fmt_choice(f, true)
+        self.location.fmt(f, self.path_storage)
+    }
+}
+
+impl<'a> Display for LocationContext<'a, WarningL> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        self.location.fmt(f, self.path_storage)
     }
 }

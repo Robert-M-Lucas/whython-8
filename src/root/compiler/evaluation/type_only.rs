@@ -5,7 +5,7 @@ use crate::root::errors::evaluable_errors::EvalErrs;
 use crate::root::errors::evaluable_errors::EvalErrs::ExpectedReference;
 use crate::root::errors::name_resolver_errors::NRErrs;
 use crate::root::errors::WErr;
-use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable, NameResult};
+use crate::root::name_resolver::name_resolvers::{GlobalTable, NameResult};
 use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, EvaluableTokens};
 use crate::root::parser::parse_function::parse_operator::{OperatorTokens, PrefixOrInfixEx};
 use crate::root::shared::common::{FunctionID, Indirection, TypeRef};
@@ -15,7 +15,7 @@ pub fn compile_evaluable_type_only(
     fid: FunctionID,
     et: &EvaluableToken,
     local_variables: &mut LocalVariableTable,
-    global_table: &mut GlobalDefinitionTable,
+    global_table: &mut GlobalTable,
     global_tracker: &mut GlobalTracker,
 ) -> Result<TypeRef, WErr> {
     let ets = et.token();
@@ -30,7 +30,7 @@ pub fn compile_evaluable_type_only(
                     )
                 }
                 NameResult::Type(t) => {
-                    t.immediate()
+                    t.immediate_single()
                     // println!("> {}", name.name());
                     // std::process::exit(123);
                     // return WErr::ne(
@@ -43,7 +43,8 @@ pub fn compile_evaluable_type_only(
         }
         EvaluableTokens::Literal(literal) => {
             let tid = literal.literal().default_type();
-            TypeRef::new(tid, Indirection(0))
+            // TODO: Don't use 0 here
+            TypeRef::new(tid, 0, Indirection(0))
         }
         EvaluableTokens::InfixOperator(lhs, op, _) => {
             // if op.is_prefix_opt_t() {
@@ -100,7 +101,10 @@ pub fn compile_evaluable_type_only(
             let signature = global_table.get_function_signature(op_fn);
             signature.return_type().as_ref().unwrap().clone()
         }
-        EvaluableTokens::DynamicAccess(inner, access) => {
+        EvaluableTokens::DynamicAccess {
+            parent: inner,
+            section: access,
+        } => {
             let t = compile_evaluable_type_only(
                 fid,
                 inner,
@@ -126,20 +130,26 @@ pub fn compile_evaluable_type_only(
             } else {
                 return WErr::ne(
                     EvalErrs::TypeDoesntHaveAttribute(
-                        global_table.get_type_name(&t.id().immediate()),
+                        global_table.get_type_name(&t.id().immediate_single()),
                         access.name().clone(),
                     ),
                     access.location().clone(),
                 );
             }
         }
-        EvaluableTokens::StaticAccess(_, n) => {
+        EvaluableTokens::StaticAccess {
+            parent: _,
+            section: n,
+        } => {
             return WErr::ne(
                 NRErrs::CannotFindConstantAttribute(n.name().clone()),
                 n.location().clone(),
             )
         } // Accessed methods must be called
-        EvaluableTokens::FunctionCall(inner, _args) => {
+        EvaluableTokens::FunctionCall {
+            function: inner,
+            args: _args,
+        } => {
             let (_slf, ifid, _) = function_only::compile_evaluable_function_only(
                 fid,
                 inner,
@@ -149,7 +159,9 @@ pub fn compile_evaluable_type_only(
             )?;
 
             let signature = global_table.get_function_signature(ifid);
-            let return_type = signature.return_type().clone().unwrap(); // TODO: Check type
+            let Some(return_type) = signature.return_type().clone() else {
+                return WErr::ne(EvalErrs::ExpectedNotNone, et.location().clone());
+            };
             return_type
         }
         EvaluableTokens::StructInitialiser(struct_init) => {

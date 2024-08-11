@@ -6,7 +6,7 @@
 //     value: EvaluableToken,
 // }
 
-// TODO: Find good way to implement?
+// TOD: Find good way to implement?
 // pub fn test_parse_assignment<'a, 'b>(s: Span<'a>) -> ParseResult<'a, Span<'a>, LineTestFn<'a, 'b>> {
 //     let (s, _) = discard_ignored(s)?;
 //     let (s, _) = parse_full_name(s, None)?;

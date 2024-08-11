@@ -1,0 +1,10 @@
+
+- Add proper imports
+    - Make the name resolver create a HashMap<FileID, (Vec<TypeID>, Vec<FunctionID>)>
+    - Make the name resolver support uses and imports
+    - Have the open set be a HashMap<FileID, Vec<FunctionID>
+    - Select the FileID with the most functions to compile and do all of those first
+    - When switching between files being compiled, rebuild the Tree used to find types when compiling
+
+- Improve type system
+

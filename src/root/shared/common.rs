@@ -1,24 +1,31 @@
-use derive_getters::{Dissolve, Getters};
-use derive_more::{Add, AddAssign, Display, Sub, SubAssign};
 use std::fmt::{Display, Formatter};
 
-#[derive(Debug, PartialEq, Eq, Hash, Display, Copy, Clone)]
-#[display(fmt = "TypeID: {}", .0)]
+use derive_getters::{Dissolve, Getters};
+use derive_more::{Add, AddAssign, Sub, SubAssign};
+
+#[derive(Debug, PartialEq, Eq, Hash, Copy, Clone)]
 /// A unique type ID. Negative is builtin, positive is user-defined
 pub struct TypeID(pub isize);
 
 impl TypeID {
-    pub fn with_indirection(self, indirection: usize) -> TypeRef {
-        TypeRef::new(self, Indirection(indirection))
+    pub fn with_indirection(self, elements: usize, indirection: usize) -> TypeRef {
+        TypeRef::new(self, elements, Indirection(indirection))
     }
 
-    pub fn immediate(self) -> TypeRef {
-        TypeRef::new(self, Indirection(0))
+    pub fn with_indirection_single(self, indirection: usize) -> TypeRef {
+        TypeRef::new(self, 1, Indirection(indirection))
+    }
+
+    pub fn immediate(self, elements: usize) -> TypeRef {
+        TypeRef::new(self, elements, Indirection(0))
+    }
+
+    pub fn immediate_single(self) -> TypeRef {
+        TypeRef::new(self, 1, Indirection(0))
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Display, Copy, Clone)]
-#[display(fmt = "FunctionID: {}", .0)]
+#[derive(Debug, PartialEq, Eq, Hash, Copy, Clone)]
 /// A unique function ID. Negative is builtin, 0 is main, and positive is user-defined
 pub struct FunctionID(pub isize);
 
@@ -42,8 +49,7 @@ impl FunctionID {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Display, Copy, Clone, Add, AddAssign, Sub, SubAssign)]
-#[display(fmt = "Indirection: {}", .0)]
+#[derive(Debug, PartialEq, Eq, Hash, Copy, Clone, Add, AddAssign, Sub, SubAssign)]
 /// The indirection to an address i.e. how many pointers you have to go through
 pub struct Indirection(pub usize);
 
@@ -51,13 +57,25 @@ impl Indirection {
     pub fn has_indirection(&self) -> bool {
         self.0 != 0
     }
+
+    pub fn plus(&self, amount: usize) -> Indirection {
+        Indirection(self.0 + amount)
+    }
+
+    pub fn minus(&self, amount: usize) -> Indirection {
+        Indirection(self.0 - amount)
+    }
 }
 
-#[derive(
-    Debug, PartialEq, Eq, Hash, Display, Copy, Clone, Default, Add, AddAssign, Sub, SubAssign,
-)]
+#[derive(Debug, PartialEq, Eq, Hash, Copy, Clone, Default, Add, AddAssign, Sub, SubAssign)]
 /// The size of something, in bytes
 pub struct ByteSize(pub usize);
+
+impl Display for ByteSize {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
 
 #[derive(Debug, PartialEq, Eq, Hash, Copy, Clone, Add, AddAssign, Sub, SubAssign)]
 /// A stack-frame-relative local address. Like in assembly, negative addresses are in the current
@@ -78,13 +96,27 @@ impl Display for LocalAddress {
 /// A `TypeID` with `Indirection`
 pub struct TypeRef {
     type_id: TypeID,
+    elements: usize,
     indirection: Indirection,
 }
 
 impl TypeRef {
-    pub fn new(type_id: TypeID, indirection: Indirection) -> TypeRef {
+    pub fn new(type_id: TypeID, elements: usize, indirection: Indirection) -> TypeRef {
         TypeRef {
             type_id,
+            elements,
+            indirection,
+        }
+    }
+
+    pub fn is_array(&self) -> bool {
+        self.elements == 1
+    }
+
+    pub fn with_indirection(&self, indirection: Indirection) -> TypeRef {
+        TypeRef {
+            type_id: self.type_id,
+            elements: self.elements,
             indirection,
         }
     }
@@ -92,6 +124,7 @@ impl TypeRef {
     pub fn plus_one_indirect(&self) -> TypeRef {
         TypeRef {
             type_id: self.type_id,
+            elements: self.elements,
             indirection: Indirection(self.indirection.0 + 1),
         }
     }
@@ -99,7 +132,16 @@ impl TypeRef {
     pub fn minus_one_indirect(&self) -> TypeRef {
         TypeRef {
             type_id: self.type_id,
+            elements: self.elements,
             indirection: Indirection(self.indirection.0 - 1),
+        }
+    }
+
+    pub fn immediate(&self) -> TypeRef {
+        TypeRef {
+            type_id: self.type_id,
+            elements: self.elements,
+            indirection: Indirection(0),
         }
     }
 }

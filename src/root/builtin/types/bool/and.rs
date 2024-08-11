@@ -2,7 +2,7 @@ use unique_type_id::UniqueTypeId;
 
 use crate::root::builtin::types::bool::printb::PrintB;
 use crate::root::builtin::types::bool::{bool_op_sig, BoolType};
-use crate::root::builtin::{f_id, BuiltinInlineFunction, InlineFunctionGenerator};
+use crate::root::builtin::{f_id, BuiltinInlineFunction, InlineFnGenerator};
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{FunctionID, LocalAddress, TypeID};
@@ -24,7 +24,7 @@ impl BuiltinInlineFunction for BoolAnd {
         bool_op_sig()
     }
 
-    fn inline(&self) -> InlineFunctionGenerator {
+    fn inline(&self) -> InlineFnGenerator {
         |args, return_into, gt, _| -> String {
             let jmp_false = gt.get_unique_tag(PrintB::id());
             let jmp_end = gt.get_unique_tag(PrintB::id());
@@ -69,14 +69,14 @@ impl BuiltinInlineFunction for BoolAsAnd {
         FunctionSignature::new_inline_builtin(
             SelfType::RefSelf,
             &[
-                ("lhs", BoolType::id().with_indirection(1)),
-                ("rhs", BoolType::id().immediate()),
+                ("lhs", BoolType::id().with_indirection_single(1)),
+                ("rhs", BoolType::id().immediate_single()),
             ],
             None,
         )
     }
 
-    fn inline(&self) -> InlineFunctionGenerator {
+    fn inline(&self) -> InlineFnGenerator {
         |args: &[LocalAddress], _, gt, _| -> String {
             let jmp_true = gt.get_unique_tag(PrintB::id());
 

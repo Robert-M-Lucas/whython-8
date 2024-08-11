@@ -1,4 +1,4 @@
-use crate::root::builtin::{BuiltinInlineFunction, InlineFunctionGenerator};
+use crate::root::builtin::{BuiltinInlineFunction, InlineFnGenerator};
 use crate::root::compiler::assembly::heap::free_function;
 use crate::root::compiler::assembly::null::{is_null_function, null_function};
 use crate::root::compiler::local_variable_table::LocalVariableTable;
@@ -7,18 +7,19 @@ use crate::root::errors::WErr;
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::location::Location;
 use crate::root::parser::parse_function::parse_evaluable::{
-    FullNameToken, FullNameTokens, FullNameWithIndirectionToken,
+    FullNameToken, FullNameTokens, UnresolvedTypeRefToken,
 };
 use crate::root::parser::parse_function::parse_operator::{OperatorToken, PrefixOrInfixEx};
 use crate::root::parser::parse_function::FunctionToken;
 use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::parser::parse_struct::StructToken;
+use crate::root::parser::path_storage::{FileID, FolderID, Scope};
 use crate::root::shared::common::{AddressedTypeRef, ByteSize, FunctionID, TypeID, TypeRef};
 use crate::root::shared::types::Type;
+use crate::root::unrandom::new_hashmap;
 use crate::root::POINTER_SIZE;
+use derive_new::new;
 use std::collections::HashMap;
-use std::path::PathBuf;
-use std::rc::Rc;
 
 #[derive(Debug)]
 enum NameTreeEntry {
@@ -45,29 +46,28 @@ impl NameTree {
 /// Top level of tree containing all named objects/functions/types
 #[derive(Default)]
 struct TopLevelNameTree {
-    table: HashMap<Rc<PathBuf>, NameTree>,
+    table: HashMap<FileID, NameTree>,
 }
 
 impl TopLevelNameTree {
-    pub fn get_tree_mut(&mut self, path: Rc<PathBuf>) -> &mut NameTree {
-        if !self.table.contains_key(&path) {
-            self.table.insert(path.clone(), Default::default());
-        }
+    pub fn get_tree_mut(&mut self, file_id: FileID) -> &mut NameTree {
+        self.table.entry(file_id).or_default();
 
-        self.table.get_mut(&path).unwrap()
+        self.table.get_mut(&file_id).unwrap()
     }
 }
 
 /// Tables containing all global, unchanging definitions from name resolution step
-pub struct GlobalDefinitionTable {
+pub struct GlobalTable {
     id_counter: isize,
     type_definitions: HashMap<TypeID, Box<dyn Type>>,
     impl_definitions: HashMap<TypeID, HashMap<String, FunctionID>>,
     function_signatures: HashMap<FunctionID, FunctionSignature>,
-    inline_functions: HashMap<FunctionID, InlineFunctionGenerator>,
     name_table: TopLevelNameTree,
     builtin_type_name_table: HashMap<String, TypeID>,
     builtin_function_name_table: HashMap<String, FunctionID>,
+    builtin_inline_functions: HashMap<FunctionID, InlineFnGenerator>,
+    scope: Scope,
 }
 
 pub enum NameResult {
@@ -76,24 +76,29 @@ pub enum NameResult {
     Variable(AddressedTypeRef),
 }
 
-impl Default for GlobalDefinitionTable {
+impl Default for GlobalTable {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl GlobalDefinitionTable {
-    pub fn new() -> GlobalDefinitionTable {
-        GlobalDefinitionTable {
+impl GlobalTable {
+    pub fn new() -> GlobalTable {
+        GlobalTable {
             id_counter: 2,
-            type_definitions: Default::default(),
-            impl_definitions: Default::default(),
-            function_signatures: Default::default(),
-            inline_functions: Default::default(),
+            type_definitions: HashMap::new(),
+            impl_definitions: HashMap::new(),
+            function_signatures: HashMap::new(),
             name_table: Default::default(),
             builtin_type_name_table: Default::default(),
             builtin_function_name_table: Default::default(),
+            builtin_inline_functions: Default::default(),
+            scope: Default::default(),
         }
+    }
+
+    pub fn scope_namespace(&mut self, scope: Scope) {
+        self.scope = scope;
     }
 
     /// Registers a builtin type
@@ -103,7 +108,6 @@ impl GlobalDefinitionTable {
             .insert(t.name().to_string(), id);
         self.type_definitions.insert(id, t);
 
-        // TODO: NOT A USER FUNCTION!
         let fid = self.id_counter;
         self.id_counter += 1;
         let null_function = null_function(id, FunctionID(fid));
@@ -136,7 +140,8 @@ impl GlobalDefinitionTable {
     pub fn register_inline_function(&mut self, inline: &dyn BuiltinInlineFunction) {
         self.function_signatures
             .insert(inline.id(), inline.signature());
-        self.inline_functions.insert(inline.id(), inline.inline());
+        self.builtin_inline_functions
+            .insert(inline.id(), inline.inline());
 
         if let Some(parent) = inline.parent_type() {
             self.get_impl_mut(parent)
@@ -162,7 +167,7 @@ impl GlobalDefinitionTable {
         // TODO
         let file_level_tree = self
             .name_table
-            .get_tree_mut(st.location().path().unwrap().clone());
+            .get_tree_mut(st.location().file_id().unwrap());
         self.id_counter += 1;
         let id = TypeID(self.id_counter - 1);
 
@@ -197,7 +202,7 @@ impl GlobalDefinitionTable {
             // TODO
             let file_level_tree = self
                 .name_table
-                .get_tree_mut(ft.location().path().unwrap().clone());
+                .get_tree_mut(ft.location().file_id().unwrap());
             file_level_tree.add_entry(ft.name().name().clone(), NameTreeEntry::Function(id));
         }
 
@@ -235,10 +240,7 @@ impl GlobalDefinitionTable {
     }
 
     /// Takes a name and resolves it to a type (or error)
-    pub fn resolve_to_type_ref(
-        &mut self,
-        name: &FullNameWithIndirectionToken,
-    ) -> Result<TypeRef, WErr> {
+    pub fn resolve_to_type_ref(&mut self, name: &UnresolvedTypeRefToken) -> Result<TypeRef, WErr> {
         let (indirection, full_name) = (name.indirection(), name.inner());
 
         fn find_error_point(name: &FullNameToken, prev_location: &Location) -> Location {
@@ -265,7 +267,7 @@ impl GlobalDefinitionTable {
 
         let process_tree = |tree: &NameTree| -> Option<_> {
             tree.get_entry(name.name()).map(|val| match val {
-                NameTreeEntry::Type(t) => Ok(TypeRef::new(*t, *indirection)),
+                NameTreeEntry::Type(t) => Ok(TypeRef::new(*t, 1, *indirection)),
                 NameTreeEntry::Function(_) => WErr::ne(
                     NRErrs::FoundFunctionNotType(name.name().clone()),
                     full_name.location().clone(),
@@ -276,7 +278,7 @@ impl GlobalDefinitionTable {
         // TODO
         if let Some(r) = process_tree(
             self.name_table
-                .get_tree_mut(full_name.location().path().unwrap().clone()),
+                .get_tree_mut(full_name.location().file_id().unwrap()),
         ) {
             return r;
         }
@@ -285,7 +287,7 @@ impl GlobalDefinitionTable {
             .name_table
             .table
             .iter()
-            .filter(|(p, _)| *p != full_name.location().path().unwrap())
+            .filter(|(p, _)| **p != full_name.location().file_id().unwrap())
         {
             if let Some(r) = process_tree(tree) {
                 return r;
@@ -293,7 +295,7 @@ impl GlobalDefinitionTable {
         }
 
         if let Some(r) = self.builtin_type_name_table.get(name.name()) {
-            return Ok(TypeRef::new(*r, *indirection));
+            return Ok(TypeRef::new(*r, 1, *indirection));
         }
 
         if let Some(_fid) = self.builtin_function_name_table.get(name.name()) {
@@ -332,7 +334,7 @@ impl GlobalDefinitionTable {
     /// Adds a local, unnamed variable to the `LocalVariableTable` and returns the address
     pub fn add_local_variable_unnamed(
         &mut self,
-        t: &FullNameWithIndirectionToken,
+        t: &UnresolvedTypeRefToken,
         local_variable_table: &mut LocalVariableTable,
     ) -> Result<AddressedTypeRef, WErr> {
         let t = self.resolve_to_type_ref(t)?;
@@ -343,7 +345,7 @@ impl GlobalDefinitionTable {
     pub fn add_local_variable_named(
         &mut self,
         name: String,
-        t: &FullNameWithIndirectionToken,
+        t: &UnresolvedTypeRefToken,
         local_variable_table: &mut LocalVariableTable,
     ) -> Result<AddressedTypeRef, WErr> {
         let t = self.resolve_to_type_ref(t)?;
@@ -402,7 +404,7 @@ impl GlobalDefinitionTable {
         // TODO
         if let Some(r) = process_tree(
             self.name_table
-                .get_tree_mut(name.location().path().unwrap().clone()),
+                .get_tree_mut(name.location().file_id().unwrap()),
         ) {
             return r;
         }
@@ -412,7 +414,7 @@ impl GlobalDefinitionTable {
             .name_table
             .table
             .iter()
-            .filter(|(p, _)| *p != name.location().path().unwrap())
+            .filter(|(p, _)| **p != name.location().file_id().unwrap())
         {
             if let Some(r) = process_tree(tree) {
                 return r;
@@ -479,9 +481,9 @@ impl GlobalDefinitionTable {
     pub fn get_function(
         &self,
         function: FunctionID,
-    ) -> (&FunctionSignature, Option<&InlineFunctionGenerator>) {
+    ) -> (&FunctionSignature, Option<&InlineFnGenerator>) {
         let signature = self.get_function_signature(function);
-        let inline = self.inline_functions.get(&function);
+        let inline = self.builtin_inline_functions.get(&function);
         (signature, inline)
     }
 }

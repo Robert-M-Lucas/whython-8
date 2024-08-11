@@ -1,0 +1,90 @@
+use /std/linked_list;
+
+struct LL {
+    first: &Node
+}
+
+impl LL {
+    fn new() -> LL {
+        return LL {
+            first: Node::null()
+        };
+    }
+
+    fn push(&self, val: int) {
+        if (Node::is_null(*self.first)) {
+            self.first = Node::new(val);
+        } else {
+            self.first.push(val);
+        };
+    }
+
+    fn get(&self, idx: int) -> int {
+        return self.first.get(idx);
+    }
+
+    fn pop(&self) -> int {
+        if (Node::is_null(*(*self.first).next)) {
+            let val: int = *(*self.first).val;
+            Node::free(*self.first);
+            self.first = Node::null();
+            return val;
+        }
+
+        return self.first.pop();
+    }
+
+    fn print(&self) {
+        if (!Node::is_null(*self.first)) {
+            self.first.print();
+        };
+    }
+}
+
+struct Node {
+    val: int,
+    next: &Node
+}
+
+impl Node {
+    fn new(val: int) -> &Node {
+        return new Node {
+            val: val,
+            next: Node::null()
+        };
+    }
+
+    fn push(&self, val: int) {
+        if (Node::is_null(*self.next)) {
+            self.next = Node::new(val);
+        } else {
+            self.next.push(val);
+        };
+    }
+
+    fn get(&self, idx: int) -> int {
+        if (idx == 0) {
+            return *self.val;
+        }
+
+        return self.next.get(idx - 1);
+    }
+
+    fn pop(&self) -> int {
+        if (Node::is_null(*(*self.next).next)) {
+            let val: int = *(*self.next).val;
+            Node::free(*self.next);
+            self.next = Node::null();
+            return val;
+        }
+
+        return self.next.pop();
+    }
+
+    fn print(&self) {
+        printi(*self.val);
+        if (!Node::is_null(*self.next)) {
+            self.next.print();
+        };
+    }
+}

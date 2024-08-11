@@ -8,7 +8,7 @@ use crate::root::builtin::types::bool::not::BoolNot;
 use crate::root::builtin::types::bool::or::{BoolAsOr, BoolOr};
 use crate::root::builtin::types::bool::printb::PrintB;
 use crate::root::errors::WErr;
-use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
+use crate::root::name_resolver::name_resolvers::GlobalTable;
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse_function::parse_literal::{LiteralToken, LiteralTokens};
 use crate::root::parser::parse_parameters::SelfType;
@@ -25,14 +25,14 @@ fn bool_op_sig() -> FunctionSignature {
     FunctionSignature::new_inline_builtin(
         SelfType::CopySelf,
         &[
-            ("lhs", BoolType::id().immediate()),
-            ("rhs", BoolType::id().immediate()),
+            ("lhs", BoolType::id().immediate_single()),
+            ("rhs", BoolType::id().immediate_single()),
         ],
-        Some(BoolType::id().immediate()),
+        Some(BoolType::id().immediate_single()),
     )
 }
 
-pub fn register_bool(global_table: &mut GlobalDefinitionTable) {
+pub fn register_bool(global_table: &mut GlobalTable) {
     global_table.register_builtin_type(b!(BoolType));
     global_table.register_inline_function(&PrintB);
     global_table.register_inline_function(&BoolEq);

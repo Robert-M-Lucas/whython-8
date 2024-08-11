@@ -2,7 +2,7 @@ use unique_type_id::UniqueTypeId;
 
 use crate::root::builtin::types::bool::printb::PrintB;
 use crate::root::builtin::types::bool::BoolType;
-use crate::root::builtin::{f_id, BuiltinInlineFunction, InlineFunctionGenerator};
+use crate::root::builtin::{f_id, BuiltinInlineFunction, InlineFnGenerator};
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{FunctionID, LocalAddress, TypeID};
@@ -23,12 +23,12 @@ impl BuiltinInlineFunction for BoolNot {
     fn signature(&self) -> FunctionSignature {
         FunctionSignature::new_inline_builtin(
             SelfType::CopySelf,
-            &[("lhs", BoolType::id().immediate())],
-            Some(BoolType::id().immediate()),
+            &[("lhs", BoolType::id().immediate_single())],
+            Some(BoolType::id().immediate_single()),
         )
     }
 
-    fn inline(&self) -> InlineFunctionGenerator {
+    fn inline(&self) -> InlineFnGenerator {
         |args: &[LocalAddress], return_into, gt, _| -> String {
             let jmp_false = gt.get_unique_tag(PrintB::id());
             let jmp_end = gt.get_unique_tag(PrintB::id());

@@ -1,11 +1,7 @@
-use std::path::PathBuf;
-use std::rc::Rc;
-
 use nom::bytes::complete::tag;
 use nom::character::complete::{anychar, char as nchar};
 use nom::error::{ErrorKind, ParseError};
 use nom::{InputTake, Offset};
-use nom_locate::LocatedSpan;
 
 use crate::root::errors::parser_errors::create_custom_error;
 use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
@@ -126,7 +122,7 @@ pub fn take_until_or_end_discard_smart<'a>(s: Span<'a>, until: &str) -> ParseRes
     let mut s = s;
     let mut found = false;
     'outer: while !s.is_empty() {
-        if let Ok((ns, _)) = tag::<&str, LocatedSpan<&str, &Rc<PathBuf>>, ErrorTree>(until)(s) {
+        if let Ok((ns, _)) = tag::<_, _, ErrorTree>(until)(s) {
             found = true;
             s = ns;
             break;
@@ -165,7 +161,7 @@ pub fn take_until_discard_smart<'a>(s: Span<'a>, until: &str) -> ParseResult<'a>
             )));
         }
 
-        if let Ok((ns, _)) = tag::<&str, LocatedSpan<&str, &Rc<PathBuf>>, ErrorTree>(until)(s) {
+        if let Ok((ns, _)) = tag::<_, _, ErrorTree>(until)(s) {
             s = ns;
             break;
         }

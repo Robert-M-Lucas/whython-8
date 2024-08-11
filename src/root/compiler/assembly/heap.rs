@@ -1,6 +1,6 @@
-use crate::root::builtin::{BuiltinInlineFunction, InlineFunctionGenerator};
+use crate::root::builtin::{BuiltinInlineFunction, InlineFnGenerator};
 use crate::root::compiler::local_variable_table::LocalVariableTable;
-use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
+use crate::root::name_resolver::name_resolvers::GlobalTable;
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::parser::parse_parameters::SelfType;
@@ -8,7 +8,7 @@ use crate::root::shared::common::{AddressedTypeRef, FunctionID, TypeID, TypeRef}
 
 pub fn heap_alloc(
     t: TypeRef,
-    global_table: &mut GlobalDefinitionTable,
+    global_table: &mut GlobalTable,
     local_variable_table: &mut LocalVariableTable,
 ) -> (String, AddressedTypeRef) {
     let size = global_table.get_size(&t).0;
@@ -49,13 +49,13 @@ impl BuiltinInlineFunction for FreeFunction {
             SelfType::None,
             vec![(
                 SimpleNameToken::new_builtin("heap_pointer".to_string()),
-                self.parent_type.with_indirection(1),
+                self.parent_type.with_indirection_single(1),
             )],
             None,
         )
     }
 
-    fn inline(&self) -> InlineFunctionGenerator {
+    fn inline(&self) -> InlineFnGenerator {
         |args, _, _, sz| -> String {
             let to_free = &args[0];
             format!(

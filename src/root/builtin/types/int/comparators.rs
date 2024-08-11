@@ -1,6 +1,6 @@
 use crate::root::builtin::types::bool::BoolType;
 use crate::root::builtin::types::int::IntType;
-use crate::root::builtin::{f_id, BuiltinInlineFunction, InlineFunctionGenerator};
+use crate::root::builtin::{f_id, BuiltinInlineFunction, InlineFnGenerator};
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{FunctionID, LocalAddress, TypeID};
@@ -29,14 +29,14 @@ impl BuiltinInlineFunction for IntEq {
         FunctionSignature::new_inline_builtin(
             SelfType::CopySelf,
             &[
-                ("lhs", IntType::id().immediate()),
-                ("rhs", IntType::id().immediate()),
+                ("lhs", IntType::id().immediate_single()),
+                ("rhs", IntType::id().immediate_single()),
             ],
-            Some(BoolType::id().immediate()),
+            Some(BoolType::id().immediate_single()),
         )
     }
 
-    fn inline(&self) -> InlineFunctionGenerator {
+    fn inline(&self) -> InlineFnGenerator {
         |args: &[LocalAddress], return_into: Option<LocalAddress>, gt, _| -> String {
             let lhs = args[0];
             let rhs = args[1];
@@ -85,14 +85,14 @@ impl BuiltinInlineFunction for IntNE {
         FunctionSignature::new_inline_builtin(
             SelfType::CopySelf,
             &[
-                ("lhs", IntType::id().immediate()),
-                ("rhs", IntType::id().immediate()),
+                ("lhs", IntType::id().immediate_single()),
+                ("rhs", IntType::id().immediate_single()),
             ],
-            Some(BoolType::id().immediate()),
+            Some(BoolType::id().immediate_single()),
         )
     }
 
-    fn inline(&self) -> InlineFunctionGenerator {
+    fn inline(&self) -> InlineFnGenerator {
         |args: &[LocalAddress], return_into: Option<LocalAddress>, gt, _| -> String {
             let lhs = args[0];
             let rhs = args[1];
@@ -141,14 +141,14 @@ impl BuiltinInlineFunction for IntGT {
         FunctionSignature::new_inline_builtin(
             SelfType::CopySelf,
             &[
-                ("lhs", IntType::id().immediate()),
-                ("rhs", IntType::id().immediate()),
+                ("lhs", IntType::id().immediate_single()),
+                ("rhs", IntType::id().immediate_single()),
             ],
-            Some(BoolType::id().immediate()),
+            Some(BoolType::id().immediate_single()),
         )
     }
 
-    fn inline(&self) -> InlineFunctionGenerator {
+    fn inline(&self) -> InlineFnGenerator {
         |args: &[LocalAddress], return_into: Option<LocalAddress>, gt, _| -> String {
             let lhs = args[0];
             let rhs = args[1];
@@ -197,14 +197,14 @@ impl BuiltinInlineFunction for IntLT {
         FunctionSignature::new_inline_builtin(
             SelfType::CopySelf,
             &[
-                ("lhs", IntType::id().immediate()),
-                ("rhs", IntType::id().immediate()),
+                ("lhs", IntType::id().immediate_single()),
+                ("rhs", IntType::id().immediate_single()),
             ],
-            Some(BoolType::id().immediate()),
+            Some(BoolType::id().immediate_single()),
         )
     }
 
-    fn inline(&self) -> InlineFunctionGenerator {
+    fn inline(&self) -> InlineFnGenerator {
         |args: &[LocalAddress], return_into: Option<LocalAddress>, gt, _| -> String {
             let lhs = args[0];
             let rhs = args[1];
@@ -253,14 +253,14 @@ impl BuiltinInlineFunction for IntGE {
         FunctionSignature::new_inline_builtin(
             SelfType::CopySelf,
             &[
-                ("lhs", IntType::id().immediate()),
-                ("rhs", IntType::id().immediate()),
+                ("lhs", IntType::id().immediate_single()),
+                ("rhs", IntType::id().immediate_single()),
             ],
-            Some(BoolType::id().immediate()),
+            Some(BoolType::id().immediate_single()),
         )
     }
 
-    fn inline(&self) -> InlineFunctionGenerator {
+    fn inline(&self) -> InlineFnGenerator {
         |args: &[LocalAddress], return_into: Option<LocalAddress>, gt, _| -> String {
             let lhs = args[0];
             let rhs = args[1];
@@ -309,14 +309,14 @@ impl BuiltinInlineFunction for IntLE {
         FunctionSignature::new_inline_builtin(
             SelfType::CopySelf,
             &[
-                ("lhs", IntType::id().immediate()),
-                ("rhs", IntType::id().immediate()),
+                ("lhs", IntType::id().immediate_single()),
+                ("rhs", IntType::id().immediate_single()),
             ],
-            Some(BoolType::id().immediate()),
+            Some(BoolType::id().immediate_single()),
         )
     }
 
-    fn inline(&self) -> InlineFunctionGenerator {
+    fn inline(&self) -> InlineFnGenerator {
         |args: &[LocalAddress], return_into: Option<LocalAddress>, gt, _| -> String {
             let lhs = args[0];
             let rhs = args[1];

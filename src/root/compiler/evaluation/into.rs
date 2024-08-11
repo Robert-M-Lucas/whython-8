@@ -15,7 +15,7 @@ use crate::root::errors::evaluable_errors::EvalErrs;
 use crate::root::errors::evaluable_errors::EvalErrs::WrongAttributeNameInInit;
 use crate::root::errors::name_resolver_errors::NRErrs;
 use crate::root::errors::WErr;
-use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable, NameResult};
+use crate::root::name_resolver::name_resolvers::{GlobalTable, NameResult};
 use crate::root::parser::location::Location;
 use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, EvaluableTokens};
 use crate::root::parser::parse_function::parse_operator::{OperatorTokens, PrefixOrInfixEx};
@@ -28,7 +28,7 @@ pub fn compile_evaluable_into(
     et: &EvaluableToken,
     target: AddressedTypeRef,
     local_variables: &mut LocalVariableTable,
-    global_table: &mut GlobalDefinitionTable,
+    global_table: &mut GlobalTable,
     global_tracker: &mut GlobalTracker,
 ) -> Result<String, WErr> {
     let ets = et.token();
@@ -260,7 +260,10 @@ pub fn compile_evaluable_into(
             )?;
             c
         }
-        EvaluableTokens::DynamicAccess(inner_eval, access) => {
+        EvaluableTokens::DynamicAccess {
+            parent: inner_eval,
+            section: access,
+        } => {
             let mut ab = AssemblyBuilder::new();
             let (c, inner) = compile_evaluable_reference(
                 fid,
@@ -306,7 +309,7 @@ pub fn compile_evaluable_into(
             let Some(found_offset) = found_offset else {
                 return WErr::ne(
                     EvalErrs::TypeDoesntHaveAttribute(
-                        global_table.get_type_name(&t.id().immediate()),
+                        global_table.get_type_name(&t.id().immediate_single()),
                         access.name().clone(),
                     ),
                     access.location().clone(),
@@ -314,9 +317,8 @@ pub fn compile_evaluable_into(
             };
 
             if inner.type_ref().indirection().has_indirection() {
-                // TODO: This is not full 64 bit!
-                ab.line(&format!("mov rax, {}", inner.local_address()));
-                ab.line(&format!("add rax, {}", found_offset.0));
+                ab.line(&format!("mov rax, qword {}", inner.local_address()));
+                ab.line(&format!("add rax, {:#018x}", found_offset.0));
                 ab.line(&format!("mov qword {}, rax", target.local_address()));
 
                 // ab.other(&copy_from_indirect_fixed_offset(
@@ -345,13 +347,19 @@ pub fn compile_evaluable_into(
 
             ab.finish()
         }
-        EvaluableTokens::StaticAccess(_, n) => {
+        EvaluableTokens::StaticAccess {
+            parent: _,
+            section: n,
+        } => {
             return WErr::ne(
                 NRErrs::CannotFindConstantAttribute(n.name().clone()),
                 n.location().clone(),
             )
         } // Accessed methods must be called
-        EvaluableTokens::FunctionCall(inner, args) => {
+        EvaluableTokens::FunctionCall {
+            function: inner,
+            args: args,
+        } => {
             let mut ab = AssemblyBuilder::new();
             let (slf, ifid, name) = function_only::compile_evaluable_function_only(
                 fid,
@@ -465,7 +473,6 @@ pub fn compile_evaluable_into(
 
             let mut code = AssemblyBuilder::new();
 
-            // TODO: Doable without clone?
             for ((offset, t_name, t_type), (name, val)) in attributes.iter().zip(give_attrs.iter())
             {
                 if t_name.name() != name.name() {

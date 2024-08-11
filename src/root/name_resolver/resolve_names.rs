@@ -1,7 +1,7 @@
 use crate::root::errors::evaluable_errors::EvalErrs;
 use crate::root::errors::name_resolver_errors::NRErrs;
 use crate::root::errors::WErr;
-use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
+use crate::root::name_resolver::name_resolvers::GlobalTable;
 use crate::root::name_resolver::resolve_function_signatures::resolve_function_signature;
 use crate::root::name_resolver::resolve_type_sizes::{resolve_type_sizes, UnsizedUserType};
 use crate::root::parser::location::Location;
@@ -84,7 +84,7 @@ impl Type for UserType {
 /// with function signatures and type definitions
 pub fn resolve_names(
     ast: Vec<TopLevelTokens>,
-    global_table: &mut GlobalDefinitionTable,
+    global_table: &mut GlobalTable,
 ) -> Result<HashMap<FunctionID, FunctionToken>, WErr> {
     let mut ast = ast;
 

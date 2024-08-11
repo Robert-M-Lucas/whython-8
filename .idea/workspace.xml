@@ -7,11 +7,57 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Refactoring">
+    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="todo.txt">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/out.asm" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.asm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/out.o" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/out.out" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/root.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/builtin/core/referencing.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/core/referencing.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/builtin/functions/exit.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/functions/exit.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/builtin/functions/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/functions/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/builtin/functions/printnl.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/functions/printnl.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/builtin/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/bool/and.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/bool/and.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/bool/comparators.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/bool/comparators.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/bool/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/bool/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/bool/not.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/bool/not.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/bool/or.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/bool/or.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/bool/printb.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/bool/printb.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/int/add.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/int/add.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/int/comparators.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/int/comparators.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/int/div.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/int/div.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/int/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/int/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/int/modulo.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/int/modulo.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/int/mul.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/int/mul.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/int/p_add.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/int/p_add.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/int/p_sub.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/int/p_sub.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/int/printi.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/int/printi.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/builtin/types/int/sub.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/builtin/types/int/sub.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/assembly/heap.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/assembly/heap.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/assembly/null.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/assembly/null.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/compile.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/compile_function.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile_function.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/compile_function_call.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile_function_call.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/coerce_self.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/coerce_self.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/function_only.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/function_only.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/into.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/into.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/new.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/new.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/reference.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/reference.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/type_only.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/type_only.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/errors/name_resolver_errors.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/errors/name_resolver_errors.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/resolve.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/resolve.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/resolve_function_signatures.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/resolve_function_signatures.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/root/name_resolver/resolve_names.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/resolve_names.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/resolve_type_sizes.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/resolve_type_sizes.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/root/parser/parse_function/parse_evaluable.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse_function/parse_evaluable.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/root/parser/path_storage.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/path_storage.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/std/linked_list.why" beforeDir="false" afterPath="$PROJECT_DIR$/std/linked_list.why" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,7 +96,7 @@
                 <list>
                   <RecentBranch>
                     <option name="branchName" value="dev" />
-                    <option name="lastUsedInstant" value="1722589612" />
+                    <option name="lastUsedInstant" value="1722955034" />
                   </RecentBranch>
                   <RecentBranch>
                     <option name="branchName" value="master" />
@@ -97,7 +143,7 @@
     &quot;Shell Script.Test Asm.executor&quot;: &quot;Run&quot;,
     &quot;git-widget-placeholder&quot;: &quot;dev&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/robertlucas/RustroverProjects/whython-8&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/robertlucas/RustroverProjects/whython-8/src/root/builtin/functions&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -106,7 +152,7 @@
     &quot;org.rust.cargo.project.model.PROJECT_DISCOVERY&quot;: &quot;true&quot;,
     &quot;org.rust.cargo.project.model.impl.CargoExternalSystemProjectAware.subscribe.first.balloon&quot;: &quot;&quot;,
     &quot;org.rust.first.attach.projects&quot;: &quot;true&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;language.rust.cargo.check&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;tasks&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
   &quot;keyToStringList&quot;: {
@@ -117,18 +163,18 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/root/builtin/functions" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/src/root/builtin/types/int" />
       <recent name="$PROJECT_DIR$/src/root/builtin/types/bool" />
       <recent name="$PROJECT_DIR$/src/root/builtin/types" />
-      <recent name="$PROJECT_DIR$/src/root/builtin/int" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/root/utils" />
+      <recent name="$PROJECT_DIR$/src/root" />
+      <recent name="$PROJECT_DIR$/std" />
       <recent name="C:\Users\rober\Documents\Coding\RustProjects\whython-8\src\root\compiler\evaluation" />
       <recent name="$PROJECT_DIR$/src/root/builtin/types/int" />
-      <recent name="$PROJECT_DIR$/src/root/builtin/types" />
-      <recent name="$PROJECT_DIR$/src/root/builtin/int" />
-      <recent name="$PROJECT_DIR$/reference" />
     </key>
   </component>
   <component name="RsExternalLinterProjectSettings">
@@ -275,134 +321,19 @@
       <workItem from="1722589603461" duration="6045000" />
       <workItem from="1722618894942" duration="1095000" />
       <workItem from="1722625341403" duration="1505000" />
-    </task>
-    <task id="LOCAL-00024" summary="Testing">
-      <option name="closed" value="true" />
-      <created>1717794747334</created>
-      <option name="number" value="00024" />
-      <option name="presentableId" value="LOCAL-00024" />
-      <option name="project" value="LOCAL" />
-      <updated>1717794747334</updated>
-    </task>
-    <task id="LOCAL-00025" summary="Todo">
-      <option name="closed" value="true" />
-      <created>1717819316020</created>
-      <option name="number" value="00025" />
-      <option name="presentableId" value="LOCAL-00025" />
-      <option name="project" value="LOCAL" />
-      <updated>1717819316020</updated>
-    </task>
-    <task id="LOCAL-00026" summary="Improved operator support">
-      <option name="closed" value="true" />
-      <created>1717826853448</created>
-      <option name="number" value="00026" />
-      <option name="presentableId" value="LOCAL-00026" />
-      <option name="project" value="LOCAL" />
-      <updated>1717826853448</updated>
-    </task>
-    <task id="LOCAL-00027" summary="Printing and function calls">
-      <option name="closed" value="true" />
-      <created>1718558711741</created>
-      <option name="number" value="00027" />
-      <option name="presentableId" value="LOCAL-00027" />
-      <option name="project" value="LOCAL" />
-      <updated>1718558711741</updated>
-    </task>
-    <task id="LOCAL-00028" summary="Testing">
-      <option name="closed" value="true" />
-      <created>1718558898901</created>
-      <option name="number" value="00028" />
-      <option name="presentableId" value="LOCAL-00028" />
-      <option name="project" value="LOCAL" />
-      <updated>1718558898901</updated>
-    </task>
-    <task id="LOCAL-00029" summary="Added exit functions">
-      <option name="closed" value="true" />
-      <created>1718636633009</created>
-      <option name="number" value="00029" />
-      <option name="presentableId" value="LOCAL-00029" />
-      <option name="project" value="LOCAL" />
-      <updated>1718636633009</updated>
-    </task>
-    <task id="LOCAL-00030" summary="More operators">
-      <option name="closed" value="true" />
-      <created>1718798005819</created>
-      <option name="number" value="00030" />
-      <option name="presentableId" value="LOCAL-00030" />
-      <option name="project" value="LOCAL" />
-      <updated>1718798005819</updated>
-    </task>
-    <task id="LOCAL-00031" summary="Cargo fix">
-      <option name="closed" value="true" />
-      <created>1718798188305</created>
-      <option name="number" value="00031" />
-      <option name="presentableId" value="LOCAL-00031" />
-      <option name="project" value="LOCAL" />
-      <updated>1718798188305</updated>
-    </task>
-    <task id="LOCAL-00032" summary="Cargo clippy">
-      <option name="closed" value="true" />
-      <created>1718799244388</created>
-      <option name="number" value="00032" />
-      <option name="presentableId" value="LOCAL-00032" />
-      <option name="project" value="LOCAL" />
-      <updated>1718799244388</updated>
-    </task>
-    <task id="LOCAL-00033" summary="Boolean improvements">
-      <option name="closed" value="true" />
-      <created>1718803787262</created>
-      <option name="number" value="00033" />
-      <option name="presentableId" value="LOCAL-00033" />
-      <option name="project" value="LOCAL" />
-      <updated>1718803787262</updated>
-    </task>
-    <task id="LOCAL-00034" summary="More boolean operations">
-      <option name="closed" value="true" />
-      <created>1718805301324</created>
-      <option name="number" value="00034" />
-      <option name="presentableId" value="LOCAL-00034" />
-      <option name="project" value="LOCAL" />
-      <updated>1718805301324</updated>
-    </task>
-    <task id="LOCAL-00035" summary="Int comparators">
-      <option name="closed" value="true" />
-      <created>1718888868217</created>
-      <option name="number" value="00035" />
-      <option name="presentableId" value="LOCAL-00035" />
-      <option name="project" value="LOCAL" />
-      <updated>1718888868217</updated>
-    </task>
-    <task id="LOCAL-00036" summary="Boolean comparators">
-      <option name="closed" value="true" />
-      <created>1718889832262</created>
-      <option name="number" value="00036" />
-      <option name="presentableId" value="LOCAL-00036" />
-      <option name="project" value="LOCAL" />
-      <updated>1718889832262</updated>
-    </task>
-    <task id="LOCAL-00037" summary="Simplified code">
-      <option name="closed" value="true" />
-      <created>1718895358320</created>
-      <option name="number" value="00037" />
-      <option name="presentableId" value="LOCAL-00037" />
-      <option name="project" value="LOCAL" />
-      <updated>1718895358320</updated>
-    </task>
-    <task id="LOCAL-00038" summary="Improvements">
-      <option name="closed" value="true" />
-      <created>1718928037028</created>
-      <option name="number" value="00038" />
-      <option name="presentableId" value="LOCAL-00038" />
-      <option name="project" value="LOCAL" />
-      <updated>1718928037028</updated>
-    </task>
-    <task id="LOCAL-00039" summary="Improvements">
-      <option name="closed" value="true" />
-      <created>1718928163157</created>
-      <option name="number" value="00039" />
-      <option name="presentableId" value="LOCAL-00039" />
-      <option name="project" value="LOCAL" />
-      <updated>1718928163157</updated>
+      <workItem from="1722969496898" duration="697000" />
+      <workItem from="1723026258349" duration="1557000" />
+      <workItem from="1723045013060" duration="8954000" />
+      <workItem from="1723127499434" duration="1119000" />
+      <workItem from="1723130972719" duration="14000" />
+      <workItem from="1723141139786" duration="603000" />
+      <workItem from="1723212841248" duration="1106000" />
+      <workItem from="1723216662767" duration="1364000" />
+      <workItem from="1723294201690" duration="8639000" />
+      <workItem from="1723381953165" duration="3923000" />
+      <workItem from="1723386729552" duration="405000" />
+      <workItem from="1723387140198" duration="611000" />
+      <workItem from="1723387893096" duration="4029000" />
     </task>
     <task id="LOCAL-00040" summary="Improved function code">
       <option name="closed" value="true" />
@@ -668,7 +599,135 @@
       <option name="project" value="LOCAL" />
       <updated>1722599152100</updated>
     </task>
-    <option name="localTasksCounter" value="73" />
+    <task id="LOCAL-00073" summary="location.rs refactor">
+      <option name="closed" value="true" />
+      <created>1722955321706</created>
+      <option name="number" value="00073" />
+      <option name="presentableId" value="LOCAL-00073" />
+      <option name="project" value="LOCAL" />
+      <updated>1722955321707</updated>
+    </task>
+    <task id="LOCAL-00074" summary="Added imports">
+      <option name="closed" value="true" />
+      <created>1722957672545</created>
+      <option name="number" value="00074" />
+      <option name="presentableId" value="LOCAL-00074" />
+      <option name="project" value="LOCAL" />
+      <updated>1722957672545</updated>
+    </task>
+    <task id="LOCAL-00075" summary="fmt">
+      <option name="closed" value="true" />
+      <created>1722957687892</created>
+      <option name="number" value="00075" />
+      <option name="presentableId" value="LOCAL-00075" />
+      <option name="project" value="LOCAL" />
+      <updated>1722957687892</updated>
+    </task>
+    <task id="LOCAL-00076" summary="Cleanup">
+      <option name="closed" value="true" />
+      <created>1722959111522</created>
+      <option name="number" value="00076" />
+      <option name="presentableId" value="LOCAL-00076" />
+      <option name="project" value="LOCAL" />
+      <updated>1722959111522</updated>
+    </task>
+    <task id="LOCAL-00077" summary="Printnl">
+      <option name="closed" value="true" />
+      <created>1722960033973</created>
+      <option name="number" value="00077" />
+      <option name="presentableId" value="LOCAL-00077" />
+      <option name="project" value="LOCAL" />
+      <updated>1722960033973</updated>
+    </task>
+    <task id="LOCAL-00078" summary="Imports">
+      <option name="closed" value="true" />
+      <created>1722960050485</created>
+      <option name="number" value="00078" />
+      <option name="presentableId" value="LOCAL-00078" />
+      <option name="project" value="LOCAL" />
+      <updated>1722960050486</updated>
+    </task>
+    <task id="LOCAL-00079" summary="Fmt">
+      <option name="closed" value="true" />
+      <created>1722960060813</created>
+      <option name="number" value="00079" />
+      <option name="presentableId" value="LOCAL-00079" />
+      <option name="project" value="LOCAL" />
+      <updated>1722960060813</updated>
+    </task>
+    <task id="LOCAL-00080" summary="Transitioned to PathStorage for paths">
+      <option name="closed" value="true" />
+      <created>1723051257003</created>
+      <option name="number" value="00080" />
+      <option name="presentableId" value="LOCAL-00080" />
+      <option name="project" value="LOCAL" />
+      <updated>1723051257004</updated>
+    </task>
+    <task id="LOCAL-00081" summary="Cargo fmt">
+      <option name="closed" value="true" />
+      <created>1723051275815</created>
+      <option name="number" value="00081" />
+      <option name="presentableId" value="LOCAL-00081" />
+      <option name="project" value="LOCAL" />
+      <updated>1723051275815</updated>
+    </task>
+    <task id="LOCAL-00082" summary="Updated todo.txt">
+      <option name="closed" value="true" />
+      <created>1723051436594</created>
+      <option name="number" value="00082" />
+      <option name="presentableId" value="LOCAL-00082" />
+      <option name="project" value="LOCAL" />
+      <updated>1723051436594</updated>
+    </task>
+    <task id="LOCAL-00083" summary="Fixed warnings">
+      <option name="closed" value="true" />
+      <created>1723053543861</created>
+      <option name="number" value="00083" />
+      <option name="presentableId" value="LOCAL-00083" />
+      <option name="project" value="LOCAL" />
+      <updated>1723053543861</updated>
+    </task>
+    <task id="LOCAL-00084" summary="Updated packages">
+      <option name="closed" value="true" />
+      <created>1723054195988</created>
+      <option name="number" value="00084" />
+      <option name="presentableId" value="LOCAL-00084" />
+      <option name="project" value="LOCAL" />
+      <updated>1723054195988</updated>
+    </task>
+    <task id="LOCAL-00085" summary="Refactoring">
+      <option name="closed" value="true" />
+      <created>1723213598029</created>
+      <option name="number" value="00085" />
+      <option name="presentableId" value="LOCAL-00085" />
+      <option name="project" value="LOCAL" />
+      <updated>1723213598029</updated>
+    </task>
+    <task id="LOCAL-00086" summary="Continued import implementation">
+      <option name="closed" value="true" />
+      <created>1723305700296</created>
+      <option name="number" value="00086" />
+      <option name="presentableId" value="LOCAL-00086" />
+      <option name="project" value="LOCAL" />
+      <updated>1723305700297</updated>
+    </task>
+    <task id="LOCAL-00087" summary="Continued import implementation">
+      <option name="closed" value="true" />
+      <created>1723305815769</created>
+      <option name="number" value="00087" />
+      <option name="presentableId" value="LOCAL-00087" />
+      <option name="project" value="LOCAL" />
+      <updated>1723305815769</updated>
+    </task>
+    <task id="LOCAL-00088" summary="todo.txt">
+      <option name="closed" value="true" />
+      <created>1723306113264</created>
+      <option name="number" value="00088" />
+      <option name="presentableId" value="LOCAL-00088" />
+      <option name="project" value="LOCAL" />
+      <updated>1723306113264</updated>
+    </task>
+    <option name="localTasksCounter" value="89" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -725,32 +784,32 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Full comments" />
-    <MESSAGE value="Made assembly deterministic in debug mode" />
-    <MESSAGE value="Changes" />
-    <MESSAGE value="Improved block parsing" />
-    <MESSAGE value="Markers" />
-    <MESSAGE value="Unrandom" />
-    <MESSAGE value="Small refactor" />
-    <MESSAGE value="Added accessing" />
-    <MESSAGE value="Completed adding accessing" />
-    <MESSAGE value="Other" />
-    <MESSAGE value="Self coercion" />
-    <MESSAGE value="Begun work towards heap allocation" />
-    <MESSAGE value="Todo" />
     <MESSAGE value="Added null to all user types" />
     <MESSAGE value="Linked list" />
     <MESSAGE value="Improvements" />
     <MESSAGE value="Added free" />
     <MESSAGE value="Added free and good parser errors" />
     <MESSAGE value="Resolved some todos" />
-    <MESSAGE value="Cargo fmt" />
     <MESSAGE value="Improved self coercion" />
     <MESSAGE value="Added more errors" />
     <MESSAGE value="Improved parser errors" />
     <MESSAGE value="All parser errors have an implementation" />
+    <MESSAGE value="location.rs refactor" />
+    <MESSAGE value="Added imports" />
+    <MESSAGE value="fmt" />
+    <MESSAGE value="Cleanup" />
+    <MESSAGE value="Printnl" />
+    <MESSAGE value="Imports" />
+    <MESSAGE value="Fmt" />
+    <MESSAGE value="Transitioned to PathStorage for paths" />
+    <MESSAGE value="Cargo fmt" />
+    <MESSAGE value="Updated todo.txt" />
+    <MESSAGE value="Fixed warnings" />
+    <MESSAGE value="Updated packages" />
     <MESSAGE value="Refactoring" />
-    <option name="LAST_COMMIT_MESSAGE" value="Refactoring" />
+    <MESSAGE value="Continued import implementation" />
+    <MESSAGE value="todo.txt" />
+    <option name="LAST_COMMIT_MESSAGE" value="todo.txt" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

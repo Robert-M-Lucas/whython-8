@@ -1,3 +1,5 @@
+pub mod identify_first_last;
+
 use color_print::cprintln;
 use std::io;
 use std::io::ErrorKind;
@@ -29,19 +31,6 @@ macro_rules! time {
         color_print::cprintln!("<g,bold>Completed [{:?}]</>", end);
     };
 }
-
-// #[macro_export]
-// macro_rules! try {
-//     ($($tts:tt)*) => {
-//         match $($tts)* {
-//             Err(e) => {
-//                 println!("\n{}");
-//                 return;
-//             }
-//             Ok(v) => v
-//         }
-//     };
-// }
 
 /// Times how long code takes to execute and puts it in `out`
 #[macro_export]
