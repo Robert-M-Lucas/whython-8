@@ -1,7 +1,7 @@
 use unique_type_id::UniqueTypeId;
 
 use crate::root::builtin::types::int::IntType;
-use crate::root::builtin::{f_id, BuiltinInlineFunction, InlineFunctionGenerator};
+use crate::root::builtin::{f_id, BuiltinInlineFunction, InlineFnGenerator};
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{FunctionID, TypeID};
@@ -27,7 +27,7 @@ impl BuiltinInlineFunction for IntPAdd {
         )
     }
 
-    fn inline(&self) -> InlineFunctionGenerator {
+    fn inline(&self) -> InlineFnGenerator {
         |_, _, _, _| -> String { String::new() }
     }
 

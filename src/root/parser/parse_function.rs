@@ -59,6 +59,7 @@ pub fn parse_function<'a>(
     let (s, _) = require_ignored(s)?;
     let (s, name) = parse_simple_name(s)?;
     let (s, _) = discard_ignored(s)?;
+
     // let c_owned = allow_self.as_ref().and_then(|s| Some(s.base().to_string()));
     // let containing_class = if let Some(s) = &c_owned {
     //     Some(s.as_str())

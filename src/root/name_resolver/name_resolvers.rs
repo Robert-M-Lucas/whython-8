@@ -1,6 +1,4 @@
-use std::collections::HashMap;
-
-use crate::root::builtin::{BuiltinInlineFunction, InlineFunctionGenerator};
+use crate::root::builtin::{BuiltinInlineFunction, InlineFnGenerator};
 use crate::root::compiler::assembly::heap::free_function;
 use crate::root::compiler::assembly::null::{is_null_function, null_function};
 use crate::root::compiler::local_variable_table::LocalVariableTable;
@@ -15,11 +13,13 @@ use crate::root::parser::parse_function::parse_operator::{OperatorToken, PrefixO
 use crate::root::parser::parse_function::FunctionToken;
 use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::parser::parse_struct::StructToken;
-use crate::root::parser::path_storage::FileID;
+use crate::root::parser::path_storage::{FileID, FolderID, Scope};
 use crate::root::shared::common::{AddressedTypeRef, ByteSize, FunctionID, TypeID, TypeRef};
 use crate::root::shared::types::Type;
 use crate::root::unrandom::new_hashmap;
 use crate::root::POINTER_SIZE;
+use derive_new::new;
+use std::collections::HashMap;
 
 #[derive(Debug)]
 enum NameTreeEntry {
@@ -58,15 +58,16 @@ impl TopLevelNameTree {
 }
 
 /// Tables containing all global, unchanging definitions from name resolution step
-pub struct GlobalDefinitionTable {
+pub struct GlobalTable {
     id_counter: isize,
     type_definitions: HashMap<TypeID, Box<dyn Type>>,
     impl_definitions: HashMap<TypeID, HashMap<String, FunctionID>>,
     function_signatures: HashMap<FunctionID, FunctionSignature>,
-    inline_functions: HashMap<FunctionID, InlineFunctionGenerator>,
     name_table: TopLevelNameTree,
     builtin_type_name_table: HashMap<String, TypeID>,
     builtin_function_name_table: HashMap<String, FunctionID>,
+    builtin_inline_functions: HashMap<FunctionID, InlineFnGenerator>,
+    scope: Scope,
 }
 
 pub enum NameResult {
@@ -75,24 +76,29 @@ pub enum NameResult {
     Variable(AddressedTypeRef),
 }
 
-impl Default for GlobalDefinitionTable {
+impl Default for GlobalTable {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl GlobalDefinitionTable {
-    pub fn new() -> GlobalDefinitionTable {
-        GlobalDefinitionTable {
+impl GlobalTable {
+    pub fn new() -> GlobalTable {
+        GlobalTable {
             id_counter: 2,
-            type_definitions: new_hashmap(),
-            impl_definitions: new_hashmap(),
-            function_signatures: new_hashmap(),
-            inline_functions: Default::default(),
+            type_definitions: HashMap::new(),
+            impl_definitions: HashMap::new(),
+            function_signatures: HashMap::new(),
             name_table: Default::default(),
             builtin_type_name_table: Default::default(),
             builtin_function_name_table: Default::default(),
+            builtin_inline_functions: Default::default(),
+            scope: Default::default(),
         }
+    }
+
+    pub fn scope_namespace(&mut self, scope: Scope) {
+        self.scope = scope;
     }
 
     /// Registers a builtin type
@@ -134,7 +140,8 @@ impl GlobalDefinitionTable {
     pub fn register_inline_function(&mut self, inline: &dyn BuiltinInlineFunction) {
         self.function_signatures
             .insert(inline.id(), inline.signature());
-        self.inline_functions.insert(inline.id(), inline.inline());
+        self.builtin_inline_functions
+            .insert(inline.id(), inline.inline());
 
         if let Some(parent) = inline.parent_type() {
             self.get_impl_mut(parent)
@@ -474,9 +481,9 @@ impl GlobalDefinitionTable {
     pub fn get_function(
         &self,
         function: FunctionID,
-    ) -> (&FunctionSignature, Option<&InlineFunctionGenerator>) {
+    ) -> (&FunctionSignature, Option<&InlineFnGenerator>) {
         let signature = self.get_function_signature(function);
-        let inline = self.inline_functions.get(&function);
+        let inline = self.builtin_inline_functions.get(&function);
         (signature, inline)
     }
 }

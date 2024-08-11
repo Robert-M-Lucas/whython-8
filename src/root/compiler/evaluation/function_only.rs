@@ -4,7 +4,7 @@ use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::evaluable_errors::EvalErrs;
 use crate::root::errors::evaluable_errors::EvalErrs::ExpectedFunctionName;
 use crate::root::errors::WErr;
-use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable, NameResult};
+use crate::root::name_resolver::name_resolvers::{GlobalTable, NameResult};
 use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, EvaluableTokens};
 use crate::root::shared::common::FunctionID;
 
@@ -13,7 +13,7 @@ pub fn compile_evaluable_function_only<'a>(
     fid: FunctionID,
     name: &'a EvaluableToken,
     local_variables: &mut LocalVariableTable,
-    global_table: &mut GlobalDefinitionTable,
+    global_table: &mut GlobalTable,
     global_tracker: &mut GlobalTracker,
 ) -> Result<(Option<&'a EvaluableToken>, FunctionID, String), WErr> {
     Ok(match name.token() {
@@ -23,7 +23,10 @@ pub fn compile_evaluable_function_only<'a>(
                 _ => return WErr::ne(ExpectedFunctionName, name.location().clone()),
             }
         }
-        EvaluableTokens::StaticAccess(inner, access) => {
+        EvaluableTokens::StaticAccess {
+            parent: inner,
+            section: access,
+        } => {
             let inner_type = compile_evaluable_type_only(
                 fid,
                 inner,
@@ -45,7 +48,10 @@ pub fn compile_evaluable_function_only<'a>(
 
             (None, function, access.name().clone())
         }
-        EvaluableTokens::DynamicAccess(inner, access) => {
+        EvaluableTokens::DynamicAccess {
+            parent: inner,
+            section: access,
+        } => {
             let inner_type = compile_evaluable_type_only(
                 fid,
                 inner,

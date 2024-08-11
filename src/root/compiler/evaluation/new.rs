@@ -15,7 +15,7 @@ use crate::root::errors::evaluable_errors::EvalErrs;
 use crate::root::errors::evaluable_errors::EvalErrs::{ExpectedNotNone, WrongAttributeNameInInit};
 use crate::root::errors::name_resolver_errors::NRErrs;
 use crate::root::errors::WErr;
-use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable, NameResult};
+use crate::root::name_resolver::name_resolvers::{GlobalTable, NameResult};
 use crate::root::parser::location::Location;
 use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, EvaluableTokens};
 use crate::root::parser::parse_function::parse_operator::{OperatorTokens, PrefixOrInfixEx};
@@ -29,7 +29,7 @@ pub fn compile_evaluable_new(
     fid: FunctionID,
     et: &EvaluableToken,
     local_variables: &mut LocalVariableTable,
-    global_table: &mut GlobalDefinitionTable,
+    global_table: &mut GlobalTable,
     global_tracker: &mut GlobalTracker,
 ) -> Result<(String, Option<AddressedTypeRef>), WErr> {
     let ets = et.token();
@@ -276,7 +276,10 @@ pub fn compile_evaluable_new(
             )?;
             (c, return_into)
         }
-        EvaluableTokens::DynamicAccess(inner_eval, access) => {
+        EvaluableTokens::DynamicAccess {
+            parent: inner_eval,
+            section: access,
+        } => {
             let mut ab = AssemblyBuilder::new();
             let (c, inner) = compile_evaluable_reference(
                 fid,
@@ -354,13 +357,19 @@ pub fn compile_evaluable_new(
 
             (ab.finish(), Some(target))
         }
-        EvaluableTokens::StaticAccess(_, n) => {
+        EvaluableTokens::StaticAccess {
+            parent: _,
+            section: n,
+        } => {
             return WErr::ne(
                 NRErrs::CannotFindConstantAttribute(n.name().clone()),
                 n.location().clone(),
             )
         } // Accessed methods must be called
-        EvaluableTokens::FunctionCall(inner, args) => {
+        EvaluableTokens::FunctionCall {
+            function: inner,
+            args: args,
+        } => {
             let mut ab = AssemblyBuilder::new();
             let (slf, ifid, name) = function_only::compile_evaluable_function_only(
                 fid,

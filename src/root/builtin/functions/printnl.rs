@@ -1,6 +1,6 @@
 use unique_type_id::UniqueTypeId;
 
-use crate::root::builtin::{f_id, BuiltinInlineFunction, InlineFunctionGenerator};
+use crate::root::builtin::{f_id, BuiltinInlineFunction, InlineFnGenerator};
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{FunctionID, TypeID};
@@ -28,7 +28,7 @@ impl BuiltinInlineFunction for PrintNL {
         FunctionSignature::new_inline_builtin(SelfType::None, &[], None)
     }
 
-    fn inline(&self) -> InlineFunctionGenerator {
+    fn inline(&self) -> InlineFnGenerator {
         |_, _, gt, sz| -> String {
             let id = format!("{}_fstr", Self::id().string_id());
             let data = format!("{id} db `\\n`,0");

@@ -75,7 +75,7 @@ pub fn main_args(args: Args) -> Result<(), String> {
 
     print!("Resolving Names... ");
     time!(
-        let (global_table, unprocessed_functions) = resolve(toplevel_tokens)
+        let (global_table, unprocessed_functions) = resolve(toplevel_tokens, &path_storage)
         .map_err(|e| e.with_context(&path_storage).to_string())?;
     );
 

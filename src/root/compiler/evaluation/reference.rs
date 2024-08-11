@@ -4,7 +4,7 @@ use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::evaluable_errors::EvalErrs;
 use crate::root::errors::name_resolver_errors::NRErrs;
 use crate::root::errors::WErr;
-use crate::root::name_resolver::name_resolvers::{GlobalDefinitionTable, NameResult};
+use crate::root::name_resolver::name_resolvers::{GlobalTable, NameResult};
 use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, EvaluableTokens};
 use crate::root::shared::common::{AddressedTypeRef, FunctionID};
 
@@ -13,7 +13,7 @@ pub fn compile_evaluable_reference(
     fid: FunctionID,
     et: &EvaluableToken,
     local_variables: &mut LocalVariableTable,
-    global_table: &mut GlobalDefinitionTable,
+    global_table: &mut GlobalTable,
     global_tracker: &mut GlobalTracker,
 ) -> Result<(String, Option<AddressedTypeRef>), WErr> {
     let ets = et.token();
@@ -45,18 +45,23 @@ pub fn compile_evaluable_reference(
         EvaluableTokens::PrefixOperator(_, _) => {
             compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?
         }
-        EvaluableTokens::DynamicAccess(_, _) => {
-            compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?
-        }
-        EvaluableTokens::StaticAccess(_, n) => {
+        EvaluableTokens::DynamicAccess {
+            parent: _,
+            section: _,
+        } => compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?,
+        EvaluableTokens::StaticAccess {
+            parent: _,
+            section: n,
+        } => {
             return WErr::ne(
                 NRErrs::CannotFindConstantAttribute(n.name().clone()),
                 n.location().clone(),
             )
         } // Accessed methods must be called
-        EvaluableTokens::FunctionCall(_, _) => {
-            compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?
-        }
+        EvaluableTokens::FunctionCall {
+            function: _,
+            args: _,
+        } => compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?,
         EvaluableTokens::StructInitialiser(_struct_init) => {
             compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?
         }

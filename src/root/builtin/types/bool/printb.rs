@@ -1,5 +1,5 @@
 use crate::root::builtin::types::bool::BoolType;
-use crate::root::builtin::{f_id, BuiltinInlineFunction, InlineFunctionGenerator};
+use crate::root::builtin::{f_id, BuiltinInlineFunction, InlineFnGenerator};
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{FunctionID, LocalAddress, TypeID};
@@ -32,7 +32,7 @@ impl BuiltinInlineFunction for PrintB {
         )
     }
 
-    fn inline(&self) -> InlineFunctionGenerator {
+    fn inline(&self) -> InlineFnGenerator {
         |args: &[LocalAddress], _, gt, sz| -> String {
             let id_false = format!("{}_f_fstr", Self::id().string_id());
             let id_true = format!("{}_t_fstr", Self::id().string_id());

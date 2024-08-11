@@ -1,5 +1,5 @@
 use crate::root::builtin::types::bool::BoolType;
-use crate::root::builtin::{f_id, BuiltinInlineFunction, InlineFunctionGenerator};
+use crate::root::builtin::{f_id, BuiltinInlineFunction, InlineFnGenerator};
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::parser::parse_parameters::SelfType;
@@ -28,7 +28,7 @@ impl BuiltinInlineFunction for NullFunction {
         )
     }
 
-    fn inline(&self) -> InlineFunctionGenerator {
+    fn inline(&self) -> InlineFnGenerator {
         |_, return_into: Option<LocalAddress>, _, _| -> String {
             let return_into = return_into.unwrap();
             format!("    mov qword {return_into}, 0\n")
@@ -80,7 +80,7 @@ impl BuiltinInlineFunction for IsNullFunction {
         )
     }
 
-    fn inline(&self) -> InlineFunctionGenerator {
+    fn inline(&self) -> InlineFnGenerator {
         |args: &[LocalAddress], return_into, gt, _| -> String {
             let jmp_false = gt.get_unique_tag(IsNullFunction::const_id());
             let jmp_end = gt.get_unique_tag(IsNullFunction::const_id());

@@ -33,9 +33,18 @@ pub fn temp_from_token(s: Span, token: EvaluableTokens) -> TempEvaluableTokensOn
 #[derive(Debug)]
 pub enum EvaluableTokens {
     Name(SimpleNameToken, Option<SimpleNameToken>),
-    StaticAccess(Box<EvaluableToken>, SimpleNameToken),
-    DynamicAccess(Box<EvaluableToken>, SimpleNameToken),
-    FunctionCall(Box<EvaluableToken>, Vec<EvaluableToken>),
+    StaticAccess {
+        parent: Box<EvaluableToken>,
+        section: SimpleNameToken,
+    },
+    DynamicAccess {
+        parent: Box<EvaluableToken>,
+        section: SimpleNameToken,
+    },
+    FunctionCall {
+        function: Box<EvaluableToken>,
+        args: Vec<EvaluableToken>,
+    },
     Literal(LiteralToken),
     StructInitialiser(StructInitToken),
     InfixOperator(Box<EvaluableToken>, OperatorToken, Box<EvaluableToken>),
@@ -120,12 +129,14 @@ impl FullNameTokens {
     pub fn into_evaluable_token(self) -> EvaluableTokens {
         match self {
             FullNameTokens::Name(n, c) => EvaluableTokens::Name(n, c),
-            FullNameTokens::StaticAccess(e, n) => {
-                EvaluableTokens::StaticAccess(b!(e.into_evaluable()), n)
-            }
-            FullNameTokens::DynamicAccess(e, n) => {
-                EvaluableTokens::DynamicAccess(b!(e.into_evaluable()), n)
-            }
+            FullNameTokens::StaticAccess(e, n) => EvaluableTokens::StaticAccess {
+                parent: b!(e.into_evaluable()),
+                section: n,
+            },
+            FullNameTokens::DynamicAccess(e, n) => EvaluableTokens::DynamicAccess {
+                parent: b!(e.into_evaluable()),
+                section: n,
+            },
         }
     }
 }
@@ -372,7 +383,10 @@ pub fn parse_evaluable<'a, 'b>(
                     TempEvaluableTokensTwo::EvaluableToken(e) => new_evaluables.push((
                         TempEvaluableTokensTwo::EvaluableToken(EvaluableToken {
                             location: e.location.clone(),
-                            token: EvaluableTokens::StaticAccess(b!(e), n),
+                            token: EvaluableTokens::StaticAccess {
+                                parent: b!(e),
+                                section: n,
+                            },
                         }),
                         t1_span,
                     )),
@@ -396,7 +410,10 @@ pub fn parse_evaluable<'a, 'b>(
                     TempEvaluableTokensTwo::EvaluableToken(e) => new_evaluables.push((
                         TempEvaluableTokensTwo::EvaluableToken(EvaluableToken {
                             location: e.location.clone(),
-                            token: EvaluableTokens::DynamicAccess(b!(e), n),
+                            token: EvaluableTokens::DynamicAccess {
+                                parent: b!(e),
+                                section: n,
+                            },
                         }),
                         t1_span,
                     )),
@@ -405,13 +422,13 @@ pub fn parse_evaluable<'a, 'b>(
             TempEvaluableTokensOne::FunctionCall(n, c, a) => new_evaluables.push((
                 TempEvaluableTokensTwo::EvaluableToken(EvaluableToken {
                     location: n.location().clone(),
-                    token: EvaluableTokens::FunctionCall(
-                        b!(EvaluableToken {
+                    token: EvaluableTokens::FunctionCall {
+                        function: b!(EvaluableToken {
                             location: n.location().clone(),
                             token: EvaluableTokens::Name(n, c)
                         }),
-                        a,
-                    ),
+                        args: a,
+                    },
                 }),
                 t1_span,
             )),
@@ -433,13 +450,16 @@ pub fn parse_evaluable<'a, 'b>(
                     TempEvaluableTokensTwo::EvaluableToken(e) => new_evaluables.push((
                         TempEvaluableTokensTwo::EvaluableToken(EvaluableToken {
                             location: e.location.clone(),
-                            token: EvaluableTokens::FunctionCall(
-                                b!(EvaluableToken {
+                            token: EvaluableTokens::FunctionCall {
+                                function: b!(EvaluableToken {
                                     location: n.location().clone(),
-                                    token: EvaluableTokens::DynamicAccess(b!(e), n)
+                                    token: EvaluableTokens::DynamicAccess {
+                                        parent: b!(e),
+                                        section: n
+                                    }
                                 }),
-                                a,
-                            ),
+                                args: a,
+                            },
                         }),
                         t1_span,
                     )),
@@ -463,13 +483,16 @@ pub fn parse_evaluable<'a, 'b>(
                     TempEvaluableTokensTwo::EvaluableToken(e) => new_evaluables.push((
                         TempEvaluableTokensTwo::EvaluableToken(EvaluableToken {
                             location: e.location.clone(),
-                            token: EvaluableTokens::FunctionCall(
-                                b!(EvaluableToken {
+                            token: EvaluableTokens::FunctionCall {
+                                function: b!(EvaluableToken {
                                     location: n.location().clone(),
-                                    token: EvaluableTokens::StaticAccess(b!(e), n)
+                                    token: EvaluableTokens::StaticAccess {
+                                        parent: b!(e),
+                                        section: n
+                                    }
                                 }),
-                                a,
-                            ),
+                                args: a,
+                            },
                         }),
                         t1_span,
                     )),

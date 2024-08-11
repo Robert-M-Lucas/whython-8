@@ -8,7 +8,7 @@ use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::evaluable_errors::EvalErrs;
 use crate::root::errors::WErr;
-use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
+use crate::root::name_resolver::name_resolvers::GlobalTable;
 use crate::root::parser::location::Location;
 use crate::root::parser::parse_function::parse_evaluable::EvaluableToken;
 use crate::root::parser::parse_parameters::SelfType;
@@ -26,7 +26,7 @@ pub fn call_function(
     name: &str,
     arguments: &[Either<&EvaluableToken, AddressedTypeRef>],
     return_address: Option<AddressedTypeRef>,
-    global_table: &mut GlobalDefinitionTable,
+    global_table: &mut GlobalTable,
     local_variables: &mut LocalVariableTable,
     global_tracker: &mut GlobalTracker,
 ) -> Result<(String, Option<AddressedTypeRef>), WErr> {

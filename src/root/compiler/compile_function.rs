@@ -10,7 +10,7 @@ use crate::root::compiler::evaluation::reference::compile_evaluable_reference;
 use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::WErr;
-use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
+use crate::root::name_resolver::name_resolvers::GlobalTable;
 use crate::root::parser::parse_function::parse_line::LineTokens;
 use crate::root::parser::parse_function::FunctionToken;
 use crate::root::shared::common::AddressedTypeRef;
@@ -21,7 +21,7 @@ use crate::root::utils::warn;
 pub fn compile_function(
     fid: FunctionID,
     function: FunctionToken,
-    global_table: &mut GlobalDefinitionTable,
+    global_table: &mut GlobalTable,
     global_tracker: &mut GlobalTracker,
 ) -> Result<String, WErr> {
     let mut local_variables = LocalVariableTable::new();
@@ -104,7 +104,7 @@ fn recursively_compile_lines(
     return_variable: &Option<AddressedTypeRef>,
     break_tag: &Option<&str>,
     local_variables: &mut LocalVariableTable,
-    global_table: &mut GlobalDefinitionTable,
+    global_table: &mut GlobalTable,
     global_tracker: &mut GlobalTracker,
 ) -> Result<(String, bool), WErr> {
     local_variables.enter_scope();

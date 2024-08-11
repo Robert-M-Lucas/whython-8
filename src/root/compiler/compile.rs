@@ -8,7 +8,7 @@ use std::time::{Duration, Instant};
 use crate::root::compiler::compile_function::compile_function;
 use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::errors::WErr;
-use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
+use crate::root::name_resolver::name_resolvers::GlobalTable;
 use crate::root::parser::parse_function::FunctionToken;
 use crate::root::parser::path_storage::PathStorage;
 use crate::root::shared::common::FunctionID;
@@ -16,7 +16,7 @@ use crate::root::unrandom::{new_hashmap, new_hashset};
 
 /// Compiles the entire program. Returns assembly.
 pub fn compile(
-    mut global_table: GlobalDefinitionTable,
+    mut global_table: GlobalTable,
     unprocessed_functions: HashMap<FunctionID, FunctionToken>,
     path_storage: &PathStorage,
 ) -> Result<String, WErr> {

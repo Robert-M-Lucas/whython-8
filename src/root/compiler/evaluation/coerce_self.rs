@@ -2,7 +2,7 @@ use crate::root::builtin::core::referencing::set_reference;
 use crate::root::compiler::assembly::utils::copy_from_indirect;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::WErr;
-use crate::root::name_resolver::name_resolvers::GlobalDefinitionTable;
+use crate::root::name_resolver::name_resolvers::GlobalTable;
 use crate::root::parser::location::Location;
 use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{AddressedTypeRef, Indirection};
@@ -10,7 +10,7 @@ use crate::root::shared::common::{AddressedTypeRef, Indirection};
 pub fn coerce_self(
     current_self: AddressedTypeRef,
     self_type: SelfType,
-    global_table: &mut GlobalDefinitionTable,
+    global_table: &mut GlobalTable,
     local_variables: &mut LocalVariableTable,
 ) -> Result<(String, AddressedTypeRef), WErr> {
     Ok(match self_type {

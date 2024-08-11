@@ -1,11 +1,15 @@
 use crate::root::errors::parser_errors::create_custom_error;
 use crate::root::errors::WErr;
+use crate::root::parser::location::Location;
 use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
 use crate::root::utils::identify_first_last::IdentifyLast;
+use derive_getters::Getters;
+use derive_new::new;
 use nom::character::complete::anychar;
 use nom::InputTake;
 use std::collections::HashMap;
 use std::fs;
+
 #[derive(Hash, Copy, Clone, Debug, Eq, PartialEq)]
 pub struct FileID(usize);
 
@@ -18,7 +22,8 @@ impl FileID {
 #[derive(Hash, Copy, Clone, Debug, Eq, PartialEq)]
 pub struct FolderID(usize);
 
-struct CodeFolder {
+#[derive(Getters)]
+pub struct CodeFolder {
     parent: FolderID,
     child_folders: HashMap<String, FolderID>,
     child_files: HashMap<String, FileID>,
@@ -36,12 +41,18 @@ impl CodeFolder {
     }
 }
 
-struct CodeFile {
+#[derive(Clone, Default, Getters, new)]
+pub struct Scope {
+    files_used: Vec<(FileID, Location)>,
+    files_imported: Vec<(FileID, Location)>,
+    folders_imported: Vec<(FolderID, Location)>,
+}
+
+#[derive(Getters)]
+pub struct CodeFile {
     parent: FolderID,
     current: String,
-    use_files: Vec<FileID>,
-    imported_files: Vec<FileID>,
-    imported_folders: Vec<FolderID>, // Use folder converts to import subfiles + folders
+    scope: Scope,
 }
 
 pub struct PathStorage {
@@ -66,9 +77,7 @@ impl PathStorage {
                 files.push(CodeFile {
                     parent: current,
                     current: section.to_string(),
-                    use_files: vec![],
-                    imported_files: vec![],
-                    imported_folders: vec![],
+                    scope: Scope::default(),
                 });
             } else {
                 folders.push(CodeFolder {
@@ -84,20 +93,24 @@ impl PathStorage {
         Ok(PathStorage { folders, files })
     }
 
-    fn get_file(&self, file_id: FileID) -> &CodeFile {
+    #[inline(always)]
+    pub fn get_file(&self, file_id: FileID) -> &CodeFile {
         &self.files[file_id.0]
     }
 
     #[allow(dead_code)]
-    fn get_file_mut(&mut self, file_id: FileID) -> &mut CodeFile {
+    #[inline(always)]
+    pub fn get_file_mut(&mut self, file_id: FileID) -> &mut CodeFile {
         &mut self.files[file_id.0]
     }
 
-    fn get_folder(&self, folder_id: FolderID) -> &CodeFolder {
+    #[inline(always)]
+    pub fn get_folder(&self, folder_id: FolderID) -> &CodeFolder {
         &self.folders[folder_id.0]
     }
 
-    fn get_folder_mut(&mut self, folder_id: FolderID) -> &mut CodeFolder {
+    #[inline(always)]
+    pub fn get_folder_mut(&mut self, folder_id: FolderID) -> &mut CodeFolder {
         &mut self.folders[folder_id.0]
     }
 
@@ -125,11 +138,11 @@ impl PathStorage {
         &mut self,
         current_file: FileID,
         is_use: bool,
-        path: Span<'a>,
+        path_span: Span<'a>,
     ) -> ParseResult<(), Vec<FileID>, ErrorTree<'a>> {
-        let mut path_rem = path;
+        let mut path_span = path_span;
 
-        let Some(last) = path_rem.chars().last() else {
+        let Some(last) = path_span.chars().last() else {
             todo!()
         };
         // let wildcard = if last == '*' {
@@ -140,10 +153,10 @@ impl PathStorage {
         //     false
         // };
 
-        let is_folder = if let Some(last) = path_rem.chars().last() {
+        let is_folder = if let Some(last) = path_span.chars().last() {
             if last == '/' {
-                let (_, p) = path_rem.take_split(path_rem.len() - 1);
-                path_rem = p;
+                let (_, p) = path_span.take_split(path_span.len() - 1);
+                path_span = p;
                 true
             } else {
                 false
@@ -152,10 +165,10 @@ impl PathStorage {
             false
         };
 
-        let is_absolute = if let Some(last) = path_rem.chars().next() {
+        let is_absolute = if let Some(last) = path_span.chars().next() {
             if last == '/' {
-                let (p, _) = path_rem.take_split(1);
-                path_rem = p;
+                let (p, _) = path_span.take_split(1);
+                path_span = p;
                 true
             } else {
                 false
@@ -163,6 +176,8 @@ impl PathStorage {
         } else {
             false
         };
+
+        let mut path_rem = path_span;
 
         // if wildcard && !is_folder {
         //     todo!()
@@ -192,14 +207,15 @@ impl PathStorage {
             self.get_file(current_file).parent
         };
 
-        for (is_last, section) in path.split_terminator('/').identify_last() {
+        for (is_last, section) in path_span.split_terminator('/').identify_last() {
             if is_last {
                 if is_folder {
                     let folder = self.add_folder(section, current);
                     if !is_use {
                         self.get_file_mut(current_file)
-                            .imported_folders
-                            .push(folder);
+                            .scope
+                            .folders_imported
+                            .push((folder, Location::from_span(&path_span)));
                     }
                     let folder_path = self.reconstruct_folder(folder);
                     let mut new_files = Vec::new();
@@ -230,21 +246,27 @@ impl PathStorage {
                             new_files.push(file);
                         }
                         if is_use {
-                            self.get_file_mut(current_file).imported_files.push(file);
+                            self.get_file_mut(current_file)
+                                .scope
+                                .files_imported
+                                .push((file, Location::from_span(&path_span)));
                         }
                     }
 
                     return Ok(((), new_files));
                 } else {
                     let (file, is_new) = self.add_file(section, current);
-                    if file == current_file {
-                        todo!();
-                    }
 
                     if is_use {
-                        self.get_file_mut(current_file).use_files.push(file);
+                        self.get_file_mut(current_file)
+                            .scope
+                            .files_used
+                            .push((file, Location::from_span(&path_span)));
                     } else {
-                        self.get_file_mut(current_file).imported_files.push(file);
+                        self.get_file_mut(current_file)
+                            .scope
+                            .files_imported
+                            .push((file, Location::from_span(&path_span)));
                     }
 
                     return if is_new {
@@ -268,9 +290,7 @@ impl PathStorage {
             self.files.push(CodeFile {
                 parent,
                 current: name.to_string(),
-                use_files: vec![],
-                imported_files: vec![],
-                imported_folders: vec![],
+                scope: Scope::default(),
             });
             let id = FileID(self.files.len() - 1);
             self.get_folder_mut(parent)
