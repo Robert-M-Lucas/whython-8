@@ -1,9 +1,8 @@
+use std::collections::HashMap;
+use std::time::{Duration, Instant};
+
 #[cfg(debug_assertions)]
 use itertools::Itertools;
-use std::collections::HashMap;
-use std::io::{stdout, Write};
-use std::thread;
-use std::time::{Duration, Instant};
 
 use crate::root::compiler::compile_function::compile_function;
 use crate::root::compiler::global_tracker::GlobalTracker;
@@ -43,6 +42,16 @@ pub fn compile(
         let Some(current_function_token) = unprocessed_functions.remove(&current_function) else {
             continue; // Inline function
         };
+
+        let file_id = current_function_token.location().file_id().unwrap();
+        global_table.scope_namespace(
+            file_id,
+            global_tracker
+                .path_storage()
+                .get_file(file_id)
+                .scope()
+                .clone(),
+        );
 
         let compiled = compile_function(
             current_function,

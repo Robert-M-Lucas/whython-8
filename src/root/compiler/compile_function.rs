@@ -31,7 +31,7 @@ pub fn compile_function(
     let return_type = if fid.is_main() { None } else { return_type };
 
     let return_type = if let Some(t) = return_type {
-        Some(global_table.resolve_to_type_ref(&t)?)
+        Some(global_table.resolve_to_type_ref(&t, None)?)
     } else {
         None
     };
@@ -39,7 +39,7 @@ pub fn compile_function(
     let mut param_address = LocalAddress(16);
 
     for (param_name, param_type) in parameters {
-        let t = global_table.resolve_to_type_ref(&param_type)?;
+        let t = global_table.resolve_to_type_ref(&param_type, None)?;
 
         local_variables.add_existing(
             param_name.name().clone(),
@@ -121,6 +121,7 @@ fn recursively_compile_lines(
                     name.name().clone(),
                     type_name,
                     local_variables,
+                    global_tracker,
                 )?;
                 contents.other(&compile_evaluable_into(
                     fid,

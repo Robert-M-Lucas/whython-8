@@ -1,6 +1,12 @@
+use derive_getters::Getters;
+use std::collections::HashMap;
+
+use itertools::Itertools;
+
 use crate::root::builtin::{BuiltinInlineFunction, InlineFnGenerator};
 use crate::root::compiler::assembly::heap::free_function;
 use crate::root::compiler::assembly::null::{is_null_function, null_function};
+use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::name_resolver_errors::NRErrs;
 use crate::root::errors::WErr;
@@ -13,13 +19,10 @@ use crate::root::parser::parse_function::parse_operator::{OperatorToken, PrefixO
 use crate::root::parser::parse_function::FunctionToken;
 use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::parser::parse_struct::StructToken;
-use crate::root::parser::path_storage::{FileID, FolderID, Scope};
+use crate::root::parser::path_storage::{FileID, Scope};
 use crate::root::shared::common::{AddressedTypeRef, ByteSize, FunctionID, TypeID, TypeRef};
 use crate::root::shared::types::Type;
-use crate::root::unrandom::new_hashmap;
 use crate::root::POINTER_SIZE;
-use derive_new::new;
-use std::collections::HashMap;
 
 #[derive(Debug)]
 enum NameTreeEntry {
@@ -52,12 +55,19 @@ struct TopLevelNameTree {
 impl TopLevelNameTree {
     pub fn get_tree_mut(&mut self, file_id: FileID) -> &mut NameTree {
         self.table.entry(file_id).or_default();
-
         self.table.get_mut(&file_id).unwrap()
     }
 }
 
+pub enum NameResult {
+    Function(FunctionID),
+    Type(TypeID),
+    Variable(AddressedTypeRef),
+    File(FileID),
+}
+
 /// Tables containing all global, unchanging definitions from name resolution step
+// #[derive(Getters)]
 pub struct GlobalTable {
     id_counter: isize,
     type_definitions: HashMap<TypeID, Box<dyn Type>>,
@@ -67,13 +77,8 @@ pub struct GlobalTable {
     builtin_type_name_table: HashMap<String, TypeID>,
     builtin_function_name_table: HashMap<String, FunctionID>,
     builtin_inline_functions: HashMap<FunctionID, InlineFnGenerator>,
+    current_file: FileID,
     scope: Scope,
-}
-
-pub enum NameResult {
-    Function(FunctionID),
-    Type(TypeID),
-    Variable(AddressedTypeRef),
 }
 
 impl Default for GlobalTable {
@@ -93,12 +98,40 @@ impl GlobalTable {
             builtin_type_name_table: Default::default(),
             builtin_function_name_table: Default::default(),
             builtin_inline_functions: Default::default(),
+            current_file: FileID::main_file(),
             scope: Default::default(),
         }
     }
 
-    pub fn scope_namespace(&mut self, scope: Scope) {
+    pub fn scope_namespace(&mut self, current_file: FileID, scope: Scope) {
+        self.current_file = current_file;
         self.scope = scope;
+    }
+
+    pub fn get_file_from_folder(
+        &self,
+        folder: &str,
+        file: &str,
+        global_tracker: &GlobalTracker,
+    ) -> Option<FileID> {
+        self.scope
+            .folders_imported()
+            .iter()
+            .find_map(|(f, _)| {
+                if global_tracker.path_storage().get_folder(*f).current() == folder {
+                    Some(*f)
+                } else {
+                    None
+                }
+            })
+            .and_then(|f| {
+                global_tracker
+                    .path_storage()
+                    .get_folder(f)
+                    .child_files()
+                    .get(file)
+                    .copied()
+            })
     }
 
     /// Registers a builtin type
@@ -184,7 +217,12 @@ impl GlobalTable {
         ft: &FunctionToken,
         containing_class: Option<TypeID>,
     ) -> FunctionID {
-        let id = if ft.name().name() == "main" {
+        let id = if ft.name().name() == "main"
+            && ft
+                .location()
+                .file_id()
+                .is_some_and(|f| f == FileID::main_file())
+        {
             FunctionID(0)
         } else {
             self.id_counter += 1;
@@ -240,7 +278,11 @@ impl GlobalTable {
     }
 
     /// Takes a name and resolves it to a type (or error)
-    pub fn resolve_to_type_ref(&mut self, name: &UnresolvedTypeRefToken) -> Result<TypeRef, WErr> {
+    pub fn resolve_to_type_ref(
+        &mut self,
+        name: &UnresolvedTypeRefToken,
+        from_imported_file: Option<FileID>,
+    ) -> Result<TypeRef, WErr> {
         let (indirection, full_name) = (name.indirection(), name.inner());
 
         fn find_error_point(name: &FullNameToken, prev_location: &Location) -> Location {
@@ -275,21 +317,33 @@ impl GlobalTable {
             })
         };
 
-        // TODO
-        if let Some(r) = process_tree(
-            self.name_table
-                .get_tree_mut(full_name.location().file_id().unwrap()),
-        ) {
+        // Search in imported file
+        if let Some(import_file) = from_imported_file {
+            debug_assert!(self
+                .scope
+                .files_imported()
+                .iter()
+                .map(|(f, _)| *f)
+                .contains(&import_file));
+
+            if let Some(r) = process_tree(self.name_table.get_tree_mut(import_file)) {
+                return r;
+            }
+
+            return WErr::ne(
+                NRErrs::TypeNotFound(name.name().clone()),
+                full_name.location().clone(),
+            );
+        }
+
+        // Search current file
+        if let Some(r) = process_tree(self.name_table.get_tree_mut(self.current_file)) {
             return r;
         }
 
-        for (_, tree) in self
-            .name_table
-            .table
-            .iter()
-            .filter(|(p, _)| **p != full_name.location().file_id().unwrap())
-        {
-            if let Some(r) = process_tree(tree) {
+        // Used files
+        for (use_file, _) in self.scope.files_used() {
+            if let Some(r) = process_tree(self.name_table.get_tree_mut(*use_file)) {
                 return r;
             }
         }
@@ -337,7 +391,7 @@ impl GlobalTable {
         t: &UnresolvedTypeRefToken,
         local_variable_table: &mut LocalVariableTable,
     ) -> Result<AddressedTypeRef, WErr> {
-        let t = self.resolve_to_type_ref(t)?;
+        let t = self.resolve_to_type_ref(t, None)?;
         Ok(self.add_local_variable_unnamed_base(t, local_variable_table))
     }
 
@@ -347,8 +401,9 @@ impl GlobalTable {
         name: String,
         t: &UnresolvedTypeRefToken,
         local_variable_table: &mut LocalVariableTable,
+        global_tracker: &GlobalTracker,
     ) -> Result<AddressedTypeRef, WErr> {
-        let t = self.resolve_to_type_ref(t)?;
+        let t = self.resolve_to_type_ref(t, None)?;
         let size = self.get_size(&t);
         let address = local_variable_table.add_new_unnamed(size);
         let address = AddressedTypeRef::new(address, t);
@@ -383,17 +438,33 @@ impl GlobalTable {
         )
     }
 
+    pub fn get_imported_file(
+        &self,
+        name: &SimpleNameToken,
+        global_tracker: &GlobalTracker,
+    ) -> Option<FileID> {
+        for (imported_file, _) in self.scope.files_imported() {
+            if global_tracker
+                .path_storage()
+                .get_file(*imported_file)
+                .current()
+                == name.name()
+            {
+                return Some(*imported_file);
+            }
+        }
+        None
+    }
+
     /// Returns what a name resolves to
     pub fn resolve_name(
         &mut self,
         name: &SimpleNameToken,
+        from_imported_file: Option<FileID>,
         _containing_class: Option<&SimpleNameToken>,
         local_variable_table: &LocalVariableTable,
+        global_tracker: &GlobalTracker,
     ) -> Result<NameResult, WErr> {
-        if let Some(variable) = local_variable_table.get(name.name()) {
-            return Ok(NameResult::Variable(variable));
-        }
-
         let process_tree = |tree: &NameTree| -> Option<_> {
             tree.get_entry(name.name()).map(|val| match val {
                 NameTreeEntry::Type(t) => Ok(NameResult::Type(*t)),
@@ -401,38 +472,72 @@ impl GlobalTable {
             })
         };
 
-        // TODO
-        if let Some(r) = process_tree(
-            self.name_table
-                .get_tree_mut(name.location().file_id().unwrap()),
-        ) {
+        let failed_to_find_error = || {
+            WErr::ne(
+                NRErrs::CannotFindName(name.name().clone()),
+                name.location().clone(),
+            )
+        };
+
+        // Search in imported file
+        if let Some(import_file) = from_imported_file {
+            debug_assert!(
+                self.scope
+                    .files_imported()
+                    .iter()
+                    .map(|(f, _)| *f)
+                    .contains(&import_file)
+                || 
+                self.scope
+                    .folders_imported()
+                    .iter()
+                    .any(|(f, _)| global_tracker
+                        .path_storage()
+                        .get_folder(*f)
+                        .child_files()
+                        .values()
+                        .contains(&import_file))
+            );
+
+            if let Some(r) = process_tree(self.name_table.get_tree_mut(import_file)) {
+                return r;
+            }
+
+            return failed_to_find_error();
+        }
+
+        if let Some(variable) = local_variable_table.get(name.name()) {
+            return Ok(NameResult::Variable(variable));
+        }
+
+        // Own tree
+        if let Some(r) = process_tree(self.name_table.get_tree_mut(self.current_file)) {
             return r;
         }
 
-        // TODO
-        for (_, tree) in self
-            .name_table
-            .table
-            .iter()
-            .filter(|(p, _)| **p != name.location().file_id().unwrap())
-        {
-            if let Some(r) = process_tree(tree) {
+        // Used files
+        for (use_file, _) in self.scope.files_used() {
+            if let Some(r) = process_tree(self.name_table.get_tree_mut(*use_file)) {
                 return r;
             }
         }
 
+        // Imported files
+        if let Some(file) = self.get_imported_file(name, global_tracker) {
+            return Ok(NameResult::File(file));
+        }
+
+        // Builtin types
         if let Some(r) = self.builtin_type_name_table.get(name.name()) {
             return Ok(NameResult::Type(*r));
         }
 
+        // Builtin functions
         if let Some(r) = self.builtin_function_name_table.get(name.name()) {
             return Ok(NameResult::Function(*r));
         }
 
-        WErr::ne(
-            NRErrs::CannotFindName(name.name().clone()),
-            name.location().clone(),
-        )
+        failed_to_find_error()
     }
 
     /// Gets the corresponding function for an operator

@@ -36,7 +36,13 @@ pub fn compile_evaluable_new(
 
     Ok(match ets {
         EvaluableTokens::Name(name, containing_class) => {
-            match global_table.resolve_name(name, containing_class.as_ref(), local_variables)? {
+            match global_table.resolve_name(
+                name,
+                None,
+                containing_class.as_ref(),
+                local_variables,
+                global_tracker,
+            )? {
                 NameResult::Function(_) => {
                     return WErr::ne(
                         EvalErrs::FunctionMustBeCalled(name.name().clone()),
@@ -46,6 +52,12 @@ pub fn compile_evaluable_new(
                 NameResult::Type(_) => {
                     return WErr::ne(
                         EvalErrs::CannotEvalStandaloneType(name.name().clone()),
+                        name.location().clone(),
+                    )
+                }
+                NameResult::File(_) => {
+                    return WErr::ne(
+                        EvalErrs::CannotEvaluateStandaloneImportedFile(name.name().clone()),
                         name.location().clone(),
                     )
                 }
@@ -422,7 +434,7 @@ pub fn compile_evaluable_new(
             (ab.finish(), return_into)
         }
         EvaluableTokens::StructInitialiser(struct_init) => {
-            let t = global_table.resolve_to_type_ref(struct_init.name())?;
+            let t = global_table.resolve_to_type_ref(struct_init.name(), None)?;
             let size = global_table.get_size(&t);
 
             let mut code = AssemblyBuilder::new();

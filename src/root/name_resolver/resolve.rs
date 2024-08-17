@@ -8,6 +8,7 @@ use crate::root::parser::parse_function::FunctionToken;
 use crate::root::parser::parse_toplevel::TopLevelTokens;
 use crate::root::parser::path_storage::{FileID, PathStorage};
 use crate::root::shared::common::FunctionID;
+use crate::root::unrandom::new_hashmap;
 use itertools::Itertools;
 use std::collections::{HashMap, HashSet};
 
@@ -21,14 +22,14 @@ pub fn resolve(
     register_builtin(&mut global_table);
 
     let mut ast = ast;
-    let mut unprocessed_functions = HashMap::new();
+    let mut unprocessed_functions = new_hashmap();
     let mut processed_files = HashSet::new();
     let mut process_order = Vec::new();
-    let f = *ast.keys().next().unwrap();
-    let (file, first) = ast.remove_entry(&f).unwrap();
+    let (file, first) = ast.remove_entry(&FileID::main_file()).unwrap();
 
     resolve_file(
         file,
+        true,
         first,
         &mut ast,
         &mut global_table,
@@ -47,6 +48,7 @@ pub fn resolve(
 
 fn resolve_file(
     file_id: FileID,
+    main_file: bool,
     tokens: Vec<TopLevelTokens>,
     ast: &mut HashMap<FileID, Vec<TopLevelTokens>>,
     global_table: &mut GlobalTable,
@@ -86,9 +88,8 @@ fn resolve_file(
         }
     }
 
-    global_table.scope_namespace(scope);
-
-    resolve_names(tokens, global_table)?;
+    global_table.scope_namespace(file_id, scope);
+    resolve_names(tokens, global_table, unprocessed_functions)?;
 
     processed_files.insert(file_id);
     process_order.pop();
@@ -112,6 +113,7 @@ fn process_if_needed(
     if let Some((file_id, tokens)) = ast.remove_entry(&file_id) {
         resolve_file(
             file_id,
+            false,
             tokens,
             ast,
             global_table,

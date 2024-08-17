@@ -1,5 +1,3 @@
-use /std/linked_list;
-
 struct LL {
     first: &Node
 }

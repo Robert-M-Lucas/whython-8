@@ -1,22 +1,8 @@
-use std/;
-
+import std/;
 
 fn main() -> int {
-    let x: LL = LL::new();
-    x.push(12);
-    x.push(7);
-    x.push(8);
-    x.print();
-    printnl();
+    std::test::foo();
 
-    printi(x.get(1));
-    printnl();
-
-    printi(x.pop());
-    printnl();
-
-    x.print();
-
-    return 8;
+    return 0;
 }
 

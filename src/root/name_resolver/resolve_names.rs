@@ -1,3 +1,4 @@
+use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::errors::evaluable_errors::EvalErrs;
 use crate::root::errors::name_resolver_errors::NRErrs;
 use crate::root::errors::WErr;
@@ -85,7 +86,8 @@ impl Type for UserType {
 pub fn resolve_names(
     ast: Vec<TopLevelTokens>,
     global_table: &mut GlobalTable,
-) -> Result<HashMap<FunctionID, FunctionToken>, WErr> {
+    unprocessed_functions: &mut HashMap<FunctionID, FunctionToken>,
+) -> Result<(), WErr> {
     let mut ast = ast;
 
     // ? User types > 1; Builtin Types < -1
@@ -107,7 +109,6 @@ pub fn resolve_names(
     }
 
     let mut unsized_final_types: HashMap<TypeID, UnsizedUserType> = new_hashmap();
-    let mut unprocessed_functions: HashMap<FunctionID, FunctionToken> = new_hashmap();
 
     for symbol in ast {
         match symbol {
@@ -117,7 +118,7 @@ pub fn resolve_names(
 
                 let mut p_attributes: Vec<(SimpleNameToken, TypeRef)> = Vec::new();
                 for (name, type_name) in attributes {
-                    let type_ref = global_table.resolve_to_type_ref(&type_name)?;
+                    let type_ref = global_table.resolve_to_type_ref(&type_name, None)?;
 
                     for (e_name, _) in &p_attributes {
                         if e_name.name() == name.name() {
@@ -140,6 +141,7 @@ pub fn resolve_names(
                     .resolve_to_type_ref(
                         &FullNameToken::new(location.clone(), FullNameTokens::Name(name, None))
                             .with_no_indirection(),
+                        None,
                     )?
                     .type_id();
 
@@ -191,5 +193,5 @@ pub fn resolve_names(
     }
 
     // (final_types, type_names, unprocessed_functions)
-    Ok(unprocessed_functions)
+    Ok(())
 }

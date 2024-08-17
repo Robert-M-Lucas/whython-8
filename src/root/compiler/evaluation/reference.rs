@@ -20,7 +20,13 @@ pub fn compile_evaluable_reference(
 
     Ok(match ets {
         EvaluableTokens::Name(name, containing_class) => {
-            match global_table.resolve_name(name, containing_class.as_ref(), local_variables)? {
+            match global_table.resolve_name(
+                name,
+                None,
+                containing_class.as_ref(),
+                local_variables,
+                global_tracker,
+            )? {
                 NameResult::Function(_) => {
                     return WErr::ne(
                         EvalErrs::FunctionMustBeCalled(name.name().clone()),
@@ -30,6 +36,12 @@ pub fn compile_evaluable_reference(
                 NameResult::Type(_) => {
                     return WErr::ne(
                         EvalErrs::CannotEvalStandaloneType(name.name().clone()),
+                        name.location().clone(),
+                    )
+                }
+                NameResult::File(_) => {
+                    return WErr::ne(
+                        EvalErrs::CannotEvaluateStandaloneImportedFile(name.name().clone()),
                         name.location().clone(),
                     )
                 }

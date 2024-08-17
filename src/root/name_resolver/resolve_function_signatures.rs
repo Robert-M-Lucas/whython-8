@@ -1,3 +1,4 @@
+use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::GlobalTable;
 use crate::root::parser::parse_function::FunctionToken;
@@ -53,7 +54,7 @@ pub fn resolve_function_signature(
     let mut args = Vec::new();
 
     let return_type = if let Some(type_name) = function_token.return_type() {
-        Some(global_table.resolve_to_type_ref(type_name)?)
+        Some(global_table.resolve_to_type_ref(type_name, None)?)
     } else {
         None
     };
@@ -61,7 +62,7 @@ pub fn resolve_function_signature(
     for (arg_name, arg_type) in function_token.parameters() {
         args.push((
             arg_name.clone(),
-            global_table.resolve_to_type_ref(arg_type)?,
+            global_table.resolve_to_type_ref(arg_type, None)?,
         ))
     }
 

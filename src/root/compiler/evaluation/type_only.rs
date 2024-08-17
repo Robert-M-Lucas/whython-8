@@ -8,7 +8,35 @@ use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::{GlobalTable, NameResult};
 use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, EvaluableTokens};
 use crate::root::parser::parse_function::parse_operator::{OperatorTokens, PrefixOrInfixEx};
+use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::shared::common::{FunctionID, Indirection, TypeRef};
+
+fn handle_name_result(name: &SimpleNameToken, name_result: NameResult) -> Result<TypeRef, WErr> {
+    Ok(match name_result {
+        NameResult::Function(_) => {
+            return WErr::ne(
+                EvalErrs::FunctionMustBeCalled(name.name().clone()),
+                name.location().clone(),
+            )
+        }
+        NameResult::Type(t) => {
+            t.immediate_single()
+            // println!("> {}", name.name());
+            // std::process::exit(123);
+            // return WErr::ne(
+            //     EvalErrs::CannotEvalStandaloneType(name.name().clone()),
+            //     name.location().clone(),
+            // )
+        }
+        NameResult::Variable(address) => address.type_ref().clone(),
+        NameResult::File(_) => {
+            return WErr::ne(
+                EvalErrs::ExpectedTypeNotImportedFile(name.name().clone()),
+                name.location().clone(),
+            )
+        }
+    })
+}
 
 /// Evaluates the type `et` evaluates to. Does not generate any assembly.
 pub fn compile_evaluable_type_only(
@@ -21,26 +49,16 @@ pub fn compile_evaluable_type_only(
     let ets = et.token();
 
     Ok(match ets {
-        EvaluableTokens::Name(name, containing_class) => {
-            match global_table.resolve_name(name, containing_class.as_ref(), local_variables)? {
-                NameResult::Function(_) => {
-                    return WErr::ne(
-                        EvalErrs::FunctionMustBeCalled(name.name().clone()),
-                        name.location().clone(),
-                    )
-                }
-                NameResult::Type(t) => {
-                    t.immediate_single()
-                    // println!("> {}", name.name());
-                    // std::process::exit(123);
-                    // return WErr::ne(
-                    //     EvalErrs::CannotEvalStandaloneType(name.name().clone()),
-                    //     name.location().clone(),
-                    // )
-                }
-                NameResult::Variable(address) => address.type_ref().clone(),
-            }
-        }
+        EvaluableTokens::Name(name, containing_class) => handle_name_result(
+            name,
+            global_table.resolve_name(
+                name,
+                None,
+                containing_class.as_ref(),
+                local_variables,
+                global_tracker,
+            )?,
+        )?,
         EvaluableTokens::Literal(literal) => {
             let tid = literal.literal().default_type();
             // TODO: Don't use 0 here
@@ -138,13 +156,54 @@ pub fn compile_evaluable_type_only(
             }
         }
         EvaluableTokens::StaticAccess {
-            parent: _,
+            parent: p,
             section: n,
         } => {
+            match p.token() {
+                EvaluableTokens::Name(file_name, containing_class) => {
+                    if let Some(file) = global_table.get_imported_file(file_name, global_tracker) {
+                        return handle_name_result(
+                            n,
+                            global_table.resolve_name(
+                                n,
+                                Some(file),
+                                containing_class.as_ref(),
+                                local_variables,
+                                global_tracker,
+                            )?,
+                        );
+                    };
+                }
+                EvaluableTokens::StaticAccess {
+                    parent,
+                    section: file_name,
+                } => {
+                    if let EvaluableTokens::Name(folder_name, containing_class) = parent.token() {
+                        if let Some(file) = global_table.get_file_from_folder(
+                            folder_name.name(),
+                            file_name.name(),
+                            global_tracker,
+                        ) {
+                            return handle_name_result(
+                                n,
+                                global_table.resolve_name(
+                                    n,
+                                    Some(file),
+                                    containing_class.as_ref(),
+                                    local_variables,
+                                    global_tracker,
+                                )?,
+                            );
+                        }
+                    }
+                }
+                _ => (),
+            }
+
             return WErr::ne(
                 NRErrs::CannotFindConstantAttribute(n.name().clone()),
                 n.location().clone(),
-            )
+            );
         } // Accessed methods must be called
         EvaluableTokens::FunctionCall {
             function: inner,
@@ -165,7 +224,7 @@ pub fn compile_evaluable_type_only(
             return_type
         }
         EvaluableTokens::StructInitialiser(struct_init) => {
-            let mut t = global_table.resolve_to_type_ref(struct_init.name())?;
+            let mut t = global_table.resolve_to_type_ref(struct_init.name(), None)?;
             if *struct_init.heap_alloc() {
                 t = t.plus_one_indirect();
             }

@@ -50,4 +50,8 @@ pub enum EvalErrs {
     WrongAttributeNameInInit(String, String),
     #[error("Expected ({0}) attributes to be initialised - found ({1})")]
     WrongAttributeCount(usize, usize),
+    #[error("Expected type, not imported file ({0})")]
+    ExpectedTypeNotImportedFile(String),
+    #[error("Cannot evaluate a standalone imported file ({0})")]
+    CannotEvaluateStandaloneImportedFile(String),
 }
