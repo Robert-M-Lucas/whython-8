@@ -26,7 +26,7 @@ pub enum NRErrs {
     ExpectedTypeNotMethodOrAttribute,
     #[error("Cannot find name ({0})")]
     CannotFindName(String),
-    #[error("Cannot find constant attribute ({0})")]
+    #[error("Cannot find constant attribute ({0}) - are you trying to use the contents of a file you haven't imported?")]
     CannotFindConstantAttribute(String),
     #[error("Method ({0}) not implemented for type ({1}) required for operator ({2})")]
     OpMethodNotImplemented(String, String, String),

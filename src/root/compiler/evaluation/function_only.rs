@@ -18,7 +18,13 @@ pub fn compile_evaluable_function_only<'a>(
 ) -> Result<(Option<&'a EvaluableToken>, FunctionID, String), WErr> {
     Ok(match name.token() {
         EvaluableTokens::Name(name, containing_class) => {
-            match global_table.resolve_name(name, containing_class.as_ref(), local_variables)? {
+            match global_table.resolve_name(
+                name,
+                None,
+                containing_class.as_ref(),
+                local_variables,
+                global_tracker,
+            )? {
                 NameResult::Function(fid) => (None, fid, name.name().clone()),
                 _ => return WErr::ne(ExpectedFunctionName, name.location().clone()),
             }
@@ -27,6 +33,59 @@ pub fn compile_evaluable_function_only<'a>(
             parent: inner,
             section: access,
         } => {
+            // TODO: Make order consistent i.e. check if type exists before checking if file exists
+            match inner.token() {
+                EvaluableTokens::Name(file_name, containing_class) => {
+                    if let Some(file) = global_table.get_imported_file(file_name, global_tracker) {
+                        return Ok(
+                            match global_table.resolve_name(
+                                access,
+                                Some(file),
+                                containing_class.as_ref(),
+                                local_variables,
+                                global_tracker,
+                            )? {
+                                NameResult::Function(fid) => (None, fid, access.name().clone()),
+                                _ => {
+                                    return WErr::ne(ExpectedFunctionName, name.location().clone())
+                                }
+                            },
+                        );
+                    };
+                }
+                EvaluableTokens::StaticAccess {
+                    parent,
+                    section: file_name,
+                } => {
+                    if let EvaluableTokens::Name(folder_name, containing_class) = parent.token() {
+                        if let Some(file) = global_table.get_file_from_folder(
+                            folder_name.name(),
+                            file_name.name(),
+                            global_tracker,
+                        ) {
+                            return Ok(
+                                match global_table.resolve_name(
+                                    access,
+                                    Some(file),
+                                    containing_class.as_ref(),
+                                    local_variables,
+                                    global_tracker,
+                                )? {
+                                    NameResult::Function(fid) => (None, fid, access.name().clone()),
+                                    _ => {
+                                        return WErr::ne(
+                                            ExpectedFunctionName,
+                                            name.location().clone(),
+                                        )
+                                    }
+                                },
+                            );
+                        }
+                    }
+                }
+                _ => (),
+            }
+
             let inner_type = compile_evaluable_type_only(
                 fid,
                 inner,

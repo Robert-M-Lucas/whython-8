@@ -14,7 +14,6 @@ use crate::root::parser::parse_imports::parse_imports;
 use crate::root::parser::parse_toplevel;
 use crate::root::parser::parse_toplevel::TopLevelTokens;
 use crate::root::parser::path_storage::{FileID, PathStorage};
-use crate::root::shared::common::FunctionID;
 
 pub type Span<'a> = LocatedSpan<&'a str, FileID>;
 
