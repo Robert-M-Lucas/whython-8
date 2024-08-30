@@ -8,34 +8,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="todo.txt">
-      <change afterPath="$PROJECT_DIR$/std/test.why" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_06_08_2024,_15_37_[Changes]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_06_08_2024__15_37__Changes_.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_06_08_2024,_15_37_[Changes]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_06_08_2024__15_37__Changes_.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_07_08_2024,_15_58_[Changes]/out.o" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_07_08_2024,_15_58_[Changes]/out.out" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_07_08_2024,_15_58_[Changes]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_07_08_2024__15_58__Changes_.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/out.asm" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.asm" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/out.o" beforeDir="false" afterPath="$PROJECT_DIR$/build/out.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.why" beforeDir="false" afterPath="$PROJECT_DIR$/main.why" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/compile.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/compile_function.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/compile_function.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/function_only.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/function_only.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/into.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/into.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/new.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/new.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/reference.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/reference.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/compiler/evaluation/type_only.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/compiler/evaluation/type_only.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/errors/evaluable_errors.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/errors/evaluable_errors.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/errors/name_resolver_errors.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/errors/name_resolver_errors.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/name_resolvers.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/resolve.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/resolve.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/resolve_function_signatures.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/resolve_function_signatures.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/name_resolver/resolve_names.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/name_resolver/resolve_names.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/root/parser/parse.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/root/parser/parse.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/std/linked_list.why" beforeDir="false" afterPath="$PROJECT_DIR$/std/linked_list.why" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/todo.txt" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -91,8 +65,8 @@
   </component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/Robert-M-Lucas/whython-8.git&quot;,
-    &quot;accountId&quot;: &quot;dcb8df19-0b39-47e1-9073-4a54f7034be8&quot;
+    &quot;url&quot;: &quot;https://github.com/Robert-M-Lucas/whython-8&quot;,
+    &quot;accountId&quot;: &quot;5325d154-08ff-47af-a3ea-1a4a5e1c240e&quot;
   }
 }</component>
   <component name="MacroExpansionManager">
@@ -315,6 +289,9 @@
       <workItem from="1723852618935" duration="133000" />
       <workItem from="1723855427357" duration="8000" />
       <workItem from="1723898825421" duration="7405000" />
+      <workItem from="1724374096565" duration="20000" />
+      <workItem from="1724420841421" duration="17000" />
+      <workItem from="1724977505526" duration="785000" />
     </task>
     <task id="LOCAL-00040" summary="Improved function code">
       <option name="closed" value="true" />
