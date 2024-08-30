@@ -1,3 +1,7 @@
+---
+tags:
+  - Planning
+---
 ## [[TODO]]
 ## Next
 - Improve type system - [[Type Parameters and Arrays]]

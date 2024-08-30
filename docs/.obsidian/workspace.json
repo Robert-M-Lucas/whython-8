@@ -4,19 +4,15 @@
     "type": "split",
     "children": [
       {
-        "id": "670e03f8ef10ebeb",
+        "id": "f0791e32414f4ade",
         "type": "tabs",
         "children": [
           {
-            "id": "d67ca8a7c35e58c6",
+            "id": "70c6b5acdbfe7d32",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Planning/Detailed/Type Parameters and Arrays.md",
-                "mode": "source",
-                "source": false
-              }
+              "type": "graph",
+              "state": {}
             }
           }
         ]
@@ -85,7 +81,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Planning/Detailed/Type Parameters and Arrays.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +97,6 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Planning/Detailed/Type Parameters and Arrays.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -124,9 +118,7 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {
-                "file": "Planning/Detailed/Type Parameters and Arrays.md"
-              }
+              "state": {}
             }
           }
         ]
@@ -148,26 +140,35 @@
       "obsidian-kanban:Create new board": false
     }
   },
-  "active": "d67ca8a7c35e58c6",
+  "active": "70c6b5acdbfe7d32",
   "lastOpenFiles": [
-    "Planning/Detailed/By-Struct Name Resolution.md",
+    "2024-08-30.md",
+    "Docs/Implementation/3. Compilation/Shared/Type ID.md",
+    "Docs/Implementation/3. Compilation/Shared/Function ID.md",
+    "Docs/Implementation/3. Compilation/Shared/Shared.md",
+    "Docs/Implementation/3. Compilation/Function Compilation/Function Compilation.md",
+    "Docs/Implementation/3. Compilation/Name Resolution/Name Resolution.md",
+    "Docs/Implementation/3. Compilation/3. Compilation.md",
+    "Docs/Implementation/2. Parsing/2. Parsing.md",
     "Planning/Detailed/Type Parameters and Arrays.md",
-    "Docs/Compilation/Shared/Function ID.md",
-    "Docs/Compilation/Shared/Type ID.md",
-    "Planning/Archive.md",
-    "Docs/Compilation/Shared/Shared.md",
-    "Planning/Planning.md",
-    "Docs/Parsing/Parsing.md",
-    "Docs/Docs.md",
-    "Docs/Compilation/Compilation.md",
+    "Planning/Detailed/By-Struct Name Resolution.md",
     "Planning/TODO.md",
-    "Docs/Compilation/Name Resolution/Name Resolution.md",
-    "Docs/Compilation/Function Compilation/Function Compilation.md",
-    "Docs/Compilation/Shared",
-    "Docs/Compilation/Function Compilation",
-    "Docs/Compilation/Name Resolution",
-    "Docs/Compilation",
-    "Docs/Parsing",
+    "Planning/Archive.md",
+    "Planning/Planning.md",
+    "Docs/Docs.md",
+    "Docs/Usage/Usage.md",
+    "Docs/Usage",
+    "Docs/Implementation/Implementation.md",
+    "Docs/Implementation/6. Execution.md",
+    "Docs/Implementation/5. Linking.md",
+    "Docs/Implementation/4. Assembling.md",
+    "Docs/Implementation/1. Argument Parsing.md",
+    "Docs/Implementation",
+    "Docs/Implementation/3. Compilation/Shared",
+    "Docs/Implementation/3. Compilation/Function Compilation",
+    "Docs/Implementation/3. Compilation/Name Resolution",
+    "Docs/Implementation/3. Compilation",
+    "Docs/Implementation/2. Parsing",
     "Planning/Main.md",
     "Docs",
     "Planning/Detailed",

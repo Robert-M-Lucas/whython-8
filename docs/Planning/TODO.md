@@ -3,7 +3,7 @@
 kanban-plugin: board
 
 ---
-
+#Planning 
 ## TODO
 
 
@@ -24,6 +24,6 @@ kanban-plugin: board
 
 %% kanban:settings
 ```
-{"kanban-plugin":"board","list-collapse":[false,false,false,false]}
+{"kanban-plugin":"board","list-collapse":[false,false,false,false],"tag-sort":[]}
 ```
 %%

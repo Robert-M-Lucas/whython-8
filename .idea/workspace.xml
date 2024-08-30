@@ -7,13 +7,9 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Added Obsidian">
+    <list default="true" id="6ca282eb-dc8c-4af0-945c-cd77d70c6194" name="Changes" comment="Planning">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/.obsidian/app.json" beforeDir="false" afterPath="$PROJECT_DIR$/docs/.obsidian/app.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/.obsidian/community-plugins.json" beforeDir="false" afterPath="$PROJECT_DIR$/docs/.obsidian/community-plugins.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/.obsidian/workspace.json" beforeDir="false" afterPath="$PROJECT_DIR$/docs/.obsidian/workspace.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/Planning/Detailed/Type System Improvement.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/Planning/Planning.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/Planning/Planning.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -295,15 +291,7 @@
       <workItem from="1723898825421" duration="7405000" />
       <workItem from="1724374096565" duration="20000" />
       <workItem from="1724420841421" duration="17000" />
-      <workItem from="1724977505526" duration="1816000" />
-    </task>
-    <task id="LOCAL-00041" summary="Tests">
-      <option name="closed" value="true" />
-      <created>1718964303334</created>
-      <option name="number" value="00041" />
-      <option name="presentableId" value="LOCAL-00041" />
-      <option name="project" value="LOCAL" />
-      <updated>1718964303334</updated>
+      <workItem from="1724977505526" duration="3032000" />
     </task>
     <task id="LOCAL-00042" summary="Deref and assign">
       <option name="closed" value="true" />
@@ -689,7 +677,15 @@
       <option name="project" value="LOCAL" />
       <updated>1724978374653</updated>
     </task>
-    <option name="localTasksCounter" value="90" />
+    <task id="LOCAL-00090" summary="Planning">
+      <option name="closed" value="true" />
+      <created>1724979988280</created>
+      <option name="number" value="00090" />
+      <option name="presentableId" value="LOCAL-00090" />
+      <option name="project" value="LOCAL" />
+      <updated>1724979988280</updated>
+    </task>
+    <option name="localTasksCounter" value="91" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -746,7 +742,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Linked list" />
     <MESSAGE value="Improvements" />
     <MESSAGE value="Added free" />
     <MESSAGE value="Added free and good parser errors" />
@@ -771,7 +766,8 @@
     <MESSAGE value="Continued import implementation" />
     <MESSAGE value="todo.txt" />
     <MESSAGE value="Added Obsidian" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added Obsidian" />
+    <MESSAGE value="Planning" />
+    <option name="LAST_COMMIT_MESSAGE" value="Planning" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
