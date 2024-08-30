@@ -4,25 +4,18 @@
     "type": "split",
     "children": [
       {
-        "id": "13c8bfdc952da66d",
+        "id": "670e03f8ef10ebeb",
         "type": "tabs",
         "children": [
           {
-            "id": "205731d2ce5a5fab",
+            "id": "d67ca8a7c35e58c6",
             "type": "leaf",
             "state": {
-              "type": "kanban",
+              "type": "markdown",
               "state": {
-                "file": "Planning/TODO.md",
-                "kanbanViewState": {
-                  "kanban-plugin": "board",
-                  "list-collapse": [
-                    false,
-                    false,
-                    false,
-                    false
-                  ]
-                }
+                "file": "Planning/Detailed/Type Parameters and Arrays.md",
+                "mode": "source",
+                "source": false
               }
             }
           }
@@ -92,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Planning/TODO.md",
+                "file": "Planning/Detailed/Type Parameters and Arrays.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -109,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Planning/TODO.md",
+                "file": "Planning/Detailed/Type Parameters and Arrays.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -132,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Planning/TODO.md"
+                "file": "Planning/Detailed/Type Parameters and Arrays.md"
               }
             }
           }
@@ -155,12 +148,28 @@
       "obsidian-kanban:Create new board": false
     }
   },
-  "active": "8f11521b105c67d1",
+  "active": "d67ca8a7c35e58c6",
   "lastOpenFiles": [
-    "Docs",
+    "Planning/Detailed/By-Struct Name Resolution.md",
+    "Planning/Detailed/Type Parameters and Arrays.md",
+    "Docs/Compilation/Shared/Function ID.md",
+    "Docs/Compilation/Shared/Type ID.md",
+    "Planning/Archive.md",
+    "Docs/Compilation/Shared/Shared.md",
     "Planning/Planning.md",
+    "Docs/Parsing/Parsing.md",
+    "Docs/Docs.md",
+    "Docs/Compilation/Compilation.md",
     "Planning/TODO.md",
-    "Planning/Detailed/Type System Improvement.md",
+    "Docs/Compilation/Name Resolution/Name Resolution.md",
+    "Docs/Compilation/Function Compilation/Function Compilation.md",
+    "Docs/Compilation/Shared",
+    "Docs/Compilation/Function Compilation",
+    "Docs/Compilation/Name Resolution",
+    "Docs/Compilation",
+    "Docs/Parsing",
+    "Planning/Main.md",
+    "Docs",
     "Planning/Detailed",
     "planning/TODO.md",
     "Planning",
