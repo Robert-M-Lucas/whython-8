@@ -1,7 +1,13 @@
-import std/;
+use std/linked_list;
 
 fn main() -> int {
-    std::test::foo();
+    let l: LL = LL::new();
+
+    l.push(1);
+    l.push(3);
+    l.push(2);
+
+    l.print();
 
     return 0;
 }
