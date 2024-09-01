@@ -182,6 +182,7 @@ pub fn compile_evaluable_type_only(
                         if let Some(file) = global_table.get_file_from_folder(
                             folder_name.name(),
                             file_name.name(),
+
                             global_tracker,
                         ) {
                             return handle_name_result(
