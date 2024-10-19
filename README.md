@@ -8,7 +8,7 @@ Some of these may be broken due to breaking changes
 
 This is designed to work on Linux using `nasm` and `gcc` requiring a library
 with `free`, `malloc`, and `printf` to be present (should be by default, 
-all may not be required if not used in your code). This may work in WSL
+all may not be required if not used in your code). This may work in WSL.
 
 The `master` branch should now contain a semi-stable version whereas
 the latest version can be found on `dev`. I also use `dev` to sync
@@ -25,3 +25,5 @@ two examples of the rich error reporting in Whython
 Use `cargo run -- [args]` to pass arguments to Whython
 
 Use `cargo run -- -h` to get help
+
+The binary for use without `cargo` commands can be found in `target/release` after running `cargo build -r`
