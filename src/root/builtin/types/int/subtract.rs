@@ -4,18 +4,20 @@ use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{FunctionID, LocalAddress, TypeID};
 use unique_type_id::UniqueTypeId;
+use crate::root::assembler::assembly_builder::Assembly;
 
+/// Implements the integer subtract operation
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
-pub struct IntAdd;
+pub struct IntSubtract;
 
-impl BuiltinInlineFunction for IntAdd {
+impl BuiltinInlineFunction for IntSubtract {
     fn id(&self) -> FunctionID {
-        f_id(IntAdd::unique_type_id().0)
+        f_id(IntSubtract::unique_type_id().0)
     }
 
     fn name(&self) -> &'static str {
-        "add"
+        "sub"
     }
 
     fn signature(&self) -> FunctionSignature {
@@ -30,13 +32,13 @@ impl BuiltinInlineFunction for IntAdd {
     }
 
     fn inline(&self) -> InlineFnGenerator {
-        |args: &[LocalAddress], return_into: Option<LocalAddress>, _, _| -> String {
+        |args: &[LocalAddress], return_into: Option<LocalAddress>, _, _| -> Assembly {
             let lhs = args[0];
             let rhs = args[1];
             let return_into = return_into.unwrap();
             format!(
                 "    mov rax, qword {lhs}
-    add rax, qword {rhs}
+    sub rax, qword {rhs}
     mov qword {return_into}, rax\n"
             )
         }
@@ -47,17 +49,18 @@ impl BuiltinInlineFunction for IntAdd {
     }
 }
 
+/// Implements the integer subtract assign operation
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
-pub struct IntAsAdd;
+pub struct IntAssignSubtract;
 
-impl BuiltinInlineFunction for IntAsAdd {
+impl BuiltinInlineFunction for IntAssignSubtract {
     fn id(&self) -> FunctionID {
-        f_id(IntAsAdd::unique_type_id().0)
+        f_id(IntAssignSubtract::unique_type_id().0)
     }
 
     fn name(&self) -> &'static str {
-        "as_add"
+        "as_sub"
     }
 
     fn signature(&self) -> FunctionSignature {
@@ -72,13 +75,13 @@ impl BuiltinInlineFunction for IntAsAdd {
     }
 
     fn inline(&self) -> InlineFnGenerator {
-        |args: &[LocalAddress], _, _, _| -> String {
+        |args: &[LocalAddress], _, _, _| -> Assembly {
             let lhs = args[0];
             let rhs = args[1];
             format!(
                 "    mov rax, qword {lhs}
     mov rdx, qword {rhs}
-    add qword [rax], rdx\n"
+    sub qword [rax], rdx\n"
             )
         }
     }

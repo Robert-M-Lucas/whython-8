@@ -19,6 +19,7 @@ use b_box::b;
 use derive_getters::Getters;
 use itertools::Itertools;
 use std::collections::HashMap;
+use crate::root::assembler::assembly_builder::Assembly;
 
 /// A Whython-code defined type
 #[derive(Getters)]
@@ -72,7 +73,7 @@ impl Type for UserType {
         &self,
         _location: &LocalAddress,
         literal: &LiteralToken,
-    ) -> Result<String, WErr> {
+    ) -> Result<Assembly, WErr> {
         WErr::ne(
             EvalErrs::TypeCannotBeInitialisedByLiteral(self.name().clone()),
             literal.location().clone(),
@@ -110,12 +111,14 @@ pub fn resolve_names(
 
     let mut unsized_final_types: HashMap<TypeID, UnsizedUserType> = new_hashmap();
 
+    // Processes impls, functions, and structs, leaving structs as unsized types
     for symbol in ast {
         match symbol {
             TopLevelTokens::Struct(st) => {
                 let (location, name, attributes, id) = st.dissolve();
                 let id = id.unwrap();
-
+                
+                // Process attributes into an unsized type
                 let mut p_attributes: Vec<(SimpleNameToken, TypeRef)> = Vec::new();
                 for (name, type_name) in attributes {
                     let type_ref = global_table.resolve_to_type_ref(&type_name, None)?;
@@ -136,6 +139,8 @@ pub fn resolve_names(
                 );
             }
             TopLevelTokens::Impl(it) => {
+                // Registers all the function in an impl token
+                
                 let (location, name, functions) = it.dissolve();
                 let type_id = *global_table
                     .resolve_to_type_ref(
@@ -153,6 +158,7 @@ pub fn resolve_names(
                 }
             }
             TopLevelTokens::Function(ft) => {
+                // Register a function token
                 let function_id = global_table.add_from_function_token(&ft, None);
                 let signature = resolve_function_signature(&ft, global_table)?;
                 global_table.add_function_signature(function_id, signature);
@@ -162,6 +168,7 @@ pub fn resolve_names(
     }
     let mut final_types: HashMap<TypeID, UserType> = new_hashmap();
 
+    // Resolve all unsized types
     while !unsized_final_types.is_empty() {
         let next_type_id = *unsized_final_types.keys().next().unwrap();
         let unsized_type = unsized_final_types.remove(&next_type_id).unwrap();
@@ -171,6 +178,7 @@ pub fn resolve_names(
             &mut unsized_final_types,
             global_table,
         )? {
+            // Reconstruct error in the case of a circular type
             let n = e
                 .iter()
                 .rev()
@@ -188,6 +196,7 @@ pub fn resolve_names(
         };
     }
 
+    // Register types
     for (id, user_type) in final_types {
         global_table.add_user_type(id, b!(user_type));
     }

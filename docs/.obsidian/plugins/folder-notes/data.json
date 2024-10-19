@@ -9,9 +9,9 @@
   "excludeFolders": [],
   "whitelistFolders": [],
   "showDeleteConfirmation": true,
-  "underlineFolder": true,
+  "underlineFolder": false,
   "stopWhitespaceCollapsing": true,
-  "underlineFolderInPath": true,
+  "underlineFolderInPath": false,
   "openFolderNoteOnClickInPath": true,
   "openInNewTab": false,
   "folderNoteName": "{{folder_name}}",
@@ -48,13 +48,13 @@
     "explorer": true,
     "path": true
   },
-  "settingsTab": "general",
+  "settingsTab": "path",
   "supportedFileTypes": [
     "md",
     "canvas"
   ],
-  "boldName": false,
-  "boldNameInPath": false,
+  "boldName": true,
+  "boldNameInPath": true,
   "cursiveName": false,
   "cursiveNameInPath": false,
   "disableOpenFolderNoteOnClick": false,

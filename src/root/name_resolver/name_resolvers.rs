@@ -24,6 +24,7 @@ use crate::root::shared::common::{AddressedTypeRef, ByteSize, FunctionID, TypeID
 use crate::root::shared::types::Type;
 use crate::root::POINTER_SIZE;
 
+/// An entry in the `NameTree` that identifies either a type or functions
 #[derive(Debug)]
 enum NameTreeEntry {
     Type(TypeID),
@@ -31,7 +32,7 @@ enum NameTreeEntry {
 }
 
 #[derive(Default, Debug)]
-/// Table of names and what they correspond to
+/// Table of names and the function / type they correspond to
 struct NameTree {
     table: HashMap<String, NameTreeEntry>,
 }
@@ -59,6 +60,7 @@ impl TopLevelNameTree {
     }
 }
 
+/// Possible results of asking for a name to be resolved
 pub enum NameResult {
     Function(FunctionID),
     Type(TypeID),
@@ -98,16 +100,18 @@ impl GlobalTable {
             builtin_type_name_table: Default::default(),
             builtin_function_name_table: Default::default(),
             builtin_inline_functions: Default::default(),
-            current_file: FileID::main_file(),
+            current_file: FileID::MAIN_FILE,
             scope: Default::default(),
         }
     }
 
+    /// Set the scope to a specific file to prevent namespace leaking 
     pub fn scope_namespace(&mut self, current_file: FileID, scope: Scope) {
         self.current_file = current_file;
         self.scope = scope;
     }
 
+    // Get a file from a folder by name
     pub fn get_file_from_folder(
         &self,
         folder: &str,
@@ -221,7 +225,7 @@ impl GlobalTable {
             && ft
                 .location()
                 .file_id()
-                .is_some_and(|f| f == FileID::main_file())
+                .is_some_and(|f| f == FileID::MAIN_FILE)
         {
             FunctionID(0)
         } else {
@@ -375,7 +379,7 @@ impl GlobalTable {
     }
 
     /// Adds a local, unnamed variable to the `LocalVariableTable` and returns the address
-    pub fn add_local_variable_unnamed_base(
+    pub fn add_local_variable_unnamed(
         &mut self,
         t: TypeRef,
         local_variable_table: &mut LocalVariableTable,
@@ -386,13 +390,13 @@ impl GlobalTable {
     }
 
     /// Adds a local, unnamed variable to the `LocalVariableTable` and returns the address
-    pub fn add_local_variable_unnamed(
+    pub fn add_local_variable_unnamed_from_token(
         &mut self,
         t: &UnresolvedTypeRefToken,
         local_variable_table: &mut LocalVariableTable,
     ) -> Result<AddressedTypeRef, WErr> {
         let t = self.resolve_to_type_ref(t, None)?;
-        Ok(self.add_local_variable_unnamed_base(t, local_variable_table))
+        Ok(self.add_local_variable_unnamed(t, local_variable_table))
     }
 
     /// Adds a local, named variable to the `LocalVariableTable` and returns the address
@@ -438,6 +442,7 @@ impl GlobalTable {
         )
     }
 
+    /// Gets a file by name from the current scope
     pub fn get_imported_file(
         &self,
         name: &SimpleNameToken,

@@ -6,6 +6,7 @@ use crate::root::parser::location::Location;
 use crate::root::parser::parse::{ErrorTree, ParseResult};
 use crate::root::parser::path_storage::PathStorage;
 
+/// Handle a `ParseResult` by turning it into a whython error
 pub fn handle_error<A, B>(
     res: ParseResult<A, B>,
     path_storage: &PathStorage,
@@ -22,9 +23,11 @@ pub fn handle_error<A, B>(
     }
 }
 
+/// Handles an error tree
 fn handle_error_tree(e: &ErrorTree, path_storage: &PathStorage) -> WErr {
     match e {
         ErrorTree::Base { location, kind } => match kind {
+            // Normal 1:1 mapping to whython error
             BaseErrorKind::Expected(smth) => WErr::n(
                 ParseError::Expected(smth.to_string()),
                 Location::from_span(location),
@@ -35,7 +38,8 @@ fn handle_error_tree(e: &ErrorTree, path_storage: &PathStorage) -> WErr {
             ),
             BaseErrorKind::External(e) => WErr::n(e, Location::from_span(location)),
         },
-        ErrorTree::Stack { base, contexts } => {
+        ErrorTree::Stack { base, contexts } => { // Base error with context
+            // Show base
             let mut sb = "Base Error:\n".to_string();
             for l in handle_error_tree(base, path_storage)
                 .with_context(path_storage)
@@ -47,6 +51,7 @@ fn handle_error_tree(e: &ErrorTree, path_storage: &PathStorage) -> WErr {
                 sb += "\n";
             }
 
+            // Show context
             for (s, c) in contexts {
                 sb += "\nIn:\n";
 
@@ -65,10 +70,10 @@ fn handle_error_tree(e: &ErrorTree, path_storage: &PathStorage) -> WErr {
                     sb += "\n";
                 }
             }
-
+            
             WErr::locationless(sb)
         }
-        ErrorTree::Alt(z) => {
+        ErrorTree::Alt(z) => { // Show multiple errors
             let mut sb = "Failed multiple parsers -\n".to_string();
 
             for (i, e) in z.iter().enumerate() {

@@ -1,0 +1,15 @@
+struct Alpha {
+    b: Beta
+}
+
+struct Beta {
+    g: Gamma
+}
+
+struct Gamma {
+    a: Alpha
+}
+
+fn main() -> int {
+    return 0;
+}

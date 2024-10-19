@@ -8,18 +8,22 @@ use derive_more::{Add, AddAssign, Sub, SubAssign};
 pub struct TypeID(pub isize);
 
 impl TypeID {
+    /// Creates a `TypeRef`
     pub fn with_indirection(self, elements: usize, indirection: usize) -> TypeRef {
         TypeRef::new(self, elements, Indirection(indirection))
     }
 
+    /// Creates a `TypeRef` with 1 element
     pub fn with_indirection_single(self, indirection: usize) -> TypeRef {
         TypeRef::new(self, 1, Indirection(indirection))
     }
 
+    /// Creates a `TypeRef` with no indirection
     pub fn immediate(self, elements: usize) -> TypeRef {
         TypeRef::new(self, elements, Indirection(0))
     }
 
+    /// Creates a `TypeRef` with 1 element and no indirection
     pub fn immediate_single(self) -> TypeRef {
         TypeRef::new(self, 1, Indirection(0))
     }
@@ -30,6 +34,8 @@ impl TypeID {
 pub struct FunctionID(pub isize);
 
 impl FunctionID {
+    pub const MAIN_FUNCTION: FunctionID = FunctionID(0);
+
     pub fn is_main(&self) -> bool {
         self.0 == 0
     }
@@ -109,10 +115,12 @@ impl TypeRef {
         }
     }
 
+    /// Returns whether a type is an array
     pub fn is_array(&self) -> bool {
         self.elements == 1
     }
 
+    /// Returns a `TypeRef` with a different indirection 
     pub fn with_indirection(&self, indirection: Indirection) -> TypeRef {
         TypeRef {
             type_id: self.type_id,
@@ -121,6 +129,7 @@ impl TypeRef {
         }
     }
 
+    /// Returns a `TypeRef` with one more indirection
     pub fn plus_one_indirect(&self) -> TypeRef {
         TypeRef {
             type_id: self.type_id,
@@ -129,6 +138,7 @@ impl TypeRef {
         }
     }
 
+    /// Returns a `TypeRef` with one less indirection
     pub fn minus_one_indirect(&self) -> TypeRef {
         TypeRef {
             type_id: self.type_id,
@@ -137,6 +147,7 @@ impl TypeRef {
         }
     }
 
+    /// Returns a `TypeRef` with no indirection
     pub fn immediate(&self) -> TypeRef {
         TypeRef {
             type_id: self.type_id,

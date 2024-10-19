@@ -1,3 +1,4 @@
+use crate::root::assembler::assembly_builder::Assembly;
 use crate::root::compiler::assembly::utils::copy_from_indirect;
 use crate::root::errors::evaluable_errors::EvalErrs;
 use crate::root::errors::WErr;
@@ -11,7 +12,7 @@ pub fn set_reference(
     to_ref: AddressedTypeRef,
     into: AddressedTypeRef,
     global_table: &GlobalTable,
-) -> Result<String, WErr> {
+) -> Result<Assembly, WErr> {
     let new_type = to_ref.type_ref().plus_one_indirect();
     if new_type != *into.type_ref() {
         return WErr::ne(
@@ -38,7 +39,7 @@ pub fn set_deref(
     to_deref: AddressedTypeRef,
     into: AddressedTypeRef,
     global_table: &mut GlobalTable,
-) -> Result<String, WErr> {
+) -> Result<Assembly, WErr> {
     let expected = into.type_ref().plus_one_indirect();
     if to_deref.type_ref() != &expected {
         return WErr::ne(

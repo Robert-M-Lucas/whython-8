@@ -4,18 +4,20 @@ use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{FunctionID, LocalAddress, TypeID};
 use unique_type_id::UniqueTypeId;
+use crate::root::assembler::assembly_builder::Assembly;
 
+/// Implements the integer add operation
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
-pub struct IntMul;
+pub struct IntAddition;
 
-impl BuiltinInlineFunction for IntMul {
+impl BuiltinInlineFunction for IntAddition {
     fn id(&self) -> FunctionID {
-        f_id(IntMul::unique_type_id().0)
+        f_id(IntAddition::unique_type_id().0)
     }
 
     fn name(&self) -> &'static str {
-        "mul"
+        "add"
     }
 
     fn signature(&self) -> FunctionSignature {
@@ -30,14 +32,13 @@ impl BuiltinInlineFunction for IntMul {
     }
 
     fn inline(&self) -> InlineFnGenerator {
-        |args: &[LocalAddress], return_into: Option<LocalAddress>, _, _| -> String {
+        |args: &[LocalAddress], return_into: Option<LocalAddress>, _, _| -> Assembly {
             let lhs = args[0];
             let rhs = args[1];
             let return_into = return_into.unwrap();
             format!(
                 "    mov rax, qword {lhs}
-    mov rdx, qword {rhs}
-    imul rdx
+    add rax, qword {rhs}
     mov qword {return_into}, rax\n"
             )
         }
@@ -48,17 +49,18 @@ impl BuiltinInlineFunction for IntMul {
     }
 }
 
+/// Implements the integer add assign operation
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
-pub struct IntAsMul;
+pub struct IntAssignAddition;
 
-impl BuiltinInlineFunction for IntAsMul {
+impl BuiltinInlineFunction for IntAssignAddition {
     fn id(&self) -> FunctionID {
-        f_id(IntAsMul::unique_type_id().0)
+        f_id(IntAssignAddition::unique_type_id().0)
     }
 
     fn name(&self) -> &'static str {
-        "as_mul"
+        "as_add"
     }
 
     fn signature(&self) -> FunctionSignature {
@@ -73,15 +75,13 @@ impl BuiltinInlineFunction for IntAsMul {
     }
 
     fn inline(&self) -> InlineFnGenerator {
-        |args: &[LocalAddress], _, _, _| -> String {
+        |args: &[LocalAddress], _, _, _| -> Assembly {
             let lhs = args[0];
             let rhs = args[1];
             format!(
-                "    mov rcx, qword {lhs}
-    mov rax, qword [rcx]
+                "    mov rax, qword {lhs}
     mov rdx, qword {rhs}
-    imul rdx
-    mov qword [rcx], rax\n"
+    add qword [rax], rdx\n"
             )
         }
     }

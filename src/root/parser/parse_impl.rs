@@ -1,6 +1,6 @@
 use crate::root::parser::location::Location;
 use crate::root::parser::parse::{ParseResult, Span};
-use crate::root::parser::parse_blocks::{parse_terminator_default_set, BRACE_TERMINATOR};
+use crate::root::parser::parse_blocks::{parse_default_terminator_content, BRACE_TERMINATOR};
 use crate::root::parser::parse_function::{parse_function, FunctionToken};
 use crate::root::parser::parse_name::{parse_simple_name, SimpleNameToken};
 use crate::root::parser::parse_toplevel::{TopLevelTokens, ToplevelTestFn};
@@ -10,6 +10,7 @@ use nom::sequence::Tuple;
 use nom::Parser;
 use nom_supreme::tag::complete::tag;
 
+/// Token representing an impl including location
 #[derive(Debug, Getters, Dissolve)]
 pub struct ImplToken {
     location: Location,
@@ -17,6 +18,7 @@ pub struct ImplToken {
     functions: Vec<FunctionToken>,
 }
 
+/// Tests whether a line should be parsed as an impl
 pub fn test_parse_impl(s: Span<'_>) -> ParseResult<Span, ToplevelTestFn<'_>> {
     match (tag("impl"), require_ignored).parse(s) {
         Ok(_) => Ok((s, |x| {
@@ -26,16 +28,21 @@ pub fn test_parse_impl(s: Span<'_>) -> ParseResult<Span, ToplevelTestFn<'_>> {
     }
 }
 
+/// Parses an impl
 pub fn parse_impl(s: Span) -> ParseResult<Span, ImplToken> {
     let location = Location::from_span(&s);
     let (s, _) = tag("impl").parse(s)?;
     let (s, _) = require_ignored(s)?;
+    
+    // Parse name
     let (s, name) = parse_simple_name(s)?;
     let (s, _) = discard_ignored(s)?;
-    let (s, contents) = parse_terminator_default_set(s, &BRACE_TERMINATOR)?;
+    
+    // Get content
+    let (s, contents) = parse_default_terminator_content(s, &BRACE_TERMINATOR)?;
 
+    // Loop while content is remaining to parse functions
     let mut functions = Vec::new();
-
     let mut c = contents;
     loop {
         let (cs, _) = discard_ignored(c)?;

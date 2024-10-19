@@ -1,10 +1,10 @@
 #[cfg(debug_assertions)]
 use color_print::cprintln;
 
-use crate::root::assembler::assembly_builder::AssemblyBuilder;
+use crate::root::assembler::assembly_builder::{Assembly, AssemblyBuilder};
 use crate::root::builtin::types::bool::BoolType;
 use crate::root::builtin::types::int::IntType;
-use crate::root::compiler::compiler_errors::CompErrs;
+use crate::root::errors::compiler_errors::CompErrs;
 use crate::root::compiler::evaluation::into::compile_evaluable_into;
 use crate::root::compiler::evaluation::reference::compile_evaluable_reference;
 use crate::root::compiler::global_tracker::GlobalTracker;
@@ -23,11 +23,11 @@ pub fn compile_function(
     function: FunctionToken,
     global_table: &mut GlobalTable,
     global_tracker: &mut GlobalTracker,
-) -> Result<String, WErr> {
+) -> Result<Assembly, WErr> {
     let mut local_variables = LocalVariableTable::new();
 
     let (_location, end_location, _name, return_type, _, parameters, lines) = function.dissolve();
-
+    
     let return_type = if fid.is_main() { None } else { return_type };
 
     let return_type = if let Some(t) = return_type {
@@ -36,8 +36,10 @@ pub fn compile_function(
         None
     };
 
+    // Address of parameters in assembly
     let mut param_address = LocalAddress(16);
 
+    // Put all parameters in local_variables
     for (param_name, param_type) in parameters {
         let t = global_table.resolve_to_type_ref(&param_type, None)?;
 
@@ -49,13 +51,15 @@ pub fn compile_function(
         param_address += LocalAddress(global_table.get_size(&t).0 as isize);
     }
 
+    // Create function return variable
     let return_variable = return_type.map(|t| {
         AddressedTypeRef::new(
             param_address, //  - LocalAddress(global_table.type_definitions().get(t.type_id()).unwrap().size().0 as isize),
             t,
         )
     });
-
+    
+    // Compile
     let (mut full_contents, last_return) = recursively_compile_lines(
         fid,
         &lines,
@@ -68,6 +72,7 @@ pub fn compile_function(
 
     // let stack_size = local_variables.stack_size();
 
+    // Check for incorrect return
     if (return_variable.is_some() || fid.is_main()) && !last_return {
         let type_ref = return_variable
             .map(|x| x.type_ref().clone())
@@ -77,10 +82,13 @@ pub fn compile_function(
             end_location,
         );
     }
+    
+    // Add implicit return code if last line of function isn't 'return'
     if !last_return {
         full_contents += "\nleave\nret";
     }
 
+    // Construct assembly
     let final_contents = format!(
         "{}:
     push rbp
@@ -106,10 +114,13 @@ fn recursively_compile_lines(
     local_variables: &mut LocalVariableTable,
     global_table: &mut GlobalTable,
     global_tracker: &mut GlobalTracker,
-) -> Result<(String, bool), WErr> {
+) -> Result<(Assembly, bool), WErr> {
+    // Enter a new scope for variables
     local_variables.enter_scope();
+    
     let mut contents = AssemblyBuilder::new();
 
+    // Tracks whether the last line is a return statement
     let mut last_is_return = false;
 
     for (line_i, line) in lines.iter().enumerate() {
@@ -133,7 +144,7 @@ fn recursively_compile_lines(
                 )?);
             }
             LineTokens::If(if_token) => {
-                let condition_addr = global_table.add_local_variable_unnamed_base(
+                let condition_addr = global_table.add_local_variable_unnamed(
                     BoolType::id().immediate_single(),
                     local_variables,
                 );
@@ -145,11 +156,13 @@ fn recursively_compile_lines(
                     global_table,
                     global_tracker,
                 )?);
+                // Compare boolean with zero to decide whether to jump
                 contents.line(&format!("cmp byte {}, 0", condition_addr.local_address()));
 
                 let end_tag = global_tracker.get_unique_tag(fid);
                 let mut next_tag = global_tracker.get_unique_tag(fid);
 
+                // Add tags to skip to next condition
                 if !if_token.elif_condition_contents().is_empty()
                     || if_token.else_contents().is_some()
                 {
@@ -171,11 +184,13 @@ fn recursively_compile_lines(
                 contents.other(&code);
 
                 for (elif_condition, elif_content) in if_token.elif_condition_contents() {
+                    // Jump to end tag to prevent fall-through from previous condition
                     contents.line(&format!("jmp {end_tag}"));
+                    // Tag for this statement
                     contents.line(&format!("{next_tag}:"));
                     next_tag = global_tracker.get_unique_tag(fid);
 
-                    let condition_addr = global_table.add_local_variable_unnamed_base(
+                    let condition_addr = global_table.add_local_variable_unnamed(
                         BoolType::id().immediate_single(),
                         local_variables,
                     );
@@ -187,9 +202,10 @@ fn recursively_compile_lines(
                         global_table,
                         global_tracker,
                     )?);
+                    // Skip if condition failed
                     contents.line(&format!("cmp byte {}, 0", condition_addr.local_address()));
                     contents.line(&format!("jz {next_tag}"));
-                    let (code, ret) = recursively_compile_lines(
+                    let (asm, ret) = recursively_compile_lines(
                         fid,
                         elif_content,
                         return_variable,
@@ -199,11 +215,13 @@ fn recursively_compile_lines(
                         global_tracker,
                     )?;
                     last_is_return &= ret;
-                    contents.other(&code);
+                    contents.other(&asm);
                 }
 
                 if let Some(else_contents) = if_token.else_contents() {
+                    // Prevent fall-through
                     contents.line(&format!("jmp {end_tag}"));
+                    
                     contents.line(&format!("{next_tag}:"));
                     next_tag = global_tracker.get_unique_tag(fid);
                     let (code, ret) = recursively_compile_lines(
@@ -218,7 +236,7 @@ fn recursively_compile_lines(
                     last_is_return &= ret;
                     contents.other(&code);
                 }
-
+                
                 contents.line(&format!("{next_tag}:"));
                 contents.line(&format!("{end_tag}:"));
             }
@@ -228,7 +246,7 @@ fn recursively_compile_lines(
 
                 contents.line(&format!("{start_tag}:"));
 
-                let condition_addr = global_table.add_local_variable_unnamed_base(
+                let condition_addr = global_table.add_local_variable_unnamed(
                     BoolType::id().immediate_single(),
                     local_variables,
                 );
@@ -240,6 +258,7 @@ fn recursively_compile_lines(
                     global_table,
                     global_tracker,
                 )?);
+                // Jump to end if condition failed
                 contents.line(&format!("cmp byte {}, 0", condition_addr.local_address()));
                 contents.line(&format!("jz {end_tag}"));
 
@@ -254,12 +273,14 @@ fn recursively_compile_lines(
                 )?;
                 last_is_return = ret;
                 contents.other(&code);
-
+                
+                // Jump to start (re-evaluates condition)
                 contents.line(&format!("jmp {start_tag}"));
                 contents.line(&format!("{end_tag}:"))
             }
             LineTokens::Return(rt) => {
                 last_is_return = true;
+                // Check return type
                 if fid.is_main() {
                     if rt.return_value().is_none() {
                         return WErr::ne(
@@ -270,7 +291,7 @@ fn recursively_compile_lines(
                         );
                     }
 
-                    let address = global_table.add_local_variable_unnamed_base(
+                    let address = global_table.add_local_variable_unnamed(
                         TypeRef::new(IntType::id(), 1, Indirection(0)),
                         local_variables,
                     );
@@ -329,6 +350,7 @@ fn recursively_compile_lines(
                 }
             }
             LineTokens::NoOp(et) => {
+                // Evaluates an evaluable e.g. a function call even if nothing is done with the result
                 contents.other(
                     &compile_evaluable_reference(
                         fid,
@@ -340,6 +362,7 @@ fn recursively_compile_lines(
                     .0,
                 );
             }
+            // Debug tool
             #[cfg(debug_assertions)]
             LineTokens::Marker(value) => {
                 cprintln!("\n<s><m!>At Compilation Marker:</> '{}'", value.value());
@@ -348,6 +371,7 @@ fn recursively_compile_lines(
         }
     }
 
+    // Put variables out of scope
     local_variables.leave_scope();
 
     Ok((contents.finish(), last_is_return))

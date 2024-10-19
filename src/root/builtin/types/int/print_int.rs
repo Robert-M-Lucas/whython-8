@@ -6,24 +6,24 @@ use crate::root::shared::common::{FunctionID, LocalAddress, TypeID};
 use unique_type_id::UniqueTypeId;
 use crate::root::assembler::assembly_builder::Assembly;
 
-/// `exit` function immediately terminating the program
+/// `printi` function that prints an integer to the terminal
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
-pub struct ExitFunction;
+pub struct PrintInt;
 
-impl ExitFunction {
+impl PrintInt {
     pub const fn id() -> FunctionID {
-        f_id(ExitFunction::unique_type_id().0)
+        f_id(PrintInt::unique_type_id().0)
     }
 }
 
-impl BuiltinInlineFunction for ExitFunction {
+impl BuiltinInlineFunction for PrintInt {
     fn id(&self) -> FunctionID {
         Self::id()
     }
 
     fn name(&self) -> &'static str {
-        "exit"
+        "printi"
     }
 
     fn signature(&self) -> FunctionSignature {
@@ -35,14 +35,23 @@ impl BuiltinInlineFunction for ExitFunction {
     }
 
     fn inline(&self) -> InlineFnGenerator {
-        |args: &[LocalAddress], _, _, _| -> Assembly {
-            let lhs = &args[0];
+        |args: &[LocalAddress], _, gt, sz| -> Assembly {
+            let id = format!("{}_fstr", Self::id().string_id());
 
-            // 0 us exit syscall
+            let data = format!("{id} db `Integer: %ld\\n`,0");
+
+            gt.add_readonly_data(&id, &data);
+
+            let lhs = args[0];
             format!(
-                "    mov rax, 60
-    mov rdi, {lhs}
-    syscall\n"
+                "    mov rdi, {id}
+    mov rsi, {lhs}
+    mov al, 0
+    sub rsp, {sz}
+    extern printf
+    call printf
+    add rsp, {sz}
+"
             )
         }
     }

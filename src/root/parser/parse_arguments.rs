@@ -4,6 +4,7 @@ use crate::root::parser::parse_function::parse_evaluable::{parse_evaluable, Eval
 use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::parser::parse_util::discard_ignored;
 
+/// Parses an argument list
 pub fn parse_arguments<'a>(
     s: Span<'a>,
     containing_class: Option<&SimpleNameToken>,
@@ -11,6 +12,7 @@ pub fn parse_arguments<'a>(
     let mut s = s;
     let mut args = Vec::new();
 
+    // Loop over arguments
     loop {
         let (ns, _) = discard_ignored(s)?;
         let (ns, section) = take_until_or_end_discard_smart(ns, ",")?;
@@ -19,6 +21,7 @@ pub fn parse_arguments<'a>(
             break;
         }
 
+        // Parse argument
         let res = parse_evaluable(section, containing_class, false)?.1;
         args.push(res);
 

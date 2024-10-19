@@ -29,6 +29,7 @@ impl LiteralTokens {
     }
 }
 
+/// Parses a literal
 pub fn parse_literal(s: Span) -> ParseResult<Span, LiteralToken> {
     let (s, _) = discard_ignored(s)?;
 

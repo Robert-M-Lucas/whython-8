@@ -8,7 +8,7 @@ use crate::root::errors::parser_errors::create_custom_error;
 use crate::root::parser::location::Location;
 use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
 use crate::root::parser::parse_arguments::parse_arguments;
-use crate::root::parser::parse_blocks::{parse_terminator_default_set, BRACKET_TERMINATOR};
+use crate::root::parser::parse_blocks::{parse_default_terminator_content, BRACKET_TERMINATOR};
 use crate::root::parser::parse_function::parse_literal::{parse_literal, LiteralToken};
 use crate::root::parser::parse_function::parse_operator::{parse_operator, OperatorToken};
 use crate::root::parser::parse_function::parse_struct_init::{parse_struct_init, StructInitToken};
@@ -16,12 +16,14 @@ use crate::root::parser::parse_name::{parse_simple_name, SimpleNameToken};
 use crate::root::parser::parse_util::discard_ignored;
 use crate::root::shared::common::Indirection;
 
+/// A token that can be evaluated to a value with location info
 #[derive(Debug, Getters)]
 pub struct EvaluableToken {
     location: Location,
     token: EvaluableTokens,
 }
 
+/// Create a temp token from a token (and location)
 #[allow(private_interfaces)]
 pub fn temp_from_token(s: Span, token: EvaluableTokens) -> TempEvaluableTokensOne {
     TempEvaluableTokensOne::EvaluableToken(EvaluableToken {
@@ -30,6 +32,7 @@ pub fn temp_from_token(s: Span, token: EvaluableTokens) -> TempEvaluableTokensOn
     })
 }
 
+/// A token that can be evaluated to a value
 #[derive(Debug)]
 pub enum EvaluableTokens {
     Name(SimpleNameToken, Option<SimpleNameToken>),
@@ -52,6 +55,7 @@ pub enum EvaluableTokens {
     None,
 }
 
+/// A `TypeRef` that hasn't been resolved
 #[derive(Debug, Getters)]
 pub struct UnresolvedTypeRefToken {
     indirection: Indirection,
@@ -93,6 +97,7 @@ impl UnresolvedTypeRefToken {
     }
 }
 
+/// A token representing a name (e.g `a`, `a.b`, `a::b`) with a location
 #[derive(Debug, Getters)]
 pub struct FullNameToken {
     location: Location,
@@ -118,6 +123,7 @@ impl FullNameToken {
     }
 }
 
+/// A token representing a name (e.g `a`, `a.b`, `a::b`)
 #[derive(Debug)]
 pub enum FullNameTokens {
     Name(SimpleNameToken, Option<SimpleNameToken>),
@@ -141,6 +147,7 @@ impl FullNameTokens {
     }
 }
 
+/// First stage temp token in evaluation
 #[allow(private_interfaces)]
 #[derive(Debug)]
 enum TempEvaluableTokensOne {
@@ -157,18 +164,21 @@ enum TempEvaluableTokensOne {
     DynamicFunctionCall(SimpleNameToken, Vec<EvaluableToken>),
 }
 
+/// An `EvaluableToken` or `OperatorToken`
 #[derive(Debug)]
 enum TempEvaluableTokensTwo {
     EvaluableToken(EvaluableToken),
     Operator(OperatorToken),
 }
 
+/// Parses a name e.g. `a`, `a.b`, `a::b`
 pub fn parse_full_name<'a>(
     s: Span<'a>,
     containing_class: Option<&SimpleNameToken>,
 ) -> ParseResult<'a, Span<'a>, UnresolvedTypeRefToken> {
     let mut indirection: usize = 0;
     let mut s = s;
+    // Add indirection based on number of &s
     loop {
         let (ns, _) = discard_ignored(s)?;
 
@@ -192,7 +202,8 @@ pub fn parse_full_name<'a>(
     let mut s = s;
 
     let (ns, _) = discard_ignored(s)?;
-
+    
+    // Add static access if `::` encountered
     if let Ok((ns, _)) = tag::<&str, Span, ErrorTree>("::")(ns) {
         let (ns, section) = parse_simple_name(ns)?;
         current = FullNameToken {
@@ -201,6 +212,7 @@ pub fn parse_full_name<'a>(
         };
         s = ns;
     }
+    // Add dynamic access in case of `.`
     if let Ok((ns, _)) = char::<Span, ErrorTree>('.')(ns) {
         let (ns, section) = parse_simple_name(ns)?;
         current = FullNameToken {
@@ -228,6 +240,8 @@ pub fn parse_full_name<'a>(
 //     }
 // }
 
+/// Parse text to an `EvaluableToken`
+// TODO: Split into smaller functions, improve documentation
 pub fn parse_evaluable<'a, 'b>(
     s: Span<'a>,
     containing_class: Option<&'b SimpleNameToken>,
@@ -282,7 +296,7 @@ pub fn parse_evaluable<'a, 'b>(
         }
 
         // Recursively parse bracketed sections
-        let ns = if let Ok((ns, inner)) = parse_terminator_default_set(s, &BRACKET_TERMINATOR) {
+        let ns = if let Ok((ns, inner)) = parse_default_terminator_content(s, &BRACKET_TERMINATOR) {
             let (_, evaluable) = parse_evaluable(inner, containing_class, false)?;
             evaluables.push((TempEvaluableTokensOne::EvaluableToken(evaluable), inner));
             ns
@@ -318,7 +332,7 @@ pub fn parse_evaluable<'a, 'b>(
                     let (x, section) = parse_simple_name(x)?;
 
                     Ok(if char::<Span, ErrorTree>('(')(x).is_ok() {
-                        let (x, arguments) = parse_terminator_default_set(x, &BRACKET_TERMINATOR)?;
+                        let (x, arguments) = parse_default_terminator_content(x, &BRACKET_TERMINATOR)?;
                         let (_, arguments) = parse_arguments(arguments, containing_class)?;
                         (
                             x,
@@ -557,7 +571,7 @@ pub fn parse_evaluable<'a, 'b>(
         let operator = if base.is_some() {
             match &enumerated_slice[0] {
                 (_, (TempEvaluableTokensTwo::Operator(op), span)) => {
-                    operator_priority.push(op.get_priority_t());
+                    operator_priority.push(op.get_priority());
                     enumerated_slice = &enumerated_slice[1..];
                     Some((op.clone(), *span))
                 }
@@ -603,7 +617,7 @@ pub fn parse_evaluable<'a, 'b>(
 
     for priority in operator_priority {
         for (pos, ((op, _), _)) in after.iter().map(|x| x.as_ref().unwrap()).enumerate() {
-            if op.get_priority_t() != priority {
+            if op.get_priority() != priority {
                 continue;
             }
 

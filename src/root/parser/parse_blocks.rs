@@ -9,9 +9,11 @@ use crate::root::parser::parse_util::discard_ignored;
 
 // ! BROKEN
 
+/// Represents terminators e.g. '(' and ')'
 pub struct Terminator {
     pub opening: char,
     pub closing: char,
+    /// Represents whether this terminator's contents are code or not e.g. a string
     pub code_inner: bool,
     pub escape_char: Option<char>,
 }
@@ -40,10 +42,14 @@ pub const STRING_TERMINATOR: Terminator = Terminator {
 pub const DEFAULT_TERMINATORS: [Terminator; 3] =
     [BRACE_TERMINATOR, BRACKET_TERMINATOR, STRING_TERMINATOR];
 
-pub fn parse_terminator_default_set<'a>(s: Span<'a>, terminator: &Terminator) -> ParseResult<'a> {
+/// Gets the content of a given terminator using the default terminator set to intelligently handle
+/// other terminators
+pub fn parse_default_terminator_content<'a>(s: Span<'a>, terminator: &Terminator) -> ParseResult<'a> {
     parse_terminator(s, terminator, &DEFAULT_TERMINATORS)
 }
 
+/// Gets the contents of a terminator using `all_terminators` to smartly handle other terminators
+/// that may occur
 pub fn parse_terminator<'a>(
     s: Span<'a>,
     terminator: &Terminator,
@@ -54,18 +60,22 @@ pub fn parse_terminator<'a>(
     let mut depth = 0;
 
     let mut s = initial_span;
-
+    
     'main: loop {
+        // Don't discard whitespace in the case of strings, for example
         if terminator.code_inner {
             s = discard_ignored(s)?.0;
         }
 
+        // Done
         if s.is_empty() {
             break;
         }
 
+        // Go up a level as previous block is closed
         if let Ok((ns, _)) = nchar::<_, ErrorTree>(terminator.closing)(s) {
             if depth == 0 {
+                // Done as last block closed
                 return Ok((ns, initial_span.take_split(initial_span.offset(&s)).1));
             } else {
                 s = ns;
@@ -74,12 +84,14 @@ pub fn parse_terminator<'a>(
             }
         }
 
+        // Enter new block
         if let Ok((ns, _)) = nchar::<_, ErrorTree>(terminator.opening)(s) {
             s = ns;
             depth += 1;
             continue;
         }
 
+        // Handle escape chars
         if let Some(escape) = terminator.escape_char {
             let (ns, c) = anychar(s)?;
             if c == escape {
@@ -88,7 +100,8 @@ pub fn parse_terminator<'a>(
                 continue;
             }
         }
-
+        
+        // Handle recursive terminator parsing if current block is code
         if terminator.code_inner {
             for t in all_terminators {
                 if nchar::<_, ErrorTree>(t.opening)(s).is_ok() {
@@ -113,10 +126,13 @@ pub fn parse_terminator<'a>(
             s = anychar(s)?.0
         }
     }
-
+    
+    // Exited closing terminator
     Err(nom::Err::Error(ErrorTree::from_char(s, terminator.closing)))
 }
 
+/// Take until a tag or the end of the span not including occurrences in `DEFAULT_TERMINATORS`
+/// blocks
 pub fn take_until_or_end_discard_smart<'a>(s: Span<'a>, until: &str) -> ParseResult<'a> {
     let original = s;
     let mut s = s;
@@ -132,7 +148,7 @@ pub fn take_until_or_end_discard_smart<'a>(s: Span<'a>, until: &str) -> ParseRes
 
         for t in &DEFAULT_TERMINATORS {
             if t.opening == c {
-                s = parse_terminator_default_set(s, t)?.0;
+                s = parse_default_terminator_content(s, t)?.0;
                 continue 'outer;
             }
         }
@@ -149,6 +165,8 @@ pub fn take_until_or_end_discard_smart<'a>(s: Span<'a>, until: &str) -> ParseRes
     Ok((end, inner))
 }
 
+
+/// Take until a tag not including occurrences in `DEFAULT_TERMINATORS` blocks
 #[allow(dead_code)]
 pub fn take_until_discard_smart<'a>(s: Span<'a>, until: &str) -> ParseResult<'a> {
     let original = s;
@@ -170,7 +188,7 @@ pub fn take_until_discard_smart<'a>(s: Span<'a>, until: &str) -> ParseResult<'a>
 
         for t in &DEFAULT_TERMINATORS {
             if t.opening == c {
-                s = parse_terminator_default_set(s, t)?.0;
+                s = parse_default_terminator_content(s, t)?.0;
                 continue 'outer;
             }
         }

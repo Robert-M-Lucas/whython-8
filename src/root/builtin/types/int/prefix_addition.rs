@@ -1,18 +1,20 @@
 use unique_type_id::UniqueTypeId;
-
+use crate::root::assembler::assembly_builder::Assembly;
 use crate::root::builtin::types::int::IntType;
 use crate::root::builtin::{f_id, BuiltinInlineFunction, InlineFnGenerator};
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{FunctionID, TypeID};
 
+/// Implements the integer prefix add operation
+/// This operation does nothing (e.g. `+6` is `6`)
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
-pub struct IntPAdd;
+pub struct IntPrefixAddition;
 
-impl BuiltinInlineFunction for IntPAdd {
+impl BuiltinInlineFunction for IntPrefixAddition {
     fn id(&self) -> FunctionID {
-        f_id(IntPAdd::unique_type_id().0)
+        f_id(IntPrefixAddition::unique_type_id().0)
     }
 
     fn name(&self) -> &'static str {
@@ -28,7 +30,7 @@ impl BuiltinInlineFunction for IntPAdd {
     }
 
     fn inline(&self) -> InlineFnGenerator {
-        |_, _, _, _| -> String { String::new() }
+        |_, _, _, _| -> Assembly { String::new() }
     }
 
     fn parent_type(&self) -> Option<TypeID> {

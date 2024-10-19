@@ -1,11 +1,13 @@
 use unique_type_id::UniqueTypeId;
-
-use crate::root::builtin::types::bool::{bool_op_sig, BoolType};
+use crate::root::assembler::assembly_builder::Assembly;
+use crate::root::builtin::types::bool::{boolean_signature, BoolType};
 use crate::root::builtin::{f_id, BuiltinInlineFunction, InlineFnGenerator};
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{FunctionID, LocalAddress, TypeID};
 
+
+/// Implements the boolean or operation
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
 pub struct BoolOr;
@@ -20,11 +22,11 @@ impl BuiltinInlineFunction for BoolOr {
     }
 
     fn signature(&self) -> FunctionSignature {
-        bool_op_sig()
+        boolean_signature()
     }
 
     fn inline(&self) -> InlineFnGenerator {
-        |args: &[LocalAddress], return_into, _, _| -> String {
+        |args: &[LocalAddress], return_into, _, _| -> Assembly {
             let lhs = args[0];
             let rhs = args[1];
             let return_into = return_into.unwrap();
@@ -44,11 +46,11 @@ impl BuiltinInlineFunction for BoolOr {
 
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
-pub struct BoolAsOr;
+pub struct BoolAssignOr;
 
-impl BuiltinInlineFunction for BoolAsOr {
+impl BuiltinInlineFunction for BoolAssignOr {
     fn id(&self) -> FunctionID {
-        f_id(BoolAsOr::unique_type_id().0)
+        f_id(BoolAssignOr::unique_type_id().0)
     }
 
     fn name(&self) -> &'static str {
@@ -67,7 +69,7 @@ impl BuiltinInlineFunction for BoolAsOr {
     }
 
     fn inline(&self) -> InlineFnGenerator {
-        |args: &[LocalAddress], _, _, _| -> String {
+        |args: &[LocalAddress], _, _, _| -> Assembly {
             let lhs = args[0];
             let rhs = args[1];
             format!(

@@ -12,18 +12,21 @@ use super::{
 //     take_while(|c: char| c.is_whitespace())(s)
 // }
 
+/// Discards whitespace and comments
 pub fn discard_ignored(s: Span) -> ParseResult<Span, ()> {
     let mut s = s;
-    // let mut ever_found = false;
+    // Ensures no infinite loop
     let mut found = true;
     while found {
         found = false;
+        // Comments
         if let Ok((ns, _)) = parse_comments::parse_comment(s) {
             s = ns;
             found = true;
             // ever_found = true;
         }
 
+        // Whitespace
         if let Ok((ns, _)) = multispace1::<_, ErrorTree>(s) {
             s = ns;
             found = true;
@@ -34,9 +37,13 @@ pub fn discard_ignored(s: Span) -> ParseResult<Span, ()> {
     Ok((s, ()))
 }
 
+/// Discards whitespace and comments requiring that whitespace/comments exist
+/// e.g. `let a = 1` requires ignored between `let` and `a`
 pub fn require_ignored(s: Span) -> ParseResult<Span, ()> {
     let mut s = s;
+    // Whether ignored has been found
     let mut ever_found = false;
+    // Prevents infinite loops
     let mut found = true;
     while found {
         found = false;

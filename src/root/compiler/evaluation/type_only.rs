@@ -11,6 +11,7 @@ use crate::root::parser::parse_function::parse_operator::{OperatorTokens, Prefix
 use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::shared::common::{FunctionID, Indirection, TypeRef};
 
+/// Helper function for correctly handling a `NameResult` when trying to get a `TypeID`
 fn handle_name_result(name: &SimpleNameToken, name_result: NameResult) -> Result<TypeRef, WErr> {
     Ok(match name_result {
         NameResult::Function(_) => {
@@ -79,13 +80,13 @@ pub fn compile_evaluable_type_only(
             )?;
 
             // code += "\n";
-            let op_fn = global_table.get_operator_function(
+            let operator_fn = global_table.get_operator_function(
                 *lhs_type.type_id(),
                 op,
                 PrefixOrInfixEx::Infix,
             )?;
-            let signature = global_table.get_function_signature(op_fn);
-            signature.return_type().as_ref().unwrap().clone()
+            let operator_fn_signature = global_table.get_function_signature(operator_fn);
+            operator_fn_signature.return_type().as_ref().unwrap().clone()
         }
         EvaluableTokens::PrefixOperator(op, lhs) => {
             let lhs_type = compile_evaluable_type_only(
@@ -96,6 +97,7 @@ pub fn compile_evaluable_type_only(
                 global_tracker,
             )?;
 
+            // Handle special cases for referencing and dereferencing
             match op.operator() {
                 OperatorTokens::Reference => return Ok(lhs_type.plus_one_indirect()),
                 OperatorTokens::Multiply => {
@@ -111,19 +113,19 @@ pub fn compile_evaluable_type_only(
             };
 
             // code += "\n";
-            let op_fn = global_table.get_operator_function(
+            let operator_fn = global_table.get_operator_function(
                 *lhs_type.type_id(),
                 op,
                 PrefixOrInfixEx::Prefix,
             )?;
-            let signature = global_table.get_function_signature(op_fn);
-            signature.return_type().as_ref().unwrap().clone()
+            let operator_fn_signature = global_table.get_function_signature(operator_fn);
+            operator_fn_signature.return_type().as_ref().unwrap().clone()
         }
         EvaluableTokens::DynamicAccess {
             parent: inner,
             section: access,
         } => {
-            let t = compile_evaluable_type_only(
+            let inner_type = compile_evaluable_type_only(
                 fid,
                 inner,
                 local_variables,
@@ -131,24 +133,25 @@ pub fn compile_evaluable_type_only(
                 global_tracker,
             )?;
 
-            let t = global_table.get_type(*t.type_id());
-            let attribs = t.get_attributes(access.location())?;
+            let new_type = global_table.get_type(*inner_type.type_id());
+            let inner_attributes = new_type.get_attributes(access.location())?;
 
-            let mut out = None;
+            let mut type_found = None;
 
-            for (_, name, t) in attribs {
+            // Find type of attribute
+            for (_, name, t) in inner_attributes {
                 if name.name() == access.name() {
-                    out = Some(t.clone());
+                    type_found = Some(t.clone());
                     break;
                 }
             }
 
-            if let Some(out) = out {
-                out.plus_one_indirect()
+            if let Some(type_found) = type_found {
+                type_found.plus_one_indirect()
             } else {
                 return WErr::ne(
                     EvalErrs::TypeDoesntHaveAttribute(
-                        global_table.get_type_name(&t.id().immediate_single()),
+                        global_table.get_type_name(&new_type.id().immediate_single()),
                         access.name().clone(),
                     ),
                     access.location().clone(),
@@ -156,16 +159,18 @@ pub fn compile_evaluable_type_only(
             }
         }
         EvaluableTokens::StaticAccess {
-            parent: p,
-            section: n,
+            parent: inner,
+            section: access,
         } => {
-            match p.token() {
+            // Handle reference to other file
+            match inner.token() {
                 EvaluableTokens::Name(file_name, containing_class) => {
+                    // Imported file
                     if let Some(file) = global_table.get_imported_file(file_name, global_tracker) {
                         return handle_name_result(
-                            n,
+                            access,
                             global_table.resolve_name(
-                                n,
+                                access,
                                 Some(file),
                                 containing_class.as_ref(),
                                 local_variables,
@@ -179,15 +184,16 @@ pub fn compile_evaluable_type_only(
                     section: file_name,
                 } => {
                     if let EvaluableTokens::Name(folder_name, containing_class) = parent.token() {
+                        // Imported folder
                         if let Some(file) = global_table.get_file_from_folder(
                             folder_name.name(),
                             file_name.name(),
                             global_tracker,
                         ) {
                             return handle_name_result(
-                                n,
+                                access,
                                 global_table.resolve_name(
-                                    n,
+                                    access,
                                     Some(file),
                                     containing_class.as_ref(),
                                     local_variables,
@@ -200,16 +206,18 @@ pub fn compile_evaluable_type_only(
                 _ => (),
             }
 
+            // If not referring to a type in another file, the only other possibility
+            // is a Type::attribute but constant attributes do not exist
             return WErr::ne(
-                NRErrs::CannotFindConstantAttribute(n.name().clone()),
-                n.location().clone(),
+                NRErrs::CannotFindConstantAttribute(access.name().clone()),
+                access.location().clone(),
             );
-        } // Accessed methods must be called
+        }
         EvaluableTokens::FunctionCall {
             function: inner,
             args: _args,
         } => {
-            let (_slf, ifid, _) = function_only::compile_evaluable_function_only(
+            let (_slf, function_id, _) = function_only::compile_evaluable_function_only(
                 fid,
                 inner,
                 local_variables,
@@ -217,18 +225,18 @@ pub fn compile_evaluable_type_only(
                 global_tracker,
             )?;
 
-            let signature = global_table.get_function_signature(ifid);
+            let signature = global_table.get_function_signature(function_id);
             let Some(return_type) = signature.return_type().clone() else {
                 return WErr::ne(EvalErrs::ExpectedNotNone, et.location().clone());
             };
             return_type
         }
         EvaluableTokens::StructInitialiser(struct_init) => {
-            let mut t = global_table.resolve_to_type_ref(struct_init.name(), None)?;
+            let mut struct_type = global_table.resolve_to_type_ref(struct_init.name(), None)?;
             if *struct_init.heap_alloc() {
-                t = t.plus_one_indirect();
+                struct_type = struct_type.plus_one_indirect();
             }
-            t
+            struct_type
         }
         EvaluableTokens::None => {
             return WErr::ne(EvalErrs::ExpectedNotNone, et.location().clone());

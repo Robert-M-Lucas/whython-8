@@ -1,4 +1,4 @@
-use crate::root::assembler::assembly_builder::AssemblyBuilder;
+use crate::root::assembler::assembly_builder::{Assembly, AssemblyBuilder};
 use crate::root::shared::common::{ByteSize, Indirection, LocalAddress};
 
 // pub fn get_jump_tag(id: FunctionID, jump_id: usize) -> String {
@@ -82,7 +82,7 @@ pub fn copy_from_indirect(
     to: LocalAddress,
     amount: ByteSize,
     indirectness: Indirection,
-) -> String {
+) -> Assembly {
     if amount == ByteSize(0) {
         return String::new();
     }
@@ -146,7 +146,7 @@ pub fn copy_from_indirect_fixed_offset(
     offset: ByteSize,
     to: LocalAddress,
     amount: ByteSize,
-) -> String {
+) -> Assembly {
     if amount == ByteSize(0) {
         return String::new();
     }
@@ -200,7 +200,7 @@ pub fn copy_from_indirect_fixed_offset(
 
 /// Copies data. Expects `from` to be the address of the data to move
 /// and `to` to be a pointer to the target
-pub fn copy_to_indirect(from: LocalAddress, to: LocalAddress, amount: ByteSize) -> String {
+pub fn copy_to_indirect(from: LocalAddress, to: LocalAddress, amount: ByteSize) -> Assembly {
     if amount == ByteSize(0) {
         return String::new();
     }
@@ -253,7 +253,7 @@ pub fn copy_to_indirect(from: LocalAddress, to: LocalAddress, amount: ByteSize) 
 
 /// Copies data. Expects `from` to be the address of the data to move
 /// and `to` to be the target
-pub fn copy(from: LocalAddress, to: LocalAddress, amount: ByteSize) -> String {
+pub fn copy(from: LocalAddress, to: LocalAddress, amount: ByteSize) -> Assembly {
     if amount == ByteSize(0) {
         return String::new();
     }
@@ -316,7 +316,8 @@ pub fn copy(from: LocalAddress, to: LocalAddress, amount: ByteSize) -> String {
     output.finish()
 }
 
-pub fn write_64bit_int(value: i64, location: &LocalAddress) -> String {
+/// Writes a 64-bit integer to a given address
+pub fn write_64bit_int(value: i64, location: &LocalAddress) -> Assembly {
     if value.abs() < 2147483647 {
         format!("    mov qword {location}, {value}\n")
     } else {

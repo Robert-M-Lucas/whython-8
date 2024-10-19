@@ -1,23 +1,24 @@
 use unique_type_id::UniqueTypeId;
-
-use crate::root::builtin::types::bool::{bool_op_sig, BoolType};
+use crate::root::assembler::assembly_builder::Assembly;
+use crate::root::builtin::types::bool::{boolean_signature, BoolType};
 use crate::root::builtin::{f_id, BuiltinInlineFunction, InlineFnGenerator};
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::shared::common::{FunctionID, LocalAddress, TypeID};
 
+/// Implements the boolean equal operation
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
-pub struct BoolEq;
+pub struct BoolEqual;
 
-impl BoolEq {
+impl BoolEqual {
     pub const fn id() -> FunctionID {
-        f_id(BoolEq::unique_type_id().0)
+        f_id(BoolEqual::unique_type_id().0)
     }
 }
 
-impl BuiltinInlineFunction for BoolEq {
+impl BuiltinInlineFunction for BoolEqual {
     fn id(&self) -> FunctionID {
-        BoolEq::id()
+        BoolEqual::id()
     }
 
     fn name(&self) -> &'static str {
@@ -25,17 +26,17 @@ impl BuiltinInlineFunction for BoolEq {
     }
 
     fn signature(&self) -> FunctionSignature {
-        bool_op_sig()
+        boolean_signature()
     }
 
     fn inline(&self) -> InlineFnGenerator {
-        |args: &[LocalAddress], return_into: Option<LocalAddress>, gt, _| -> String {
+        |args: &[LocalAddress], return_into: Option<LocalAddress>, gt, _| -> Assembly {
             let lhs = args[0];
             let rhs = args[1];
             let return_into = return_into.unwrap();
-            let jmp_false = gt.get_unique_tag(BoolEq::id());
-            let jmp_true = gt.get_unique_tag(BoolEq::id());
-            let jmp_end = gt.get_unique_tag(BoolEq::id());
+            let jmp_false = gt.get_unique_tag(BoolEqual::id());
+            let jmp_true = gt.get_unique_tag(BoolEqual::id());
+            let jmp_end = gt.get_unique_tag(BoolEqual::id());
 
             format!(
                 "    cmp byte {lhs}, 0
@@ -60,19 +61,21 @@ impl BuiltinInlineFunction for BoolEq {
     }
 }
 
+
+/// Implements the boolean not equal operation
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
-pub struct BoolNE;
+pub struct BoolNotEqual;
 
-impl BoolNE {
+impl BoolNotEqual {
     pub const fn id() -> FunctionID {
-        f_id(BoolNE::unique_type_id().0)
+        f_id(BoolNotEqual::unique_type_id().0)
     }
 }
 
-impl BuiltinInlineFunction for BoolNE {
+impl BuiltinInlineFunction for BoolNotEqual {
     fn id(&self) -> FunctionID {
-        BoolNE::id()
+        BoolNotEqual::id()
     }
 
     fn name(&self) -> &'static str {
@@ -80,17 +83,17 @@ impl BuiltinInlineFunction for BoolNE {
     }
 
     fn signature(&self) -> FunctionSignature {
-        bool_op_sig()
+        boolean_signature()
     }
 
     fn inline(&self) -> InlineFnGenerator {
-        |args: &[LocalAddress], return_into: Option<LocalAddress>, gt, _| -> String {
+        |args: &[LocalAddress], return_into: Option<LocalAddress>, gt, _| -> Assembly {
             let lhs = args[0];
             let rhs = args[1];
             let return_into = return_into.unwrap();
-            let jmp_false = gt.get_unique_tag(BoolNE::id());
-            let jmp_true = gt.get_unique_tag(BoolNE::id());
-            let jmp_end = gt.get_unique_tag(BoolNE::id());
+            let jmp_false = gt.get_unique_tag(BoolNotEqual::id());
+            let jmp_true = gt.get_unique_tag(BoolNotEqual::id());
+            let jmp_end = gt.get_unique_tag(BoolNotEqual::id());
 
             format!(
                 "    cmp byte {lhs}, 0

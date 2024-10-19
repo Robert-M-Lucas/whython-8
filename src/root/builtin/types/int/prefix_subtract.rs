@@ -4,57 +4,44 @@ use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{FunctionID, LocalAddress, TypeID};
 use unique_type_id::UniqueTypeId;
+use crate::root::assembler::assembly_builder::Assembly;
 
+/// Implements the integer subtract operation
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
-pub struct PrintI;
+pub struct IntPrefixSubtract;
 
-impl PrintI {
-    pub const fn id() -> FunctionID {
-        f_id(PrintI::unique_type_id().0)
-    }
-}
-
-impl BuiltinInlineFunction for PrintI {
+impl BuiltinInlineFunction for IntPrefixSubtract {
     fn id(&self) -> FunctionID {
-        Self::id()
+        f_id(IntPrefixSubtract::unique_type_id().0)
     }
 
     fn name(&self) -> &'static str {
-        "printi"
+        "p_sub"
     }
 
     fn signature(&self) -> FunctionSignature {
         FunctionSignature::new_inline_builtin(
-            SelfType::None,
+            SelfType::CopySelf,
             &[("lhs", IntType::id().immediate_single())],
-            None,
+            Some(IntType::id().immediate_single()),
         )
     }
 
     fn inline(&self) -> InlineFnGenerator {
-        |args: &[LocalAddress], _, gt, sz| -> String {
-            let id = format!("{}_fstr", Self::id().string_id());
-
-            let data = format!("{id} db `Integer: %ld\\n`,0");
-
-            gt.add_readonly_data(&id, &data);
-
+        |args: &[LocalAddress], return_into: Option<LocalAddress>, _, _| -> Assembly {
             let lhs = args[0];
+            let return_into = return_into.unwrap();
             format!(
-                "    mov rdi, {id}
-    mov rsi, {lhs}
-    mov al, 0
-    sub rsp, {sz}
-    extern printf
-    call printf
-    add rsp, {sz}
-"
+                "    mov rax, qword {lhs}
+    neg rax
+    mov qword {return_into}, rax\n"
             )
         }
     }
 
     fn parent_type(&self) -> Option<TypeID> {
-        None
+        Some(IntType::id())
     }
 }
+

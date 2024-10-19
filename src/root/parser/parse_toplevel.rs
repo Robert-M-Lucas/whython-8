@@ -15,6 +15,7 @@ pub enum TopLevelTokens {
 
 pub type ToplevelTestFn<'a> = fn(Span<'a>) -> ParseResult<Span<'a>, TopLevelTokens>;
 
+/// Parse a file into tokens (with imports removed)
 pub fn parse_toplevel(s: Span) -> ParseResult<Span, Vec<TopLevelTokens>> {
     let mut s = s;
     let mut tokens = Vec::new();
@@ -28,6 +29,7 @@ pub fn parse_toplevel(s: Span) -> ParseResult<Span, Vec<TopLevelTokens>> {
             return Ok((ns, tokens));
         }
 
+        // Parse either a struct, impl, or function
         let (_, parse_fn) =
             alt((test_parse_struct, test_parse_impl, test_parse_function)).parse(ns)?;
 

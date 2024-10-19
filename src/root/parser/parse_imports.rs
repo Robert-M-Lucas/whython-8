@@ -7,6 +7,8 @@ use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
 use crate::root::parser::parse_util::discard_ignored;
 use crate::root::parser::path_storage::{FileID, PathStorage};
 
+/// Parses import statements (including uses)
+/// Returns a `Vec` of file IDs to parse for this file
 pub fn parse_imports<'a>(
     s: Span<'a>,
     path_storage: &mut PathStorage,
@@ -22,9 +24,10 @@ pub fn parse_imports<'a>(
             is_use = false;
             tag::<_, _, ErrorTree>("import")(ns)
         }) else {
-            return Ok((ns, found_paths));
+            return Ok((ns, found_paths)); // No more imports
         };
 
+        // Get path
         let (ns, _) = discard_ignored(ns)?;
         let Ok((pre_s, path)) =
             take_till::<_, _, ErrorTree>(|c| c == ';' || c == '\n' || c == '\r')(ns)
@@ -34,7 +37,8 @@ pub fn parse_imports<'a>(
                 ns,
             ));
         };
-
+        
+        // Handle path split between lines
         let (ns, next) = anychar::<_, ErrorTree>(pre_s).unwrap();
         if next != ';' {
             return Err(create_custom_error(
@@ -43,6 +47,7 @@ pub fn parse_imports<'a>(
             ));
         }
 
+        // Submit to path storage
         let (_, ids) = path_storage.get_id_and_add_to_file(current_file, is_use, path)?;
 
         for id in ids {

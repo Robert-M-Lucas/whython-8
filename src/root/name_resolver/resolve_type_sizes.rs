@@ -36,7 +36,9 @@ impl UnsizedUserType {
     }
 }
 
-/// Resolves the size of all user type
+/// Resolves the size of a user type recursively
+/// Returns the size of the type, an error or a `Vec<Name, TypeID, Location>` in reverse order
+/// representing how the circular definition happened
 pub fn resolve_type_sizes(
     unsized_type: UnsizedUserType,
     final_types: &mut HashMap<TypeID, UserType>,
@@ -51,13 +53,13 @@ pub fn resolve_type_sizes(
     for (attribute_name, attribute_type) in attributes {
         let offset = size;
 
-        if attribute_type.indirection().has_indirection() {
+        if attribute_type.indirection().has_indirection() { // Indirection mean fixed size
             size += POINTER_SIZE;
-        } else if let Some(sized_type) = final_types.get(attribute_type.type_id()) {
+        } else if let Some(sized_type) = final_types.get(attribute_type.type_id()) { // Type already processed
             size += *sized_type.size();
-        } else if let Some(sized_type) = global_table.try_get_type(*attribute_type.type_id()) {
+        } else if let Some(sized_type) = global_table.try_get_type(*attribute_type.type_id()) { // Built-in type already processed
             size += sized_type.size();
-        } else if let Some(unsized_type) = unsized_types.remove(attribute_type.type_id()) {
+        } else if let Some(unsized_type) = unsized_types.remove(attribute_type.type_id()) { // Recurse
             size +=
                 match resolve_type_sizes(unsized_type, final_types, unsized_types, global_table)? {
                     Ok(s) => s,

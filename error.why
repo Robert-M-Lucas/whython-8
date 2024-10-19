@@ -1,0 +1,6 @@
+fn main() -> int {
+    let a: int = 0;
+    printi(a);
+    printi(b);
+    return 0;
+}

@@ -1,33 +1,34 @@
 use b_box::b;
 use unique_type_id::UniqueTypeId;
-
+use subtract::IntAssignSubtract;
+use crate::root::assembler::assembly_builder::Assembly;
 use crate::root::builtin::t_id;
-use crate::root::builtin::types::int::add::{IntAdd, IntAsAdd};
-use crate::root::builtin::types::int::comparators::{IntEq, IntGE, IntGT, IntLE, IntLT, IntNE};
-use crate::root::builtin::types::int::div::{IntAsDiv, IntDiv};
-use crate::root::builtin::types::int::modulo::{IntAsMod, IntMod};
-use crate::root::builtin::types::int::mul::{IntAsMul, IntMul};
-use crate::root::builtin::types::int::p_add::IntPAdd;
-use crate::root::builtin::types::int::p_sub::{IntAsSub, IntPSub};
-use crate::root::builtin::types::int::printi::PrintI;
-use crate::root::builtin::types::int::sub::IntSub;
+use crate::root::builtin::types::int::addition::{IntAddition, IntAssignAddition};
+use crate::root::builtin::types::int::comparators::{IntEqual, IntGreaterThan, IntGreaterThanEqual, IntLessThan, IntLessThanEqual, IntNotEqual};
+use crate::root::builtin::types::int::division::{IntAssignDivide, IntDivide};
+use crate::root::builtin::types::int::modulo::{IntAssignModulo, IntModulo};
+use crate::root::builtin::types::int::multiply::{IntAssignMultiply, IntMultiply};
+use crate::root::builtin::types::int::prefix_addition::IntPrefixAddition;
+use crate::root::builtin::types::int::prefix_subtract::IntPrefixSubtract;
+use crate::root::builtin::types::int::print_int::PrintInt;
+use crate::root::builtin::types::int::subtract::IntSubtract;
 use crate::root::compiler::assembly::utils::write_64bit_int;
-use crate::root::compiler::compiler_errors::CompErrs;
+use crate::root::errors::compiler_errors::CompErrs;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::GlobalTable;
 use crate::root::parser::parse_function::parse_literal::{LiteralToken, LiteralTokens};
 use crate::root::shared::common::{ByteSize, LocalAddress, TypeID};
 use crate::root::shared::types::Type;
 
-mod add;
+mod addition;
 mod comparators;
-mod div;
+mod division;
 mod modulo;
-mod mul;
-mod p_add;
-mod p_sub;
-mod printi;
-mod sub;
+mod multiply;
+mod prefix_addition;
+mod prefix_subtract;
+mod print_int;
+mod subtract;
 
 // fn int_op_sig() -> FunctionSignature {
 //     FunctionSignature::new_inline_builtin(
@@ -37,27 +38,28 @@ mod sub;
 //     )
 // }
 
+/// Registers all integer types and functions in the `GlobalTable`
 pub fn register_int(global_table: &mut GlobalTable) {
     global_table.register_builtin_type(b!(IntType));
-    global_table.register_inline_function(&IntAdd);
-    global_table.register_inline_function(&IntAsAdd);
-    global_table.register_inline_function(&IntPAdd);
-    global_table.register_inline_function(&IntSub);
-    global_table.register_inline_function(&IntAsSub);
-    global_table.register_inline_function(&IntPSub);
-    global_table.register_inline_function(&IntMul);
-    global_table.register_inline_function(&IntAsMul);
-    global_table.register_inline_function(&IntDiv);
-    global_table.register_inline_function(&IntAsDiv);
-    global_table.register_inline_function(&IntMod);
-    global_table.register_inline_function(&IntAsMod);
-    global_table.register_inline_function(&IntEq);
-    global_table.register_inline_function(&IntNE);
-    global_table.register_inline_function(&IntGT);
-    global_table.register_inline_function(&IntLT);
-    global_table.register_inline_function(&IntGE);
-    global_table.register_inline_function(&IntLE);
-    global_table.register_inline_function(&PrintI);
+    global_table.register_inline_function(&IntAddition);
+    global_table.register_inline_function(&IntAssignAddition);
+    global_table.register_inline_function(&IntPrefixAddition);
+    global_table.register_inline_function(&IntSubtract);
+    global_table.register_inline_function(&IntAssignSubtract);
+    global_table.register_inline_function(&IntPrefixSubtract);
+    global_table.register_inline_function(&IntMultiply);
+    global_table.register_inline_function(&IntAssignMultiply);
+    global_table.register_inline_function(&IntDivide);
+    global_table.register_inline_function(&IntAssignDivide);
+    global_table.register_inline_function(&IntModulo);
+    global_table.register_inline_function(&IntAssignModulo);
+    global_table.register_inline_function(&IntEqual);
+    global_table.register_inline_function(&IntNotEqual);
+    global_table.register_inline_function(&IntGreaterThan);
+    global_table.register_inline_function(&IntLessThan);
+    global_table.register_inline_function(&IntGreaterThanEqual);
+    global_table.register_inline_function(&IntLessThanEqual);
+    global_table.register_inline_function(&PrintInt);
 }
 
 #[derive(UniqueTypeId)]
@@ -87,7 +89,7 @@ impl Type for IntType {
         &self,
         location: &LocalAddress,
         literal: &LiteralToken,
-    ) -> Result<String, WErr> {
+    ) -> Result<Assembly, WErr> {
         Ok(match literal.literal() {
             LiteralTokens::Bool(value) => {
                 if *value {

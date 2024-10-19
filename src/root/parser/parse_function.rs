@@ -1,7 +1,7 @@
 use crate::root::parser::location::Location;
 use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
 use crate::root::parser::parse_blocks::{
-    parse_terminator_default_set, BRACE_TERMINATOR, BRACKET_TERMINATOR,
+    parse_default_terminator_content, BRACE_TERMINATOR, BRACKET_TERMINATOR,
 };
 use crate::root::parser::parse_function::parse_evaluable::{
     parse_full_name, UnresolvedTypeRefToken,
@@ -30,6 +30,7 @@ pub mod parse_return;
 mod parse_struct_init;
 pub mod parse_while;
 
+/// Token representing a function including location
 #[derive(Debug, Getters, Dissolve)]
 pub struct FunctionToken {
     location: Location,
@@ -41,6 +42,7 @@ pub struct FunctionToken {
     lines: Vec<LineTokens>,
 }
 
+/// Tests if a line should be parsed as a function
 pub fn test_parse_function(s: Span<'_>) -> ParseResult<Span, ToplevelTestFn<'_>> {
     match (tag("fn"), require_ignored).parse(s) {
         Ok(_) => Ok((s, |x| {
@@ -50,6 +52,7 @@ pub fn test_parse_function(s: Span<'_>) -> ParseResult<Span, ToplevelTestFn<'_>>
     }
 }
 
+/// Parses a function
 pub fn parse_function<'a>(
     s: Span<'a>,
     allow_self: Option<&SimpleNameToken>,
@@ -57,6 +60,7 @@ pub fn parse_function<'a>(
     let location = Location::from_span(&s);
     let (s, _) = tag("fn").parse(s)?;
     let (s, _) = require_ignored(s)?;
+    // Parse name
     let (s, name) = parse_simple_name(s)?;
     let (s, _) = discard_ignored(s)?;
 
@@ -65,11 +69,13 @@ pub fn parse_function<'a>(
     //     Some(s.as_str())
     // } else { None };
 
-    let (s, contents) = parse_terminator_default_set(s, &BRACKET_TERMINATOR)?;
+    // Parse parameters
+    let (s, contents) = parse_default_terminator_content(s, &BRACKET_TERMINATOR)?;
     let (_, (parameters, has_self)) = parse_parameters(contents, allow_self)?;
 
     let (s, _) = discard_ignored(s)?;
 
+    // Parse return type
     let (s, return_type) = if let Ok((s, _)) = tag::<_, _, ErrorTree>("->")(s) {
         let (s, _) = discard_ignored(s)?;
         // let location = Location::from_span(&s);
@@ -79,7 +85,8 @@ pub fn parse_function<'a>(
         (s, None)
     };
 
-    let (s, contents) = parse_terminator_default_set(s, &BRACE_TERMINATOR)?;
+    // Parse contents
+    let (s, contents) = parse_default_terminator_content(s, &BRACE_TERMINATOR)?;
 
     let end_location = Location::from_span_end(&contents);
 

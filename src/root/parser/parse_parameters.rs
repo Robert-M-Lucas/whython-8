@@ -10,6 +10,7 @@ use crate::root::shared::common::Indirection;
 
 pub type Parameters = Vec<(SimpleNameToken, UnresolvedTypeRefToken)>;
 
+/// The type of self i.e. whether self is passed by value, by reference, or isn't used
 #[derive(Debug, Copy, Clone)]
 pub enum SelfType {
     None,
@@ -18,11 +19,13 @@ pub enum SelfType {
 }
 
 impl SelfType {
+    /// Returns `true` if not `SelfType::None`
     pub fn uses_self(&self) -> bool {
         !matches!(&self, SelfType::None)
     }
 }
 
+/// Parses a parameter list
 pub fn parse_parameters<'a>(
     s: Span<'a>,
     mut allow_self: Option<&SimpleNameToken>,
@@ -35,6 +38,7 @@ pub fn parse_parameters<'a>(
     let mut has_ref = false;
 
     while !s.is_empty() {
+        // Handle reference (for self) if no previous parameters
         let ns = if parameters.is_empty() {
             if let Ok((ns, _)) = char::<Span, ErrorTree>('&')(s) {
                 has_ref = true;
@@ -46,9 +50,11 @@ pub fn parse_parameters<'a>(
             s
         };
 
+        // Get name
         let (ns, name) = parse_simple_name(ns)?;
 
         let (ns, p_type) =
+            // If self, get self type rather than specified type
             if allow_self.is_some() && parameters.is_empty() && *name.name() == "self" {
                 has_self = if has_ref {
                     SelfType::RefSelf
@@ -56,6 +62,7 @@ pub fn parse_parameters<'a>(
                     SelfType::CopySelf
                 };
                 let s = allow_self.take().unwrap();
+                // If reference increase indirection
                 let i = if has_ref {
                     Indirection(1)
                 } else {
@@ -73,6 +80,7 @@ pub fn parse_parameters<'a>(
                 let (ns, _) = char(':')(ns)?;
                 let (ns, _) = discard_ignored(ns)?;
                 // let t_location = Location::from_span(&ns);
+                // Parse type
                 let (ns, type_name_token) = parse_full_name(ns, allow_self)?;
                 let (ns, _) = discard_ignored(ns)?;
                 (ns, type_name_token)

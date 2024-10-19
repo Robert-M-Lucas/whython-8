@@ -11,8 +11,12 @@
             "id": "70c6b5acdbfe7d32",
             "type": "leaf",
             "state": {
-              "type": "graph",
-              "state": {}
+              "type": "markdown",
+              "state": {
+                "file": "Docs/Implementation/3. Compilation/3. Compilation.md",
+                "mode": "source",
+                "source": false
+              }
             }
           }
         ]
@@ -81,6 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "Docs/Implementation/3. Compilation/3. Compilation.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -97,6 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "Docs/Implementation/3. Compilation/3. Compilation.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -118,7 +124,9 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {}
+              "state": {
+                "file": "Docs/Implementation/3. Compilation/3. Compilation.md"
+              }
             }
           }
         ]
@@ -142,13 +150,13 @@
   },
   "active": "70c6b5acdbfe7d32",
   "lastOpenFiles": [
+    "Docs/Implementation/3. Compilation/Shared/Shared.md",
+    "Docs/Implementation/3. Compilation/Shared/Function ID.md",
+    "Docs/Implementation/3. Compilation/3. Compilation.md",
     "2024-08-30.md",
     "Docs/Implementation/3. Compilation/Shared/Type ID.md",
-    "Docs/Implementation/3. Compilation/Shared/Function ID.md",
-    "Docs/Implementation/3. Compilation/Shared/Shared.md",
     "Docs/Implementation/3. Compilation/Function Compilation/Function Compilation.md",
     "Docs/Implementation/3. Compilation/Name Resolution/Name Resolution.md",
-    "Docs/Implementation/3. Compilation/3. Compilation.md",
     "Docs/Implementation/2. Parsing/2. Parsing.md",
     "Planning/Detailed/Type Parameters and Arrays.md",
     "Planning/Detailed/By-Struct Name Resolution.md",

@@ -6,6 +6,7 @@ use nom_supreme::error::GenericErrorTree;
 use nom_supreme::tag::complete::tag;
 use nom_supreme::tag::TagError;
 
+/// Represents whether an operator can be prefix, infix, or both
 #[derive(PartialEq, Debug)]
 pub enum PrefixOrInfix {
     Prefix,
@@ -13,12 +14,15 @@ pub enum PrefixOrInfix {
     Both,
 }
 
+/// Represents whether a function is prefix or infix, not both
 #[derive(Copy, Clone, Debug)]
 pub enum PrefixOrInfixEx {
     Prefix,
     Infix,
 }
 
+/// Maps operators to their relevant tokens, whether they are prefix and/or infix,
+/// and their function names
 const OPERATOR_MAPS: [(&str, OperatorTokens, PrefixOrInfix, &str); 23] = [
     ("+=", OperatorTokens::AsAdd, PrefixOrInfix::Infix, "as_add"),
     ("-=", OperatorTokens::AsSub, PrefixOrInfix::Infix, "as_sub"),
@@ -50,6 +54,7 @@ const OPERATOR_MAPS: [(&str, OperatorTokens, PrefixOrInfix, &str); 23] = [
     ("!", OperatorTokens::Not, PrefixOrInfix::Prefix, "not"),
 ];
 
+/// A token representing an operator with a location
 #[derive(Debug, Clone, Getters)]
 pub struct OperatorToken {
     location: Location,
@@ -57,15 +62,16 @@ pub struct OperatorToken {
 }
 
 impl OperatorToken {
-    pub fn is_prefix_opt_t(&self) -> bool {
-        self.operator.is_prefix_op()
+    pub fn is_prefix(&self) -> bool {
+        self.operator.is_prefix()
     }
 
-    pub fn get_priority_t(&self) -> usize {
+    pub fn get_priority(&self) -> usize {
         self.operator.get_priority()
     }
 }
 
+/// A token representing an operator
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub enum OperatorTokens {
     Add,
@@ -94,7 +100,7 @@ pub enum OperatorTokens {
 }
 
 impl OperatorTokens {
-    pub fn is_prefix_op(&self) -> bool {
+    pub fn is_prefix(&self) -> bool {
         for (_, op, prefix, _) in &OPERATOR_MAPS {
             if self == op {
                 return match prefix {
@@ -107,7 +113,7 @@ impl OperatorTokens {
         panic!()
     }
 
-    pub fn is_infix_op(&self) -> bool {
+    pub fn is_infix(&self) -> bool {
         for (_, op, prefix, _) in &OPERATOR_MAPS {
             if self == op {
                 return match prefix {
@@ -120,6 +126,8 @@ impl OperatorTokens {
         panic!()
     }
 
+    /// Gets the relevant function name for an operator (changes based on whether it is prefix
+    /// or infix)
     pub fn get_method_name(&self, kind: PrefixOrInfixEx) -> Option<String> {
         for (_, op, p_kind, name) in &OPERATOR_MAPS {
             if self == op {
@@ -141,7 +149,8 @@ impl OperatorTokens {
         }
         None
     }
-
+    
+    /// Gets the priority value of an operator
     pub fn get_priority(&self) -> usize {
         for (p, (_, op, _, _)) in OPERATOR_MAPS.iter().enumerate() {
             if self == op {
@@ -151,6 +160,7 @@ impl OperatorTokens {
         panic!()
     }
 
+    /// Gets the in-code representation of an operator
     pub fn to_str(&self) -> &'static str {
         for (s, op, _, _) in &OPERATOR_MAPS {
             if self == op {
@@ -161,6 +171,7 @@ impl OperatorTokens {
     }
 }
 
+/// Parses text into an operator
 pub fn parse_operator(s: Span) -> ParseResult<Span, OperatorToken> {
     for (operator, token, _, _) in OPERATOR_MAPS {
         if let Ok((s, x)) = tag::<_, _, ErrorTree>(operator)(s) {

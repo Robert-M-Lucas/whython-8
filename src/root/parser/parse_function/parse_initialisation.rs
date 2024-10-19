@@ -11,6 +11,7 @@ use nom::character::complete::char;
 use nom::sequence::Tuple;
 use nom_supreme::tag::complete::tag;
 
+// Token holding an initialiser
 #[derive(Debug, Getters)]
 pub struct InitialisationToken {
     location: Location,
@@ -19,6 +20,7 @@ pub struct InitialisationToken {
     value: EvaluableToken,
 }
 
+/// Test if line should be parsed as initialiser
 pub fn test_parse_initialisation<'b>(s: Span<'_>) -> ParseResult<Span, LineTestFn<'_, 'b>> {
     match (tag("let"), require_ignored).parse(s) {
         Ok(_) => Ok((s, |x, c| {
@@ -28,20 +30,27 @@ pub fn test_parse_initialisation<'b>(s: Span<'_>) -> ParseResult<Span, LineTestF
     }
 }
 
+/// Parse initialiser
 pub fn parse_initialisation<'a>(
     s: Span<'a>,
     containing_class: Option<&SimpleNameToken>,
 ) -> ParseResult<'a, Span<'a>, InitialisationToken> {
     let (s, l) = tag("let")(s)?;
     let (s, _) = require_ignored(s)?;
+    
+    // Parse variable name
     let (s, name) = parse_simple_name(s)?;
     let (s, _) = discard_ignored(s)?;
     let (s, _) = char(':')(s)?;
     let (s, _) = discard_ignored(s)?;
+    
+    // Parse type
     let (s, type_name) = parse_full_name(s, containing_class)?;
     let (s, _) = discard_ignored(s)?;
     let (s, _) = char('=')(s)?;
     let (s, _) = discard_ignored(s)?;
+    
+    // Parse value
     let (s, value) = parse_evaluable(s, containing_class, true)?;
 
     Ok((

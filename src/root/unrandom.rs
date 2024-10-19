@@ -4,6 +4,7 @@ use std::hash::RandomState;
 #[cfg(debug_assertions)]
 use std::mem::size_of;
 
+/// In debug mode creates a deterministic `HashMap`, in release mode creates a normal one
 #[inline]
 pub fn new_hashmap<A, B>() -> HashMap<A, B> {
     #[cfg(debug_assertions)]
@@ -16,6 +17,9 @@ pub fn new_hashmap<A, B>() -> HashMap<A, B> {
     }
 }
 
+/// Sets the `RandomState` of a `HashMap` to 0 to make it deterministic
+/// 
+/// Uses unsafe, unstable code - only use in debug mode!
 #[cfg(debug_assertions)]
 #[inline]
 pub fn unrandom_hashmap<A, B>() -> HashMap<A, B> {
@@ -24,6 +28,7 @@ pub fn unrandom_hashmap<A, B>() -> HashMap<A, B> {
     HashMap::with_hasher(r)
 }
 
+/// In debug mode creates a deterministic `HashSet`, in release mode creates a normal one
 #[inline]
 pub fn new_hashset<A>() -> HashSet<A> {
     #[cfg(debug_assertions)]
@@ -36,6 +41,9 @@ pub fn new_hashset<A>() -> HashSet<A> {
     }
 }
 
+/// Sets the `RandomState` of a `HashSet` to 0 to make it deterministic
+///
+/// Uses unsafe, unstable code - only use in debug mode!
 #[cfg(debug_assertions)]
 #[inline]
 pub fn unrandom_hashset<A>() -> HashSet<A> {
