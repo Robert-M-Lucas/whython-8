@@ -1,3 +1,3 @@
 pub(crate) mod common;
-pub mod types;
 mod new_types;
+pub mod types;

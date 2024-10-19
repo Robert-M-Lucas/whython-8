@@ -26,7 +26,7 @@ impl SimpleNameToken {
             name: s.to_string(),
         }
     }
-    
+
     /// Gets the name out of the token
     pub fn take_name(self) -> String {
         self.name

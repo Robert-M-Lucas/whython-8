@@ -38,7 +38,8 @@ fn handle_error_tree(e: &ErrorTree, path_storage: &PathStorage) -> WErr {
             ),
             BaseErrorKind::External(e) => WErr::n(e, Location::from_span(location)),
         },
-        ErrorTree::Stack { base, contexts } => { // Base error with context
+        ErrorTree::Stack { base, contexts } => {
+            // Base error with context
             // Show base
             let mut sb = "Base Error:\n".to_string();
             for l in handle_error_tree(base, path_storage)
@@ -70,10 +71,11 @@ fn handle_error_tree(e: &ErrorTree, path_storage: &PathStorage) -> WErr {
                     sb += "\n";
                 }
             }
-            
+
             WErr::locationless(sb)
         }
-        ErrorTree::Alt(z) => { // Show multiple errors
+        ErrorTree::Alt(z) => {
+            // Show multiple errors
             let mut sb = "Failed multiple parsers -\n".to_string();
 
             for (i, e) in z.iter().enumerate() {

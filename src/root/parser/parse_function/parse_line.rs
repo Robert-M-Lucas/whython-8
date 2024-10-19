@@ -74,7 +74,8 @@ pub fn parse_line<'a>(
     .parse(s)
     {
         Ok((_, parser)) => parser(s, containing_class), // Parse line type found
-        Err(_e) => { // Parse as evaluable
+        Err(_e) => {
+            // Parse as evaluable
             match parse_evaluable(s, containing_class, true).map(|(s, e)| (s, LineTokens::NoOp(e)))
             {
                 Ok(x) => Ok(x),

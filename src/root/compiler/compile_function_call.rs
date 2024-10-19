@@ -1,11 +1,11 @@
 use crate::root::assembler::assembly_builder::{Assembly, AssemblyBuilder};
 use crate::root::compiler::assembly::utils::{align_16_bytes, align_16_bytes_plus_8, copy};
-use crate::root::errors::compiler_errors::CompErrs;
 use crate::root::compiler::evaluation::coerce_self::coerce_self;
 use crate::root::compiler::evaluation::into::compile_evaluable_into;
 use crate::root::compiler::evaluation::reference::compile_evaluable_reference;
 use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
+use crate::root::errors::compiler_errors::CompErrs;
 use crate::root::errors::evaluable_errors::EvalErrs;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::GlobalTable;
@@ -155,10 +155,8 @@ pub fn call_function(
 
             match a {
                 Either::Left(eval) => {
-                    let into = global_table.add_local_variable_unnamed(
-                        signature_args[i].clone(),
-                        local_variables,
-                    );
+                    let into = global_table
+                        .add_local_variable_unnamed(signature_args[i].clone(), local_variables);
                     let c = compile_evaluable_into(
                         parent_fid,
                         eval,
@@ -269,10 +267,8 @@ pub fn call_function(
 
             match a {
                 Either::Left(eval) => {
-                    let into = global_table.add_local_variable_unnamed(
-                        signature_args[i].clone(),
-                        local_variables,
-                    );
+                    let into = global_table
+                        .add_local_variable_unnamed(signature_args[i].clone(), local_variables);
                     size += global_table.get_size(into.type_ref());
                     let c = compile_evaluable_into(
                         parent_fid,
@@ -323,8 +319,8 @@ pub fn call_function(
 
         // ? Arguments
         for arg in args.iter().rev() {
-            let into = global_table
-                .add_local_variable_unnamed(arg.type_ref().clone(), local_variables);
+            let into =
+                global_table.add_local_variable_unnamed(arg.type_ref().clone(), local_variables);
             code.other(&copy(
                 *arg.local_address(),
                 *into.local_address(),

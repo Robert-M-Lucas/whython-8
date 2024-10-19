@@ -39,12 +39,12 @@ pub fn parse(path_storage: &mut PathStorage) -> Result<HashMap<FileID, Vec<TopLe
         };
 
         let base = Span::new_extra(&text, file_id);
-        
+
         // Parse imports
         let (after_use, new_files) =
             handle_error(parse_imports(base, path_storage, file_id), path_storage)?;
         path_queue.extend(new_files);
-        
+
         // Parse contents
         let res = parse_toplevel::parse_toplevel(after_use);
         let (remaining, new_output) = handle_error(res, path_storage)?;

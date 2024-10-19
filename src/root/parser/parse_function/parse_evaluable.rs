@@ -202,7 +202,7 @@ pub fn parse_full_name<'a>(
     let mut s = s;
 
     let (ns, _) = discard_ignored(s)?;
-    
+
     // Add static access if `::` encountered
     if let Ok((ns, _)) = tag::<&str, Span, ErrorTree>("::")(ns) {
         let (ns, section) = parse_simple_name(ns)?;
@@ -332,7 +332,8 @@ pub fn parse_evaluable<'a, 'b>(
                     let (x, section) = parse_simple_name(x)?;
 
                     Ok(if char::<Span, ErrorTree>('(')(x).is_ok() {
-                        let (x, arguments) = parse_default_terminator_content(x, &BRACKET_TERMINATOR)?;
+                        let (x, arguments) =
+                            parse_default_terminator_content(x, &BRACKET_TERMINATOR)?;
                         let (_, arguments) = parse_arguments(arguments, containing_class)?;
                         (
                             x,

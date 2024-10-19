@@ -1,4 +1,3 @@
-use unique_type_id::UniqueTypeId;
 use crate::root::assembler::assembly_builder::Assembly;
 use crate::root::builtin::types::bool::print_bool::PrintBool;
 use crate::root::builtin::types::bool::{boolean_signature, BoolType};
@@ -6,6 +5,7 @@ use crate::root::builtin::{f_id, BuiltinInlineFunction, InlineFnGenerator};
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{FunctionID, LocalAddress, TypeID};
+use unique_type_id::UniqueTypeId;
 
 /// Implements the boolean and operation
 #[derive(UniqueTypeId)]

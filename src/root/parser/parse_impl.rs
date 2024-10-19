@@ -33,11 +33,11 @@ pub fn parse_impl(s: Span) -> ParseResult<Span, ImplToken> {
     let location = Location::from_span(&s);
     let (s, _) = tag("impl").parse(s)?;
     let (s, _) = require_ignored(s)?;
-    
+
     // Parse name
     let (s, name) = parse_simple_name(s)?;
     let (s, _) = discard_ignored(s)?;
-    
+
     // Get content
     let (s, contents) = parse_default_terminator_content(s, &BRACE_TERMINATOR)?;
 

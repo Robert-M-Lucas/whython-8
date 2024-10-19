@@ -33,21 +33,21 @@ pub fn compile_evaluable_reference(
                     return WErr::ne(
                         EvalErrs::FunctionMustBeCalled(name.name().clone()),
                         name.location().clone(),
-                    )
+                    );
                 }
                 NameResult::Type(_) => {
                     // Name was a type (not a value)
                     return WErr::ne(
                         EvalErrs::CannotEvalStandaloneType(name.name().clone()),
                         name.location().clone(),
-                    )
+                    );
                 }
                 NameResult::File(_) => {
                     // Name was a file (not a value)
                     return WErr::ne(
                         EvalErrs::CannotEvaluateStandaloneImportedFile(name.name().clone()),
                         name.location().clone(),
-                    )
+                    );
                 }
                 NameResult::Variable(address) => (String::new(), Some(address)),
             }
@@ -77,7 +77,7 @@ pub fn compile_evaluable_reference(
             return WErr::ne(
                 NRErrs::CannotFindConstantAttribute(n.name().clone()),
                 n.location().clone(),
-            )
+            );
         }
         // Cannot get an address without instantiation
         EvaluableTokens::FunctionCall {

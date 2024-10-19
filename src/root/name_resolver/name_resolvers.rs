@@ -1,4 +1,3 @@
-use derive_getters::Getters;
 use std::collections::HashMap;
 
 use itertools::Itertools;
@@ -105,7 +104,7 @@ impl GlobalTable {
         }
     }
 
-    /// Set the scope to a specific file to prevent namespace leaking 
+    /// Set the scope to a specific file to prevent namespace leaking
     pub fn scope_namespace(&mut self, current_file: FileID, scope: Scope) {
         self.current_file = current_file;
         self.scope = scope;
@@ -492,16 +491,16 @@ impl GlobalTable {
                     .iter()
                     .map(|(f, _)| *f)
                     .contains(&import_file)
-                || 
-                self.scope
-                    .folders_imported()
-                    .iter()
-                    .any(|(f, _)| global_tracker
-                        .path_storage()
-                        .get_folder(*f)
-                        .child_files()
-                        .values()
-                        .contains(&import_file))
+                    || self
+                        .scope
+                        .folders_imported()
+                        .iter()
+                        .any(|(f, _)| global_tracker
+                            .path_storage()
+                            .get_folder(*f)
+                            .child_files()
+                            .values()
+                            .contains(&import_file))
             );
 
             if let Some(r) = process_tree(self.name_table.get_tree_mut(import_file)) {

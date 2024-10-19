@@ -86,7 +86,11 @@ pub fn compile_evaluable_type_only(
                 PrefixOrInfixEx::Infix,
             )?;
             let operator_fn_signature = global_table.get_function_signature(operator_fn);
-            operator_fn_signature.return_type().as_ref().unwrap().clone()
+            operator_fn_signature
+                .return_type()
+                .as_ref()
+                .unwrap()
+                .clone()
         }
         EvaluableTokens::PrefixOperator(op, lhs) => {
             let lhs_type = compile_evaluable_type_only(
@@ -119,7 +123,11 @@ pub fn compile_evaluable_type_only(
                 PrefixOrInfixEx::Prefix,
             )?;
             let operator_fn_signature = global_table.get_function_signature(operator_fn);
-            operator_fn_signature.return_type().as_ref().unwrap().clone()
+            operator_fn_signature
+                .return_type()
+                .as_ref()
+                .unwrap()
+                .clone()
         }
         EvaluableTokens::DynamicAccess {
             parent: inner,
@@ -188,7 +196,6 @@ pub fn compile_evaluable_type_only(
                         if let Some(file) = global_table.get_file_from_folder(
                             folder_name.name(),
                             file_name.name(),
-
                             global_tracker,
                         ) {
                             return handle_name_result(

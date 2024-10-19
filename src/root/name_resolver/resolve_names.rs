@@ -1,4 +1,4 @@
-use crate::root::compiler::global_tracker::GlobalTracker;
+use crate::root::assembler::assembly_builder::Assembly;
 use crate::root::errors::evaluable_errors::EvalErrs;
 use crate::root::errors::name_resolver_errors::NRErrs;
 use crate::root::errors::WErr;
@@ -19,7 +19,6 @@ use b_box::b;
 use derive_getters::Getters;
 use itertools::Itertools;
 use std::collections::HashMap;
-use crate::root::assembler::assembly_builder::Assembly;
 
 /// A Whython-code defined type
 #[derive(Getters)]
@@ -117,7 +116,7 @@ pub fn resolve_names(
             TopLevelTokens::Struct(st) => {
                 let (location, name, attributes, id) = st.dissolve();
                 let id = id.unwrap();
-                
+
                 // Process attributes into an unsized type
                 let mut p_attributes: Vec<(SimpleNameToken, TypeRef)> = Vec::new();
                 for (name, type_name) in attributes {
@@ -140,7 +139,7 @@ pub fn resolve_names(
             }
             TopLevelTokens::Impl(it) => {
                 // Registers all the function in an impl token
-                
+
                 let (location, name, functions) = it.dissolve();
                 let type_id = *global_table
                     .resolve_to_type_ref(

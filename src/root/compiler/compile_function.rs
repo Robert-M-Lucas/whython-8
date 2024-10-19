@@ -4,11 +4,11 @@ use color_print::cprintln;
 use crate::root::assembler::assembly_builder::{Assembly, AssemblyBuilder};
 use crate::root::builtin::types::bool::BoolType;
 use crate::root::builtin::types::int::IntType;
-use crate::root::errors::compiler_errors::CompErrs;
 use crate::root::compiler::evaluation::into::compile_evaluable_into;
 use crate::root::compiler::evaluation::reference::compile_evaluable_reference;
 use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
+use crate::root::errors::compiler_errors::CompErrs;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::GlobalTable;
 use crate::root::parser::parse_function::parse_line::LineTokens;
@@ -27,7 +27,7 @@ pub fn compile_function(
     let mut local_variables = LocalVariableTable::new();
 
     let (_location, end_location, _name, return_type, _, parameters, lines) = function.dissolve();
-    
+
     let return_type = if fid.is_main() { None } else { return_type };
 
     let return_type = if let Some(t) = return_type {
@@ -58,7 +58,7 @@ pub fn compile_function(
             t,
         )
     });
-    
+
     // Compile
     let (mut full_contents, last_return) = recursively_compile_lines(
         fid,
@@ -82,7 +82,7 @@ pub fn compile_function(
             end_location,
         );
     }
-    
+
     // Add implicit return code if last line of function isn't 'return'
     if !last_return {
         full_contents += "\nleave\nret";
@@ -117,7 +117,7 @@ fn recursively_compile_lines(
 ) -> Result<(Assembly, bool), WErr> {
     // Enter a new scope for variables
     local_variables.enter_scope();
-    
+
     let mut contents = AssemblyBuilder::new();
 
     // Tracks whether the last line is a return statement
@@ -144,10 +144,8 @@ fn recursively_compile_lines(
                 )?);
             }
             LineTokens::If(if_token) => {
-                let condition_addr = global_table.add_local_variable_unnamed(
-                    BoolType::id().immediate_single(),
-                    local_variables,
-                );
+                let condition_addr = global_table
+                    .add_local_variable_unnamed(BoolType::id().immediate_single(), local_variables);
                 contents.other(&compile_evaluable_into(
                     fid,
                     if_token.if_condition(),
@@ -221,7 +219,7 @@ fn recursively_compile_lines(
                 if let Some(else_contents) = if_token.else_contents() {
                     // Prevent fall-through
                     contents.line(&format!("jmp {end_tag}"));
-                    
+
                     contents.line(&format!("{next_tag}:"));
                     next_tag = global_tracker.get_unique_tag(fid);
                     let (code, ret) = recursively_compile_lines(
@@ -236,7 +234,7 @@ fn recursively_compile_lines(
                     last_is_return &= ret;
                     contents.other(&code);
                 }
-                
+
                 contents.line(&format!("{next_tag}:"));
                 contents.line(&format!("{end_tag}:"));
             }
@@ -246,10 +244,8 @@ fn recursively_compile_lines(
 
                 contents.line(&format!("{start_tag}:"));
 
-                let condition_addr = global_table.add_local_variable_unnamed(
-                    BoolType::id().immediate_single(),
-                    local_variables,
-                );
+                let condition_addr = global_table
+                    .add_local_variable_unnamed(BoolType::id().immediate_single(), local_variables);
                 contents.other(&compile_evaluable_into(
                     fid,
                     while_token.condition(),
@@ -273,7 +269,7 @@ fn recursively_compile_lines(
                 )?;
                 last_is_return = ret;
                 contents.other(&code);
-                
+
                 // Jump to start (re-evaluates condition)
                 contents.line(&format!("jmp {start_tag}"));
                 contents.line(&format!("{end_tag}:"))

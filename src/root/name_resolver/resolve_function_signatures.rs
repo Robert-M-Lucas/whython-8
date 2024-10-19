@@ -1,4 +1,3 @@
-use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::GlobalTable;
 use crate::root::parser::parse_function::FunctionToken;

@@ -149,7 +149,7 @@ impl OperatorTokens {
         }
         None
     }
-    
+
     /// Gets the priority value of an operator
     pub fn get_priority(&self) -> usize {
         for (p, (_, op, _, _)) in OPERATOR_MAPS.iter().enumerate() {

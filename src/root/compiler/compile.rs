@@ -1,8 +1,6 @@
 use std::collections::HashMap;
 use std::time::{Duration, Instant};
 
-#[cfg(debug_assertions)]
-use itertools::Itertools;
 use crate::root::assembler::assembly_builder::Assembly;
 use crate::root::compiler::compile_function::compile_function;
 use crate::root::compiler::global_tracker::GlobalTracker;
@@ -12,6 +10,8 @@ use crate::root::parser::parse_function::FunctionToken;
 use crate::root::parser::path_storage::PathStorage;
 use crate::root::shared::common::FunctionID;
 use crate::root::unrandom::{new_hashmap, new_hashset};
+#[cfg(debug_assertions)]
+use itertools::Itertools;
 
 /// Compiles the entire program. Returns assembly.
 pub fn compile(
@@ -23,11 +23,11 @@ pub fn compile(
     // TODO: Write assembly to disk asynchronously while compiling
     let mut compiled_functions = new_hashmap();
     let mut compiled_len = 0usize;
-    
+
     // Functions to compile
     let mut open_set = new_hashset();
     let mut compiled_count: usize = 0;
-    
+
     // Last time progress was shown
     let mut last_shown = Instant::now();
 
@@ -42,7 +42,7 @@ pub fn compile(
         open_set.remove(&current_function);
 
         compiled_count += 1;
-        
+
         let Some(current_function_token) = unprocessed_functions.remove(&current_function) else {
             continue; // Inline function
         };
@@ -100,14 +100,13 @@ section .text
 
 ";
     // Add all functions
-    
+
     #[cfg(not(debug_assertions))]
     for (_id, f) in compiled_functions {
         asm += &f;
         asm += "\n\n";
     }
-    
-    
+
     #[cfg(debug_assertions)]
     for (_id, f) in compiled_functions
         .iter()
@@ -117,7 +116,7 @@ section .text
         asm += "\n\n";
     }
 
-    // Add static data 
+    // Add static data
     if !global_tracker.readonly_data_section().is_empty() {
         asm += "section .data_readonly";
         asm += global_tracker.readonly_data_section();

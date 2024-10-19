@@ -48,21 +48,21 @@ pub fn compile_evaluable_into(
                     return WErr::ne(
                         EvalErrs::FunctionMustBeCalled(name.name().clone()),
                         name.location().clone(),
-                    )
+                    );
                 }
                 NameResult::Type(_) => {
                     // Name was a type (not a value)
                     return WErr::ne(
                         EvalErrs::CannotEvalStandaloneType(name.name().clone()),
                         name.location().clone(),
-                    )
+                    );
                 }
                 NameResult::File(_) => {
                     // Name was a file (not a value)
                     return WErr::ne(
                         EvalErrs::CannotEvaluateStandaloneImportedFile(name.name().clone()),
                         name.location().clone(),
-                    )
+                    );
                 }
                 NameResult::Variable(address) => {
                     // Check type
@@ -75,7 +75,7 @@ pub fn compile_evaluable_into(
                             name.location().clone(),
                         );
                     }
-                    
+
                     // Copy into output
                     copy(
                         *address.local_address(),
@@ -93,7 +93,7 @@ pub fn compile_evaluable_into(
                     literal.location().clone(),
                 );
             }
-            
+
             let t = global_table.get_type(*target.type_ref().type_id());
             t.instantiate_from_literal(target.local_address(), literal)?
         }
@@ -138,7 +138,7 @@ pub fn compile_evaluable_into(
                     op.location().clone(),
                 );
             }
-            
+
             // Check if return type is correct for target
             match operator_fn_signature.return_type() {
                 None => {
@@ -306,7 +306,7 @@ pub fn compile_evaluable_into(
             let Some(inner) = inner else {
                 return WErr::ne(EvalErrs::ExpectedNotNone, inner_eval.location().clone());
             };
-            
+
             // Coerce self, if needed
             let inner = if inner.type_ref().indirection().0 > 1 {
                 let (c, inner) =
@@ -320,7 +320,7 @@ pub fn compile_evaluable_into(
             let inner_type = global_table.get_type(*inner.type_ref().type_id());
             let inner_attributes = inner_type.get_attributes(access.location())?;
             let mut found_offset = None;
-            
+
             // Find the byte offset of the attribute
             for (offset, name, t) in inner_attributes {
                 if name.name() == access.name() {
@@ -336,7 +336,7 @@ pub fn compile_evaluable_into(
                     found_offset = Some(*offset);
                 }
             }
-            
+
             // Error if not found
             let Some(found_offset) = found_offset else {
                 return WErr::ne(
@@ -347,9 +347,9 @@ pub fn compile_evaluable_into(
                     access.location().clone(),
                 );
             };
-            
-            
-            if inner.type_ref().indirection().has_indirection() { // If inner is a reference
+
+            if inner.type_ref().indirection().has_indirection() {
+                // If inner is a reference
                 // Get inner address
                 ab.line(&format!("mov rax, qword {}", inner.local_address()));
                 // Add offset
@@ -392,11 +392,11 @@ pub fn compile_evaluable_into(
             return WErr::ne(
                 NRErrs::CannotFindConstantAttribute(n.name().clone()),
                 n.location().clone(),
-            )
+            );
         }
         EvaluableTokens::FunctionCall {
             function: inner,
-            args: args,
+            args,
         } => {
             let mut ab = AssemblyBuilder::new();
             let (slf, function_id, name) = function_only::compile_evaluable_function_only(
@@ -429,7 +429,7 @@ pub fn compile_evaluable_into(
 
             // Left is arguments to be evaluated by call_function
             args.iter().for_each(|a| n_args.push(Left(a)));
-            
+
             let (asm, _) = call_function(
                 fid,
                 function_id,
@@ -448,7 +448,7 @@ pub fn compile_evaluable_into(
         EvaluableTokens::StructInitialiser(struct_init) => {
             let struct_type_ref = global_table.resolve_to_type_ref(struct_init.name(), None)?;
             let size = global_table.get_size(&struct_type_ref);
-            
+
             if *struct_init.heap_alloc() {
                 // Incorrect reference count
                 if target.type_ref() != &struct_type_ref.plus_one_indirect() {
@@ -461,8 +461,13 @@ pub fn compile_evaluable_into(
                     );
                 }
                 let mut ab = AssemblyBuilder::new();
-                let (asm, sr) =
-                    compile_evaluable_new(fid, evaluable, local_variables, global_table, global_tracker)?;
+                let (asm, sr) = compile_evaluable_new(
+                    fid,
+                    evaluable,
+                    local_variables,
+                    global_table,
+                    global_tracker,
+                )?;
                 ab.other(&asm);
                 let sr = sr.unwrap();
                 ab.other(&copy(
@@ -473,9 +478,11 @@ pub fn compile_evaluable_into(
                 return Ok(ab.finish());
             }
             debug_assert!(!struct_type_ref.indirection().has_indirection());
-            
+
             // Incorrect reference count
-            if *struct_init.heap_alloc() && &struct_type_ref.plus_one_indirect() != target.type_ref() {
+            if *struct_init.heap_alloc()
+                && &struct_type_ref.plus_one_indirect() != target.type_ref()
+            {
                 return WErr::ne(
                     EvalErrs::ExpectedDifferentType(
                         global_table.get_type_name(target.type_ref()),
@@ -517,9 +524,10 @@ pub fn compile_evaluable_into(
             }
 
             let mut asm = AssemblyBuilder::new();
-            
+
             // Create all attributes in correct place in struct
-            for ((offset, t_name, t_type), (name, val)) in attributes.iter().zip(given_attributes.iter())
+            for ((offset, t_name, t_type), (name, val)) in
+                attributes.iter().zip(given_attributes.iter())
             {
                 // Incorrect attribute
                 if t_name.name() != name.name() {
@@ -542,7 +550,7 @@ pub fn compile_evaluable_into(
                     global_tracker,
                 )?);
             }
-            
+
             // TODO: Test
             if *struct_init.heap_alloc() {
                 let (c, ref_target) = heap_alloc(struct_type_ref, global_table, local_variables);
