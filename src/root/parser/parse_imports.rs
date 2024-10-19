@@ -37,7 +37,7 @@ pub fn parse_imports<'a>(
                 ns,
             ));
         };
-        
+
         // Handle path split between lines
         let (ns, next) = anychar::<_, ErrorTree>(pre_s).unwrap();
         if next != ';' {

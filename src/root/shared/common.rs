@@ -120,7 +120,7 @@ impl TypeRef {
         self.elements == 1
     }
 
-    /// Returns a `TypeRef` with a different indirection 
+    /// Returns a `TypeRef` with a different indirection
     pub fn with_indirection(&self, indirection: Indirection) -> TypeRef {
         TypeRef {
             type_id: self.type_id,

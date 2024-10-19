@@ -1,8 +1,8 @@
+use crate::root::assembler::assembly_builder::Assembly;
 use crate::root::parser::path_storage::PathStorage;
 use crate::root::shared::common::FunctionID;
 use derive_getters::{Dissolve, Getters};
 use std::collections::HashSet;
-use crate::root::assembler::assembly_builder::Assembly;
 
 /// Tracks data between function compilations, including data about files and folders
 #[derive(Dissolve, Getters)]

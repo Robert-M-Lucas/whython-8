@@ -18,7 +18,7 @@ pub fn new_hashmap<A, B>() -> HashMap<A, B> {
 }
 
 /// Sets the `RandomState` of a `HashMap` to 0 to make it deterministic
-/// 
+///
 /// Uses unsafe, unstable code - only use in debug mode!
 #[cfg(debug_assertions)]
 #[inline]

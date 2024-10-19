@@ -133,7 +133,6 @@ impl<ErrorType> LocationTyped<ErrorType> {
         }
     }
 
-    
     /// Creates a 'none' location
     pub fn none() -> LocationTyped<ErrorType> {
         LocationTyped {
@@ -142,11 +141,11 @@ impl<ErrorType> LocationTyped<ErrorType> {
         }
     }
 
-    /// Checks if a location is not 'none' 
+    /// Checks if a location is not 'none'
     pub fn has_location(&self) -> bool {
         !matches!(self.inner_location, ErrorLocation::None)
     }
-    
+
     /// Formats a location into text
     fn fmt_choice(
         &self,
@@ -170,7 +169,7 @@ impl<ErrorType> LocationTyped<ErrorType> {
         writeln!(f, "{}", cformat!("<c,bold>In File:</>"))?;
         writeln!(f, "    {}", path_storage.reconstruct_file(location.file_id))?;
         writeln!(f, "{}", cformat!("<c,bold>At:</>"))?;
-        
+
         // Helper function for failing to get text from file
         fn fail(f: &mut Formatter<'_>) -> std::fmt::Result {
             write!(f, "Failed to fetch file reference (has the file changed?)")
@@ -183,7 +182,7 @@ impl<ErrorType> LocationTyped<ErrorType> {
         if location.line == (file.lines().count() + 1) as u32 {
             return writeln!(f, "{}", cformat!("    <c, bold>End Of File</>"));
         }
-        
+
         // Gets the accurate offset
         let mut offset = 0usize;
         let mut chars = file.chars();
@@ -201,7 +200,7 @@ impl<ErrorType> LocationTyped<ErrorType> {
         let mut line_iter = file.lines();
 
         let largest_num_len = format!("{}", location.line + 2).len();
-        
+
         // Adds preceding lines if they exist
         if location.line > 1 {
             if location.line > 2 {
@@ -216,7 +215,7 @@ impl<ErrorType> LocationTyped<ErrorType> {
             let Some(line) = line_iter.nth(location.line as usize - 2) else {
                 return fail(f);
             };
-            
+
             let line = if line.chars().count() > CHAR_LIMIT {
                 format!(
                     "{} ...",
@@ -237,7 +236,7 @@ impl<ErrorType> LocationTyped<ErrorType> {
         let Some(line) = line_iter.next() else {
             return fail(f);
         };
-        
+
         // Gets the part of the line with the rrror
         let (mut start, mut end) = (0usize, line.chars().count() - 1);
         if end > CHAR_LIMIT {
@@ -256,7 +255,7 @@ impl<ErrorType> LocationTyped<ErrorType> {
         }
 
         end += 1;
-        
+
         // Writes the error line
         writeln!(
             f,
@@ -268,7 +267,7 @@ impl<ErrorType> LocationTyped<ErrorType> {
                 .collect::<String>(),
             width = largest_num_len
         )?;
-        
+
         // Shows where the error happened with the correct formatting
         if is_warning {
             let warn_line = format!(
@@ -287,7 +286,7 @@ impl<ErrorType> LocationTyped<ErrorType> {
             );
             writeln!(f, "{}", cformat!("<r,bold>{}</>", err_line))?;
         }
-        
+
         // Writes later lines if mmore exist
         if let Some(line) = line_iter.next() {
             let line = if line.chars().count() > CHAR_LIMIT {
@@ -338,7 +337,7 @@ impl LocationFilledFmt for LocationTyped<WarningL> {
     }
 }
 
-/// A `LocationTyped` with all the information needed to stand alone i.e. be turned into an error 
+/// A `LocationTyped` with all the information needed to stand alone i.e. be turned into an error
 pub struct LocationContext<'a, ErrorType> {
     location: &'a LocationTyped<ErrorType>,
     path_storage: &'a PathStorage,

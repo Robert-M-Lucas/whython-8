@@ -1,5 +1,3 @@
-use b_box::b;
-use unique_type_id::UniqueTypeId;
 use crate::root::assembler::assembly_builder::Assembly;
 use crate::root::builtin::t_id;
 use crate::root::builtin::types::bool::and::{BoolAnd, BoolAssignAnd};
@@ -14,6 +12,8 @@ use crate::root::parser::parse_function::parse_literal::{LiteralToken, LiteralTo
 use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{ByteSize, LocalAddress, TypeID};
 use crate::root::shared::types::Type;
+use b_box::b;
+use unique_type_id::UniqueTypeId;
 
 mod and;
 mod comparators;

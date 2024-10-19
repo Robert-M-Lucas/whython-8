@@ -38,12 +38,12 @@ pub fn parse_if<'a>(
 ) -> ParseResult<'a, Span<'a>, IfToken> {
     let (s, l) = tag("if")(s)?; // If
     let (s, _) = discard_ignored(s)?;
-    
+
     // Parse condition
     let (s, content) = parse_default_terminator_content(s, &BRACKET_TERMINATOR)?;
     let (_, if_condition) = parse_evaluable(content, containing_class, false)?;
     let (s, _) = discard_ignored(s)?;
-    
+
     // Parse content
     let (s, contents) = parse_default_terminator_content(s, &BRACE_TERMINATOR)?;
     let (_, if_contents) = parse_lines(contents, containing_class)?;

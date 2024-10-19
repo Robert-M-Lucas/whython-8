@@ -37,19 +37,19 @@ pub fn parse_initialisation<'a>(
 ) -> ParseResult<'a, Span<'a>, InitialisationToken> {
     let (s, l) = tag("let")(s)?;
     let (s, _) = require_ignored(s)?;
-    
+
     // Parse variable name
     let (s, name) = parse_simple_name(s)?;
     let (s, _) = discard_ignored(s)?;
     let (s, _) = char(':')(s)?;
     let (s, _) = discard_ignored(s)?;
-    
+
     // Parse type
     let (s, type_name) = parse_full_name(s, containing_class)?;
     let (s, _) = discard_ignored(s)?;
     let (s, _) = char('=')(s)?;
     let (s, _) = discard_ignored(s)?;
-    
+
     // Parse value
     let (s, value) = parse_evaluable(s, containing_class, true)?;
 

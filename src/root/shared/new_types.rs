@@ -2,28 +2,28 @@
 // use either::Either;
 // use itertools::Itertools;
 // use crate::root::parser::location::Location;
-// 
+//
 // pub struct GlobalTable {
 //     type_templates: HashMap<String, UserTypeTemplate>,
 //     cached_types: HashMap<TypeID, >
 // }
-// 
+//
 // #[derive(Eq, PartialEq, Hash)]
 // pub enum TypeID {
 //     User { id: usize, parameters: Vec<TypeID>, array_count: usize },
 //     Builtin { id: usize }
 // }
-// 
-// 
+//
+//
 // #[derive(Eq, PartialEq)]
 // pub struct TraitID(usize);
-// 
+//
 // pub struct UserTypeTemplate {
 //     location: Location,
 //     parameters: Vec<Vec<TraitID>>,
-//     attributes: Vec<(String, Either<TypeID, usize>)> // (Name, Either<Type, index of parameter>) 
+//     attributes: Vec<(String, Either<TypeID, usize>)> // (Name, Either<Type, index of parameter>)
 // }
-// 
+//
 // impl UserTypeTemplate {
 //     pub fn fill<'a>(&'a self, parameters: &'a [TypeID]) -> UserType {
 //         UserType {
@@ -38,7 +38,7 @@
 //         }
 //     }
 // }
-// 
+//
 // pub struct UserType<'a> {
 //     location: &'a Location,
 //     size: usize,

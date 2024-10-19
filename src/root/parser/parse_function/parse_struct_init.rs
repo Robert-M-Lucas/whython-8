@@ -38,7 +38,7 @@ pub fn parse_struct_init<'a>(
     debug_assert!(*struct_name.indirection() == Indirection(0)); // TODO
 
     let (s, _) = discard_ignored(s)?;
-    
+
     // Get contents
     let (remaining, in_braces) = parse_default_terminator_content(s, &BRACE_TERMINATOR)?;
 

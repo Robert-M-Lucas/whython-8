@@ -108,7 +108,6 @@ impl PathStorage {
         &self.files[file_id.0]
     }
 
-
     /// Returns a `CodeFile` mut ref by its ID
     #[allow(dead_code)]
     #[inline(always)]
@@ -116,13 +115,11 @@ impl PathStorage {
         &mut self.files[file_id.0]
     }
 
-
     /// Returns a `CodeFolder` ref by its ID
     #[inline(always)]
     pub fn get_folder(&self, folder_id: FolderID) -> &CodeFolder {
         &self.folders[folder_id.0]
     }
-
 
     /// Returns a `CodeFolder` mut ref by its ID
     #[inline(always)]
@@ -152,7 +149,7 @@ impl PathStorage {
         sb
     }
 
-    /// Adds an import and adds it to a file, returning new files 
+    /// Adds an import and adds it to a file, returning new files
     /// required to compile the current file
     pub fn get_id_and_add_to_file<'a>(
         &mut self,
@@ -172,7 +169,7 @@ impl PathStorage {
         // } else {
         //     false
         // };
-        
+
         // Folders must end in '/'
         let is_folder = if let Some(last) = path_span.chars().last() {
             if last == '/' {
@@ -186,7 +183,7 @@ impl PathStorage {
         } else {
             false
         };
-        
+
         // Gets whether the path is absolute or relative (starts with / means absolute)
         let is_absolute = if let Some(next) = path_span.chars().next() {
             if next == '/' {
@@ -226,7 +223,6 @@ impl PathStorage {
             ));
         }
 
-        
         let mut current: FolderID = if is_absolute {
             FolderID::ROOT_FOLDER
         } else {
@@ -273,7 +269,7 @@ impl PathStorage {
                         if is_new {
                             new_files.push(file);
                         }
-                        
+
                         if is_use {
                             // Add files imported by use
                             self.get_file_mut(current_file)
@@ -287,7 +283,7 @@ impl PathStorage {
                 } else {
                     // Add file
                     let (file, is_new) = self.add_file(section, current);
-                    
+
                     if is_use {
                         self.get_file_mut(current_file)
                             .scope

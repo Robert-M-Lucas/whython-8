@@ -12,7 +12,7 @@ pub trait Type {
     fn size(&self) -> ByteSize;
 
     fn name(&self) -> &str;
-    
+
     fn get_attributes(
         &self,
         location: &Location,
@@ -22,7 +22,7 @@ pub trait Type {
             location.clone(),
         )
     }
-    
+
     fn instantiate_from_literal(
         &self,
         location: &LocalAddress,

@@ -1,4 +1,3 @@
-use crate::root::assembler::assembly_builder::Assembly;
 use crate::root::compiler::evaluation::type_only::compile_evaluable_type_only;
 use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
@@ -98,7 +97,7 @@ pub fn compile_evaluable_function_only<'a>(
             )?;
             let function =
                 global_table.get_impl_function_by_name(*inner_type.type_id(), access.name());
-            
+
             let Some(function) = function else {
                 return WErr::ne(
                     EvalErrs::TypeDoesntHaveMethod(
@@ -116,7 +115,7 @@ pub fn compile_evaluable_function_only<'a>(
             section: access,
         } => {
             // Don't check for other file as only StaticAccess can refer to other files
-            
+
             let inner_type = compile_evaluable_type_only(
                 fid,
                 inner,

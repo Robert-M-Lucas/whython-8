@@ -17,4 +17,5 @@ Use `cargo run -- -i error.why` and `cargo run -- -i error2.why` to see
 two examples of the rich error reporting in Whython
 
 Use `cargo run -- [args]` to pass arguments to Whython
+
 Use `cargo run -- -h` to get help

@@ -1,10 +1,9 @@
-use b_box::b;
-use unique_type_id::UniqueTypeId;
-use subtract::IntAssignSubtract;
 use crate::root::assembler::assembly_builder::Assembly;
 use crate::root::builtin::t_id;
 use crate::root::builtin::types::int::addition::{IntAddition, IntAssignAddition};
-use crate::root::builtin::types::int::comparators::{IntEqual, IntGreaterThan, IntGreaterThanEqual, IntLessThan, IntLessThanEqual, IntNotEqual};
+use crate::root::builtin::types::int::comparators::{
+    IntEqual, IntGreaterThan, IntGreaterThanEqual, IntLessThan, IntLessThanEqual, IntNotEqual,
+};
 use crate::root::builtin::types::int::division::{IntAssignDivide, IntDivide};
 use crate::root::builtin::types::int::modulo::{IntAssignModulo, IntModulo};
 use crate::root::builtin::types::int::multiply::{IntAssignMultiply, IntMultiply};
@@ -19,6 +18,9 @@ use crate::root::name_resolver::name_resolvers::GlobalTable;
 use crate::root::parser::parse_function::parse_literal::{LiteralToken, LiteralTokens};
 use crate::root::shared::common::{ByteSize, LocalAddress, TypeID};
 use crate::root::shared::types::Type;
+use b_box::b;
+use subtract::IntAssignSubtract;
+use unique_type_id::UniqueTypeId;
 
 mod addition;
 mod comparators;

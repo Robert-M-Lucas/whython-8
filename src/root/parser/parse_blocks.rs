@@ -44,7 +44,10 @@ pub const DEFAULT_TERMINATORS: [Terminator; 3] =
 
 /// Gets the content of a given terminator using the default terminator set to intelligently handle
 /// other terminators
-pub fn parse_default_terminator_content<'a>(s: Span<'a>, terminator: &Terminator) -> ParseResult<'a> {
+pub fn parse_default_terminator_content<'a>(
+    s: Span<'a>,
+    terminator: &Terminator,
+) -> ParseResult<'a> {
     parse_terminator(s, terminator, &DEFAULT_TERMINATORS)
 }
 
@@ -60,7 +63,7 @@ pub fn parse_terminator<'a>(
     let mut depth = 0;
 
     let mut s = initial_span;
-    
+
     'main: loop {
         // Don't discard whitespace in the case of strings, for example
         if terminator.code_inner {
@@ -100,7 +103,7 @@ pub fn parse_terminator<'a>(
                 continue;
             }
         }
-        
+
         // Handle recursive terminator parsing if current block is code
         if terminator.code_inner {
             for t in all_terminators {
@@ -126,7 +129,7 @@ pub fn parse_terminator<'a>(
             s = anychar(s)?.0
         }
     }
-    
+
     // Exited closing terminator
     Err(nom::Err::Error(ErrorTree::from_char(s, terminator.closing)))
 }
@@ -164,7 +167,6 @@ pub fn take_until_or_end_discard_smart<'a>(s: Span<'a>, until: &str) -> ParseRes
 
     Ok((end, inner))
 }
-
 
 /// Take until a tag not including occurrences in `DEFAULT_TERMINATORS` blocks
 #[allow(dead_code)]
