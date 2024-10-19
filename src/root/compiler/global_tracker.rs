@@ -2,14 +2,15 @@ use crate::root::parser::path_storage::PathStorage;
 use crate::root::shared::common::FunctionID;
 use derive_getters::{Dissolve, Getters};
 use std::collections::HashSet;
+use crate::root::assembler::assembly_builder::Assembly;
 
-/// Tracks data between function compilations
+/// Tracks data between function compilations, including data about files and folders
 #[derive(Dissolve, Getters)]
 pub struct GlobalTracker<'a> {
     path_storage: &'a PathStorage,
     function_calls: HashSet<FunctionID>,
     readonly_contents: HashSet<String>,
-    readonly_data_section: String,
+    readonly_data_section: Assembly,
     unique_tag_counter: usize,
 }
 
@@ -29,11 +30,11 @@ impl<'a> GlobalTracker<'a> {
     }
 
     /// Stores that a function has been called to ensure it gets compiled
-    pub fn f_call(&mut self, fid: FunctionID) {
+    pub fn store_function_call(&mut self, fid: FunctionID) {
         self.function_calls.insert(fid);
     }
 
-    /// Clears the function calls
+    /// Clears the function calls - needed between function compilations
     pub fn reset_functions(&mut self) {
         self.function_calls = Default::default();
     }

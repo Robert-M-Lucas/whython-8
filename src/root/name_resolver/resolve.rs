@@ -25,7 +25,7 @@ pub fn resolve(
     let mut unprocessed_functions = new_hashmap();
     let mut processed_files = HashSet::new();
     let mut process_order = Vec::new();
-    let (file, first) = ast.remove_entry(&FileID::main_file()).unwrap();
+    let (file, first) = ast.remove_entry(&FileID::MAIN_FILE).unwrap();
 
     resolve_file(
         file,
@@ -46,6 +46,7 @@ pub fn resolve(
     Ok((global_table, unprocessed_functions))
 }
 
+/// Processes a file handling its imports
 fn resolve_file(
     file_id: FileID,
     main_file: bool,
@@ -97,6 +98,7 @@ fn resolve_file(
     Ok(())
 }
 
+/// Processes a file if it hasn't already been processed
 fn process_if_needed(
     file_id: FileID,
     location: &Location,
@@ -124,6 +126,7 @@ fn process_if_needed(
         )?;
         Ok(())
     } else {
+        // Reconstruct error due to circular import
         process_order.push(file_id);
         let s = process_order
             .iter()

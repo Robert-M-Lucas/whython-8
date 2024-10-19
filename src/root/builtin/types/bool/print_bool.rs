@@ -4,18 +4,20 @@ use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{FunctionID, LocalAddress, TypeID};
 use unique_type_id::UniqueTypeId;
+use crate::root::assembler::assembly_builder::Assembly;
 
+/// `printb` function that prints a boolean to the terminal
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
-pub struct PrintB;
+pub struct PrintBool;
 
-impl PrintB {
+impl PrintBool {
     pub const fn id() -> FunctionID {
-        f_id(PrintB::unique_type_id().0)
+        f_id(PrintBool::unique_type_id().0)
     }
 }
 
-impl BuiltinInlineFunction for PrintB {
+impl BuiltinInlineFunction for PrintBool {
     fn id(&self) -> FunctionID {
         Self::id()
     }
@@ -33,7 +35,7 @@ impl BuiltinInlineFunction for PrintB {
     }
 
     fn inline(&self) -> InlineFnGenerator {
-        |args: &[LocalAddress], _, gt, sz| -> String {
+        |args: &[LocalAddress], _, gt, sz| -> Assembly {
             let id_false = format!("{}_f_fstr", Self::id().string_id());
             let id_true = format!("{}_t_fstr", Self::id().string_id());
 
@@ -43,8 +45,8 @@ impl BuiltinInlineFunction for PrintB {
             gt.add_readonly_data(&id_false, &data_false);
             gt.add_readonly_data(&id_true, &data_true);
 
-            let jmp_false = gt.get_unique_tag(PrintB::id());
-            let jmp_end = gt.get_unique_tag(PrintB::id());
+            let jmp_false = gt.get_unique_tag(PrintBool::id());
+            let jmp_end = gt.get_unique_tag(PrintBool::id());
 
             let lhs = args[0];
             format!(

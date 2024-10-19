@@ -4,7 +4,9 @@ use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{FunctionID, LocalAddress, TypeID};
 use unique_type_id::UniqueTypeId;
+use crate::root::assembler::assembly_builder::Assembly;
 
+/// `exit` function immediately terminating the program
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
 pub struct ExitFunction;
@@ -33,7 +35,7 @@ impl BuiltinInlineFunction for ExitFunction {
     }
 
     fn inline(&self) -> InlineFnGenerator {
-        |args: &[LocalAddress], _, _, _| -> String {
+        |args: &[LocalAddress], _, _, _| -> Assembly {
             let lhs = &args[0];
 
             // 0 us exit syscall

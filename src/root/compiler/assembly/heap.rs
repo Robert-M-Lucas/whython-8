@@ -1,3 +1,4 @@
+use crate::root::assembler::assembly_builder::Assembly;
 use crate::root::builtin::{BuiltinInlineFunction, InlineFnGenerator};
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::name_resolver::name_resolvers::GlobalTable;
@@ -6,15 +7,16 @@ use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{AddressedTypeRef, FunctionID, TypeID, TypeRef};
 
+/// Allocates space for a type on the heap and return `(Assembly, [the address])`
 pub fn heap_alloc(
     t: TypeRef,
     global_table: &mut GlobalTable,
     local_variable_table: &mut LocalVariableTable,
-) -> (String, AddressedTypeRef) {
+) -> (Assembly, AddressedTypeRef) {
     let size = global_table.get_size(&t).0;
     let sz = local_variable_table.stack_size().0;
     let output =
-        global_table.add_local_variable_unnamed_base(t.plus_one_indirect(), local_variable_table);
+        global_table.add_local_variable_unnamed(t.plus_one_indirect(), local_variable_table);
 
     (
         format!(
@@ -30,6 +32,7 @@ pub fn heap_alloc(
     )
 }
 
+/// `free` function for deallocating heap memory
 pub struct FreeFunction {
     id: FunctionID,
     parent_type: TypeID,
@@ -56,7 +59,7 @@ impl BuiltinInlineFunction for FreeFunction {
     }
 
     fn inline(&self) -> InlineFnGenerator {
-        |args, _, _, sz| -> String {
+        |args, _, _, sz| -> Assembly {
             let to_free = &args[0];
             format!(
                 "    mov rdi, qword {to_free}
@@ -73,6 +76,7 @@ impl BuiltinInlineFunction for FreeFunction {
     }
 }
 
+/// Creates a `FreeFunction` for a given type and function id
 pub fn free_function(t: TypeID, f: FunctionID) -> FreeFunction {
     FreeFunction {
         id: f,

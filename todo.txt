@@ -1,7 +1,0 @@
-
-- Add proper imports ?
-    - Make the name resolver create a HashMap<FileID, (Vec<TypeID>, Vec<FunctionID>)>
-    - Select the FileID with the most functions to compile and do all of those first
-
-- Improve type system
-

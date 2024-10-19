@@ -21,6 +21,7 @@ impl LocalVariableTable {
         }
     }
 
+    /// The current function stack size
     pub fn stack_size(&self) -> ByteSize {
         *self.stack_size.last().unwrap()
     }

@@ -5,20 +5,22 @@ use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{FunctionID, LocalAddress, TypeID};
 use unique_type_id::UniqueTypeId;
+use crate::root::assembler::assembly_builder::Assembly;
 
+/// Implements the integer equal operation
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
-pub struct IntEq;
+pub struct IntEqual;
 
-impl IntEq {
+impl IntEqual {
     pub const fn id() -> FunctionID {
-        f_id(IntEq::unique_type_id().0)
+        f_id(IntEqual::unique_type_id().0)
     }
 }
 
-impl BuiltinInlineFunction for IntEq {
+impl BuiltinInlineFunction for IntEqual {
     fn id(&self) -> FunctionID {
-        IntEq::id()
+        IntEqual::id()
     }
 
     fn name(&self) -> &'static str {
@@ -37,12 +39,12 @@ impl BuiltinInlineFunction for IntEq {
     }
 
     fn inline(&self) -> InlineFnGenerator {
-        |args: &[LocalAddress], return_into: Option<LocalAddress>, gt, _| -> String {
+        |args: &[LocalAddress], return_into: Option<LocalAddress>, gt, _| -> Assembly {
             let lhs = args[0];
             let rhs = args[1];
             let return_into = return_into.unwrap();
-            let jmp_true = gt.get_unique_tag(IntEq::id());
-            let jmp_end = gt.get_unique_tag(IntEq::id());
+            let jmp_true = gt.get_unique_tag(IntEqual::id());
+            let jmp_end = gt.get_unique_tag(IntEqual::id());
 
             format!(
                 "    mov rax, qword {lhs}
@@ -62,19 +64,20 @@ impl BuiltinInlineFunction for IntEq {
     }
 }
 
+/// Implements the integer not equal operation
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
-pub struct IntNE;
+pub struct IntNotEqual;
 
-impl IntNE {
+impl IntNotEqual {
     pub const fn id() -> FunctionID {
-        f_id(IntNE::unique_type_id().0)
+        f_id(IntNotEqual::unique_type_id().0)
     }
 }
 
-impl BuiltinInlineFunction for IntNE {
+impl BuiltinInlineFunction for IntNotEqual {
     fn id(&self) -> FunctionID {
-        IntNE::id()
+        IntNotEqual::id()
     }
 
     fn name(&self) -> &'static str {
@@ -93,12 +96,12 @@ impl BuiltinInlineFunction for IntNE {
     }
 
     fn inline(&self) -> InlineFnGenerator {
-        |args: &[LocalAddress], return_into: Option<LocalAddress>, gt, _| -> String {
+        |args: &[LocalAddress], return_into: Option<LocalAddress>, gt, _| -> Assembly {
             let lhs = args[0];
             let rhs = args[1];
             let return_into = return_into.unwrap();
-            let jmp_true = gt.get_unique_tag(IntNE::id());
-            let jmp_end = gt.get_unique_tag(IntNE::id());
+            let jmp_true = gt.get_unique_tag(IntNotEqual::id());
+            let jmp_end = gt.get_unique_tag(IntNotEqual::id());
 
             format!(
                 "    mov rax, qword {lhs}
@@ -118,19 +121,20 @@ impl BuiltinInlineFunction for IntNE {
     }
 }
 
+/// Implements the integer greater than operation
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
-pub struct IntGT;
+pub struct IntGreaterThan;
 
-impl IntGT {
+impl IntGreaterThan {
     pub const fn id() -> FunctionID {
-        f_id(IntGT::unique_type_id().0)
+        f_id(IntGreaterThan::unique_type_id().0)
     }
 }
 
-impl BuiltinInlineFunction for IntGT {
+impl BuiltinInlineFunction for IntGreaterThan {
     fn id(&self) -> FunctionID {
-        IntGT::id()
+        IntGreaterThan::id()
     }
 
     fn name(&self) -> &'static str {
@@ -149,12 +153,12 @@ impl BuiltinInlineFunction for IntGT {
     }
 
     fn inline(&self) -> InlineFnGenerator {
-        |args: &[LocalAddress], return_into: Option<LocalAddress>, gt, _| -> String {
+        |args: &[LocalAddress], return_into: Option<LocalAddress>, gt, _| -> Assembly {
             let lhs = args[0];
             let rhs = args[1];
             let return_into = return_into.unwrap();
-            let jmp_true = gt.get_unique_tag(IntGT::id());
-            let jmp_end = gt.get_unique_tag(IntGT::id());
+            let jmp_true = gt.get_unique_tag(IntGreaterThan::id());
+            let jmp_end = gt.get_unique_tag(IntGreaterThan::id());
 
             format!(
                 "    mov rax, qword {lhs}
@@ -174,19 +178,20 @@ impl BuiltinInlineFunction for IntGT {
     }
 }
 
+/// Implements the integer less than operation
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
-pub struct IntLT;
+pub struct IntLessThan;
 
-impl IntLT {
+impl IntLessThan {
     pub const fn id() -> FunctionID {
-        f_id(IntLT::unique_type_id().0)
+        f_id(IntLessThan::unique_type_id().0)
     }
 }
 
-impl BuiltinInlineFunction for IntLT {
+impl BuiltinInlineFunction for IntLessThan {
     fn id(&self) -> FunctionID {
-        IntLT::id()
+        IntLessThan::id()
     }
 
     fn name(&self) -> &'static str {
@@ -205,12 +210,12 @@ impl BuiltinInlineFunction for IntLT {
     }
 
     fn inline(&self) -> InlineFnGenerator {
-        |args: &[LocalAddress], return_into: Option<LocalAddress>, gt, _| -> String {
+        |args: &[LocalAddress], return_into: Option<LocalAddress>, gt, _| -> Assembly {
             let lhs = args[0];
             let rhs = args[1];
             let return_into = return_into.unwrap();
-            let jmp_true = gt.get_unique_tag(IntLT::id());
-            let jmp_end = gt.get_unique_tag(IntLT::id());
+            let jmp_true = gt.get_unique_tag(IntLessThan::id());
+            let jmp_end = gt.get_unique_tag(IntLessThan::id());
 
             format!(
                 "    mov rax, qword {rhs}
@@ -230,19 +235,20 @@ impl BuiltinInlineFunction for IntLT {
     }
 }
 
+/// Implements the integer greater than or equal operation
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
-pub struct IntGE;
+pub struct IntGreaterThanEqual;
 
-impl IntGE {
+impl IntGreaterThanEqual {
     pub const fn id() -> FunctionID {
-        f_id(IntGE::unique_type_id().0)
+        f_id(IntGreaterThanEqual::unique_type_id().0)
     }
 }
 
-impl BuiltinInlineFunction for IntGE {
+impl BuiltinInlineFunction for IntGreaterThanEqual {
     fn id(&self) -> FunctionID {
-        IntGE::id()
+        IntGreaterThanEqual::id()
     }
 
     fn name(&self) -> &'static str {
@@ -261,12 +267,12 @@ impl BuiltinInlineFunction for IntGE {
     }
 
     fn inline(&self) -> InlineFnGenerator {
-        |args: &[LocalAddress], return_into: Option<LocalAddress>, gt, _| -> String {
+        |args: &[LocalAddress], return_into: Option<LocalAddress>, gt, _| -> Assembly {
             let lhs = args[0];
             let rhs = args[1];
             let return_into = return_into.unwrap();
-            let jmp_true = gt.get_unique_tag(IntGE::id());
-            let jmp_end = gt.get_unique_tag(IntGE::id());
+            let jmp_true = gt.get_unique_tag(IntGreaterThanEqual::id());
+            let jmp_end = gt.get_unique_tag(IntGreaterThanEqual::id());
 
             format!(
                 "    mov rax, qword {lhs}
@@ -286,19 +292,20 @@ impl BuiltinInlineFunction for IntGE {
     }
 }
 
+/// Implements the integer less than or equal operation
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
-pub struct IntLE;
+pub struct IntLessThanEqual;
 
-impl IntLE {
+impl IntLessThanEqual {
     pub const fn id() -> FunctionID {
-        f_id(IntLE::unique_type_id().0)
+        f_id(IntLessThanEqual::unique_type_id().0)
     }
 }
 
-impl BuiltinInlineFunction for IntLE {
+impl BuiltinInlineFunction for IntLessThanEqual {
     fn id(&self) -> FunctionID {
-        IntLE::id()
+        IntLessThanEqual::id()
     }
 
     fn name(&self) -> &'static str {
@@ -317,12 +324,12 @@ impl BuiltinInlineFunction for IntLE {
     }
 
     fn inline(&self) -> InlineFnGenerator {
-        |args: &[LocalAddress], return_into: Option<LocalAddress>, gt, _| -> String {
+        |args: &[LocalAddress], return_into: Option<LocalAddress>, gt, _| -> Assembly {
             let lhs = args[0];
             let rhs = args[1];
             let return_into = return_into.unwrap();
-            let jmp_true = gt.get_unique_tag(IntLE::id());
-            let jmp_end = gt.get_unique_tag(IntLE::id());
+            let jmp_true = gt.get_unique_tag(IntLessThanEqual::id());
+            let jmp_end = gt.get_unique_tag(IntLessThanEqual::id());
 
             format!(
                 "    mov rax, qword {rhs}

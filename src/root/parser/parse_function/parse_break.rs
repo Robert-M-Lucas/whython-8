@@ -6,11 +6,13 @@ use derive_getters::Getters;
 use nom::character::complete::char;
 use nom_supreme::tag::complete::tag;
 
+/// Token representing a break
 #[derive(Debug, Getters)]
 pub struct BreakToken {
     location: Location,
 }
 
+/// Checks if the line should be parsed as a break
 pub fn test_parse_break<'b>(s: Span<'_>) -> ParseResult<Span, LineTestFn<'_, 'b>> {
     match tag("break")(s) {
         Ok(_) => Ok((s, |x, _| {

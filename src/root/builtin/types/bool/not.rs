@@ -1,12 +1,14 @@
 use unique_type_id::UniqueTypeId;
-
-use crate::root::builtin::types::bool::printb::PrintB;
+use crate::root::assembler::assembly_builder::Assembly;
+use crate::root::builtin::types::bool::print_bool::PrintBool;
 use crate::root::builtin::types::bool::BoolType;
 use crate::root::builtin::{f_id, BuiltinInlineFunction, InlineFnGenerator};
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{FunctionID, LocalAddress, TypeID};
 
+
+/// Implements the boolean not operation
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
 pub struct BoolNot;
@@ -29,9 +31,9 @@ impl BuiltinInlineFunction for BoolNot {
     }
 
     fn inline(&self) -> InlineFnGenerator {
-        |args: &[LocalAddress], return_into, gt, _| -> String {
-            let jmp_false = gt.get_unique_tag(PrintB::id());
-            let jmp_end = gt.get_unique_tag(PrintB::id());
+        |args: &[LocalAddress], return_into, gt, _| -> Assembly {
+            let jmp_false = gt.get_unique_tag(PrintBool::id());
+            let jmp_end = gt.get_unique_tag(PrintBool::id());
 
             let lhs = args[0];
             let return_into = return_into.unwrap();

@@ -12,6 +12,7 @@ use crate::root::DEBUG_ON_ERROR;
 pub mod evaluable_errors;
 pub mod name_resolver_errors;
 pub mod parser_errors;
+pub mod compiler_errors;
 
 /// Universal error for Whython-8
 #[derive(Debug)]

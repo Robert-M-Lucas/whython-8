@@ -1,12 +1,13 @@
 use unique_type_id::UniqueTypeId;
-
-use crate::root::builtin::types::bool::printb::PrintB;
-use crate::root::builtin::types::bool::{bool_op_sig, BoolType};
+use crate::root::assembler::assembly_builder::Assembly;
+use crate::root::builtin::types::bool::print_bool::PrintBool;
+use crate::root::builtin::types::bool::{boolean_signature, BoolType};
 use crate::root::builtin::{f_id, BuiltinInlineFunction, InlineFnGenerator};
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
 use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{FunctionID, LocalAddress, TypeID};
 
+/// Implements the boolean and operation
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
 pub struct BoolAnd;
@@ -21,13 +22,13 @@ impl BuiltinInlineFunction for BoolAnd {
     }
 
     fn signature(&self) -> FunctionSignature {
-        bool_op_sig()
+        boolean_signature()
     }
 
     fn inline(&self) -> InlineFnGenerator {
-        |args, return_into, gt, _| -> String {
-            let jmp_false = gt.get_unique_tag(PrintB::id());
-            let jmp_end = gt.get_unique_tag(PrintB::id());
+        |args, return_into, gt, _| -> Assembly {
+            let jmp_false = gt.get_unique_tag(PrintBool::id());
+            let jmp_end = gt.get_unique_tag(PrintBool::id());
 
             let lhs = args[0];
             let rhs = args[1];
@@ -54,11 +55,11 @@ impl BuiltinInlineFunction for BoolAnd {
 
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
-pub struct BoolAsAnd;
+pub struct BoolAssignAnd;
 
-impl BuiltinInlineFunction for BoolAsAnd {
+impl BuiltinInlineFunction for BoolAssignAnd {
     fn id(&self) -> FunctionID {
-        f_id(BoolAsAnd::unique_type_id().0)
+        f_id(BoolAssignAnd::unique_type_id().0)
     }
 
     fn name(&self) -> &'static str {
@@ -77,8 +78,8 @@ impl BuiltinInlineFunction for BoolAsAnd {
     }
 
     fn inline(&self) -> InlineFnGenerator {
-        |args: &[LocalAddress], _, gt, _| -> String {
-            let jmp_true = gt.get_unique_tag(PrintB::id());
+        |args: &[LocalAddress], _, gt, _| -> Assembly {
+            let jmp_true = gt.get_unique_tag(PrintBool::id());
 
             let lhs = args[0];
             let rhs = args[1];

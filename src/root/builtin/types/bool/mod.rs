@@ -1,12 +1,12 @@
 use b_box::b;
 use unique_type_id::UniqueTypeId;
-
+use crate::root::assembler::assembly_builder::Assembly;
 use crate::root::builtin::t_id;
-use crate::root::builtin::types::bool::and::{BoolAnd, BoolAsAnd};
-use crate::root::builtin::types::bool::comparators::{BoolEq, BoolNE};
+use crate::root::builtin::types::bool::and::{BoolAnd, BoolAssignAnd};
+use crate::root::builtin::types::bool::comparators::{BoolEqual, BoolNotEqual};
 use crate::root::builtin::types::bool::not::BoolNot;
-use crate::root::builtin::types::bool::or::{BoolAsOr, BoolOr};
-use crate::root::builtin::types::bool::printb::PrintB;
+use crate::root::builtin::types::bool::or::{BoolAssignOr, BoolOr};
+use crate::root::builtin::types::bool::print_bool::PrintBool;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::GlobalTable;
 use crate::root::name_resolver::resolve_function_signatures::FunctionSignature;
@@ -19,9 +19,13 @@ mod and;
 mod comparators;
 mod not;
 mod or;
-mod printb;
+mod print_bool;
 
-fn bool_op_sig() -> FunctionSignature {
+/// Helper function for getting the function signature of common boolean operations
+/// `lhs`: `bool`
+/// `rhs`: `bool`
+/// `return_type`: `Some(bool)`
+fn boolean_signature() -> FunctionSignature {
     FunctionSignature::new_inline_builtin(
         SelfType::CopySelf,
         &[
@@ -32,18 +36,20 @@ fn bool_op_sig() -> FunctionSignature {
     )
 }
 
+/// Registers all boolean types and functions in the `GlobalTable`
 pub fn register_bool(global_table: &mut GlobalTable) {
     global_table.register_builtin_type(b!(BoolType));
-    global_table.register_inline_function(&PrintB);
-    global_table.register_inline_function(&BoolEq);
-    global_table.register_inline_function(&BoolNE);
+    global_table.register_inline_function(&PrintBool);
+    global_table.register_inline_function(&BoolEqual);
+    global_table.register_inline_function(&BoolNotEqual);
     global_table.register_inline_function(&BoolAnd);
-    global_table.register_inline_function(&BoolAsAnd);
+    global_table.register_inline_function(&BoolAssignAnd);
     global_table.register_inline_function(&BoolOr);
-    global_table.register_inline_function(&BoolAsOr);
+    global_table.register_inline_function(&BoolAssignOr);
     global_table.register_inline_function(&BoolNot);
 }
 
+/// The boolean type `bool`
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
 pub struct BoolType;
@@ -71,7 +77,7 @@ impl Type for BoolType {
         &self,
         location: &LocalAddress,
         literal: &LiteralToken,
-    ) -> Result<String, WErr> {
+    ) -> Result<Assembly, WErr> {
         Ok(match literal.literal() {
             LiteralTokens::Bool(value) => {
                 if *value {

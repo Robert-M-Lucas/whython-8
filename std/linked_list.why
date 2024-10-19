@@ -1,10 +1,10 @@
-struct LL {
+struct LinkedList {
     first: &Node
 }
 
-impl LL {
-    fn new() -> LL {
-        return LL {
+impl LinkedList {
+    fn new() -> LinkedList {
+        return LinkedList {
             first: Node::null()
         };
     }

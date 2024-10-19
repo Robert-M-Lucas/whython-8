@@ -5,7 +5,9 @@ use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{FunctionID, LocalAddress, TypeID};
 use unique_type_id::UniqueTypeId;
+use crate::root::assembler::assembly_builder::Assembly;
 
+/// `null` function that returns a null pointer with a specified type
 pub struct NullFunction {
     id: FunctionID,
     parent_type: TypeID,
@@ -29,7 +31,7 @@ impl BuiltinInlineFunction for NullFunction {
     }
 
     fn inline(&self) -> InlineFnGenerator {
-        |_, return_into: Option<LocalAddress>, _, _| -> String {
+        |_, return_into: Option<LocalAddress>, _, _| -> Assembly {
             let return_into = return_into.unwrap();
             format!("    mov qword {return_into}, 0\n")
         }
@@ -40,6 +42,7 @@ impl BuiltinInlineFunction for NullFunction {
     }
 }
 
+/// Creates a `NullFunction` for a given type and function id
 pub fn null_function(t: TypeID, f: FunctionID) -> NullFunction {
     NullFunction {
         id: f,
@@ -47,6 +50,7 @@ pub fn null_function(t: TypeID, f: FunctionID) -> NullFunction {
     }
 }
 
+/// `is_null` function for checking if a reference is null
 #[derive(UniqueTypeId)]
 #[UniqueTypeIdType = "u16"]
 pub struct IsNullFunction {
@@ -81,7 +85,7 @@ impl BuiltinInlineFunction for IsNullFunction {
     }
 
     fn inline(&self) -> InlineFnGenerator {
-        |args: &[LocalAddress], return_into, gt, _| -> String {
+        |args: &[LocalAddress], return_into, gt, _| -> Assembly {
             let jmp_false = gt.get_unique_tag(IsNullFunction::const_id());
             let jmp_end = gt.get_unique_tag(IsNullFunction::const_id());
 
@@ -105,6 +109,7 @@ impl BuiltinInlineFunction for IsNullFunction {
     }
 }
 
+/// Generates an `IsNullFunction` for a given type and function id
 pub fn is_null_function(t: TypeID, f: FunctionID) -> IsNullFunction {
     IsNullFunction {
         id: f,

@@ -16,6 +16,7 @@ use crate::root::parser::parse_function::parse_while::{test_parse_while, WhileTo
 use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::parser::parse_util::discard_ignored;
 
+/// A token holding all types of lines
 #[derive(Debug)]
 pub enum LineTokens {
     Initialisation(InitialisationToken),
@@ -28,10 +29,11 @@ pub enum LineTokens {
     Marker(MarkerToken),
 }
 
-/// fn(line span, Option<class name>)
+/// fn(line span, Option<class name>) -> parse result
 pub type LineTestFn<'a, 'b> =
     fn(Span<'a>, Option<&'b SimpleNameToken>) -> ParseResult<'a, Span<'a>, LineTokens>;
 
+/// Parses a set of lines e.g. function content, if content
 pub fn parse_lines<'a>(
     contents: Span<'a>,
     containing_class: Option<&SimpleNameToken>,
@@ -54,10 +56,12 @@ pub fn parse_lines<'a>(
     Ok(((), lines))
 }
 
+/// Parses a single line
 pub fn parse_line<'a>(
     s: Span<'a>,
     containing_class: Option<&SimpleNameToken>,
 ) -> ParseResult<'a, Span<'a>, LineTokens> {
+    // Try different line types
     match alt((
         test_parse_break,
         test_parse_return,
@@ -69,12 +73,12 @@ pub fn parse_line<'a>(
     ))
     .parse(s)
     {
-        Ok((_, parser)) => parser(s, containing_class),
-        Err(_e) => {
+        Ok((_, parser)) => parser(s, containing_class), // Parse line type found
+        Err(_e) => { // Parse as evaluable
             match parse_evaluable(s, containing_class, true).map(|(s, e)| (s, LineTokens::NoOp(e)))
             {
                 Ok(x) => Ok(x),
-                Err(e) => Err(
+                Err(e) => Err( // Failed all line types and evaluable
                     nom::Err::Error(ErrorTree::Alt(vec![
                         create_custom_error_tree(
                             "Expected 'break', 'return', 'let', 'while', 'if', or an evaluable. Evaluable parsing error shown next.".to_string(),

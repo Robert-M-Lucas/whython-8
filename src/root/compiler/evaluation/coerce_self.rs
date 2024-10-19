@@ -1,3 +1,4 @@
+use crate::root::assembler::assembly_builder::Assembly;
 use crate::root::builtin::core::referencing::set_reference;
 use crate::root::compiler::assembly::utils::copy_from_indirect;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
@@ -7,17 +8,19 @@ use crate::root::parser::location::Location;
 use crate::root::parser::parse_parameters::SelfType;
 use crate::root::shared::common::{AddressedTypeRef, Indirection};
 
+/// Coerces in-code self into the correct type
+// TODO: Work in progress
 pub fn coerce_self(
     current_self: AddressedTypeRef,
     self_type: SelfType,
     global_table: &mut GlobalTable,
     local_variables: &mut LocalVariableTable,
-) -> Result<(String, AddressedTypeRef), WErr> {
+) -> Result<(Assembly, AddressedTypeRef), WErr> {
     Ok(match self_type {
         SelfType::None => (String::new(), current_self),
         SelfType::CopySelf => {
             if current_self.type_ref().indirection().has_indirection() {
-                let new_self = global_table.add_local_variable_unnamed_base(
+                let new_self = global_table.add_local_variable_unnamed(
                     current_self.type_ref().immediate(),
                     local_variables,
                 );
@@ -37,7 +40,7 @@ pub fn coerce_self(
         }
         SelfType::RefSelf => {
             if !current_self.type_ref().indirection().has_indirection() {
-                let new_self = global_table.add_local_variable_unnamed_base(
+                let new_self = global_table.add_local_variable_unnamed(
                     current_self.type_ref().plus_one_indirect(),
                     local_variables,
                 );
@@ -53,7 +56,7 @@ pub fn coerce_self(
             } else if *current_self.type_ref().indirection() == Indirection(1) {
                 (String::new(), current_self)
             } else {
-                let new_self = global_table.add_local_variable_unnamed_base(
+                let new_self = global_table.add_local_variable_unnamed(
                     current_self.type_ref().with_indirection(Indirection(1)),
                     local_variables,
                 );

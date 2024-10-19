@@ -1,0 +1,6 @@
+[[1. Argument Parsing]]
+[[2. Parsing]]
+[[3. Compilation]]
+[[4. Assembling]]
+[[5. Linking]]
+[[6. Execution]]

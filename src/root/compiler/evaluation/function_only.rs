@@ -1,3 +1,4 @@
+use crate::root::assembler::assembly_builder::Assembly;
 use crate::root::compiler::evaluation::type_only::compile_evaluable_type_only;
 use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
@@ -9,6 +10,7 @@ use crate::root::parser::parse_function::parse_evaluable::{EvaluableToken, Evalu
 use crate::root::shared::common::FunctionID;
 
 /// Evaluates `name` into a `FunctionID`
+/// Returns `([inner EvaluableToken, if one exists], FunctionID, [name of the function[)`
 pub fn compile_evaluable_function_only<'a>(
     fid: FunctionID,
     name: &'a EvaluableToken,
@@ -34,6 +36,7 @@ pub fn compile_evaluable_function_only<'a>(
             section: access,
         } => {
             // TODO: Make order consistent i.e. check if type exists before checking if file exists
+            // Resolve if static access refers to a name in an imported file
             match inner.token() {
                 EvaluableTokens::Name(file_name, containing_class) => {
                     if let Some(file) = global_table.get_imported_file(file_name, global_tracker) {
@@ -95,6 +98,7 @@ pub fn compile_evaluable_function_only<'a>(
             )?;
             let function =
                 global_table.get_impl_function_by_name(*inner_type.type_id(), access.name());
+            
             let Some(function) = function else {
                 return WErr::ne(
                     EvalErrs::TypeDoesntHaveMethod(
@@ -111,6 +115,8 @@ pub fn compile_evaluable_function_only<'a>(
             parent: inner,
             section: access,
         } => {
+            // Don't check for other file as only StaticAccess can refer to other files
+            
             let inner_type = compile_evaluable_type_only(
                 fid,
                 inner,

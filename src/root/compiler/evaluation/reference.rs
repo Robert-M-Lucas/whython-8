@@ -1,3 +1,4 @@
+use crate::root::assembler::assembly_builder::Assembly;
 use crate::root::compiler::evaluation::new::compile_evaluable_new;
 use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
@@ -15,7 +16,7 @@ pub fn compile_evaluable_reference(
     local_variables: &mut LocalVariableTable,
     global_table: &mut GlobalTable,
     global_tracker: &mut GlobalTracker,
-) -> Result<(String, Option<AddressedTypeRef>), WErr> {
+) -> Result<(Assembly, Option<AddressedTypeRef>), WErr> {
     let ets = et.token();
 
     Ok(match ets {
@@ -28,18 +29,21 @@ pub fn compile_evaluable_reference(
                 global_tracker,
             )? {
                 NameResult::Function(_) => {
+                    // Name was function (no call at the end)
                     return WErr::ne(
                         EvalErrs::FunctionMustBeCalled(name.name().clone()),
                         name.location().clone(),
                     )
                 }
                 NameResult::Type(_) => {
+                    // Name was a type (not a value)
                     return WErr::ne(
                         EvalErrs::CannotEvalStandaloneType(name.name().clone()),
                         name.location().clone(),
                     )
                 }
                 NameResult::File(_) => {
+                    // Name was a file (not a value)
                     return WErr::ne(
                         EvalErrs::CannotEvaluateStandaloneImportedFile(name.name().clone()),
                         name.location().clone(),
@@ -49,14 +53,18 @@ pub fn compile_evaluable_reference(
             }
         }
         EvaluableTokens::Literal(_) => {
+            // Cannot get an address without instantiation
             compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?
         }
         EvaluableTokens::InfixOperator(_, _, _) => {
+            // Cannot get an address without instantiation
             compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?
         }
         EvaluableTokens::PrefixOperator(_, _) => {
+            // Cannot get an address without instantiation
             compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?
         }
+        // Cannot get an address without instantiation
         EvaluableTokens::DynamicAccess {
             parent: _,
             section: _,
@@ -65,16 +73,19 @@ pub fn compile_evaluable_reference(
             parent: _,
             section: n,
         } => {
+            // Constant attributes do not exist - if it's a method, it must be called
             return WErr::ne(
                 NRErrs::CannotFindConstantAttribute(n.name().clone()),
                 n.location().clone(),
             )
-        } // Accessed methods must be called
+        }
+        // Cannot get an address without instantiation
         EvaluableTokens::FunctionCall {
             function: _,
             args: _,
         } => compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?,
         EvaluableTokens::StructInitialiser(_struct_init) => {
+            // Cannot get an address without instantiation
             compile_evaluable_new(fid, et, local_variables, global_table, global_tracker)?
         }
         EvaluableTokens::None => (String::new(), None),

@@ -1,6 +1,6 @@
-use crate::root::assembler::assembly_builder::AssemblyBuilder;
+use crate::root::assembler::assembly_builder::{Assembly, AssemblyBuilder};
 use crate::root::compiler::assembly::utils::{align_16_bytes, align_16_bytes_plus_8, copy};
-use crate::root::compiler::compiler_errors::CompErrs;
+use crate::root::errors::compiler_errors::CompErrs;
 use crate::root::compiler::evaluation::coerce_self::coerce_self;
 use crate::root::compiler::evaluation::into::compile_evaluable_into;
 use crate::root::compiler::evaluation::reference::compile_evaluable_reference;
@@ -16,7 +16,8 @@ use crate::root::shared::common::{AddressedTypeRef, ByteSize, FunctionID};
 use either::Either;
 use itertools::Itertools;
 
-// TODO: Cleanup code
+// TODO: Work in progress
+// TODO: Reduce arg count, cleanup code, document
 /// Calls a given function with arguments
 pub fn call_function(
     parent_fid: FunctionID,
@@ -29,8 +30,8 @@ pub fn call_function(
     global_table: &mut GlobalTable,
     local_variables: &mut LocalVariableTable,
     global_tracker: &mut GlobalTracker,
-) -> Result<(String, Option<AddressedTypeRef>), WErr> {
-    global_tracker.f_call(fid);
+) -> Result<(Assembly, Option<AddressedTypeRef>), WErr> {
+    global_tracker.store_function_call(fid);
 
     let self_type = *global_table.get_function_signature(fid).self_type();
     if uses_self && matches!(self_type, SelfType::None) {
@@ -60,7 +61,7 @@ pub fn call_function(
             } else {
                 Some(
                     global_table
-                        .add_local_variable_unnamed_base(expected_return.clone(), local_variables),
+                        .add_local_variable_unnamed(expected_return.clone(), local_variables),
                 )
             }
         } else {
@@ -128,7 +129,7 @@ pub fn call_function(
                             }
                             into
                         } else {
-                            let into = global_table.add_local_variable_unnamed_base(
+                            let into = global_table.add_local_variable_unnamed(
                                 signature_args[i].clone(),
                                 local_variables,
                             );
@@ -154,7 +155,7 @@ pub fn call_function(
 
             match a {
                 Either::Left(eval) => {
-                    let into = global_table.add_local_variable_unnamed_base(
+                    let into = global_table.add_local_variable_unnamed(
                         signature_args[i].clone(),
                         local_variables,
                     );
@@ -241,7 +242,7 @@ pub fn call_function(
                             }
                             into
                         } else {
-                            let into = global_table.add_local_variable_unnamed_base(
+                            let into = global_table.add_local_variable_unnamed(
                                 signature_args[i].clone(),
                                 local_variables,
                             );
@@ -268,7 +269,7 @@ pub fn call_function(
 
             match a {
                 Either::Left(eval) => {
-                    let into = global_table.add_local_variable_unnamed_base(
+                    let into = global_table.add_local_variable_unnamed(
                         signature_args[i].clone(),
                         local_variables,
                     );
@@ -307,7 +308,7 @@ pub fn call_function(
             local_variables.add_new_unnamed(diff);
 
             let into =
-                global_table.add_local_variable_unnamed_base(return_type.clone(), local_variables);
+                global_table.add_local_variable_unnamed(return_type.clone(), local_variables);
 
             Some(into)
         } else {
@@ -323,7 +324,7 @@ pub fn call_function(
         // ? Arguments
         for arg in args.iter().rev() {
             let into = global_table
-                .add_local_variable_unnamed_base(arg.type_ref().clone(), local_variables);
+                .add_local_variable_unnamed(arg.type_ref().clone(), local_variables);
             code.other(&copy(
                 *arg.local_address(),
                 *into.local_address(),
