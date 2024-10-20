@@ -14,6 +14,7 @@ use nom_supreme::tag::complete::tag;
 /// Token representing a while statement with location
 #[derive(Debug, Getters)]
 pub struct WhileToken {
+    #[allow(dead_code)]
     location: Location,
     condition: EvaluableToken,
     contents: Vec<LineTokens>,

@@ -28,6 +28,7 @@ impl AssemblyBuilder {
     }
 
     /// Adds a single, non-indented line with a trailing newline
+    #[allow(dead_code)]
     pub fn toplevel(&mut self, line: AssemblyRef) {
         self.inner += line;
         self.inner.push('\n');

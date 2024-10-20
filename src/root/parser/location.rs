@@ -15,6 +15,7 @@ pub enum ToLocation<'a> {
     Span(Span<'a>),
 }
 
+#[allow(dead_code)]
 impl<'a> ToLocation<'a> {
     pub fn from_location(location: Location) -> ToLocation<'a> {
         ToLocation::Location(location)
@@ -59,6 +60,7 @@ pub type Location = LocationTyped<ErrorL>;
 enum ErrorLocation {
     Location(InnerLocation),
     Builtin,
+    #[allow(dead_code)]
     None,
 }
 
@@ -134,6 +136,7 @@ impl<ErrorType> LocationTyped<ErrorType> {
     }
 
     /// Creates a 'none' location
+    #[allow(dead_code)]
     pub fn none() -> LocationTyped<ErrorType> {
         LocationTyped {
             error_type: Default::default(),
@@ -142,6 +145,7 @@ impl<ErrorType> LocationTyped<ErrorType> {
     }
 
     /// Checks if a location is not 'none'
+    #[allow(dead_code)]
     pub fn has_location(&self) -> bool {
         !matches!(self.inner_location, ErrorLocation::None)
     }

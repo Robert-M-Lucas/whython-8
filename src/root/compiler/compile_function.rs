@@ -132,7 +132,6 @@ fn recursively_compile_lines(
                     name.name().clone(),
                     type_name,
                     local_variables,
-                    global_tracker,
                 )?;
                 contents.other(&compile_evaluable_into(
                     fid,

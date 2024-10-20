@@ -25,6 +25,7 @@ impl<'a> GlobalTracker<'a> {
         }
     }
 
+    #[allow(dead_code)]
     pub fn functions_mut(&mut self) -> &mut HashSet<FunctionID> {
         &mut self.function_calls
     }

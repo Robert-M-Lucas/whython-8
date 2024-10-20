@@ -7,6 +7,7 @@ use derive_more::{Add, AddAssign, Sub, SubAssign};
 /// A unique type ID. Negative is builtin, positive is user-defined
 pub struct TypeID(pub isize);
 
+#[allow(dead_code)]
 impl TypeID {
     /// Creates a `TypeRef`
     pub fn with_indirection(self, elements: usize, indirection: usize) -> TypeRef {
@@ -59,6 +60,7 @@ impl FunctionID {
 /// The indirection to an address i.e. how many pointers you have to go through
 pub struct Indirection(pub usize);
 
+#[allow(dead_code)]
 impl Indirection {
     pub fn has_indirection(&self) -> bool {
         self.0 != 0
@@ -116,6 +118,7 @@ impl TypeRef {
     }
 
     /// Returns whether a type is an array
+    #[allow(dead_code)]
     pub fn is_array(&self) -> bool {
         self.elements == 1
     }

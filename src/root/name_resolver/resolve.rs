@@ -29,7 +29,6 @@ pub fn resolve(
 
     resolve_file(
         file,
-        true,
         first,
         &mut ast,
         &mut global_table,
@@ -49,7 +48,6 @@ pub fn resolve(
 /// Processes a file handling its imports
 fn resolve_file(
     file_id: FileID,
-    main_file: bool,
     tokens: Vec<TopLevelTokens>,
     ast: &mut HashMap<FileID, Vec<TopLevelTokens>>,
     global_table: &mut GlobalTable,
@@ -115,7 +113,6 @@ fn process_if_needed(
     if let Some((file_id, tokens)) = ast.remove_entry(&file_id) {
         resolve_file(
             file_id,
-            false,
             tokens,
             ast,
             global_table,
