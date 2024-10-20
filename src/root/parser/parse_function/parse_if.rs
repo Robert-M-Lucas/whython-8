@@ -14,6 +14,7 @@ use nom_supreme::tag::complete::tag;
 /// Token holding an if statement
 #[derive(Debug, Getters)]
 pub struct IfToken {
+    #[allow(dead_code)]
     location: Location,
     if_condition: EvaluableToken,
     if_contents: Vec<LineTokens>,

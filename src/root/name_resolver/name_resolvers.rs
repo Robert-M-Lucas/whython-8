@@ -64,6 +64,7 @@ pub enum NameResult {
     Function(FunctionID),
     Type(TypeID),
     Variable(AddressedTypeRef),
+    #[allow(dead_code)]
     File(FileID),
 }
 
@@ -290,14 +291,14 @@ impl GlobalTable {
 
         fn find_error_point(name: &FullNameToken, prev_location: &Location) -> Location {
             match name.token() {
-                FullNameTokens::Name(_, _) => prev_location.clone(),
-                FullNameTokens::StaticAccess(n, _) => find_error_point(n, name.location()),
-                FullNameTokens::DynamicAccess(n, _) => find_error_point(n, name.location()),
+                FullNameTokens::Name { name: _, containing_class: _ } => prev_location.clone(),
+                FullNameTokens::StaticAccess { inner: n, name: _ } => find_error_point(n, name.location()),
+                FullNameTokens::DynamicAccess { inner: n, name: _ } => find_error_point(n, name.location()),
             }
         }
 
         let (name, containing) = match full_name.token() {
-            FullNameTokens::Name(n, c) => (n, c),
+            FullNameTokens::Name { name: n, containing_class: c } => (n, c),
             _ => WErr::ne(
                 NRErrs::ExpectedTypeNotMethodOrAttribute,
                 find_error_point(full_name, full_name.location()),
@@ -389,6 +390,7 @@ impl GlobalTable {
     }
 
     /// Adds a local, unnamed variable to the `LocalVariableTable` and returns the address
+    #[allow(dead_code)]
     pub fn add_local_variable_unnamed_from_token(
         &mut self,
         t: &UnresolvedTypeRefToken,
@@ -404,7 +406,6 @@ impl GlobalTable {
         name: String,
         t: &UnresolvedTypeRefToken,
         local_variable_table: &mut LocalVariableTable,
-        global_tracker: &GlobalTracker,
     ) -> Result<AddressedTypeRef, WErr> {
         let t = self.resolve_to_type_ref(t, None)?;
         let size = self.get_size(&t);

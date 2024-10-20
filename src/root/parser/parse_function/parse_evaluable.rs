@@ -63,6 +63,7 @@ pub struct UnresolvedTypeRefToken {
 }
 
 impl UnresolvedTypeRefToken {
+    #[allow(dead_code)]
     pub fn from_simple(
         simple: SimpleNameToken,
         containing_class: Option<SimpleNameToken>,
@@ -72,7 +73,10 @@ impl UnresolvedTypeRefToken {
             indirection: Indirection(0),
             inner: FullNameToken {
                 location,
-                token: FullNameTokens::Name(simple, containing_class),
+                token: FullNameTokens::Name {
+                    name: simple,
+                    containing_class
+                },
             },
         }
     }
@@ -87,11 +91,15 @@ impl UnresolvedTypeRefToken {
             indirection,
             inner: FullNameToken {
                 location,
-                token: FullNameTokens::Name(simple, containing_class),
+                token: FullNameTokens::Name {
+                    name: simple,
+                    containing_class
+                },
             },
         }
     }
 
+    #[allow(dead_code)]
     pub fn into_inner(self) -> FullNameToken {
         self.inner
     }
@@ -126,22 +134,24 @@ impl FullNameToken {
 /// A token representing a name (e.g `a`, `a.b`, `a::b`)
 #[derive(Debug)]
 pub enum FullNameTokens {
-    Name(SimpleNameToken, Option<SimpleNameToken>),
-    StaticAccess(Box<FullNameToken>, SimpleNameToken),
-    DynamicAccess(Box<FullNameToken>, SimpleNameToken),
+    Name { name: SimpleNameToken, containing_class: Option<SimpleNameToken> },
+    StaticAccess { inner: Box<FullNameToken>, name: SimpleNameToken },
+    #[allow(dead_code)]
+    DynamicAccess { inner: Box<FullNameToken>, name: SimpleNameToken },
 }
 
 impl FullNameTokens {
+    #[allow(dead_code)]
     pub fn into_evaluable_token(self) -> EvaluableTokens {
         match self {
-            FullNameTokens::Name(n, c) => EvaluableTokens::Name(n, c),
-            FullNameTokens::StaticAccess(e, n) => EvaluableTokens::StaticAccess {
-                parent: b!(e.into_evaluable()),
-                section: n,
+            FullNameTokens::Name { name, containing_class } => EvaluableTokens::Name(name, containing_class),
+            FullNameTokens::StaticAccess { inner, name } => EvaluableTokens::StaticAccess {
+                parent: b!(inner.into_evaluable()),
+                section: name,
             },
-            FullNameTokens::DynamicAccess(e, n) => EvaluableTokens::DynamicAccess {
-                parent: b!(e.into_evaluable()),
-                section: n,
+            FullNameTokens::DynamicAccess { inner, name } => EvaluableTokens::DynamicAccess {
+                parent: b!(inner.into_evaluable()),
+                section: name,
             },
         }
     }
@@ -196,7 +206,10 @@ pub fn parse_full_name<'a>(
 
     let mut current = FullNameToken {
         location: section.location().clone(),
-        token: FullNameTokens::Name(section, containing_class.cloned()),
+        token: FullNameTokens::Name {
+            name: section,
+            containing_class: containing_class.cloned()
+        },
     };
 
     let mut s = s;
@@ -208,7 +221,10 @@ pub fn parse_full_name<'a>(
         let (ns, section) = parse_simple_name(ns)?;
         current = FullNameToken {
             location: section.location().clone(),
-            token: FullNameTokens::StaticAccess(b!(current), section),
+            token: FullNameTokens::StaticAccess {
+                inner: b!(current),
+                name: section
+            },
         };
         s = ns;
     }
@@ -217,7 +233,10 @@ pub fn parse_full_name<'a>(
         let (ns, section) = parse_simple_name(ns)?;
         current = FullNameToken {
             location: section.location().clone(),
-            token: FullNameTokens::DynamicAccess(b!(current), section),
+            token: FullNameTokens::DynamicAccess {
+                inner: b!(current),
+                name: section
+            },
         };
         s = ns;
     }

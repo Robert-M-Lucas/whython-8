@@ -62,6 +62,7 @@ pub struct OperatorToken {
 }
 
 impl OperatorToken {
+    #[allow(dead_code)]
     pub fn is_prefix(&self) -> bool {
         self.operator.is_prefix()
     }
@@ -100,6 +101,7 @@ pub enum OperatorTokens {
 }
 
 impl OperatorTokens {
+    #[allow(dead_code)]
     pub fn is_prefix(&self) -> bool {
         for (_, op, prefix, _) in &OPERATOR_MAPS {
             if self == op {
@@ -112,7 +114,8 @@ impl OperatorTokens {
         }
         panic!()
     }
-
+    
+    #[allow(dead_code)]
     pub fn is_infix(&self) -> bool {
         for (_, op, prefix, _) in &OPERATOR_MAPS {
             if self == op {

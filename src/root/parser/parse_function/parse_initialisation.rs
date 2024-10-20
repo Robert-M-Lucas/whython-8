@@ -14,6 +14,7 @@ use nom_supreme::tag::complete::tag;
 // Token holding an initialiser
 #[derive(Debug, Getters)]
 pub struct InitialisationToken {
+    #[allow(dead_code)]
     location: Location,
     name: SimpleNameToken,
     type_name: UnresolvedTypeRefToken,

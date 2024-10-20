@@ -27,6 +27,7 @@ pub struct UserType {
     name: String,
     size: ByteSize,
     attributes: Vec<(ByteSize, SimpleNameToken, TypeRef)>,
+    #[allow(dead_code)]
     location: Location,
 }
 
@@ -143,7 +144,10 @@ pub fn resolve_names(
                 let (location, name, functions) = it.dissolve();
                 let type_id = *global_table
                     .resolve_to_type_ref(
-                        &FullNameToken::new(location.clone(), FullNameTokens::Name(name, None))
+                        &FullNameToken::new(location.clone(), FullNameTokens::Name {
+                            name: name,
+                            containing_class: None
+                        })
                             .with_no_indirection(),
                         None,
                     )?
