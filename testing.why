@@ -1,0 +1,20 @@
+use std/linked_list;
+
+fn main() -> int {
+    let l = LinkedList::new();
+    l.push(1);
+    l.push(2);
+    l.push(3);
+
+    typequery l;
+
+    l.print();
+    printnl();
+
+    l.pop();
+    l.push(4);
+    l.print();
+
+    return 0;
+}
+

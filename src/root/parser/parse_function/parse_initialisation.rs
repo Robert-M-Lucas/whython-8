@@ -1,5 +1,5 @@
 use crate::root::parser::location::Location;
-use crate::root::parser::parse::{ParseResult, Span};
+use crate::root::parser::parse::{ErrorTree, ParseResult, Span};
 use crate::root::parser::parse_function::parse_evaluable::{
     parse_evaluable, parse_full_name, EvaluableToken, UnresolvedTypeRefToken,
 };
@@ -17,7 +17,7 @@ pub struct InitialisationToken {
     #[allow(dead_code)]
     location: Location,
     name: SimpleNameToken,
-    type_name: UnresolvedTypeRefToken,
+    type_name: Option<UnresolvedTypeRefToken>,
     value: EvaluableToken,
 }
 
@@ -42,15 +42,22 @@ pub fn parse_initialisation<'a>(
     // Parse variable name
     let (s, name) = parse_simple_name(s)?;
     let (s, _) = discard_ignored(s)?;
-    let (s, _) = char(':')(s)?;
-    let (s, _) = discard_ignored(s)?;
+    
+    let (s, type_name) = if let Ok((s, _)) = char::<nom_locate::LocatedSpan<&str, _>, ErrorTree>(':')(s) {
+        let (s, _) = discard_ignored(s)?;
 
-    // Parse type
-    let (s, type_name) = parse_full_name(s, containing_class)?;
-    let (s, _) = discard_ignored(s)?;
+        // Parse type
+        let (s, type_name) = parse_full_name(s, containing_class)?;
+        let (s, _) = discard_ignored(s)?;
+        (s, Some(type_name))
+    }
+    else {
+        (s, None)
+    };
+
     let (s, _) = char('=')(s)?;
     let (s, _) = discard_ignored(s)?;
-
+    
     // Parse value
     let (s, value) = parse_evaluable(s, containing_class, true)?;
 

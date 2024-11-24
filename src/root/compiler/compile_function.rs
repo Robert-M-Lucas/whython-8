@@ -5,17 +5,20 @@ use crate::root::assembler::assembly_builder::{Assembly, AssemblyBuilder};
 use crate::root::builtin::types::bool::BoolType;
 use crate::root::builtin::types::int::IntType;
 use crate::root::compiler::evaluation::into::compile_evaluable_into;
+use crate::root::compiler::evaluation::new::compile_evaluable_new;
 use crate::root::compiler::evaluation::reference::compile_evaluable_reference;
+use crate::root::compiler::evaluation::type_only::compile_evaluable_type_only;
 use crate::root::compiler::global_tracker::GlobalTracker;
 use crate::root::compiler::local_variable_table::LocalVariableTable;
 use crate::root::errors::compiler_errors::CompErrs;
+use crate::root::errors::evaluable_errors::EvalErrs;
 use crate::root::errors::WErr;
 use crate::root::name_resolver::name_resolvers::GlobalTable;
 use crate::root::parser::parse_function::parse_line::LineTokens;
 use crate::root::parser::parse_function::FunctionToken;
 use crate::root::shared::common::AddressedTypeRef;
 use crate::root::shared::common::{FunctionID, Indirection, LocalAddress, TypeRef};
-use crate::root::utils::warn;
+use crate::root::utils::{info_location, warn, warn_location};
 
 /// Compiles a given function into assembly
 pub fn compile_function(
@@ -128,11 +131,25 @@ fn recursively_compile_lines(
         match line {
             LineTokens::Initialisation(it) => {
                 let (name, type_name, value) = (it.name(), it.type_name(), it.value());
-                let address = global_table.add_local_variable_named(
-                    name.name().clone(),
-                    type_name,
-                    local_variables,
-                )?;
+                
+                
+                
+                // if let Some(type_name) = type_name {
+                let address = if let Some(type_name) = type_name {
+                    global_table.add_local_variable_named(
+                        name.name().clone(),
+                        type_name,
+                        local_variables,
+                    )?
+                }
+                else {
+                    let t = compile_evaluable_type_only(fid, value, local_variables, global_table, global_tracker)?;
+                    global_table.add_local_variable_named_typed(
+                        name.name().clone(),
+                        t,
+                        local_variables,
+                    )?
+                };
                 contents.other(&compile_evaluable_into(
                     fid,
                     value,
@@ -141,6 +158,21 @@ fn recursively_compile_lines(
                     global_table,
                     global_tracker,
                 )?);
+                // }
+                // else {
+                //     
+                //     let (s, a) = compile_evaluable_new(fid, value, local_variables, global_table, global_tracker)?;
+                //     if let Some(a) = a {
+                //         global_table.add_local_variable_named_typed(name.name().clone(), a.type_ref().clone(), local_variables)?;
+                //     }
+                //     else {
+                //         return WErr::ne(
+                //             EvalErrs::ExpectedNotNone,
+                //             value.location().clone(),
+                //         );
+                //     }
+                //     contents.other(&s);
+                // }
             }
             LineTokens::If(if_token) => {
                 let condition_addr = global_table
@@ -356,6 +388,10 @@ fn recursively_compile_lines(
                     )?
                     .0,
                 );
+            }
+            LineTokens::Typequery(tq) => {
+                let t = compile_evaluable_type_only(fid, tq.querying(), local_variables, global_table, global_tracker)?;
+                global_tracker.info_messages_mut().push((format!("Type: {}", global_table.get_type_name(&t)), tq.location().clone().into_info()));
             }
             // Debug tool
             #[cfg(debug_assertions)]

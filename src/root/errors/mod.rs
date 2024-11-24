@@ -33,7 +33,7 @@ impl WErr {
         #[cfg(debug_assertions)]
         if DEBUG_ON_ERROR {
             println!("WErr created:");
-            println!("{}", Backtrace::capture());
+            println!("{}", Backtrace::force_capture());
         }
         w
     }
@@ -49,7 +49,7 @@ impl WErr {
         #[cfg(debug_assertions)]
         if DEBUG_ON_ERROR {
             println!("WErr created:");
-            println!("{}", Backtrace::capture());
+            println!("{}", Backtrace::force_capture());
         }
         Err(w)
     }

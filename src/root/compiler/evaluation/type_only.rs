@@ -63,7 +63,7 @@ pub fn compile_evaluable_type_only(
         EvaluableTokens::Literal(literal) => {
             let tid = literal.literal().default_type();
             // TODO: Don't use 0 here
-            TypeRef::new(tid, 0, Indirection(0))
+            TypeRef::new(tid, 1, Indirection(0))
         }
         EvaluableTokens::InfixOperator(lhs, op, _) => {
             // if op.is_prefix_opt_t() {

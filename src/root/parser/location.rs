@@ -5,7 +5,7 @@ use std::marker::PhantomData;
 
 use color_print::cformat;
 use nom::InputTake;
-
+use num_format::Locale::tr;
 use crate::root::parser::parse::Span;
 use crate::root::parser::path_storage::{FileID, PathStorage};
 
@@ -44,13 +44,17 @@ struct InnerLocation {
     line: u32,
 }
 
-/// Error type
+/// Error location type
 #[derive(Debug, Clone)]
 pub struct ErrorL;
 
-/// Warning type
+/// Warning location type
 #[derive(Debug, Clone)]
 pub struct WarningL;
+
+/// Info location type
+#[derive(Debug, Clone)]
+pub struct InfoL;
 
 // Default type is an error
 pub type Location = LocationTyped<ErrorL>;
@@ -73,6 +77,15 @@ pub struct LocationTyped<ErrorType> {
 
 impl LocationTyped<ErrorL> {
     pub fn into_warning(self) -> LocationTyped<WarningL> {
+        LocationTyped {
+            error_type: Default::default(),
+            inner_location: self.inner_location,
+        }
+    }
+}
+
+impl LocationTyped<ErrorL> {
+    pub fn into_info(self) -> LocationTyped<InfoL> {
         LocationTyped {
             error_type: Default::default(),
             inner_location: self.inner_location,
@@ -155,6 +168,7 @@ impl<ErrorType> LocationTyped<ErrorType> {
         &self,
         f: &mut Formatter<'_>,
         is_warning: bool,
+        is_info: bool,
         path_storage: &PathStorage,
     ) -> std::fmt::Result {
         // Return if builtin or none
@@ -241,7 +255,7 @@ impl<ErrorType> LocationTyped<ErrorType> {
             return fail(f);
         };
 
-        // Gets the part of the line with the rrror
+        // Gets the part of the line with the errror
         let (mut start, mut end) = (0usize, line.chars().count() - 1);
         if end > CHAR_LIMIT {
             let start_dist = offset - start;
@@ -281,7 +295,17 @@ impl<ErrorType> LocationTyped<ErrorType> {
                 width = largest_num_len
             );
             writeln!(f, "{}", cformat!("<y,bold>{}</>", warn_line))?;
-        } else {
+        } 
+        else if is_info {
+            let warn_line = format!(
+                "{:0width$} |  {}^Here",
+                "I",
+                (0..(offset - start)).map(|_| ' ').collect::<String>(),
+                width = largest_num_len
+            );
+            writeln!(f, "{}", cformat!("<c,bold>{}</>", warn_line))?;
+        }
+        else {
             let err_line = format!(
                 "{:0width$} |  {}^Here",
                 "E",
@@ -331,13 +355,19 @@ pub trait LocationFilledFmt {
 
 impl LocationFilledFmt for LocationTyped<ErrorL> {
     fn fmt(&self, f: &mut Formatter<'_>, path_storage: &PathStorage) -> std::fmt::Result {
-        self.fmt_choice(f, false, path_storage)
+        self.fmt_choice(f, false, false, path_storage)
     }
 }
 
 impl LocationFilledFmt for LocationTyped<WarningL> {
     fn fmt(&self, f: &mut Formatter<'_>, path_storage: &PathStorage) -> std::fmt::Result {
-        self.fmt_choice(f, true, path_storage)
+        self.fmt_choice(f, true, false, path_storage)
+    }
+}
+
+impl LocationFilledFmt for LocationTyped<InfoL> {
+    fn fmt(&self, f: &mut Formatter<'_>, path_storage: &PathStorage) -> std::fmt::Result {
+        self.fmt_choice(f, false, true, path_storage)
     }
 }
 
@@ -354,6 +384,12 @@ impl<'a> Display for LocationContext<'a, ErrorL> {
 }
 
 impl<'a> Display for LocationContext<'a, WarningL> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        self.location.fmt(f, self.path_storage)
+    }
+}
+
+impl<'a> Display for LocationContext<'a, InfoL> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         self.location.fmt(f, self.path_storage)
     }

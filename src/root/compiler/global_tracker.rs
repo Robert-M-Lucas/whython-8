@@ -3,11 +3,13 @@ use crate::root::parser::path_storage::PathStorage;
 use crate::root::shared::common::FunctionID;
 use derive_getters::{Dissolve, Getters};
 use std::collections::HashSet;
+use crate::root::parser::location::{InfoL, Location, LocationTyped};
 
 /// Tracks data between function compilations, including data about files and folders
 #[derive(Dissolve, Getters)]
 pub struct GlobalTracker<'a> {
     path_storage: &'a PathStorage,
+    info_messages: Vec<(String, LocationTyped<InfoL>)>,
     function_calls: HashSet<FunctionID>,
     readonly_contents: HashSet<String>,
     readonly_data_section: Assembly,
@@ -18,6 +20,7 @@ impl<'a> GlobalTracker<'a> {
     pub fn new(path_storage: &'a PathStorage) -> GlobalTracker {
         GlobalTracker {
             path_storage,
+            info_messages: Vec::new(),
             function_calls: Default::default(),
             readonly_contents: Default::default(),
             readonly_data_section: "".to_string(),
@@ -30,6 +33,8 @@ impl<'a> GlobalTracker<'a> {
         &mut self.function_calls
     }
 
+    pub fn info_messages_mut(&mut self) -> &mut Vec<(String, LocationTyped<InfoL>)> { &mut self.info_messages }
+    
     /// Stores that a function has been called to ensure it gets compiled
     pub fn store_function_call(&mut self, fid: FunctionID) {
         self.function_calls.insert(fid);

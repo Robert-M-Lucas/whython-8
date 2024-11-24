@@ -29,6 +29,7 @@ pub mod parse_operator;
 pub mod parse_return;
 mod parse_struct_init;
 pub mod parse_while;
+mod parse_typequery;
 
 /// Token representing a function including location
 #[derive(Debug, Getters, Dissolve)]

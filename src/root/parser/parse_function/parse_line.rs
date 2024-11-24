@@ -12,6 +12,7 @@ use crate::root::parser::parse_function::parse_initialisation::{
 #[cfg(debug_assertions)]
 use crate::root::parser::parse_function::parse_marker::{test_parse_marker, MarkerToken};
 use crate::root::parser::parse_function::parse_return::{test_parse_return, ReturnToken};
+use crate::root::parser::parse_function::parse_typequery::{test_parse_typequery, TypequeryToken};
 use crate::root::parser::parse_function::parse_while::{test_parse_while, WhileToken};
 use crate::root::parser::parse_name::SimpleNameToken;
 use crate::root::parser::parse_util::discard_ignored;
@@ -25,6 +26,7 @@ pub enum LineTokens {
     Return(ReturnToken),
     Break(BreakToken),
     NoOp(EvaluableToken),
+    Typequery(TypequeryToken),
     #[cfg(debug_assertions)]
     Marker(MarkerToken),
 }
@@ -65,6 +67,7 @@ pub fn parse_line<'a>(
     match alt((
         test_parse_break,
         test_parse_return,
+        test_parse_typequery,
         test_parse_initialisation,
         test_parse_while,
         test_parse_if,
@@ -82,7 +85,7 @@ pub fn parse_line<'a>(
                 Err(e) => Err( // Failed all line types and evaluable
                     nom::Err::Error(ErrorTree::Alt(vec![
                         create_custom_error_tree(
-                            "Expected 'break', 'return', 'let', 'while', 'if', or an evaluable. Evaluable parsing error shown next.".to_string(),
+                            "Expected 'break', 'return', 'let', 'while', 'if', 'typequery', or an evaluable. Evaluable parsing error shown next.".to_string(),
                             s,
                         ),
                         to_error_tree(e, s)

@@ -157,6 +157,7 @@ pub fn call_function(
                 Either::Left(eval) => {
                     let into = global_table
                         .add_local_variable_unnamed(signature_args[i].clone(), local_variables);
+                    
                     let c = compile_evaluable_into(
                         parent_fid,
                         eval,

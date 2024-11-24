@@ -117,11 +117,11 @@ impl TypeRef {
         }
     }
 
-    /// Returns whether a type is an array
-    #[allow(dead_code)]
-    pub fn is_array(&self) -> bool {
-        self.elements == 1
-    }
+    // /// Returns whether a type is an array
+    // #[allow(dead_code)]
+    // pub fn is_array(&self) -> bool {
+    //     self.elements == 1
+    // }
 
     /// Returns a `TypeRef` with a different indirection
     pub fn with_indirection(&self, indirection: Indirection) -> TypeRef {

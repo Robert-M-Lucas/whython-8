@@ -18,7 +18,7 @@ use crate::root::runner::{assemble, link_gcc, run};
 use crate::time;
 
 #[cfg(debug_assertions)]
-pub const DEBUG_ON_ERROR: bool = false;
+pub const DEBUG_ON_ERROR: bool = true;
 
 pub mod assembler;
 pub mod builtin;

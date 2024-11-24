@@ -12,6 +12,7 @@ use crate::root::shared::common::FunctionID;
 use crate::root::unrandom::{new_hashmap, new_hashset};
 #[cfg(debug_assertions)]
 use itertools::Itertools;
+use crate::root::utils::info_location;
 
 /// Compiles the entire program. Returns assembly.
 pub fn compile(
@@ -34,6 +35,7 @@ pub fn compile(
     open_set.insert(FunctionID::MAIN_FUNCTION); // Start with main
     let mut global_tracker = GlobalTracker::new(path_storage);
 
+    println!();
     while !open_set.is_empty() {
         // Reset state tracked during function compilation
         global_tracker.reset_functions();
@@ -78,7 +80,7 @@ pub fn compile(
         // Show info if last info shown was long enough ago
         if Instant::now() - last_shown > Duration::from_millis(1000) {
             print!(
-                "\n  - {}/{} Functions Compiled",
+                "\r  - {}/{} Functions Compiled",
                 compiled_count,
                 open_set.len() + compiled_count
             );
@@ -86,7 +88,7 @@ pub fn compile(
         }
     }
     print!(
-        "\n  - {}/{} Functions Compiled",
+        "\r  - {}/{} Functions Compiled",
         compiled_count,
         open_set.len() + compiled_count
     );
@@ -120,6 +122,10 @@ section .text
     if !global_tracker.readonly_data_section().is_empty() {
         asm += "section .data_readonly";
         asm += global_tracker.readonly_data_section();
+    }
+    
+    for (msg, location) in global_tracker.info_messages() {
+        info_location(msg, location.with_context(global_tracker.path_storage()));
     }
 
     Ok(asm)

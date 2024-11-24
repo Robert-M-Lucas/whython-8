@@ -415,6 +415,20 @@ impl GlobalTable {
         Ok(address)
     }
 
+    /// Adds a local, named variable to the `LocalVariableTable` and returns the address
+    pub fn add_local_variable_named_typed(
+        &mut self,
+        name: String,
+        t: TypeRef,
+        local_variable_table: &mut LocalVariableTable,
+    ) -> Result<AddressedTypeRef, WErr> {
+        let size = self.get_size(&t);
+        let address = local_variable_table.add_new_unnamed(size);
+        let address = AddressedTypeRef::new(address, t);
+        local_variable_table.add_existing(name, address.clone());
+        Ok(address)
+    }
+
     /// Returns whether a main function has been defined
     pub fn has_main(&self) -> bool {
         self.function_signatures.contains_key(&FunctionID(0))

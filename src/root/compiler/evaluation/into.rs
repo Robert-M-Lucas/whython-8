@@ -67,6 +67,7 @@ pub fn compile_evaluable_into(
                 NameResult::Variable(address) => {
                     // Check type
                     if address.type_ref() != target.type_ref() {
+                        // println!("{:?} \n {:?}", address.type_ref(), target.type_ref());
                         return WErr::ne(
                             EvalErrs::ExpectedDifferentType(
                                 global_table.get_type_name(target.type_ref()),

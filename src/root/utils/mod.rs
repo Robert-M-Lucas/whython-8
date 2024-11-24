@@ -5,6 +5,7 @@ use std::io;
 use std::io::ErrorKind;
 use std::ops::{Add, Rem, Sub};
 use std::process::ExitStatus;
+use crate::root::parser::location::{InfoL, LocationContext, WarningL};
 
 /// Tries to run an executable showing a suitable message upon failure
 pub fn try_run_program(name: &str, exit_status: io::Result<ExitStatus>) -> Result<ExitStatus, ()> {
@@ -57,4 +58,27 @@ pub fn align<T: Copy + Sub<Output = T> + Rem<Output = T> + Add<Output = T>>(
 /// Prints a warning
 pub fn warn(msg: &str) {
     cprintln!("\n<y,bold>Warning:</> <y>{}</>", msg);
+}
+
+/// Prints a warning with a location
+pub fn warn_location(msg: &str, location: LocationContext<WarningL>) {
+    cprintln!(
+        "<y,bold>Warning:</>\n    {}\n{}",
+        msg,
+        location
+    )
+}
+
+/// Prints info
+pub fn info(msg: &str) {
+    cprintln!("\n<c,bold>Info:</> <y>{}</>", msg);
+}
+
+/// Prints a warning with a location
+pub fn info_location(msg: &str, location: LocationContext<InfoL>) {
+    cprintln!(
+        "<c,bold>Info:</>\n    {}\n{}",
+        msg,
+        location
+    )
 }
