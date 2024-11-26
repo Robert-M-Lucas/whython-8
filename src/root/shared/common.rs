@@ -44,7 +44,7 @@ impl FunctionID {
     /// Gets an identifier for the function that can be used in assembly
     pub fn string_id(&self) -> String {
         if self.is_main() {
-            return "main".to_string();
+            return "_start".to_string();
         }
 
         let id = self.0;

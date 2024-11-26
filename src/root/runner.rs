@@ -23,20 +23,45 @@ pub fn assemble(output: &str) -> Result<(), ()> {
 }
 
 /// Links assembled code
-pub fn link_gcc(output: &str) -> Result<(), ()> {
+// pub fn link_gcc(output: &str) -> Result<(), ()> {
+//     if !try_run_program(
+//         "gcc",
+//         Command::new("gcc")
+//             .args([
+//                 format!("{output}.o").as_str(),
+//                 "-o",
+//                 format!("{output}.out").as_str(),
+//             ])
+//             .status(),
+//     )?
+//     .success()
+//     {
+//         cprintln!("<r,bold>gcc linking step failed</>");
+//         return Err(());
+//     }
+//
+//     Ok(())
+// }
+
+/// Links assembled code
+pub fn link_ld(output: &str) -> Result<(), ()> {
     if !try_run_program(
-        "gcc",
-        Command::new("gcc")
+        "ld",
+        Command::new("ld")
             .args([
+                "-static",
+                "/usr/lib/x86_64-linux-gnu/crt1.o",
+                "/usr/lib/x86_64-linux-gnu/crti.o",
                 format!("{output}.o").as_str(),
                 "-o",
                 format!("{output}.out").as_str(),
+                "-lc",
             ])
             .status(),
     )?
     .success()
     {
-        cprintln!("<r,bold>gcc linking step failed</>");
+        cprintln!("<r,bold>ld linking step failed</>");
         return Err(());
     }
 

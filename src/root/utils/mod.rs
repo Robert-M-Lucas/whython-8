@@ -55,7 +55,21 @@ pub fn align<T: Copy + Sub<Output = T> + Rem<Output = T> + Add<Output = T>>(
     num + (alignment - (num % alignment)) % alignment
 }
 
-/// Prints a warning
+// /// Prints a warning
+// pub fn warn(msg: &str) {
+//     cprintln!("\n<y,bold>Warning:</> <y>{}</>", msg);
+// }
+//
+// /// Prints a warning with a location
+// pub fn warn_location(msg: &str, location: LocationContext<WarningL>) {
+//     cprintln!(
+//         "<y,bold>Warning:</>\n    {}\n{}",
+//         msg,
+//         location
+//     )
+// }
+
+/// Prints warning
 pub fn warn(msg: &str) {
     cprintln!("\n<y,bold>Warning:</> <y>{}</>", msg);
 }
@@ -74,7 +88,7 @@ pub fn info(msg: &str) {
     cprintln!("\n<c,bold>Info:</> <y>{}</>", msg);
 }
 
-/// Prints a warning with a location
+/// Prints info with a location
 pub fn info_location(msg: &str, location: LocationContext<InfoL>) {
     cprintln!(
         "<c,bold>Info:</>\n    {}\n{}",

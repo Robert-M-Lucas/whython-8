@@ -132,8 +132,6 @@ fn recursively_compile_lines(
             LineTokens::Initialisation(it) => {
                 let (name, type_name, value) = (it.name(), it.type_name(), it.value());
                 
-                
-                
                 // if let Some(type_name) = type_name {
                 let address = if let Some(type_name) = type_name {
                     global_table.add_local_variable_named(
@@ -330,7 +328,9 @@ fn recursively_compile_lines(
                         global_table,
                         global_tracker,
                     )?);
-                    contents.line(&format!("mov rax, qword {}", address.local_address()));
+                    contents.line(&format!("mov rdi, qword {}", address.local_address()));
+                    contents.line(&format!("mov rax, 60"));
+                    contents.line(&format!("syscall"));
                 } else if let Some(return_value) = rt.return_value() {
                     if return_variable.is_none() {
                         return WErr::ne(
@@ -357,15 +357,22 @@ fn recursively_compile_lines(
                     );
                 }
 
-                contents.line("leave");
-                contents.line("ret");
+                if !fid.is_main() {
+                    contents.line("leave");
+                    contents.line("ret");
+                }
 
                 if line_i != lines.len() - 1 {
-                    warn(
-                        &format!("Return isn't the last instruction in the block. Following lines in block will not be compiled/run.\n{}", 
-                                 rt.location().clone().into_warning().with_context(global_tracker.path_storage())
-                        )
-                    )
+                    // warn(
+                    //     &format!("Return isn't the last instruction in the block. Following lines in block will not be compiled/run.\n{}",
+                    //              rt.location().clone().into_warning().with_context(global_tracker.path_storage())
+                    //     )
+                    // )
+                    
+                    global_tracker.warn_messages_mut().push((
+                        "Return isn't the last instruction in the block. Following lines in block will not be compiled/run.".to_string(), 
+                        rt.location().clone().into_warning())
+                    );
                 }
                 break;
             }

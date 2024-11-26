@@ -12,7 +12,7 @@ use crate::root::shared::common::FunctionID;
 use crate::root::unrandom::{new_hashmap, new_hashset};
 #[cfg(debug_assertions)]
 use itertools::Itertools;
-use crate::root::utils::info_location;
+use crate::root::utils::{info_location, warn_location};
 
 /// Compiles the entire program. Returns assembly.
 pub fn compile(
@@ -96,7 +96,7 @@ pub fn compile(
 
     let mut asm: Assembly = String::with_capacity(compiled_len);
 
-    asm += "    global main
+    asm += "    global _start
 
 section .text
 
@@ -126,6 +126,9 @@ section .text
     
     for (msg, location) in global_tracker.info_messages() {
         info_location(msg, location.with_context(global_tracker.path_storage()));
+    }
+    for (msg, location) in global_tracker.warn_messages() {
+        warn_location(msg, location.with_context(global_tracker.path_storage()));
     }
 
     Ok(asm)

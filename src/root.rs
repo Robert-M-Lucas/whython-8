@@ -14,11 +14,11 @@ use crate::root::compiler::compile::compile;
 use crate::root::name_resolver::resolve::resolve;
 use crate::root::parser::parse::parse;
 use crate::root::parser::path_storage::PathStorage;
-use crate::root::runner::{assemble, link_gcc, run};
+use crate::root::runner::{assemble, link_ld, run};
 use crate::time;
 
 #[cfg(debug_assertions)]
-pub const DEBUG_ON_ERROR: bool = true;
+pub const DEBUG_ON_ERROR: bool = false;
 
 pub mod assembler;
 pub mod builtin;
@@ -97,10 +97,10 @@ pub fn main_args(args: Args) -> Result<(), String> {
 
     #[cfg(target_os = "linux")]
     {
-        print!("Linking (gcc)... ");
+        print!("Linking (ld)... ");
 
         let t = Instant::now();
-        link_gcc(&args.output).unwrap();
+        link_ld(&args.output).unwrap();
         let end = t.elapsed();
         let size = File::open(format!("{}.out", args.output))
             .unwrap()
